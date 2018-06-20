@@ -10,6 +10,7 @@ import conversionMap from '../../utils/conversionMap';
 
 import {
 	card,
+	Header,
 	heading,
 	row,
 	title,
@@ -93,8 +94,6 @@ export default class Mapping extends Component {
 			}
 			return acc[val];
 		}, mapping);
-
-		console.log(this.state.dirty);
 
 		this.setState({
 			dirty: true,
@@ -206,39 +205,17 @@ export default class Mapping extends Component {
 					<h2 className={heading}>Manage Mappings</h2>
 				</div>
 				<div style={{ padding: '5px 20px' }}>
-					<header
-						style={{
-							display: 'flex',
-							flexDirection: 'row',
-							justifyContent: 'space-between',
-							fontWeight: 600,
-							paddingTop: 20,
-						}}
-					>
+					<Header>
 						<span>Field Name</span>
 						<div>
-							<span
-								style={{
-									minWidth: '150px',
-									display: 'inline-block',
-									margin: '0 10px',
-									textAlign: 'center',
-								}}
-							>
+							<span className="col">
 								Use-case
 							</span>
-							<span
-								style={{
-									minWidth: '150px',
-									display: 'inline-block',
-									margin: '0 10px',
-									textAlign: 'center',
-								}}
-							>
+							<span className="col">
 								Data Type
 							</span>
 						</div>
-					</header>
+					</Header>
 					{
 						Object.keys(this.state.mapping)
 							.map((field) => {

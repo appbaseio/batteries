@@ -13,6 +13,21 @@ export const card = css`
 	box-sizing: border-box;
 `;
 
+export const Header = styled('header')`
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	font-weight: 600;
+	padding-top: 20px;
+
+	.col {
+		min-width: 150px;
+		display: inline-block;
+		margin: 0 10px;
+		text-align: center;
+	}
+`;
+
 export const heading = css`
 	font-size: 16px;
 	letter-spacing: 0.015rem;
