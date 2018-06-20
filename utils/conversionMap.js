@@ -1,6 +1,5 @@
 export default {
 	text: [],
-	string: [],
 	object: [],
 
 	integer: ['float', 'long', 'text'],
@@ -10,5 +9,6 @@ export default {
 
 	date: ['text'],
 	geo_point: ['text'],
+	geo_shape: ['text'],
 	boolean: ['text'],
 };
