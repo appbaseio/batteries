@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import textUsecases from './usecases';
 import {
 	getCredentials,
 	getMappings,
@@ -21,6 +22,7 @@ import {
 	Button,
 	deleteBtn,
 } from './styles';
+import NewFieldModal from './NewFieldModal';
 
 export default class Mapping extends Component {
 	constructor(props) {
@@ -30,7 +32,10 @@ export default class Mapping extends Component {
 			loading: true,
 			mapping: null,
 			dirty: false,
+			showModal: false,
 		};
+
+		this.usecases = textUsecases;
 		this.originalMapping = null;
 	}
 
@@ -101,20 +106,49 @@ export default class Mapping extends Component {
 		});
 	}
 
+	cancelChanges = () => {
+		this.setState({
+			mapping: this.originalMapping,
+			dirty: false,
+		});
+	}
+
+	toggleModal = () => {
+		this.setState({
+			showModal: !this.state.showModal,
+		});
+	}
+
+	addField = ({ name, type, usecase }) => {
+		console.log(name, type, usecase);
+		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
+		const fields = name.split('.');
+
+		fields.reduce((acc, val, index) => {
+			if (index === fields.length - 1) {
+				acc[val] = {
+					type,
+				};
+				// add usecase here
+				return true;
+			}
+			return acc[val].properties;
+		}, mapping);
+
+		this.setState({
+			dirty: true,
+			mapping,
+		});
+	}
+
 	renderUsecase = (field, fieldname) => {
 		if (field.type === 'text') {
-			const usecases = {
-				search: 'Search',
-				aggs: 'Aggs',
-				searchaggs: 'Search & Aggs',
-				none: 'None',
-			};
 			const selected = field.fields
-				? this.getUsecase(field.fields, usecases)
+				? this.getUsecase(field.fields, this.usecases)
 				: 'none';
 			return (
 				<select
-					name="usecase"
+					name="field-usecase"
 					defaultValue={selected}
 					className={dropdown}
 					onChange={(e) => {
@@ -122,7 +156,7 @@ export default class Mapping extends Component {
 					}}
 				>
 					{
-						Object.entries(usecases).map(value => (
+						Object.entries(this.usecases).map(value => (
 							<option key={value[0]} value={value[0]}>{value[1]}</option>
 						))
 					}
@@ -173,17 +207,37 @@ export default class Mapping extends Component {
 												this.setMapping(field, e.target.value);
 											}}
 										>
-											<option value={this.getType(originalFields[field].type)}>
-												{this.getType(originalFields[field].type)}
-											</option>
-
 											{
-												conversionMap[this.getType(originalFields[field].type)]
-													.map(itemType => (
-														<option key={itemType} value={this.getType(itemType)}>
-															{this.getType(itemType)}
+												originalFields[field]
+													? (
+														<option value={this.getType(originalFields[field].type)}>
+															{this.getType(originalFields[field].type)}
 														</option>
-													))
+													)
+													: (
+														<option value={this.getType(fields[field].type)}>
+															{this.getType(fields[field].type)}
+														</option>
+													)
+											}
+											{
+												originalFields[field]
+													? (
+														conversionMap[this.getType(originalFields[field].type)]
+															.map(itemType => (
+																<option key={itemType} value={this.getType(itemType)}>
+																	{this.getType(itemType)}
+																</option>
+															))
+													)
+												: (
+													conversionMap[this.getType(fields[field].type)]
+														.map(itemType => (
+															<option key={itemType} value={this.getType(itemType)}>
+																{this.getType(itemType)}
+															</option>
+														))
+												)
 											}
 										</select>
 									</div>
@@ -201,8 +255,19 @@ export default class Mapping extends Component {
 		if (this.state.loading || !this.state.mapping) return <div>Please wait...</div>;
 		return (
 			<div className={card}>
-				<div style={{ borderBottom: '1px solid #eee', padding: 20 }}>
+				<div
+					style={{
+						borderBottom: '1px solid #eee',
+						padding: 20,
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+					}}
+				>
 					<h2 className={heading}>Manage Mappings</h2>
+					<Button ghost onClick={this.toggleModal}>
+						Add New Field
+					</Button>
 				</div>
 				<div style={{ padding: '5px 20px' }}>
 					<Header>
@@ -220,10 +285,14 @@ export default class Mapping extends Component {
 						Object.keys(this.state.mapping)
 							.map((field) => {
 								if (this.state.mapping[field]) {
+									const currentMappingFields = this.state.mapping[field].properties;
+									const originalMappingFields = this.originalMapping[field]
+										? this.originalMapping[field].properties
+										: this.state.mapping[field].properties;
 									return this.renderMapping(
 										field,
-										this.state.mapping[field].properties,
-										this.originalMapping[field].properties,
+										currentMappingFields,
+										originalMappingFields,
 										`${field}.properties`,
 									);
 								}
@@ -236,12 +305,20 @@ export default class Mapping extends Component {
 						? (
 							<Footer>
 								<Button>
-									Confirm Types
+									Confirm Mapping Changes
+								</Button>
+								<Button ghost onClick={this.cancelChanges}>
+									Cancel
 								</Button>
 							</Footer>
 						)
 						: null
 				}
+				<NewFieldModal
+					show={this.state.showModal}
+					addField={this.addField}
+					onClose={this.toggleModal}
+				/>
 			</div>
 		);
 	}

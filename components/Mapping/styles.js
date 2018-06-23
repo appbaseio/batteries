@@ -2,6 +2,8 @@ import styled, { css } from 'react-emotion';
 
 const green = '#b6ef7e';
 const greenHover = '#c3f295';
+const grey = '#efefef';
+const greyHover = '#fafafa';
 
 export const card = css`
 	width: 100%;
@@ -106,13 +108,14 @@ export const Button = styled('a')`
 	align-items: center;
 	color: #53683b;
 	font-weight: 600;
-	background-color: ${green};
+	background-color: ${props => (props.ghost ? grey : green)};;
 	text-transform: uppercase;
 	box-shadow: 0 3px 3px 0 rgba(0,0,0,0.1);
 	cursor: pointer;
+	margin-left: 12px;
 
 	&:hover, &:focus {
-		background-color: ${greenHover};
+		background-color: ${props => (props.ghost ? greyHover : greenHover)};
 		box-shadow: 0 5px 5px 0 rgba(0,0,0,0.1);
 		text-decoration: none;
 	}
@@ -147,4 +150,17 @@ export const deleteBtn = css`
 			color: #222;
 		}
 	}
+`;
+
+export const Input = styled('input')`
+	diplay: flex;
+	flex-grow: 1;
+	min-width: 150px;
+	height: 34px;
+	border: 1px solid #f8f8f8;
+	box-shadow: 0 3px 5px 0 rgba(0,0,0,0.05);
+	background-color: #fff;
+	border-radius: 2px;
+	outline-color: #c7f4ff;
+	padding: 5px;
 `;
