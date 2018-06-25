@@ -1,17 +1,17 @@
 import mappingUsecase from './mappingUsecase';
 
-const ACC_API = 'https://accapi.appbase.io/';
-const SCALR_API = 'https://scalr.api.appbase.io/';
+const ACC_API = 'https://accapi.appbase.io';
+const SCALR_API = 'https://scalr.api.appbase.io';
 const PRESERVED_KEYS = ['meta'];
 const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
 
 export function getCredentials(appId) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}app/${appId}/permissions`, {
+		fetch(`${ACC_API}/app/${appId}/permissions`, {
 			method: 'GET',
 			credentials: 'include',
 			headers: {
-				'content-type': 'application/json',
+				'Content-Type': 'application/json',
 			},
 		})
 			.then(res => res.json())
@@ -28,11 +28,11 @@ export function getCredentials(appId) {
 
 export function getMappings(appName, credentials) {
 	return new Promise((resolve, reject) => {
-		fetch(`${SCALR_API}${appName}/_mapping`, {
+		fetch(`${SCALR_API}/${appName}/_mapping`, {
 			method: 'GET',
 			credentials: 'include',
 			headers: {
-				'content-type': 'application/json',
+				'Content-Type': 'application/json',
 				Authorization: `Basic ${btoa(credentials)}`,
 			},
 		})
@@ -50,6 +50,30 @@ export function getMappings(appName, credentials) {
 					};
 				});
 				resolve(mappings);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
+export function reIndex(mappings, appId) {
+	const body = {
+		mappings,
+		es_version: '5',
+	};
+	return new Promise((resolve, reject) => {
+		fetch(`https://accapi-staging.bottleneck.io/app/${appId}/reindex`, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(body),
+		})
+			.then(res => res.json())
+			.then((data) => {
+				resolve(data);
 			})
 			.catch((e) => {
 				reject(e);

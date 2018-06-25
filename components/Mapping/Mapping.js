@@ -6,8 +6,10 @@ import {
 	updateMapping,
 	transformToES5,
 	hasAggs,
+	reIndex,
 } from '../../utils';
 import conversionMap from '../../utils/conversionMap';
+import mappingUsecase from '../../utils/mappingUsecase';
 
 import {
 	card,
@@ -120,16 +122,20 @@ export default class Mapping extends Component {
 	}
 
 	addField = ({ name, type, usecase }) => {
-		console.log(name, type, usecase);
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const fields = name.split('.');
+		let newUsecase = {};
+
+		if (usecase) {
+			newUsecase = mappingUsecase[usecase];
+		}
 
 		fields.reduce((acc, val, index) => {
 			if (index === fields.length - 1) {
 				acc[val] = {
 					type,
+					...newUsecase,
 				};
-				// add usecase here
 				return true;
 			}
 			return acc[val].properties;
@@ -140,6 +146,16 @@ export default class Mapping extends Component {
 			mapping,
 		});
 	}
+
+	reIndex = () => {
+		reIndex(this.state.mapping, this.props.appId)
+			.then((res) => {
+				console.log(res);
+			})
+			.catch((err) => {
+				console.log('error @reindexing', err);
+			});
+	};
 
 	renderUsecase = (field, fieldname) => {
 		if (field.type === 'text') {
@@ -304,7 +320,7 @@ export default class Mapping extends Component {
 					this.state.dirty
 						? (
 							<Footer>
-								<Button>
+								<Button onClick={this.reIndex}>
 									Confirm Mapping Changes
 								</Button>
 								<Button ghost onClick={this.cancelChanges}>
