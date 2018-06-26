@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
+import Loader from '../shared/Loader';
 import textUsecases from './usecases';
+import { getCredentials } from '../../utils';
 import {
-	getCredentials,
 	getMappings,
 	updateMapping,
 	transformToES5,
 	hasAggs,
 	reIndex,
-} from '../../utils';
+} from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
 
@@ -25,16 +26,19 @@ import {
 	deleteBtn,
 } from './styles';
 import NewFieldModal from './NewFieldModal';
+import ErrorModal from './ErrorModal';
 
 export default class Mapping extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			loading: true,
 			mapping: null,
 			dirty: false,
 			showModal: false,
+			isLoading: true,
+			errorMessage: '',
+			showError: false,
 		};
 
 		this.usecases = textUsecases;
@@ -50,14 +54,14 @@ export default class Mapping extends Component {
 			.then((res) => {
 				this.originalMapping = res;
 				this.setState({
-					loading: false,
+					isLoading: false,
 					mapping: res ? transformToES5(res) : res,
 				});
 			})
 			.catch((e) => {
 				console.error(e);
 				this.setState({
-					loading: false,
+					isLoading: false,
 				});
 			});
 	}
@@ -121,6 +125,13 @@ export default class Mapping extends Component {
 		});
 	}
 
+	hideErrorModal = () => {
+		this.setState({
+			showError: false,
+			errorMessage: '',
+		});
+	}
+
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const fields = name.split('.');
@@ -148,12 +159,25 @@ export default class Mapping extends Component {
 	}
 
 	reIndex = () => {
+		this.setState({
+			isLoading: true,
+		});
+
 		reIndex(this.state.mapping, this.props.appId)
-			.then((res) => {
-				console.log(res);
+			.then(() => {
+				this.setState({
+					isLoading: false,
+					dirty: false,
+					errorMessage: '',
+				});
+				this.originalMapping = this.state.mapping;
 			})
 			.catch((err) => {
-				console.log('error @reindexing', err);
+				this.setState({
+					isLoading: false,
+					showError: true,
+					errorMessage: err,
+				});
 			});
 	};
 
@@ -268,7 +292,7 @@ export default class Mapping extends Component {
 	};
 
 	render() {
-		if (this.state.loading || !this.state.mapping) return <div>Please wait...</div>;
+		if (this.state.isLoading && !this.state.mapping) return <Loader show message="Fetching mappings... Please wait!" />;
 		return (
 			<div className={card}>
 				<div
@@ -334,6 +358,15 @@ export default class Mapping extends Component {
 					show={this.state.showModal}
 					addField={this.addField}
 					onClose={this.toggleModal}
+				/>
+				<Loader
+					show={this.state.isLoading}
+					message="Re-indexing your data... Please wait!"
+				/>
+				<ErrorModal
+					show={this.state.showError}
+					error={this.state.errorMessage}
+					onClose={this.hideErrorModal}
 				/>
 			</div>
 		);
