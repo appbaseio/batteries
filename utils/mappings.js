@@ -136,7 +136,7 @@ export function updateMapping(mapping, field, type, usecase) {
 					type,
 				},
 			};
-		} else if (!Array.isArray(_mapping[key]) && typeof (_mapping[key]) !== 'string') {
+		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
 			_mapping = {
 				..._mapping,
 				[key]: {
