@@ -165,12 +165,7 @@ export default class Mapping extends Component {
 
 		reIndex(this.state.mapping, this.props.appId)
 			.then(() => {
-				this.setState({
-					isLoading: false,
-					dirty: false,
-					errorMessage: '',
-				});
-				this.originalMapping = this.state.mapping;
+				window.location.reload();
 			})
 			.catch((err) => {
 				this.setState({

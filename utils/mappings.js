@@ -53,14 +53,15 @@ export function reIndex(mappings, appId) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				if (data.status === 200) resolve(data);
-				else {
-					console.log('rejecting');
-					reject(data.error.reason);
+				if (data.error) {
+					reject(data.error);
 				}
+				if (data.body && data.body.response_info.failures.length) {
+					reject(data.body.response_info.failures);
+				}
+				resolve();
 			})
 			.catch((e) => {
-				console.log('rejecting');
 				reject(e);
 			});
 	});
