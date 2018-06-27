@@ -81,8 +81,8 @@ export function transformToES5(mapping) {
 	// eslint-disable-next-line
 	let _mapping = { ...mapping };
 
-	Object.keys(_mapping).forEach((key) => {
-		if (PRESERVED_KEYS.includes(key)) return _mapping;
+	Object.keys(_mapping).every((key) => {
+		if (PRESERVED_KEYS.includes(key)) return false;
 
 		if (_mapping[key].type === 'string') {
 			const hasUsecase = !!_mapping[key].fields;
@@ -112,6 +112,7 @@ export function transformToES5(mapping) {
 				},
 			};
 		}
+		return true;
 	});
 	return _mapping;
 }
