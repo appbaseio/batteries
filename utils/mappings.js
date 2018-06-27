@@ -54,9 +54,13 @@ export function reIndex(mappings, appId) {
 			.then(res => res.json())
 			.then((data) => {
 				if (data.status === 200) resolve(data);
-				else reject(data.error.reason);
+				else {
+					console.log('rejecting');
+					reject(data.error.reason);
+				}
 			})
 			.catch((e) => {
+				console.log('rejecting');
 				reject(e);
 			});
 	});
@@ -103,7 +107,7 @@ export function transformToES5(mapping) {
 					type: 'text',
 				},
 			};
-		} else if (!Array.isArray(_mapping[key]) && typeof (_mapping[key]) !== 'string') {
+		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
 			_mapping = {
 				..._mapping,
 				[key]: {
@@ -121,8 +125,8 @@ export function updateMapping(mapping, field, type, usecase) {
 	// eslint-disable-next-line
 	let _mapping = { ...mapping };
 
-	Object.keys(_mapping).forEach((key) => {
-		if (PRESERVED_KEYS.includes(key)) return _mapping;
+	Object.keys(_mapping).every((key) => {
+		if (PRESERVED_KEYS.includes(key)) return false;
 
 		if (key === field) {
 			let newUsecase = {};
@@ -145,6 +149,7 @@ export function updateMapping(mapping, field, type, usecase) {
 				},
 			};
 		}
+		return true;
 	});
 	return _mapping;
 }
