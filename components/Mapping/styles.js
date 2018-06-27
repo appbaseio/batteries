@@ -164,3 +164,14 @@ export const Input = styled('input')`
 	outline-color: #c7f4ff;
 	padding: 5px;
 `;
+
+export const ErrorLogger = styled('pre')`
+	height: auto;
+	max-height: 200px;
+	overflow-y: scroll;
+	width: 100%;
+	background-color: #eee;
+	padding: 10px;
+	font-family: monospace;
+	font-size: 14px;
+`;

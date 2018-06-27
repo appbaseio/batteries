@@ -39,6 +39,7 @@ export default class Mapping extends Component {
 			isLoading: true,
 			errorMessage: '',
 			showError: false,
+			errorLength: 0,
 		};
 
 		this.usecases = textUsecases;
@@ -171,7 +172,8 @@ export default class Mapping extends Component {
 				this.setState({
 					isLoading: false,
 					showError: true,
-					errorMessage: err,
+					errorLength: Array.isArray(err) && err.length,
+					errorMessage: JSON.stringify(err, null, 4),
 				});
 			});
 	};
@@ -360,6 +362,7 @@ export default class Mapping extends Component {
 				/>
 				<ErrorModal
 					show={this.state.showError}
+					errorLength={this.state.errorLength}
 					error={this.state.errorMessage}
 					onClose={this.hideErrorModal}
 				/>
