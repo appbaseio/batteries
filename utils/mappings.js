@@ -36,10 +36,11 @@ export function getMappings(appName, credentials) {
 	});
 }
 
-export function reIndex(mappings, appId) {
+export function reIndex(mappings, appId, excludeFields) {
 	const body = {
 		mappings,
 		settings: analyzerSettings,
+		exclude_fields: excludeFields,
 		es_version: '5',
 	};
 	return new Promise((resolve, reject) => {

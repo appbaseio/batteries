@@ -29,7 +29,13 @@ export default class NewFieldModal extends Component {
 
 	addField = () => {
 		const { name, usecase, type } = this.state;
-		if (name) {
+		const deletedPaths = this.props.deletedPaths
+			.map(item => item.split('.properties.').join('.'));
+		if (name && deletedPaths.includes(name)) {
+			this.setState({
+				error: 'You\'re trying to add a field which you just deleted. This will result in loss of data.',
+			});
+		} else if (name) {
 			this.props.addField({
 				name,
 				type,

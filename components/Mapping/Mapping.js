@@ -40,6 +40,7 @@ export default class Mapping extends Component {
 			errorMessage: '',
 			showError: false,
 			errorLength: 0,
+			deletedPaths: [],
 		};
 
 		this.usecases = textUsecases;
@@ -110,6 +111,7 @@ export default class Mapping extends Component {
 		this.setState({
 			dirty: true,
 			mapping,
+			deletedPaths: [...this.state.deletedPaths, path],
 		});
 	}
 
@@ -164,7 +166,7 @@ export default class Mapping extends Component {
 			isLoading: true,
 		});
 
-		reIndex(this.state.mapping, this.props.appId)
+		reIndex(this.state.mapping, this.props.appId, this.state.deletedPaths)
 			.then(() => {
 				window.location.reload();
 			})
@@ -355,6 +357,7 @@ export default class Mapping extends Component {
 					show={this.state.showModal}
 					addField={this.addField}
 					onClose={this.toggleModal}
+					deletedPaths={this.state.deletedPaths}
 				/>
 				<Loader
 					show={this.state.isLoading}
