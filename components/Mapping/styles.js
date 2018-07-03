@@ -64,7 +64,7 @@ export const dropdown = css`
 	border-radius: 2px;
 	outline-color: #c7f4ff;
 	margin-left: 12px;
-	padding-right: 15px;
+	padding: 6px 15px 6px 6px;
 	text-transform: capitalize;
 `;
 

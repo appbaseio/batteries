@@ -5,14 +5,23 @@ import { SCALR_API } from './index';
 const PRESERVED_KEYS = ['meta'];
 const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
 
-export function getMappings(appName, credentials) {
+function getAuthHeaders(credentials) {
+	if (credentials) {
+		return {
+			Authorization: `Basic ${btoa(credentials)}`,
+		};
+	}
+	return {};
+}
+
+export function getMappings(appName, credentials, url = SCALR_API) {
 	return new Promise((resolve, reject) => {
-		fetch(`${SCALR_API}/${appName}/_mapping`, {
+		fetch(`${url}/${appName}/_mapping`, {
 			method: 'GET',
 			credentials: 'include',
 			headers: {
+				...getAuthHeaders(credentials),
 				'Content-Type': 'application/json',
-				Authorization: `Basic ${btoa(credentials)}`,
 			},
 		})
 			.then(res => res.json())

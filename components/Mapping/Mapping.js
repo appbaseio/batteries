@@ -41,6 +41,7 @@ export default class Mapping extends Component {
 			showError: false,
 			errorLength: 0,
 			deletedPaths: [],
+			editable: this.props.editable || !this.props.url,
 		};
 
 		this.usecases = textUsecases;
@@ -48,37 +49,28 @@ export default class Mapping extends Component {
 	}
 
 	componentDidMount() {
-		getCredentials(this.props.appId)
+		if (this.state.editable) {
+			getCredentials(this.props.appId)
 			.then((res) => {
 				const { username, password } = res;
 				return getMappings(this.props.appName, `${username}:${password}`);
 			})
-			.then((res) => {
-				this.originalMapping = res;
-				this.setState({
-					isLoading: false,
-					mapping: res ? transformToES5(res) : res,
-				});
-			})
+			.then(this.handleMapping)
 			.catch((e) => {
 				console.error(e);
 				this.setState({
 					isLoading: false,
 				});
 			});
+		} else {
+			getMappings(this.props.appName, this.props.credentials, this.props.url)
+				.then(this.handleMapping);
+		}
 	}
 
 	getType = (type) => {
 		if (type === 'string') return 'text';
 		return type;
-	};
-
-	setMapping = (field, type, usecase) => {
-		const mapping = updateMapping(this.state.mapping, field, type, usecase);
-		this.setState({
-			mapping,
-			dirty: true,
-		});
 	};
 
 	getUsecase = (fields) => {
@@ -90,6 +82,22 @@ export default class Mapping extends Component {
 		if (!hasAggsFlag && hasSearchFlag) return 'search';
 		if (hasAggsFlag && !hasSearchFlag) return 'aggs';
 		return 'none';
+	}
+
+	setMapping = (field, type, usecase) => {
+		const mapping = updateMapping(this.state.mapping, field, type, usecase);
+		this.setState({
+			mapping,
+			dirty: true,
+		});
+	};
+
+	handleMapping = (res) => {
+		this.originalMapping = res;
+		this.setState({
+			isLoading: false,
+			mapping: res ? transformToES5(res) : res,
+		});
 	}
 
 	deletePath = (path) => {
@@ -185,21 +193,33 @@ export default class Mapping extends Component {
 			const selected = field.fields
 				? this.getUsecase(field.fields, this.usecases)
 				: 'none';
+
+			if (this.state.editable) {
+				return (
+					<select
+						name="field-usecase"
+						defaultValue={selected}
+						className={dropdown}
+						onChange={(e) => {
+							this.setMapping(fieldname, 'text', e.target.value);
+						}}
+					>
+						{
+							Object.entries(this.usecases).map(value => (
+								<option key={value[0]} value={value[0]}>{value[1]}</option>
+							))
+						}
+					</select>
+				);
+			}
+
 			return (
-				<select
-					name="field-usecase"
-					defaultValue={selected}
+				<span
+					style={{ boxShadow: 'none', border: 0 }}
 					className={dropdown}
-					onChange={(e) => {
-						this.setMapping(fieldname, 'text', e.target.value);
-					}}
 				>
-					{
-						Object.entries(this.usecases).map(value => (
-							<option key={value[0]} value={value[0]}>{value[1]}</option>
-						))
-					}
-				</select>
+					{selected}
+				</span>
 			);
 		}
 		return null;
@@ -214,9 +234,15 @@ export default class Mapping extends Component {
 				>
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>{type}</span>
-						<a onClick={() => { this.deletePath(address); }}>
-							<i className="fas fa-trash-alt" />
-						</a>
+						{
+							this.state.editable
+								? (
+									<a onClick={() => { this.deletePath(address); }}>
+										<i className="fas fa-trash-alt" />
+									</a>
+								)
+								: null
+						}
 					</h4>
 					{
 						Object.keys(fields).map((field) => {
@@ -232,53 +258,72 @@ export default class Mapping extends Component {
 								<div key={field} className={item}>
 									<div className={deleteBtn}>
 										<span title={field}>{field}</span>
-										<a onClick={() => { this.deletePath(`${address}.${field}`); }}>
-											<i className="fas fa-trash-alt" />
-										</a>
+										{
+											this.state.editable
+												? (
+													<a onClick={() => { this.deletePath(`${address}.${field}`); }}>
+														<i className="fas fa-trash-alt" />
+													</a>
+												)
+												: null
+										}
 									</div>
 									<div className={subItem}>
 										{this.renderUsecase(fields[field], field)}
-										<select
-											className={dropdown}
-											name={`${field}-mapping`}
-											defaultValue={fields[field].type}
-											onChange={(e) => {
-												this.setMapping(field, e.target.value);
-											}}
-										>
-											{
-												originalFields[field]
-													? (
-														<option value={this.getType(originalFields[field].type)}>
-															{this.getType(originalFields[field].type)}
-														</option>
-													)
-													: (
-														<option value={this.getType(fields[field].type)}>
-															{this.getType(fields[field].type)}
-														</option>
-													)
-											}
-											{
-												originalFields[field]
-													? (
-														conversionMap[this.getType(originalFields[field].type)]
-															.map(itemType => (
-																<option key={itemType} value={this.getType(itemType)}>
-																	{this.getType(itemType)}
-																</option>
-															))
-													)
-												: (
-													conversionMap[this.getType(fields[field].type)]
-														.map(itemType => (
-															<option key={itemType} value={this.getType(itemType)}>
-																{this.getType(itemType)}
-															</option>
-														))
+										{
+											this.state.editable
+												? (
+													<select
+														className={dropdown}
+														name={`${field}-mapping`}
+														defaultValue={fields[field].type}
+														onChange={(e) => {
+															this.setMapping(field, e.target.value);
+														}}
+													>
+														{
+															originalFields[field]
+																? (
+																	<option value={this.getType(originalFields[field].type)}>
+																		{this.getType(originalFields[field].type)}
+																	</option>
+																)
+																: (
+																	<option value={this.getType(fields[field].type)}>
+																		{this.getType(fields[field].type)}
+																	</option>
+																)
+														}
+														{
+															originalFields[field]
+																? (
+																	conversionMap[this.getType(originalFields[field].type)]
+																		.map(itemType => (
+																			<option key={itemType} value={this.getType(itemType)}>
+																				{this.getType(itemType)}
+																			</option>
+																		))
+																)
+															: (
+																conversionMap[this.getType(fields[field].type)]
+																	.map(itemType => (
+																		<option key={itemType} value={this.getType(itemType)}>
+																			{this.getType(itemType)}
+																		</option>
+																	))
+															)
+														}
+													</select>
 												)
-											}
-										</select>
+												: (
+													<span
+														style={{ boxShadow: 'none', border: 0 }}
+														className={dropdown}
+													>
+														{fields[field].type}
+													</span>
+												)
+										}
 									</div>
 								</div>
 							);
@@ -304,9 +349,15 @@ export default class Mapping extends Component {
 					}}
 				>
 					<h2 className={heading}>Manage Mappings</h2>
-					<Button ghost onClick={this.toggleModal}>
-						Add New Field
-					</Button>
+					{
+						this.state.editable
+							? (
+								<Button ghost onClick={this.toggleModal}>
+									Add New Field
+								</Button>
+							)
+							: null
+					}
 				</div>
 				<div style={{ padding: '5px 20px' }}>
 					<Header>
@@ -340,7 +391,7 @@ export default class Mapping extends Component {
 					}
 				</div>
 				{
-					this.state.dirty
+					this.state.dirty && this.state.editable
 						? (
 							<Footer>
 								<Button onClick={this.reIndex}>
