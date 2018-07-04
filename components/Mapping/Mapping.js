@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
-import { getCredentials } from '../../utils';
+import { getCredentials, checkUserStatus } from '../../utils';
 import {
 	getMappings,
 	updateMapping,
@@ -41,7 +41,7 @@ export default class Mapping extends Component {
 			showError: false,
 			errorLength: 0,
 			deletedPaths: [],
-			editable: this.props.editable || !this.props.url,
+			editable: false,
 		};
 
 		this.usecases = textUsecases;
@@ -49,22 +49,38 @@ export default class Mapping extends Component {
 	}
 
 	componentDidMount() {
-		if (this.state.editable) {
-			getCredentials(this.props.appId)
-			.then((res) => {
-				const { username, password } = res;
-				return getMappings(this.props.appName, `${username}:${password}`);
-			})
-			.then(this.handleMapping)
-			.catch((e) => {
-				console.error(e);
-				this.setState({
-					isLoading: false,
-				});
-			});
-		} else {
+		if (this.props.url) {
 			getMappings(this.props.appName, this.props.credentials, this.props.url)
 				.then(this.handleMapping);
+		} else {
+			// check if it is a paid user
+			checkUserStatus()
+				.then((res) => {
+					if (res.isPaidUser) {
+						this.setState({
+							editable: true,
+						});
+					}
+				})
+				.catch(() => {
+					this.setState({
+						editable: false,
+					});
+				});
+
+			getCredentials(this.props.appId)
+				.then((user) => {
+					const { username, password } = user;
+					console.log('credentials', user);
+					return getMappings(this.props.appName, `${username}:${password}`);
+				})
+				.then(this.handleMapping)
+				.catch((e) => {
+					console.error(e);
+					this.setState({
+						isLoading: false,
+					});
+				});
 		}
 	}
 
@@ -335,6 +351,29 @@ export default class Mapping extends Component {
 		return null;
 	};
 
+	renderPromotionalButtons = () => (this.props.url
+		? (
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
+					Get an appbase.io account to edit mappings
+				</p>
+				<Button href="https://appbase.io" target="_blank">
+					Signup Now
+				</Button>
+			</div>
+		)
+		: (
+			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
+					Upgrade your plan to edit mappings
+				</p>
+				<Button href="/billing" target="_blank">
+					Upgrade Now
+				</Button>
+			</div>
+		)
+	)
+
 	render() {
 		if (this.state.isLoading && !this.state.mapping) return <Loader show message="Fetching mappings... Please wait!" />;
 		return (
@@ -356,7 +395,7 @@ export default class Mapping extends Component {
 									Add New Field
 								</Button>
 							)
-							: null
+							: this.renderPromotionalButtons()
 					}
 				</div>
 				<div style={{ padding: '5px 20px' }}>
