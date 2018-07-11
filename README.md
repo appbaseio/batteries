@@ -17,4 +17,6 @@ yarn add emotion react-emotion rc-tooltip react-select
 yarn add -D babel-plugin-emotion
 ```
 
+> You will need to setup css-loader in your webpack config for react-select
+
 3. Import and use the desired batteries as you please.
