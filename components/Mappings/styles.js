@@ -15,6 +15,19 @@ export const card = css`
 	box-sizing: border-box;
 `;
 
+export const HeaderWrapper = styled('div')`
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+
+	p {
+		font-size: 13px;
+		margin: 6px 0 0;
+		color: #999;
+	}
+`;
+
 export const Header = styled('header')`
 	display: flex;
 	flex-direction: row;

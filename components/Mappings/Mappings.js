@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Tooltip from 'rc-tooltip';
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
 import { getCredentials, checkUserStatus } from '../../utils';
@@ -14,6 +15,7 @@ import mappingUsecase from '../../utils/mappingUsecase';
 
 import {
 	card,
+	HeaderWrapper,
 	Header,
 	heading,
 	row,
@@ -27,6 +29,14 @@ import {
 } from './styles';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
+
+const hoverMessage = () => (
+	<div style={{ maxWidth: 220 }}>
+		Editing mappings isn{"'"}t a native feature in Elasticsearch.
+		All appbase.io paid plans offer editable mappings by performing
+		a lossless re-indexing of your data whenever you edit them from this UI.
+	</div>
+);
 
 export default class Mapping extends Component {
 	constructor(props) {
@@ -316,7 +326,7 @@ export default class Mapping extends Component {
 																	conversionMap[this.getType(originalFields[field].type)]
 																		.map(itemType => (
 																			<option key={itemType} value={this.getType(itemType)}>
-																				{this.getType(itemType)}
+																				{this.getType(itemType).split('_').join(' ')}
 																			</option>
 																		))
 																)
@@ -324,7 +334,7 @@ export default class Mapping extends Component {
 																conversionMap[this.getType(fields[field].type)]
 																	.map(itemType => (
 																		<option key={itemType} value={this.getType(itemType)}>
-																			{this.getType(itemType)}
+																			{this.getType(itemType).split('_').join(' ')}
 																		</option>
 																	))
 															)
@@ -356,6 +366,9 @@ export default class Mapping extends Component {
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
 					Get an appbase.io account to edit mappings
+					<Tooltip overlay={hoverMessage} mouseLeaveDelay={0}>
+						<i style={{ margin: '1px 3px 0px 8px' }} className="fas fa-info-circle" />
+					</Tooltip>
 				</p>
 				<Button href="https://appbase.io" target="_blank">
 					Signup Now
@@ -366,6 +379,9 @@ export default class Mapping extends Component {
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
 					Upgrade your plan to edit mappings
+					<Tooltip overlay={hoverMessage} mouseLeaveDelay={0}>
+						<i style={{ margin: '1px 3px 0px 8px' }} className="fas fa-info-circle" />
+					</Tooltip>
 				</p>
 				<Button href="/billing" target="_blank">
 					Upgrade Now
@@ -387,7 +403,10 @@ export default class Mapping extends Component {
 						justifyContent: 'space-between',
 					}}
 				>
-					<h2 className={heading}>Manage Mappings</h2>
+					<HeaderWrapper>
+						<h2 className={heading}>Manage Mappings</h2>
+						<p>Add new fields or change the types of existing ones.</p>
+					</HeaderWrapper>
 					{
 						this.state.editable
 							? (
@@ -403,7 +422,7 @@ export default class Mapping extends Component {
 						<span>Field Name</span>
 						<div>
 							<span className="col">
-								Use-case
+								Use case
 							</span>
 							<span className="col">
 								Data Type

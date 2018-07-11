@@ -55,6 +55,7 @@ export default class NewFieldModal extends Component {
 		return (
 			<Modal show={this.props.show} onClose={this.props.onClose}>
 				<h3>Add New Field</h3>
+				<p />
 
 				<section>
 					<Header>
@@ -111,7 +112,7 @@ export default class NewFieldModal extends Component {
 								Object.keys(conversionMap)
 									.filter(value => value !== 'object')
 									.map(value => (
-										<option key={value} value={value}>{value}</option>
+										<option key={value} value={value}>{value.split('_').join(' ')}</option>
 									))
 							}
 						</select>

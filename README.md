@@ -10,10 +10,10 @@ git submodule add git@github.com:appbaseio-confidential/batteries.git
 git submodule init
 ```
 
-2. Setup emotion-js (if you don't have it already):
+2. Installation:
 
 ```bash
-yarn add emotion react-emotion
+yarn add emotion react-emotion rc-tooltip
 yarn add -D babel-plugin-emotion
 ```
 
