@@ -27,6 +27,7 @@ import {
 	Button,
 	deleteBtn,
 } from './styles';
+import Modal from '../shared/Modal';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 
@@ -36,6 +37,18 @@ const hoverMessage = () => (
 		All appbase.io paid plans offer editable mappings by performing
 		a lossless re-indexing of your data whenever you edit them from this UI.
 	</div>
+);
+
+const FeedbackModal = props => (
+	<Modal show={props.show} onClose={props.onClose}>
+		<h3>Mapping successfully updated</h3>
+		<p>Took {props.timetaken}ms</p>
+		<div style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}>
+			<Button ghost onClick={props.onClose}>
+				Close
+			</Button>
+		</div>
+	</Modal>
 );
 
 export default class Mapping extends Component {
@@ -51,7 +64,9 @@ export default class Mapping extends Component {
 			showError: false,
 			errorLength: 0,
 			deletedPaths: [],
-			editable: false,
+			editable: true,
+			showFeedback: false,
+			timetaken: '0',
 		};
 
 		this.usecases = textUsecases;
@@ -81,7 +96,6 @@ export default class Mapping extends Component {
 			getCredentials(this.props.appId)
 				.then((user) => {
 					const { username, password } = user;
-					console.log('credentials', user);
 					return getMappings(this.props.appName, `${username}:${password}`);
 				})
 				.then(this.handleMapping)
@@ -201,8 +215,11 @@ export default class Mapping extends Component {
 		});
 
 		reIndex(this.state.mapping, this.props.appId, this.state.deletedPaths)
-			.then(() => {
-				window.location.reload();
+			.then((timetaken) => {
+				this.setState({
+					showFeedback: true,
+					timetaken,
+				});
 			})
 			.catch((err) => {
 				this.setState({
@@ -477,6 +494,11 @@ export default class Mapping extends Component {
 					errorLength={this.state.errorLength}
 					error={this.state.errorMessage}
 					onClose={this.hideErrorModal}
+				/>
+				<FeedbackModal
+					show={this.state.showFeedback}
+					timetaken={this.state.timetaken}
+					onClose={() => window.location.reload()}
 				/>
 			</div>
 		);
