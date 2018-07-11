@@ -3,7 +3,7 @@ import analyzerSettings from './analyzerSettings';
 import { SCALR_API } from './index';
 
 const PRESERVED_KEYS = ['meta'];
-const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
+export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
 
 function getAuthHeaders(credentials) {
 	if (credentials) {

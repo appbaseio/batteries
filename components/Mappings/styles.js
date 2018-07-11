@@ -37,9 +37,17 @@ export const Header = styled('header')`
 
 	.col {
 		min-width: 150px;
-		display: inline-block;
-		margin: 0 10px;
+		display: inline-flex;
+		margin: 0 0 0 12px;
 		text-align: center;
+
+		&:first-child {
+			margin: 0;
+		}
+
+		&.col--grow {
+			flex-grow: 1;
+		}
 	}
 `;
 

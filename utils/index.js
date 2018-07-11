@@ -49,6 +49,7 @@ export function checkUserStatus() {
 			.then((res) => {
 				if (res.body.c_id) return res.body.c_id;
 				reject();
+				return null;
 			})
 			.then(getBillingStatus)
 			.then(res => res.json())

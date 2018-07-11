@@ -1,8 +1,28 @@
 import React, { Component } from 'react';
+import Tooltip from 'rc-tooltip';
 import Modal from '../shared/Modal';
 import { Header, Input, Button, dropdown } from './styles';
 import conversionMap from '../../utils/conversionMap';
 import textUsecases from './usecases';
+
+const fieldNameMessage = () => (
+	<div style={{ maxWidth: 250 }}>
+		Add a nested field by using the dot (.) notation, e.g. foo.bar will create a mapping like:
+		<pre style={{ marginTop: 5, padding: 10, backgroundColor: '#eee' }}>{
+`foo: {
+    bar: { ... }
+}`}
+		</pre>
+	</div>
+);
+
+const usecaseMessage = () => (
+	<div style={{ maxWidth: 250 }}>
+		Based on the primary use case, whether search or aggregations,
+		we will add the appropriate analyzers, mappings to ensure best results
+		when performing the action
+	</div>
+);
 
 export default class NewFieldModal extends Component {
 	constructor(props) {
@@ -13,8 +33,9 @@ export default class NewFieldModal extends Component {
 	}
 
 	getInitialState = () => ({
+		esType: this.props.types[0],
 		name: '',
-		usecase: 'none',
+		usecase: 'search',
 		type: 'text',
 		error: '',
 	});
@@ -28,16 +49,23 @@ export default class NewFieldModal extends Component {
 	}
 
 	addField = () => {
-		const { name, usecase, type } = this.state;
+		const {
+			esType,
+			name,
+			usecase,
+			type,
+		} = this.state;
 		const deletedPaths = this.props.deletedPaths
 			.map(item => item.split('.properties.').join('.'));
-		if (name && deletedPaths.includes(name)) {
+		const fieldName = `${esType}.${name}`;
+
+		if (name && deletedPaths.includes(fieldName)) {
 			this.setState({
 				error: 'You\'re trying to add a field which you just deleted. This will result in loss of data.',
 			});
 		} else if (name) {
 			this.props.addField({
-				name,
+				name: fieldName,
 				type,
 				usecase: type === 'text' ? usecase : null,
 			});
@@ -55,27 +83,54 @@ export default class NewFieldModal extends Component {
 		return (
 			<Modal show={this.props.show} onClose={this.props.onClose}>
 				<h3>Add New Field</h3>
-				<p />
 
 				<section>
 					<Header>
-						<span>Field Name</span>
-						<div>
-							{
-								this.state.type === 'text'
-									? (
-										<span className="col">
-											Use-case
-										</span>
-									)
-									: null
-							}
-							<span className="col">
-								Data Type
-							</span>
-						</div>
+						<span className="col">
+							Type
+						</span>
+						<span className="col col--grow">
+							Field Name
+							<Tooltip overlay={fieldNameMessage} mouseLeaveDelay={0}>
+								<i
+									style={{ margin: '1px 3px 0px 8px' }}
+									className="fas fa-info-circle"
+								/>
+							</Tooltip>
+						</span>
+						{
+							this.state.type === 'text'
+								? (
+									<span className="col">
+										Use case
+										<Tooltip overlay={usecaseMessage} mouseLeaveDelay={0}>
+											<i
+												style={{ margin: '1px 3px 0px 8px' }}
+												className="fas fa-info-circle"
+											/>
+										</Tooltip>
+									</span>
+								)
+								: null
+						}
+						<span className="col">
+							Data Type
+						</span>
 					</Header>
 					<div style={{ padding: '10px 0', display: 'flex' }}>
+						<select
+							className={dropdown}
+							style={{ textTransform: 'none', marginLeft: 0, marginRight: 12 }}
+							name="esType"
+							defaultValue={this.props.types[0]}
+							onChange={this.handleNewFieldChange}
+						>
+							{
+								this.props.types.map(value => (
+									<option key={value} value={value}>{value}</option>
+								))
+							}
+						</select>
 						<Input
 							innerRef={(el) => { this.input = el; }}
 							type="text"

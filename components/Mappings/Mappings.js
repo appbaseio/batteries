@@ -9,6 +9,7 @@ import {
 	transformToES5,
 	hasAggs,
 	reIndex,
+	REMOVED_KEYS,
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
@@ -41,11 +42,16 @@ const hoverMessage = () => (
 
 const FeedbackModal = props => (
 	<Modal show={props.show} onClose={props.onClose}>
-		<h3>Mapping successfully updated</h3>
-		<p>Took {props.timetaken}ms</p>
+		<h3>Re-index successful</h3>
+
+		<p>
+			The mappings have been updated and the data has been
+			successfully re-indexed in {props.timeTaken}ms.
+		</p>
+
 		<div style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}>
 			<Button ghost onClick={props.onClose}>
-				Close
+				Done
 			</Button>
 		</div>
 	</Modal>
@@ -66,7 +72,7 @@ export default class Mapping extends Component {
 			deletedPaths: [],
 			editable: true,
 			showFeedback: false,
-			timetaken: '0',
+			timeTaken: '0',
 		};
 
 		this.usecases = textUsecases;
@@ -200,6 +206,9 @@ export default class Mapping extends Component {
 				};
 				return true;
 			}
+			if (!acc[val] || !acc[val].properties) {
+				acc[val] = { properties: {} };
+			}
 			return acc[val].properties;
 		}, mapping);
 
@@ -214,11 +223,18 @@ export default class Mapping extends Component {
 			isLoading: true,
 		});
 
-		reIndex(this.state.mapping, this.props.appId, this.state.deletedPaths)
-			.then((timetaken) => {
+		const excludedFields = this.state.deletedPaths
+			.map(path => path.split('.properties.').join('.'))
+			.map((path) => {
+				const i = path.indexOf('.') + 1;
+				return path.substring(i);
+			});
+
+		reIndex(this.state.mapping, this.props.appId, excludedFields)
+			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
-					timetaken,
+					timeTaken,
 				});
 			})
 			.catch((err) => {
@@ -261,7 +277,7 @@ export default class Mapping extends Component {
 					style={{ boxShadow: 'none', border: 0 }}
 					className={dropdown}
 				>
-					{selected}
+					{this.usecases[selected]}
 				</span>
 			);
 		}
@@ -480,6 +496,10 @@ export default class Mapping extends Component {
 						: null
 				}
 				<NewFieldModal
+					types={
+						Object.keys(this.state.mapping)
+							.filter(type => !REMOVED_KEYS.includes(type))
+					}
 					show={this.state.showModal}
 					addField={this.addField}
 					onClose={this.toggleModal}
@@ -497,7 +517,7 @@ export default class Mapping extends Component {
 				/>
 				<FeedbackModal
 					show={this.state.showFeedback}
-					timetaken={this.state.timetaken}
+					timeTaken={this.state.timeTaken}
 					onClose={() => window.location.reload()}
 				/>
 			</div>
