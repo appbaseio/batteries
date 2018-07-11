@@ -13,6 +13,10 @@ export const card = css`
 	border-radius: 3px;
 	box-shadow: 0 3px 5px 0 rgba(0,0,0,0.05);
 	box-sizing: border-box;
+
+	i {
+		margin: 3px 3px 0px 8px;
+	}
 `;
 
 export const HeaderWrapper = styled('div')`

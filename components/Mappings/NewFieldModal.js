@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import Tooltip from 'rc-tooltip';
+import { Creatable } from 'react-select';
+import 'react-select/dist/react-select.css';
+
 import Modal from '../shared/Modal';
 import { Header, Input, Button, dropdown } from './styles';
 import conversionMap from '../../utils/conversionMap';
@@ -33,12 +36,16 @@ export default class NewFieldModal extends Component {
 	}
 
 	getInitialState = () => ({
-		esType: this.props.types[0],
+		esType: this.props.types[0] || '',
 		name: '',
 		usecase: 'search',
 		type: 'text',
 		error: '',
 	});
+
+	handleEsTypeChange = ({ label }) => {
+		this.setState({ esType: label });
+	}
 
 	handleNewFieldChange = (e) => {
 		const { name, value } = e.target;
@@ -92,10 +99,7 @@ export default class NewFieldModal extends Component {
 						<span className="col col--grow">
 							Field Name
 							<Tooltip overlay={fieldNameMessage} mouseLeaveDelay={0}>
-								<i
-									style={{ margin: '1px 3px 0px 8px' }}
-									className="fas fa-info-circle"
-								/>
+								<i className="fas fa-info-circle" />
 							</Tooltip>
 						</span>
 						{
@@ -104,10 +108,7 @@ export default class NewFieldModal extends Component {
 									<span className="col">
 										Use case
 										<Tooltip overlay={usecaseMessage} mouseLeaveDelay={0}>
-											<i
-												style={{ margin: '1px 3px 0px 8px' }}
-												className="fas fa-info-circle"
-											/>
+											<i className="fas fa-info-circle" />
 										</Tooltip>
 									</span>
 								)
@@ -118,7 +119,23 @@ export default class NewFieldModal extends Component {
 						</span>
 					</Header>
 					<div style={{ padding: '10px 0', display: 'flex' }}>
-						<select
+						<span style={{ width: 150, marginRight: 12 }}>
+							<Creatable
+								value={{ label: this.state.esType, value: this.state.esType }}
+								placeholder="Select or Create Type"
+								promptTextCreator={label => `Create type "${label}"`}
+								onChange={this.handleEsTypeChange}
+								options={
+									this.props.types
+										.map(item => ({
+											value: item,
+											label: item,
+										}))
+								}
+								clearable={false}
+							/>
+						</span>
+						{/* <select
 							className={dropdown}
 							style={{ textTransform: 'none', marginLeft: 0, marginRight: 12 }}
 							name="esType"
@@ -130,7 +147,7 @@ export default class NewFieldModal extends Component {
 									<option key={value} value={value}>{value}</option>
 								))
 							}
-						</select>
+						</select> */}
 						<Input
 							innerRef={(el) => { this.input = el; }}
 							type="text"

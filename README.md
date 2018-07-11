@@ -13,7 +13,7 @@ git submodule init
 2. Installation:
 
 ```bash
-yarn add emotion react-emotion rc-tooltip
+yarn add emotion react-emotion rc-tooltip react-select
 yarn add -D babel-plugin-emotion
 ```
 

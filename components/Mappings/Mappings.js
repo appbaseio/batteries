@@ -32,6 +32,19 @@ import Modal from '../shared/Modal';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 
+const fieldNameMessage = () => (
+	<div style={{ maxWidth: 220 }}>
+		Names of the fields and nested-fields are represented with relative indentation.
+	</div>
+);
+
+const usecaseMessage = () => (
+	<div style={{ maxWidth: 220 }}>
+		We detect the appropriate analyzers and mappings here
+		representing the usecase - search or aggregations.
+	</div>
+);
+
 const hoverMessage = () => (
 	<div style={{ maxWidth: 220 }}>
 		Editing mappings isn{"'"}t a native feature in Elasticsearch.
@@ -400,7 +413,7 @@ export default class Mapping extends Component {
 				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
 					Get an appbase.io account to edit mappings
 					<Tooltip overlay={hoverMessage} mouseLeaveDelay={0}>
-						<i style={{ margin: '1px 3px 0px 8px' }} className="fas fa-info-circle" />
+						<i className="fas fa-info-circle" />
 					</Tooltip>
 				</p>
 				<Button href="https://appbase.io" target="_blank">
@@ -413,7 +426,7 @@ export default class Mapping extends Component {
 				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
 					Upgrade your plan to edit mappings
 					<Tooltip overlay={hoverMessage} mouseLeaveDelay={0}>
-						<i style={{ margin: '1px 3px 0px 8px' }} className="fas fa-info-circle" />
+						<i className="fas fa-info-circle" />
 					</Tooltip>
 				</p>
 				<Button href="/billing" target="_blank">
@@ -452,10 +465,18 @@ export default class Mapping extends Component {
 				</div>
 				<div style={{ padding: '5px 20px' }}>
 					<Header>
-						<span>Field Name</span>
+						<span>
+							Field Name
+							<Tooltip overlay={fieldNameMessage} mouseLeaveDelay={0}>
+								<i className="fas fa-info-circle" />
+							</Tooltip>
+						</span>
 						<div>
 							<span className="col">
 								Use case
+								<Tooltip overlay={usecaseMessage} mouseLeaveDelay={0}>
+									<i className="fas fa-info-circle" />
+								</Tooltip>
 							</span>
 							<span className="col">
 								Data Type
