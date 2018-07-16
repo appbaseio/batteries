@@ -6,8 +6,9 @@ Private plug-able modules for appbase dashboard
 1. Setup the submodule:
 
 ```bash
-git submodule add git@github.com:appbaseio-confidential/batteries.git
 git submodule init
+git submodule sync
+git submodule update --recursive --remote
 ```
 
 2. Installation:
