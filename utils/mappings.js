@@ -26,9 +26,7 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				const types = Object
-					.keys(data[appName].mappings)
-					.filter(type => !REMOVED_KEYS.includes(type));
+				const types = Object.keys(data[appName].mappings).filter(type => !REMOVED_KEYS.includes(type));
 
 				let mappings = {};
 				types.forEach((type) => {
@@ -83,8 +81,8 @@ export function hasAggs(field) {
 	let hasAggsFlag = false;
 	Object.keys(field).forEach((subField) => {
 		if (
-			field[subField].type === 'keyword'
-			|| (field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
+			field[subField].type === 'keyword' ||
+			(field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
 		) {
 			hasAggsFlag = true;
 		}
@@ -163,4 +161,29 @@ export function updateMapping(mapping, field, type, usecase) {
 		return true;
 	});
 	return _mapping;
+}
+/**
+ * Traverse the mappings object & returns the fields
+ * @param {Object} mappings
+ * @returns {{ [key: string]: Array<string> }}
+ */
+export function traverseMapping(mappings = {}) {
+	const fieldObject = {};
+	const checkIfPropertyPresent = (m, type) => {
+		fieldObject[type] = [];
+		const setFields = (mp, prefix = '') => {
+			if (mp.properties) {
+				Object.keys(mp.properties).forEach((mpp) => {
+					fieldObject[type].push(`${prefix}${mpp}`);
+					const field = mp.properties[mpp];
+					if (field && field.properties) {
+						setFields(field, `${prefix}${mpp}.`);
+					}
+				});
+			}
+		};
+		setFields(m);
+	};
+	Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
+	return fieldObject;
 }
