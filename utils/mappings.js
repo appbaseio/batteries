@@ -26,7 +26,8 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				const types = Object.keys(data[appName].mappings).filter(type => !REMOVED_KEYS.includes(type));
+				const types = Object.keys(data[appName].mappings)
+					.filter(type => !REMOVED_KEYS.includes(type));
 
 				let mappings = {};
 				types.forEach((type) => {
@@ -162,6 +163,7 @@ export function updateMapping(mapping, field, type, usecase) {
 	});
 	return _mapping;
 }
+
 /**
  * Traverse the mappings object & returns the fields
  * @param {Object} mappings
@@ -186,4 +188,47 @@ export function traverseMapping(mappings = {}) {
 	};
 	Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
 	return fieldObject;
+}
+
+function getFieldsTree(mappings = {}, prefix = null) {
+	let tree = {};
+	Object.keys(mappings).forEach((key) => {
+		if (mappings[key].properties) {
+			tree = {
+				...tree,
+				...getFieldsTree(mappings[key].properties, key),
+			};
+		} else {
+			const originalFields = mappings[key].fields;
+			tree = {
+				...tree,
+				[`${prefix ? `${prefix}.` : ''}${key}`]: {
+					type: mappings[key].type,
+					fields: mappings[key].fields ? Object.keys(mappings[key].fields) : [],
+					originalFields: originalFields || {},
+				},
+			};
+		}
+	});
+
+	return tree;
+}
+
+/**
+ * returns field types with sub-fields
+ * @param {Object} mappings
+ * @param {String} prefix
+ */
+export function getMappingsTree(mappings = {}) {
+	let tree = {};
+	Object.keys(mappings).forEach((key) => {
+		if (mappings[key].properties) {
+			tree = {
+				...tree,
+				...getFieldsTree(mappings[key].properties, null),
+			};
+		}
+	});
+
+	return tree;
 }

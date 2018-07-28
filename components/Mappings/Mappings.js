@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { string } from 'prop-types';
 import Tooltip from 'rc-tooltip';
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
@@ -70,7 +71,7 @@ const FeedbackModal = props => (
 	</Modal>
 );
 
-export default class Mapping extends Component {
+export default class Mappings extends Component {
 	constructor(props) {
 		super(props);
 
@@ -83,7 +84,7 @@ export default class Mapping extends Component {
 			showError: false,
 			errorLength: 0,
 			deletedPaths: [],
-			editable: true,
+			editable: false,
 			showFeedback: false,
 			timeTaken: '0',
 		};
@@ -545,3 +546,12 @@ export default class Mapping extends Component {
 		);
 	}
 }
+
+// appId and appName are required for appbase ecosystem
+// credentials (optional) and url are needed for non-appbase apps
+Mappings.propTypes = {
+	appId: string,
+	appName: string.isRequired,
+	credentials: string,
+	url: string,
+};
