@@ -5,16 +5,20 @@ import { Button, ErrorLogger } from './styles';
 const ErrorModal = props => (
 	<Modal show={props.show} onClose={props.onClose}>
 		<h3>
-			{
-				props.errorLength
-					? `${props.errorLength} records failed to index`
-					: 'An error occured'
-			}
+			{props.errorLength
+				? `${props.errorLength} records failed to index`
+				: 'An error occured'}
 		</h3>
-		<p>
-			To prevent data loss, we have restored your original mappings.
-			You can fix {props.errorLength ? 'these' : 'this'} and retry.
-		</p>
+
+		{props.message ? (
+			<p>{props.message}</p>
+		) : (
+			<p>
+				To prevent data loss, we have restored your original mappings. You can fix{' '}
+				{props.errorLength ? 'these' : 'this'} and retry.
+			</p>
+		)}
+
 		<ErrorLogger>{props.error}</ErrorLogger>
 
 		<div style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}>

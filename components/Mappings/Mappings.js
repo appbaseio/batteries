@@ -96,7 +96,13 @@ export default class Mappings extends Component {
 	componentDidMount() {
 		if (this.props.url) {
 			getMappings(this.props.appName, this.props.credentials, this.props.url)
-				.then(this.handleMapping);
+				.then(this.handleMapping)
+				.catch((error) => {
+					this.setState({
+						error,
+						isLoading: false,
+					});
+				});
 		} else {
 			// check if it is a paid user
 			checkUserStatus()
@@ -122,6 +128,8 @@ export default class Mappings extends Component {
 				.catch((e) => {
 					console.error(e);
 					this.setState({
+						mappingsError: e,
+						showError: true,
 						isLoading: false,
 					});
 				});
@@ -439,6 +447,16 @@ export default class Mappings extends Component {
 
 	render() {
 		if (this.state.isLoading && !this.state.mapping) return <Loader show message="Fetching mappings... Please wait!" />;
+		if (this.state.mappingsError) {
+			return (
+				<ErrorModal
+					show={this.state.showError}
+					message="Some error occured while fetching the mappings"
+					error={JSON.stringify(this.state.mappingsError, null, 2)}
+					onClose={this.hideErrorModal}
+				/>
+			);
+		}
 		return (
 			<div className={card}>
 				<div
