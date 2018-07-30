@@ -15,9 +15,33 @@ export function getCredentials(appId) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				const permissions = data.body
-					.filter(permission => (permission.read && permission.write));
-				resolve(permissions[0]);
+				let result = data.body
+					.find(permission => (
+						permission.read
+						&& permission.write
+						&& permission.referers.includes('*')
+						&& permission.include_fields.includes('*')
+					));
+				if (!result) {
+					result = data.body
+						.find(permission => (
+							permission.read
+							&& permission.write
+							&& permission.referers.includes('*')
+						));
+				}
+				if (!result) {
+					result = data.body
+						.find(permission => (
+							permission.read
+							&& permission.write
+						));
+				}
+				if (!result) {
+					result = data.body
+						.find(permission => (permission.read));
+				}
+				resolve(result);
 			})
 			.catch((e) => {
 				reject(e);
