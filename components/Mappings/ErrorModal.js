@@ -19,7 +19,7 @@ const ErrorModal = props => (
 			</p>
 		)}
 
-		<ErrorLogger>{props.error}</ErrorLogger>
+		{props.error ? <ErrorLogger>{props.error}</ErrorLogger> : null}
 
 		<div style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}>
 			<Button ghost onClick={props.onClose}>
