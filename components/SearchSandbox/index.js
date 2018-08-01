@@ -3,7 +3,7 @@ import { Menu, Button, Dropdown, Icon } from 'antd';
 import { Link } from 'react-router';
 import { css } from 'emotion';
 import { getMappings, getMappingsTree } from '../../utils/mappings';
-// import { getPrefrences } from '../../utils';
+import { getPreferences, setPreferences } from '../../utils/sandbox';
 
 const nav = css`
 	position: fixed;
@@ -40,15 +40,22 @@ export default class SearchSandbox extends Component {
 			mappings: null,
 			currentRoute: 'editor',
 			filterCount: 0,
-			componentProps: {
-				search: {},
-			},
+			componentProps: {},
 		};
 	}
 
 	componentDidMount() {
 		if (this.props.isDashboard) {
-			// getPreferences()
+			getPreferences(this.props.appId)
+				.then((pref) => {
+					this.pref = pref || {};
+					this.setState({
+						componentProps: this.pref[this.state.profile] || {},
+					});
+				})
+				.catch(() => this.getLocalPref());
+		} else {
+			this.getLocalPref();
 		}
 
 		getMappings(this.props.appName, this.props.credentials, this.props.url)
@@ -59,17 +66,38 @@ export default class SearchSandbox extends Component {
 			});
 	}
 
-	getActiveConfig = () => this.state.configs.find(config => config.profile === this.state.profile)
-
-	setConfig = (config) => {
-		console.log(config);
+	getLocalPref = () => {
+		let pref = localStorage.getItem(this.props.appName);
+		if (pref) pref = JSON.parse(pref);
+		this.pref = pref;
 	};
+
+	setLocalPref = (pref = {}) => {
+		const value = JSON.stringify(pref);
+		localStorage.setItem(this.props.appName, value);
+	};
+
+	getActiveConfig = () => this.state.configs.find(config => config.profile === this.state.profile);
 
 	setFilterCount = (filterCount) => {
 		this.setState({
 			filterCount,
 		});
 	};
+
+	savePreferences = () => {
+		this.pref = {
+			...this.pref,
+			[this.state.profile]: this.state.componentProps,
+		};
+
+		if (this.props.isDashboard) {
+			setPreferences(this.props.appId, this.pref)
+				.catch(() => this.setLocalPref(this.pref));
+		} else {
+			this.setLocalPref(this.pref);
+		}
+	}
 
 	deleteComponent = (id) => {
 		const { componentProps } = this.state;
@@ -92,6 +120,7 @@ export default class SearchSandbox extends Component {
 	handleProfileChange = (e) => {
 		this.setState({
 			profile: e.key,
+			componentProps: this.pref[e.key] || {},
 		});
 	};
 
@@ -104,7 +133,7 @@ export default class SearchSandbox extends Component {
 					...newProps,
 				},
 			},
-		});
+		}, this.savePreferences);
 	};
 
 	render() {
@@ -125,7 +154,6 @@ export default class SearchSandbox extends Component {
 			credentials: this.props.credentials || null,
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
-			setConfig: this.setConfig,
 			mappings: this.state.mappings,
 			componentProps: this.state.componentProps,
 			onPropChange: this.handleComponentPropChange,
@@ -164,7 +192,7 @@ export default class SearchSandbox extends Component {
 						</Dropdown>
 					</div>
 				</Menu>
-				<div className={wrapper}>
+				<div className={wrapper} key={this.state.profile}>
 					{
 						React.Children.map(this.props.children, child => (
 							<SandboxContext.Consumer>
@@ -179,5 +207,5 @@ export default class SearchSandbox extends Component {
 }
 
 SearchSandbox.defaultProps = {
-	isDashboard: true,
+	isDashboard: false,
 };
