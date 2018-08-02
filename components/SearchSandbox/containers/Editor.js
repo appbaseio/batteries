@@ -168,18 +168,18 @@ export default class Editor extends Component {
 	}
 
 	renderPropsForm = () => {
-		const { dataField } = this.state.listComponentProps;
-		if (!dataField.length) {
+		const fields = this.getAvailableDataField();
+		if (!fields.length) {
 			return (
 				<p>
 					There are no compatible fields present in your data
-					mappings. <a href="/mappings">You can edit your mappings here</a> to
+					mappings. <a href="/mappings">You can edit your mappings</a> to
 					add filters (agggregation components).
 				</p>
 			);
 		}
-		const fields = this.getAvailableDataField();
 
+		const { dataField } = this.state.listComponentProps;
 		return (
 			<Form onSubmit={this.handleSubmit}>
 				<Form.Item
