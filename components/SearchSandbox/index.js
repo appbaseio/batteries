@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Button, Dropdown, Icon } from 'antd';
+import { Menu, Button, Dropdown, Icon, Modal, Input } from 'antd';
 import { Link } from 'react-router';
 import { css } from 'emotion';
 import { getMappings, getMappingsTree } from '../../utils/mappings';
@@ -15,6 +15,8 @@ const nav = css`
 const wrapper = css`
 	padding: 60px 15px 15px;
 `;
+
+const NEW_PROFILE = 'SEARCH_SANDBOX_NEW_PROFILE_APPBASE';
 
 export const SandboxContext = React.createContext();
 
@@ -33,14 +35,18 @@ export default class SearchSandbox extends Component {
 	constructor(props) {
 		super(props);
 		const profile = 'default';
+		this.profileInput = React.createRef();
 
 		this.state = {
 			profile,
+			profileList: ['default'],
 			configs: [],
 			mappings: null,
 			currentRoute: 'editor',
 			filterCount: 0,
 			componentProps: {},
+			showNewProfileModal: false,
+			profileModalError: '',
 		};
 	}
 
@@ -49,8 +55,12 @@ export default class SearchSandbox extends Component {
 			getPreferences(this.props.appId)
 				.then((pref) => {
 					this.pref = pref || {};
+					const profileList = Array.from(new Set([
+						...this.state.profileList,
+						...Object.keys(this.pref)]));
 					this.setState({
 						componentProps: this.pref[this.state.profile] || {},
+						profileList,
 					});
 				})
 				.catch(() => this.getLocalPref());
@@ -118,10 +128,17 @@ export default class SearchSandbox extends Component {
 	};
 
 	handleProfileChange = (e) => {
-		this.setState({
-			profile: e.key,
-			componentProps: this.pref[e.key] || {},
-		});
+		const { key } = e;
+		if (key === NEW_PROFILE) {
+			this.setState({
+				showNewProfileModal: true,
+			});
+		} else {
+			this.setState({
+				profile: key,
+				componentProps: this.pref[key] || {},
+			});
+		}
 	};
 
 	handleComponentPropChange = (component, newProps) => {
@@ -136,15 +153,41 @@ export default class SearchSandbox extends Component {
 		}, this.savePreferences);
 	};
 
+	handleSaveProfile = () => {
+		const { value } = this.profileInput.current.input;
+		if (this.state.profileList.includes(value)) {
+			this.setState({
+				profileModalError: 'A search profile with the same name already exists',
+			});
+		} else {
+			this.setState({
+				profileList: [...this.state.profileList, value],
+				profile: value,
+				componentProps: {},
+				showNewProfileModal: false,
+				profileModalError: '',
+			});
+		}
+	};
+
+	handleCancel = () => {
+		this.setState({
+			showNewProfileModal: false,
+			profileModalError: '',
+		});
+	};
+
 	render() {
 		if (!this.state.mappings) return 'Loading...';
 
 		const menu = (
 			<Menu onClick={this.handleProfileChange}>
-				<Menu.Item key="default">default</Menu.Item>
-				<Menu.Item key="Alpha">Alpha</Menu.Item>
-				<Menu.Item key="Beta">Beta</Menu.Item>
-				<Menu.Item key="Gamma">Gamma</Menu.Item>
+				{
+					this.state.profileList.map(item => (
+						<Menu.Item key={item}>{item}</Menu.Item>
+					))
+				}
+				<Menu.Item key={NEW_PROFILE}>Create a New Profile</Menu.Item>
 			</Menu>
 		);
 
@@ -201,6 +244,30 @@ export default class SearchSandbox extends Component {
 						))
 					}
 				</div>
+
+				<Modal
+					title="Create a new Search Profile"
+					visible={this.state.showNewProfileModal}
+					onOk={this.handleSaveProfile}
+					onCancel={this.handleCancel}
+				>
+					<div
+						style={{ margin: '0 0 6px' }}
+						className="ant-form-extra"
+					>
+						Set search profile name
+					</div>
+					<Input
+						type="text"
+						ref={this.profileInput}
+						placeholder="Search Profile Name"
+					/>
+					{
+						this.state.profileModalError
+							? (<p style={{ color: 'tomato' }}>{this.state.profileModalError}</p>)
+							: null
+					}
+				</Modal>
 			</SandboxContext.Provider>
 		);
 	}
