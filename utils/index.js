@@ -85,6 +85,7 @@ export function checkUserStatus() {
 				}
 				resolve({
 					isPaidUser: true,
+					plan: res.plan,
 				});
 			})
 			.catch(() => {
