@@ -1,8 +1,18 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, Button, Modal, Form, Input, Switch } from 'antd';
+import {
+	Row,
+	Col,
+	Card,
+	Button,
+	Modal,
+	Form,
+	Input,
+	Switch,
+	Dropdown,
+	Icon,
+	Menu,
+} from 'antd';
 import { ReactiveBase, ReactiveList, SelectedFilters } from '@appbaseio/reactivesearch';
-import Select from 'react-select';
-import 'react-select/dist/react-select.css';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
@@ -42,11 +52,6 @@ export default class Editor extends Component {
 		return fields;
 	};
 
-	transformToSuggestion = item => ({
-		label: item,
-		value: item,
-	});
-
 	showModal = () => {
 		this.setState({
 			showModal: true,
@@ -81,7 +86,7 @@ export default class Editor extends Component {
 	};
 
 	handleDataFieldChange = (item) => {
-		const dataField = item.label;
+		const dataField = item.key;
 
 		this.setState({
 			listComponentProps: {
@@ -168,18 +173,27 @@ export default class Editor extends Component {
 	}
 
 	renderPropsForm = () => {
-		const { dataField } = this.state.listComponentProps;
-		if (!dataField.length) {
+		const fields = this.getAvailableDataField();
+		if (!fields.length) {
 			return (
 				<p>
 					There are no compatible fields present in your data
-					mappings. <a href="/mappings">You can edit your mappings here</a> to
+					mappings. <a href="/mappings">You can edit your mappings</a> to
 					add filters (agggregation components).
 				</p>
 			);
 		}
-		const fields = this.getAvailableDataField();
 
+		const { dataField } = this.state.listComponentProps;
+		const menu = (
+			<Menu onClick={this.handleDataFieldChange}>
+				{
+					fields.map(item => (
+						<Menu.Item key={item}>{item}</Menu.Item>
+					))
+				}
+			</Menu>
+		);
 		return (
 			<Form onSubmit={this.handleSubmit}>
 				<Form.Item
@@ -192,16 +206,19 @@ export default class Editor extends Component {
 					>
 						{multiListTypes.dataField.description}
 					</div>
-					<Select
-						name="form-field-name"
-						value={dataField}
-						onChange={this.handleDataFieldChange}
-						options={fields.map(item => ({
-							label: item,
-							value: item,
-						}))}
-						clearable={false}
-					/>
+					<Dropdown overlay={menu}>
+						<Button
+							size="medium"
+							style={{
+								width: '100%',
+								display: 'flex',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+							}}
+						>
+							{dataField} <Icon type="down" />
+						</Button>
+					</Dropdown>
 				</Form.Item>
 				{
 					Object.keys(multiListTypes)
@@ -265,7 +282,7 @@ export default class Editor extends Component {
 							<ReactiveList
 								componentId="result"
 								dataField={this.getAvailableDataField()[0]}
-								onData={res => <div>{res.original_title}</div>}
+								onData={res => <div key={res._id}>{res.original_title}</div>}
 								react={{
 									and: Object.keys(this.props.componentProps),
 								}}

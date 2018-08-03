@@ -1,35 +1,16 @@
 import React, { Component } from 'react';
 import { Menu, Button, Dropdown, Icon, Modal, Input } from 'antd';
-import { Link } from 'react-router';
 import { css } from 'emotion';
 import { getMappings, getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 
-const nav = css`
-	position: fixed;
-	top: 100px;
-	width: calc(100% - 120px);
-	z-index: 10;
-`;
-
 const wrapper = css`
-	padding: 60px 15px 15px;
+	padding: 15px;
 `;
 
 const NEW_PROFILE = 'SEARCH_SANDBOX_NEW_PROFILE_APPBASE';
 
 export const SandboxContext = React.createContext();
-
-const navLinks = [
-	{
-		label: 'Editor',
-		link: 'editor',
-	},
-	{
-		label: 'UI Demos',
-		link: 'ui-demos',
-	},
-];
 
 export default class SearchSandbox extends Component {
 	constructor(props) {
@@ -42,7 +23,6 @@ export default class SearchSandbox extends Component {
 			profileList: ['default'],
 			configs: [],
 			mappings: null,
-			currentRoute: 'editor',
 			filterCount: 0,
 			componentProps: {},
 			showNewProfileModal: false,
@@ -114,18 +94,8 @@ export default class SearchSandbox extends Component {
 		const { [id]: del, ...remProps } = componentProps;
 		this.setState({
 			componentProps: remProps,
-		});
+		}, this.savePreferences);
 	}
-
-	handleClick = (e) => {
-		const currentRoute = navLinks.find(item => item.link === e.key);
-
-		if (currentRoute) {
-			this.setState({
-				currentRoute: currentRoute.link,
-			});
-		}
-	};
 
 	handleProfileChange = (e) => {
 		const { key } = e;
@@ -207,35 +177,20 @@ export default class SearchSandbox extends Component {
 
 		return (
 			<SandboxContext.Provider value={contextValue}>
-				<Menu
-					onClick={this.handleClick}
-					selectedKeys={[this.state.currentRoute]}
-					mode="horizontal"
-					// search-sandbox-navbar class is added here
-					// to support styling modifications outside dashboard
-					className={`search-sandbox-navbar ${nav}`}
-				>
-					{
-						navLinks.map(item => (
-							<Menu.Item key={item.link}>
-								<Link
-									activeClassName="active"
-									to={`/search-sandbox/${this.props.appName}/${item.link}`}
-								>
-									{item.label}
-								</Link>
-							</Menu.Item>
-						))
-					}
-					<div style={{ float: 'right', paddingRight: 10 }}>
+				<div className={wrapper} key={this.state.profile}>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row-reverse',
+							padding: '10px 20px 0',
+						}}
+					>
 						<Dropdown overlay={menu}>
-							<Button style={{ marginLeft: 8 }}>
+							<Button size="large" style={{ marginLeft: 8 }}>
 								Search Profile - {this.state.profile} <Icon type="down" />
 							</Button>
 						</Dropdown>
 					</div>
-				</Menu>
-				<div className={wrapper} key={this.state.profile}>
 					{
 						React.Children.map(this.props.children, child => (
 							<SandboxContext.Consumer>
