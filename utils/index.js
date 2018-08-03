@@ -15,31 +15,22 @@ export function getCredentials(appId) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				let result = data.body
-					.find(permission => (
-						permission.read
-						&& permission.write
-						&& permission.referers.includes('*')
-						&& permission.include_fields.includes('*')
-					));
+				let result = data.body.find(permission =>
+						permission.read &&
+						permission.write &&
+						permission.referers.includes('*') &&
+						permission.include_fields.includes('*'));
 				if (!result) {
-					result = data.body
-						.find(permission => (
-							permission.read
-							&& permission.write
-							&& permission.referers.includes('*')
-						));
+					result = data.body.find(permission =>
+							permission.read &&
+							permission.write &&
+							permission.referers.includes('*'));
 				}
 				if (!result) {
-					result = data.body
-						.find(permission => (
-							permission.read
-							&& permission.write
-						));
+					result = data.body.find(permission => permission.read && permission.write);
 				}
 				if (!result) {
-					result = data.body
-						.find(permission => (permission.read));
+					result = data.body.find(permission => permission.read);
 				}
 				resolve(result);
 			})
@@ -81,6 +72,7 @@ export function checkUserStatus() {
 				if (!res.message || res.plan === 'free') {
 					resolve({
 						isPaidUser: false,
+						plan: 'free',
 					});
 				}
 				resolve({
