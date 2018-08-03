@@ -186,21 +186,14 @@ export default class RSWrapper extends Component {
 	};
 
 	handleDataFieldChange = (item) => {
-		if (Array.isArray(item) && !item.length) {
-			this.setError('DataField is a required prop');
-		} else if (item) {
-			const dataField = Array.isArray(item)
-				? item.map(val => val.label)
-				: item.label;
+		const dataField = item.key;
 
-			this.setState({
-				componentProps: {
-					...this.state.componentProps,
-					dataField,
-				},
-			});
-		}
-		// this.props.onChange(this.props.id, { dataField });
+		this.setState({
+			componentProps: {
+				...this.state.componentProps,
+				dataField,
+			},
+		});
 	};
 
 	handleSwitchPropChange = (name, value) => {
@@ -221,11 +214,6 @@ export default class RSWrapper extends Component {
 			},
 		});
 	};
-
-	transformToSuggestion = item => ({
-		label: item,
-		value: item,
-	});
 
 	handleSearchDataFieldChange = (item) => {
 		const field = item.key;
@@ -286,14 +274,14 @@ export default class RSWrapper extends Component {
 	}
 
 	renderDeleteButton = (x, y, index) => (
-			<Button
-				className={deleteStyles}
-				icon="delete"
-				shape="circle"
-				type="danger"
-				onClick={() => this.handleSearchDataFieldDelete(index)}
-			/>
-		);
+		<Button
+			className={deleteStyles}
+			icon="delete"
+			shape="circle"
+			type="danger"
+			onClick={() => this.handleSearchDataFieldDelete(index)}
+		/>
+	);
 
 	renderDataFieldTable = () => {
 		const fields = this.getAvailableDataField();
@@ -437,13 +425,16 @@ export default class RSWrapper extends Component {
 	renderPropsForm = () => {
 		const propNames = propsMap[this.props.component];
 		const { dataField } = this.state.componentProps;
-
-		const { multiple } = propNames.dataField;
-		const dataFieldDefault = multiple
-			? dataField.map(this.transformToSuggestion)
-			: dataField;
-
 		const fields = this.getAvailableDataField();
+		const menu = (
+			<Menu onClick={this.handleDataFieldChange}>
+				{
+					fields.map(item => (
+						<Menu.Item key={item}>{item}</Menu.Item>
+					))
+				}
+			</Menu>
+		);
 
 		return (
 			<Form onSubmit={this.handleSubmit}>
@@ -473,16 +464,19 @@ export default class RSWrapper extends Component {
 						this.props.id === 'search'
 							? this.renderDataFieldTable()
 							: (
-								<Select
-									name="form-field-name"
-									value={dataFieldDefault}
-									onChange={this.handleDataFieldChange}
-									options={fields.map(item => ({
-										label: item,
-										value: item,
-									}))}
-									multi={multiple}
-								/>
+								<Dropdown overlay={menu}>
+									<Button
+										size="medium"
+										style={{
+											width: '100%',
+											display: 'flex',
+											justifyContent: 'space-between',
+											alignItems: 'center',
+										}}
+									>
+										{dataField} <Icon type="down" />
+									</Button>
+								</Dropdown>
 							)
 					}
 				</Form.Item>
