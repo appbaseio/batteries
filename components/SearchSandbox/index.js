@@ -114,7 +114,7 @@ export default class SearchSandbox extends Component {
 		const { [id]: del, ...remProps } = componentProps;
 		this.setState({
 			componentProps: remProps,
-		});
+		}, this.savePreferences);
 	}
 
 	handleClick = (e) => {

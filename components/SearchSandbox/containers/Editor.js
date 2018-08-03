@@ -265,7 +265,7 @@ export default class Editor extends Component {
 							<ReactiveList
 								componentId="result"
 								dataField={this.getAvailableDataField()[0]}
-								onData={res => <div>{res.original_title}</div>}
+								onData={res => <div key={res._id}>{res.original_title}</div>}
 								react={{
 									and: Object.keys(this.props.componentProps),
 								}}

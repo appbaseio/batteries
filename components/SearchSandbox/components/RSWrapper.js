@@ -7,8 +7,13 @@ import {
 	Switch,
 	Button,
 	Modal,
+	Table,
+	Menu,
+	Icon,
+	Dropdown,
 } from 'antd';
 import Select from 'react-select';
+import { css } from 'emotion';
 
 import { DataSearch, MultiList } from '@appbaseio/reactivesearch';
 
@@ -25,6 +30,17 @@ const propsMap = {
 	MultiList: multiListTypes,
 };
 
+const deleteStyles = css`
+	margin: 0 10px;
+	opacity: 0;
+`;
+
+const rowStyles = css`
+	&:hover .${deleteStyles} {
+		opacity: 1;
+	}
+`;
+
 export default class RSWrapper extends Component {
 	constructor(props) {
 		super(props);
@@ -39,7 +55,14 @@ export default class RSWrapper extends Component {
 			// set default dataField for the component if not defined
 			const dataFields = this.getAvailableDataField();
 			const { multiple } = propsMap[this.props.component].dataField;
-			props.onPropChange(props.id, { dataField: multiple ? [dataFields[0]] : dataFields[0] });
+			let otherProps = {};
+			if (props.id === 'search') {
+				otherProps = { fieldWeights: [2] };
+			}
+			props.onPropChange(props.id, {
+				dataField: multiple ? [dataFields[0]] : dataFields[0],
+				...otherProps,
+			});
 		}
 	}
 
@@ -82,6 +105,15 @@ export default class RSWrapper extends Component {
 			.map(item => `${field}.${item}`),
 	];
 
+	getSubFieldWeights = (field, defaultWeight = 1) => [
+		...this.props.mappings[field].fields
+			.map((item) => {
+				let weight = 1;
+				if (item === 'keyword') weight = defaultWeight;
+				return parseInt(weight, 10);
+			}),
+	];
+
 	setError = (error) => {
 		this.setState({
 			error,
@@ -112,6 +144,19 @@ export default class RSWrapper extends Component {
 
 		const validFields = this.getSubFields(selectedFields, types);
 		return validFields ? validFields[0] : null;
+	}
+
+	generateFieldWeights = (selectedFields, weights) => {
+		let resultWeights = [];
+		selectedFields.forEach((item, index) => {
+			resultWeights = [
+				...resultWeights,
+				parseInt(weights[index], 10),
+				...this.getSubFieldWeights(item, weights[index]),
+			];
+		});
+
+		return resultWeights;
 	}
 
 	resetComponentProps = () => {
@@ -181,6 +226,155 @@ export default class RSWrapper extends Component {
 		label: item,
 		value: item,
 	});
+
+	handleSearchDataFieldChange = (item) => {
+		const field = item.key;
+		const index = item.item.props.value;
+
+		const dataField = Object.assign(
+			[],
+			this.state.componentProps.dataField,
+			{ [index]: field },
+		);
+		this.setState({
+			componentProps: {
+				...this.state.componentProps,
+				dataField,
+			},
+		});
+	};
+
+	handleSearchDataFieldDelete = (deleteIndex) => {
+		this.setState({
+			componentProps: {
+				...this.state.componentProps,
+				dataField: this.state.componentProps.dataField
+					.filter((i, index) => index !== deleteIndex),
+				fieldWeights: this.state.componentProps.fieldWeights
+					.filter((i, index) => index !== deleteIndex),
+			},
+		});
+	}
+
+	handleSearchWeightChange = (index, value) => {
+		const fieldWeights = Object.assign(
+			[],
+			this.state.componentProps.fieldWeights,
+			{ [index]: value },
+		);
+		this.setState({
+			componentProps: {
+				...this.state.componentProps,
+				fieldWeights,
+			},
+		});
+	}
+
+	handleAddFieldRow = () => {
+		const field = this.getAvailableDataField()
+			.find(item => !this.state.componentProps.dataField.includes(item));
+
+		if (field) {
+			this.setState({
+				componentProps: {
+					...this.state.componentProps,
+					dataField: [...this.state.componentProps.dataField, field],
+					fieldWeights: [...this.state.componentProps.fieldWeights, 2],
+				},
+			});
+		}
+	}
+
+	renderDeleteButton = (x, y, index) => (
+			<Button
+				className={deleteStyles}
+				icon="delete"
+				shape="circle"
+				type="danger"
+				onClick={() => this.handleSearchDataFieldDelete(index)}
+			/>
+		);
+
+	renderDataFieldTable = () => {
+		const fields = this.getAvailableDataField();
+		const columns = [
+			{
+				title: 'Field',
+				dataIndex: 'field',
+				key: 'field',
+				render: (selected, x, index) => {
+					const menu = (
+						<Menu onClick={this.handleSearchDataFieldChange}>
+							{
+								fields
+									.filter(item => (
+										item === selected
+										|| !this.state.componentProps.dataField.includes(item)
+									))
+									.map(item => (
+										<Menu.Item key={item} value={index}>{item}</Menu.Item>
+									))
+							}
+						</Menu>
+					);
+					return (
+						<Dropdown overlay={menu}>
+							<Button style={{ marginLeft: 8 }}>
+								{selected} <Icon type="down" />
+							</Button>
+						</Dropdown>
+					);
+				},
+			},
+			{
+				title: 'Weight',
+				dataIndex: 'weight',
+				key: 'weight',
+				render: (value, x, index) => (
+					<Input
+						min={1}
+						type="number"
+						defaultValue={value}
+						onChange={e => this.handleSearchWeightChange(index, e.target.value)}
+					/>
+				),
+			},
+			{
+				render: this.renderDeleteButton,
+			},
+		];
+
+		const dataSource = this.state.componentProps.dataField.map((field, index) => ({
+			key: field,
+			field,
+			weight: this.state.componentProps.fieldWeights[index],
+		}));
+
+		return (
+			<React.Fragment>
+				<Table
+					dataSource={dataSource}
+					columns={columns}
+					pagination={false}
+					rowClassName={rowStyles}
+				/>
+				{
+					fields.length === this.state.componentProps.dataField.length
+						? null
+						: (
+							<Button
+								onClick={this.handleAddFieldRow}
+								type="primary"
+								style={{ marginBottom: 16 }}
+							>
+								Add a new field
+							</Button>
+
+						)
+				}
+			</React.Fragment>
+		);
+	}
 
 	renderFormItem = (item, name) => {
 		let FormInput = null;
@@ -275,16 +469,22 @@ export default class RSWrapper extends Component {
 							)
 							: null
 					}
-					<Select
-						name="form-field-name"
-						value={dataFieldDefault}
-						onChange={this.handleDataFieldChange}
-						options={fields.map(item => ({
-							label: item,
-							value: item,
-						}))}
-						multi={multiple}
-					/>
+					{
+						this.props.id === 'search'
+							? this.renderDataFieldTable()
+							: (
+								<Select
+									name="form-field-name"
+									value={dataFieldDefault}
+									onChange={this.handleDataFieldChange}
+									options={fields.map(item => ({
+										label: item,
+										value: item,
+									}))}
+									multi={multiple}
+								/>
+							)
+					}
 				</Form.Item>
 				{
 					Object.keys(propNames)
@@ -307,6 +507,16 @@ export default class RSWrapper extends Component {
 			};
 		}
 
+		let otherProps = {};
+		if (this.props.id === 'search') {
+			otherProps = {
+				fieldWeights: this.generateFieldWeights(
+					this.props.componentProps.dataField,
+					this.props.componentProps.fieldWeights,
+				),
+			};
+		}
+
 		return (
 			<div>
 				<Row gutter={8}>
@@ -315,6 +525,7 @@ export default class RSWrapper extends Component {
 							componentId={this.props.id}
 							{...this.props.componentProps}
 							dataField={this.generateDataField(this.props.componentProps.dataField)}
+							{...otherProps}
 						/>
 					</Col>
 					<Col span={this.props.full ? 24 : 2}>
