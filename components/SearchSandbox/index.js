@@ -178,7 +178,13 @@ export default class SearchSandbox extends Component {
 		return (
 			<SandboxContext.Provider value={contextValue}>
 				<div className={wrapper} key={this.state.profile}>
-					<div style={{ display: 'flex', flexDirection: 'row-reverse', padding: '10px 20px 0' }}>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row-reverse',
+							padding: '10px 20px 0',
+						}}
+					>
 						<Dropdown overlay={menu}>
 							<Button size="large" style={{ marginLeft: 8 }}>
 								Search Profile - {this.state.profile} <Icon type="down" />
