@@ -12,7 +12,6 @@ import {
 	Icon,
 	Dropdown,
 } from 'antd';
-import Select from 'react-select';
 import { css } from 'emotion';
 
 import { DataSearch, MultiList } from '@appbaseio/reactivesearch';

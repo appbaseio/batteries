@@ -13,7 +13,6 @@ import {
 	Menu,
 } from 'antd';
 import { ReactiveBase, ReactiveList, SelectedFilters } from '@appbaseio/reactivesearch';
-import Select from 'react-select';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
