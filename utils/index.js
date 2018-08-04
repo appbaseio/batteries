@@ -69,7 +69,7 @@ export function checkUserStatus() {
 			.then(getBillingStatus)
 			.then(res => res.json())
 			.then((res) => {
-				if (!res.message || res.plan === 'free') {
+				if (!res.plan || res.plan === 'free') {
 					resolve({
 						isPaidUser: false,
 						plan: 'free',

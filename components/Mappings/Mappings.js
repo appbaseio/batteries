@@ -96,13 +96,13 @@ export default class Mappings extends Component {
 	componentDidMount() {
 		if (this.props.url) {
 			getMappings(this.props.appName, this.props.credentials, this.props.url)
-				.then(this.handleMapping)
-				.catch((error) => {
-					this.setState({
-						error,
-						isLoading: false,
-					});
+			.then(this.handleMapping)
+			.catch((error) => {
+				this.setState({
+					error,
+					isLoading: false,
 				});
+			});
 		} else {
 			// check if it is a paid user
 			checkUserStatus()
@@ -113,7 +113,7 @@ export default class Mappings extends Component {
 						});
 					}
 				})
-				.catch(() => {
+				.catch((e) => {
 					this.setState({
 						editable: false,
 					});
