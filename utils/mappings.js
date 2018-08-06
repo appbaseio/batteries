@@ -1,6 +1,6 @@
 import mappingUsecase from './mappingUsecase';
 import analyzerSettings from './analyzerSettings';
-import { SCALR_API } from './index';
+import { SCALR_API, ACC_API } from './index';
 
 const PRESERVED_KEYS = ['meta'];
 export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
@@ -52,7 +52,7 @@ export function reIndex(mappings, appId, excludeFields) {
 		es_version: '5',
 	};
 	return new Promise((resolve, reject) => {
-		fetch(`https://accapi-staging.bottleneck.io/app/${appId}/reindex`, {
+		fetch(`${ACC_API}/app/${appId}/reindex`, {
 			method: 'POST',
 			credentials: 'include',
 			headers: {
