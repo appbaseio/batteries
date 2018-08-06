@@ -11,13 +11,17 @@ import {
 	Dropdown,
 	Icon,
 	Menu,
+	Tree,
+	Popover,
 } from 'antd';
 import { ReactiveBase, ReactiveList, SelectedFilters } from '@appbaseio/reactivesearch';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import { SCALR_API } from '../../../utils';
-import { listItem, title, formWrapper } from '../styles';
+import { listItem, formWrapper } from '../styles';
+
+const { TreeNode } = Tree;
 
 export default class Editor extends Component {
 	constructor(props) {
@@ -229,6 +233,40 @@ export default class Editor extends Component {
 		);
 	}
 
+	renderAsJSON = res => (
+			<div style={{ textAlign: 'right' }}>
+				<Popover
+					placement="leftTop"
+					content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
+					title="JSON Result"
+				>
+					<Button>
+						View as JSON
+					</Button>
+				</Popover>
+			</div>
+		)
+
+	renderAsTree = (res, key = '0') => Object.keys(res).map((item, index) => {
+		const type = typeof res[item];
+		if (type === 'string' || type === 'number' || Array.isArray(res)) {
+			return (
+				<TreeNode
+					title={`${item}: ${JSON.stringify(res[item])}`}
+					key={`${key}-${index + 1}`}
+				/>
+			);
+		}
+		return (
+			<TreeNode
+				title={item}
+				key={`${key}-${index + 1}`}
+			>
+				{this.renderAsTree(res[item], String(index))}
+			</TreeNode>
+		);
+	})
+
 	render() {
 		return (
 			<ReactiveBase
@@ -284,15 +322,14 @@ export default class Editor extends Component {
 								dataField="city"
 								pagination
 								onData={res => (
-									<div className={listItem}>
+									<div className={listItem} key={res._id}>
 										{
-											Object.keys(this.props.mappings)
-												.map(item => (
-													<div>
-														<span className={title}>{item}:</span>
-														{JSON.stringify(res[item], null, 2)}
-													</div>
-												))
+											this.renderAsJSON(res)
+										}
+										{
+											<Tree showLine>
+												{this.renderAsTree(res)}
+											</Tree>
 										}
 									</div>
 								)}

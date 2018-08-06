@@ -6,6 +6,12 @@ const listItem = css`
 	line-height: 30px;
 	border-bottom: 1px solid #eee;
 
+	li {
+		word-wrap: break-word;
+		width: 100%;
+		overflow: hidden;
+	}
+
 	& > div {
 		margin-bottom: 4px;
 	}
