@@ -17,6 +17,7 @@ import { ReactiveBase, ReactiveList, SelectedFilters } from '@appbaseio/reactive
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import { SCALR_API } from '../../../utils';
+import { listItem, title, formWrapper } from '../styles';
 
 export default class Editor extends Component {
 	constructor(props) {
@@ -195,7 +196,7 @@ export default class Editor extends Component {
 			</Menu>
 		);
 		return (
-			<Form onSubmit={this.handleSubmit}>
+			<Form onSubmit={this.handleSubmit} className={formWrapper}>
 				<Form.Item
 					label={multiListTypes.dataField.label}
 					colon={false}
@@ -208,7 +209,6 @@ export default class Editor extends Component {
 					</div>
 					<Dropdown overlay={menu}>
 						<Button
-							size="medium"
 							style={{
 								width: '100%',
 								display: 'flex',
@@ -281,8 +281,21 @@ export default class Editor extends Component {
 							<SelectedFilters />
 							<ReactiveList
 								componentId="result"
-								dataField={this.getAvailableDataField()[0]}
-								onData={res => <div key={res._id}>{res.original_title}</div>}
+								dataField="city"
+								pagination
+								onData={res => (
+									<div className={listItem}>
+										{
+											Object.keys(this.props.mappings)
+												.map(item => (
+													<div>
+														<span className={title}>{item}:</span>
+														{JSON.stringify(res[item], null, 2)}
+													</div>
+												))
+										}
+									</div>
+								)}
 								react={{
 									and: Object.keys(this.props.componentProps),
 								}}

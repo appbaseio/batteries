@@ -12,12 +12,13 @@ import {
 	Icon,
 	Dropdown,
 } from 'antd';
-import { css } from 'emotion';
 
 import { DataSearch, MultiList } from '@appbaseio/reactivesearch';
 
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
+
+import { deleteStyles, rowStyles, formWrapper, componentStyles } from '../styles';
 
 const componentMap = {
 	DataSearch,
@@ -28,17 +29,6 @@ const propsMap = {
 	DataSearch: dataSearchTypes,
 	MultiList: multiListTypes,
 };
-
-const deleteStyles = css`
-	margin: 0 10px;
-	opacity: 0;
-`;
-
-const rowStyles = css`
-	&:hover .${deleteStyles} {
-		opacity: 1;
-	}
-`;
 
 export default class RSWrapper extends Component {
 	constructor(props) {
@@ -349,14 +339,15 @@ export default class RSWrapper extends Component {
 					fields.length === this.state.componentProps.dataField.length
 						? null
 						: (
-							<Button
-								onClick={this.handleAddFieldRow}
-								type="primary"
-								style={{ marginBottom: 16 }}
-							>
-								Add a new field
-							</Button>
-
+							<div style={{ paddingTop: 12, textAlign: 'right' }}>
+								<Button
+									onClick={this.handleAddFieldRow}
+									type="primary"
+									style={{ marginBottom: 16 }}
+								>
+									Add a new field
+								</Button>
+							</div>
 						)
 				}
 			</React.Fragment>
@@ -436,7 +427,7 @@ export default class RSWrapper extends Component {
 		);
 
 		return (
-			<Form onSubmit={this.handleSubmit}>
+			<Form onSubmit={this.handleSubmit} className={formWrapper}>
 				<Form.Item
 					label={propNames.dataField.label}
 					colon={false}
@@ -465,7 +456,6 @@ export default class RSWrapper extends Component {
 							: (
 								<Dropdown overlay={menu}>
 									<Button
-										size="medium"
 										style={{
 											width: '100%',
 											display: 'flex',
@@ -519,6 +509,7 @@ export default class RSWrapper extends Component {
 							{...this.props.componentProps}
 							dataField={this.generateDataField(this.props.componentProps.dataField)}
 							{...otherProps}
+							className={componentStyles}
 						/>
 					</Col>
 					<Col span={this.props.full ? 24 : 2}>
