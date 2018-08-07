@@ -157,7 +157,11 @@ export default class SearchSandbox extends Component {
 						<Menu.Item key={item}>{item}</Menu.Item>
 					))
 				}
-				<Menu.Item key={NEW_PROFILE}>Create a New Profile</Menu.Item>
+				<Menu.Divider />
+				<Menu.Item key={NEW_PROFILE}>
+					<Icon type="plus" />&nbsp;
+					Create a New Profile
+				</Menu.Item>
 			</Menu>
 		);
 
