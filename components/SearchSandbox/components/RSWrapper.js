@@ -88,20 +88,30 @@ export default class RSWrapper extends Component {
 		return fields;
 	};
 
-	getSubFields = (field, types) => [
-		...this.props.mappings[field].fields
-			.filter(item => types.includes(this.props.mappings[field].originalFields[item].type))
-			.map(item => `${field}.${item}`),
-	];
+	getSubFields = (field, types) => {
+		if (this.props.mappings[field] && this.props.mappings[field].fields) {
+			return [
+				...this.props.mappings[field].fields
+					.filter(item => types.includes(this.props.mappings[field].originalFields[item].type))
+					.map(item => `${field}.${item}`),
+			];
+		}
+		return null;
+	}
 
-	getSubFieldWeights = (field, defaultWeight = 1) => [
-		...this.props.mappings[field].fields
-			.map((item) => {
-				let weight = 1;
-				if (item === 'keyword') weight = defaultWeight;
-				return parseInt(weight, 10);
-			}),
-	];
+	getSubFieldWeights = (field, defaultWeight = 1) => {
+		if (this.props.mappings[field] && this.props.mappings[field].fields) {
+			return [
+				...this.props.mappings[field].fields
+					.map((item) => {
+						let weight = 1;
+						if (item === 'keyword') weight = defaultWeight;
+						return parseInt(weight, 10);
+					}),
+			];
+		}
+		return null;
+	}
 
 	setError = (error) => {
 		this.setState({
