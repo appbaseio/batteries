@@ -14,7 +14,7 @@ import {
 	Tree,
 	Popover,
 } from 'antd';
-import { ReactiveBase, ReactiveList, SelectedFilters } from '@appbaseio/reactivesearch';
+import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
 
 import multiListTypes from '../utils/multilist-types';
@@ -75,14 +75,21 @@ export default class Editor extends Component {
 
 	handleOk = () => {
 		// only set to store if dataField is valid
-		this.props.onPropChange(
-			`list-${this.props.filterCount + 1}`,
-			this.state.listComponentProps,
-		);
-		this.props.setFilterCount(this.props.filterCount + 1);
-		this.setState({
-			showModal: false,
-		}, this.resetNewComponentData);
+		const fields = this.getAvailableDataField();
+		if (fields.length) {
+			this.props.onPropChange(
+				`list-${this.props.filterCount + 1}`,
+				this.state.listComponentProps,
+			);
+			this.props.setFilterCount(this.props.filterCount + 1);
+			this.setState({
+				showModal: false,
+			}, this.resetNewComponentData);
+		} else {
+			this.setState({
+				showModal: false,
+			});
+		}
 	};
 
 	handleCancel = () => {
@@ -235,18 +242,18 @@ export default class Editor extends Component {
 	}
 
 	renderAsJSON = res => (
-			<div style={{ textAlign: 'right' }}>
-				<Popover
-					placement="leftTop"
-					content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
-					title="JSON Result"
-				>
-					<Button>
-						View as JSON
-					</Button>
-				</Popover>
-			</div>
-		)
+		<div style={{ textAlign: 'right' }}>
+			<Popover
+				placement="leftTop"
+				content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
+				title="JSON Result"
+			>
+				<Button>
+					View as JSON
+				</Button>
+			</Popover>
+		</div>
+	)
 
 	renderAsTree = (res, key = '0') => Object.keys(res).map((item, index) => {
 		const type = typeof res[item];
@@ -269,6 +276,33 @@ export default class Editor extends Component {
 	})
 
 	render() {
+		let resultComponentProps = this.props.componentProps.result || {};
+		resultComponentProps = {
+			size: 5,
+			pagination: true,
+			...resultComponentProps,
+			onData: res => (
+				<div className={listItem} key={res._id}>
+					<ExpandCollapse
+						previewHeight="400px"
+						expandText="Show more"
+					>
+						{
+							this.renderAsJSON(res)
+						}
+						{
+							<Tree showLine>
+								{this.renderAsTree(res)}
+							</Tree>
+						}
+					</ExpandCollapse>
+				</div>
+			),
+			react: {
+				and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
+			},
+		};
+
 		return (
 			<ReactiveBase
 				app={this.props.appName}
@@ -289,7 +323,7 @@ export default class Editor extends Component {
 						</Card>
 						{
 							Object.keys(this.props.componentProps)
-								.filter(item => item !== 'search')
+								.filter(item => item !== 'search' && item !== 'result')
 								.map(config => (
 									<Card key={config} style={{ marginTop: 20 }}>
 										<RSWrapper
@@ -318,30 +352,14 @@ export default class Editor extends Component {
 
 						<Card>
 							<SelectedFilters />
-							<ReactiveList
-								componentId="result"
-								dataField="city"
-								pagination
-								onData={res => (
-									<div className={listItem} key={res._id}>
-										<ExpandCollapse
-											previewHeight="400px"
-											expandText="Show more"
-										>
-											{
-												this.renderAsJSON(res)
-											}
-											{
-												<Tree showLine>
-													{this.renderAsTree(res)}
-												</Tree>
-											}
-										</ExpandCollapse>
-									</div>
-								)}
-								react={{
-									and: Object.keys(this.props.componentProps),
-								}}
+							<RSWrapper
+								id="result"
+								component="ReactiveList"
+								mappings={this.props.mappings}
+								componentProps={resultComponentProps}
+								onPropChange={this.props.onPropChange}
+								full
+								showDelete={false}
 							/>
 						</Card>
 					</Col>

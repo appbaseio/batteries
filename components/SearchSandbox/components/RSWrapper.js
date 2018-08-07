@@ -13,21 +13,24 @@ import {
 	Dropdown,
 } from 'antd';
 
-import { DataSearch, MultiList } from '@appbaseio/reactivesearch';
+import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
 
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
+import reactiveListTypes from '../utils/reactivelist-types';
 
 import { deleteStyles, rowStyles, formWrapper, componentStyles } from '../styles';
 
 const componentMap = {
 	DataSearch,
 	MultiList,
+	ReactiveList,
 };
 
 const propsMap = {
 	DataSearch: dataSearchTypes,
 	MultiList: multiListTypes,
+	ReactiveList: reactiveListTypes,
 };
 
 export default class RSWrapper extends Component {
@@ -88,30 +91,20 @@ export default class RSWrapper extends Component {
 		return fields;
 	};
 
-	getSubFields = (field, types) => {
-		if (this.props.mappings[field] && this.props.mappings[field].fields) {
-			return [
-				...this.props.mappings[field].fields
-					.filter(item => types.includes(this.props.mappings[field].originalFields[item].type))
-					.map(item => `${field}.${item}`),
-			];
-		}
-		return null;
-	}
+	getSubFields = (field, types) => [
+		...this.props.mappings[field].fields
+			.filter(item => types.includes(this.props.mappings[field].originalFields[item].type))
+			.map(item => `${field}.${item}`),
+	];
 
-	getSubFieldWeights = (field, defaultWeight = 1) => {
-		if (this.props.mappings[field] && this.props.mappings[field].fields) {
-			return [
-				...this.props.mappings[field].fields
-					.map((item) => {
-						let weight = 1;
-						if (item === 'keyword') weight = defaultWeight;
-						return parseInt(weight, 10);
-					}),
-			];
-		}
-		return null;
-	}
+	getSubFieldWeights = (field, defaultWeight = 1) => [
+		...this.props.mappings[field].fields
+			.map((item) => {
+				let weight = 1;
+				if (item === 'keyword') weight = defaultWeight;
+				return parseInt(weight, 10);
+			}),
+	];
 
 	setError = (error) => {
 		this.setState({
@@ -531,7 +524,7 @@ export default class RSWrapper extends Component {
 							Edit
 						</Button>
 						{
-							this.props.full
+							this.props.full && this.props.showDelete
 								? (
 									<Button
 										size="large"
@@ -563,3 +556,7 @@ export default class RSWrapper extends Component {
 		);
 	}
 }
+
+RSWrapper.defaultProps = {
+	showDelete: true,
+};
