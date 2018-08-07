@@ -26,8 +26,7 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				const types = Object.keys(data[appName].mappings)
-					.filter(type => !REMOVED_KEYS.includes(type));
+				const types = Object.keys(data[appName].mappings).filter(type => !REMOVED_KEYS.includes(type));
 
 				let mappings = {};
 				types.forEach((type) => {
@@ -165,21 +164,26 @@ export function updateMapping(mapping, field, type, usecase) {
 }
 
 /**
- * Traverse the mappings object & returns the fields
+ * Traverse the mappings object & returns the fields (leaf)
  * @param {Object} mappings
  * @returns {{ [key: string]: Array<string> }}
  */
-export function traverseMapping(mappings = {}) {
+export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 	const fieldObject = {};
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
 		const setFields = (mp, prefix = '') => {
 			if (mp.properties) {
 				Object.keys(mp.properties).forEach((mpp) => {
-					fieldObject[type].push(`${prefix}${mpp}`);
+					if (!returnOnlyLeafFields) {
+						fieldObject[type].push(`${prefix}${mpp}`);
+					}
 					const field = mp.properties[mpp];
 					if (field && field.properties) {
 						setFields(field, `${prefix}${mpp}.`);
+					} else if (returnOnlyLeafFields) {
+						// To return only leaf fields
+						fieldObject[type].push(`${prefix}${mpp}`);
 					}
 				});
 			}
