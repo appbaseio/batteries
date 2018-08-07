@@ -14,7 +14,7 @@ git submodule update --recursive --remote
 2. Installation:
 
 ```bash
-yarn add emotion react-emotion rc-tooltip react-select antd @appbaseio/reactivesearch
+yarn add emotion react-emotion rc-tooltip react-select antd @appbaseio/reactivesearch react-expand-collapse
 yarn add -D babel-plugin-emotion babel-plugin-import
 ```
 

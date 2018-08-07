@@ -15,6 +15,7 @@ import {
 	Popover,
 } from 'antd';
 import { ReactiveBase, ReactiveList, SelectedFilters } from '@appbaseio/reactivesearch';
+import ExpandCollapse from 'react-expand-collapse';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
@@ -323,14 +324,19 @@ export default class Editor extends Component {
 								pagination
 								onData={res => (
 									<div className={listItem} key={res._id}>
-										{
-											this.renderAsJSON(res)
-										}
-										{
-											<Tree showLine>
-												{this.renderAsTree(res)}
-											</Tree>
-										}
+										<ExpandCollapse
+											previewHeight="400px"
+											expandText="Show more"
+										>
+											{
+												this.renderAsJSON(res)
+											}
+											{
+												<Tree showLine>
+													{this.renderAsTree(res)}
+												</Tree>
+											}
+										</ExpandCollapse>
 									</div>
 								)}
 								react={{
