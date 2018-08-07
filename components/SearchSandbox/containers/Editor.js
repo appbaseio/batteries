@@ -284,7 +284,7 @@ export default class Editor extends Component {
 			onData: res => (
 				<div className={listItem} key={res._id}>
 					<ExpandCollapse
-						previewHeight="400px"
+						previewHeight="390px"
 						expandText="Show more"
 					>
 						{
