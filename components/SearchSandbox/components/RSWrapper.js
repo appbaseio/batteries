@@ -485,14 +485,6 @@ export default class RSWrapper extends Component {
 		if (!this.props.componentProps.dataField) return null;
 		const RSComponent = componentMap[this.props.component];
 
-		let btnStyle = {};
-		if (this.props.full) {
-			btnStyle = {
-				width: '49%',
-				marginTop: 10,
-			};
-		}
-
 		let otherProps = {};
 		if (this.props.id === 'search') {
 			otherProps = {
@@ -506,6 +498,34 @@ export default class RSWrapper extends Component {
 		return (
 			<div>
 				<Row gutter={8}>
+					{
+						this.props.full
+							? (
+								<Col span={24} style={{ textAlign: 'right', paddingBottom: 16 }}>
+									<Button
+										icon="edit"
+										shape="circle"
+										size="large"
+										onClick={this.showModal}
+									/>
+									{
+										this.props.showDelete
+											? (
+												<Button
+													icon="delete"
+													shape="circle"
+													type="danger"
+													size="large"
+													style={{ marginLeft: 8 }}
+													onClick={() => this.props.onDelete(this.props.id)}
+												/>
+											)
+											: null
+									}
+								</Col>
+							)
+							: null
+					}
 					<Col span={this.props.full ? 24 : 22}>
 						<RSComponent
 							componentId={this.props.id}
@@ -515,32 +535,20 @@ export default class RSWrapper extends Component {
 							className={componentStyles}
 						/>
 					</Col>
-					<Col span={this.props.full ? 24 : 2}>
-						<Button
-							size="large"
-							onClick={this.showModal}
-							style={btnStyle}
-						>
-							Edit
-						</Button>
-						{
-							this.props.full && this.props.showDelete
-								? (
+					{
+						this.props.full
+							? null
+							: (
+								<Col span={2} style={{ textAlign: 'right' }}>
 									<Button
+										icon="edit"
+										shape="circle"
 										size="large"
-										type="danger"
-										onClick={() => this.props.onDelete(this.props.id)}
-										style={{
-											...btnStyle,
-											marginLeft: '2%',
-										}}
-									>
-										Delete
-									</Button>
-								)
-								: null
-						}
-					</Col>
+										onClick={this.showModal}
+									/>
+								</Col>
+							)
+					}
 				</Row>
 
 				<Modal
