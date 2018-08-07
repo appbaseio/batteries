@@ -85,6 +85,7 @@ export default class Mappings extends Component {
 			errorLength: 0,
 			deletedPaths: [],
 			editable: false,
+			loadingError: null,
 			showFeedback: false,
 			timeTaken: '0',
 		};
@@ -97,9 +98,9 @@ export default class Mappings extends Component {
 		if (this.props.url) {
 			getMappings(this.props.appName, this.props.credentials, this.props.url)
 			.then(this.handleMapping)
-			.catch((error) => {
+			.catch((loadingError) => {
 				this.setState({
-					error,
+					loadingError,
 					isLoading: false,
 				});
 			});
@@ -446,6 +447,7 @@ export default class Mappings extends Component {
 	)
 
 	render() {
+		if (this.state.loadingError) return <p style={{ padding: 20 }}>{this.state.loadingError}</p>
 		if (this.state.isLoading && !this.state.mapping) return <Loader show message="Fetching mappings... Please wait!" />;
 		if (this.state.mappingsError) {
 			return (

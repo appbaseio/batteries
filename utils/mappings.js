@@ -67,6 +67,9 @@ export function reIndex(mappings, appId, excludeFields) {
 				if (data.body && data.body.response_info.failures.length) {
 					reject(data.body.response_info.failures);
 				}
+				if (data.Message) {
+					reject(data.Message);
+				}
 				resolve(data.body.response_info.took);
 			})
 			.catch((e) => {
