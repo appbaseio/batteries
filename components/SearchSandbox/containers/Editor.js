@@ -19,7 +19,6 @@ import ExpandCollapse from 'react-expand-collapse';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
-import { SCALR_API } from '../../../utils';
 import { listItem, formWrapper } from '../styles';
 
 const { TreeNode } = Tree;
@@ -241,20 +240,6 @@ export default class Editor extends Component {
 		);
 	}
 
-	renderAsJSON = res => (
-		<div style={{ textAlign: 'right' }}>
-			<Popover
-				placement="leftTop"
-				content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
-				title="JSON Result"
-			>
-				<Button>
-					View as JSON
-				</Button>
-			</Popover>
-		</div>
-	)
-
 	renderAsTree = (res, key = '0') => {
 		if (!res) return null;
 		const iterable = Array.isArray(res) ? res : Object.keys(res);
@@ -279,7 +264,21 @@ export default class Editor extends Component {
 				</TreeNode>
 			);
 		});
-	}
+	};
+
+	renderAsJSON = res => (
+		<div style={{ textAlign: 'right' }}>
+			<Popover
+				placement="leftTop"
+				content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
+				title="JSON Result"
+			>
+				<Button>
+					View as JSON
+				</Button>
+			</Popover>
+		</div>
+	)
 
 	render() {
 		let resultComponentProps = this.props.componentProps.result || {};
@@ -313,7 +312,7 @@ export default class Editor extends Component {
 			<ReactiveBase
 				app={this.props.appName}
 				credentials={this.props.credentials}
-				url={SCALR_API}
+				url={this.props.url}
 			>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>

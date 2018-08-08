@@ -18,6 +18,7 @@ import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
+import { generateDataField, generateFieldWeights } from '../utils/dataField';
 
 import { deleteStyles, rowStyles, formWrapper, componentStyles } from '../styles';
 
@@ -91,21 +92,6 @@ export default class RSWrapper extends Component {
 		return fields;
 	};
 
-	getSubFields = (field, types) => [
-		...this.props.mappings[field].fields
-			.filter(item => types.includes(this.props.mappings[field].originalFields[item].type))
-			.map(item => `${field}.${item}`),
-	];
-
-	getSubFieldWeights = (field, defaultWeight = 1) => [
-		...this.props.mappings[field].fields
-			.map((item) => {
-				let weight = 1;
-				if (item === 'keyword') weight = defaultWeight;
-				return parseInt(weight, 10);
-			}),
-	];
-
 	setError = (error) => {
 		this.setState({
 			error,
@@ -116,39 +102,6 @@ export default class RSWrapper extends Component {
 				});
 			}, 3000);
 		});
-	}
-
-	// generates the dataField prop for reactivesearch component
-	// based on the selected-field(s)
-	generateDataField = (selectedFields) => {
-		const { types, multiple } = propsMap[this.props.component].dataField;
-		if (multiple) {
-			let resultFields = [];
-			selectedFields.forEach((item) => {
-				resultFields = [
-					item,
-					...resultFields,
-					...this.getSubFields(item, types),
-				];
-			});
-			return resultFields;
-		}
-
-		const validFields = this.getSubFields(selectedFields, types);
-		return validFields ? validFields[0] : null;
-	}
-
-	generateFieldWeights = (selectedFields, weights) => {
-		let resultWeights = [];
-		selectedFields.forEach((item, index) => {
-			resultWeights = [
-				...resultWeights,
-				parseInt(weights[index], 10),
-				...this.getSubFieldWeights(item, weights[index]),
-			];
-		});
-
-		return resultWeights;
 	}
 
 	resetComponentProps = () => {
@@ -488,9 +441,10 @@ export default class RSWrapper extends Component {
 		let otherProps = {};
 		if (this.props.id === 'search') {
 			otherProps = {
-				fieldWeights: this.generateFieldWeights(
+				fieldWeights: generateFieldWeights(
 					this.props.componentProps.dataField,
 					this.props.componentProps.fieldWeights,
+					this.props.mappings,
 				),
 			};
 		}
@@ -530,7 +484,11 @@ export default class RSWrapper extends Component {
 						<RSComponent
 							componentId={this.props.id}
 							{...this.props.componentProps}
-							dataField={this.generateDataField(this.props.componentProps.dataField)}
+							dataField={generateDataField(
+								this.props.component,
+								this.props.componentProps.dataField,
+								this.props.mappings,
+							)}
 							{...otherProps}
 							className={componentStyles}
 						/>

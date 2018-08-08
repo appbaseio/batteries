@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import { Menu, Button, Dropdown, Icon, Modal, Input } from 'antd';
 import { css } from 'emotion';
+import { getParameters } from 'codesandbox/lib/api/define';
+
 import { getMappings, getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
+import { SCALR_API } from '../../utils';
+import getSearchTemplate, { getTemplateStyles } from './template';
 
 const wrapper = css`
 	padding: 15px;
@@ -147,6 +151,47 @@ export default class SearchSandbox extends Component {
 		});
 	};
 
+	openSandbox = () => {
+		const config = {
+			appId: this.props.appId || null,
+			appName: this.props.appName || null,
+			url: this.props.url,
+			credentials: this.props.credentials || null,
+			componentProps: this.state.componentProps,
+			mappings: this.state.mappings,
+		};
+		const code = getSearchTemplate(config);
+		const html = '<div id="root"></div>';
+		const styles = getTemplateStyles();
+
+		const parameters = getParameters({
+			files: {
+				'index.js': {
+					content: code,
+				},
+				'package.json': {
+					content: {
+						dependencies: {
+							react: '16.3.2',
+							'react-dom': '16.3.2',
+							antd: '^3.6.6',
+							'@appbaseio/reactivesearch': 'latest',
+							'react-expand-collapse': 'latest',
+						},
+					},
+				},
+				'index.html': {
+					content: html,
+				},
+				'styles.css': {
+					content: styles,
+				},
+			},
+		});
+
+		window.open(`https://codesandbox.io/api/v1/sandboxes/define?parameters=${parameters}`, '_blank');
+	}
+
 	render() {
 		if (!this.state.mappings) return 'Loading...';
 
@@ -168,6 +213,7 @@ export default class SearchSandbox extends Component {
 		const contextValue = {
 			appId: this.props.appId || null,
 			appName: this.props.appName || null,
+			url: this.props.url,
 			credentials: this.props.credentials || null,
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
@@ -194,6 +240,9 @@ export default class SearchSandbox extends Component {
 								Search Profile - {this.state.profile} <Icon type="down" />
 							</Button>
 						</Dropdown>
+						<Button onClick={this.openSandbox} size="large" type="primary">
+							Open in Codesanbox
+						</Button>
 					</div>
 					{
 						React.Children.map(this.props.children, child => (
@@ -234,4 +283,5 @@ export default class SearchSandbox extends Component {
 
 SearchSandbox.defaultProps = {
 	isDashboard: false,
+	url: SCALR_API,
 };
