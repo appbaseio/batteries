@@ -255,25 +255,31 @@ export default class Editor extends Component {
 		</div>
 	)
 
-	renderAsTree = (res, key = '0') => Object.keys(res).map((item, index) => {
-		const type = typeof res[item];
-		if (type === 'string' || type === 'number' || Array.isArray(res)) {
+	renderAsTree = (res, key = '0') => {
+		if (!res) return null;
+		const iterable = Array.isArray(res) ? res : Object.keys(res);
+		return iterable.map((item, index) => {
+			const type = typeof res[item];
+			if (type === 'string' || type === 'number') {
+				return (
+					<TreeNode
+						title={`${item}: ${JSON.stringify(res[item])}`}
+						key={`${key}-${index + 1}`}
+					/>
+				);
+			}
+			const hasObject = (res[item] === undefined && typeof item !== 'string');
+			const node = hasObject ? item : res[item];
 			return (
 				<TreeNode
-					title={`${item}: ${JSON.stringify(res[item])}`}
+					title={typeof item !== 'string' ? 'Object' : `${node || Array.isArray(res) ? item : `${item}: null`}`}
 					key={`${key}-${index + 1}`}
-				/>
+				>
+					{this.renderAsTree(node, `${key}-${index + 1}`)}
+				</TreeNode>
 			);
-		}
-		return (
-			<TreeNode
-				title={item}
-				key={`${key}-${index + 1}`}
-			>
-				{this.renderAsTree(res[item], String(index))}
-			</TreeNode>
-		);
-	})
+		});
+	}
 
 	render() {
 		let resultComponentProps = this.props.componentProps.result || {};
