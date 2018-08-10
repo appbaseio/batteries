@@ -6,6 +6,10 @@ const listItem = css`
 	line-height: 30px;
 	border-bottom: 1px solid #eee;
 
+	mark {
+		background-color: #f5ff00;
+	}
+
 	li {
 		word-wrap: break-word;
 		width: 100%;

@@ -251,7 +251,12 @@ export default class Editor extends Component {
 			if (type === 'string' || type === 'number') {
 				return (
 					<TreeNode
-						title={`${item}: ${JSON.stringify(res[item])}`}
+						title={
+							<div>
+								<span>{item}:</span>&nbsp;
+								<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+							</div>
+						}
 						key={`${key}-${index + 1}`}
 					/>
 				);

@@ -55,7 +55,12 @@ const renderAsTree = (res, key = '0') => {
 		if (type === 'string' || type === 'number') {
 			return (
 				<TreeNode
-					title={item + ": " + JSON.stringify(res[item])}
+					title={
+						<div>
+							<span>{item}:</span>&nbsp;
+							<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+						</div>
+					}
 					key={key + "-" + (index + 1)}
 				/>
 			);
@@ -194,6 +199,10 @@ function getTemplateStyles() {
 	font-size: 16px;
 	line-height: 30px;
 	border-bottom: 1px solid #eee;
+}
+
+.list-item mark {
+	background-color: #f5ff00;
 }
 
 .list-item li {
