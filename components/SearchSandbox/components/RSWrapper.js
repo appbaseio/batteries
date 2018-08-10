@@ -52,6 +52,7 @@ export default class RSWrapper extends Component {
 			if (props.id === 'search') {
 				otherProps = { fieldWeights: [2] };
 			}
+
 			props.onPropChange(props.id, {
 				dataField: multiple ? [dataFields[0]] : dataFields[0],
 				...otherProps,
@@ -491,6 +492,7 @@ export default class RSWrapper extends Component {
 							)}
 							{...otherProps}
 							className={componentStyles}
+							size={parseInt(this.props.componentProps.size || 10, 10)}
 						/>
 					</Col>
 					{

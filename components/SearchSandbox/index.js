@@ -42,9 +42,12 @@ export default class SearchSandbox extends Component {
 					const profileList = Array.from(new Set([
 						...this.state.profileList,
 						...Object.keys(this.pref)]));
+					const componentProps = this.pref[this.state.profile] || {};
 					this.setState({
-						componentProps: this.pref[this.state.profile] || {},
+						componentProps,
 						profileList,
+						filterCount: Object.keys(componentProps)
+							.filter(item => item !== 'search' && item !== 'result'),
 					});
 				})
 				.catch(() => this.getLocalPref());
@@ -106,25 +109,30 @@ export default class SearchSandbox extends Component {
 		if (key === NEW_PROFILE) {
 			this.setState({
 				showNewProfileModal: true,
+				filterCount: 0,
 			});
 		} else {
+			const componentProps = this.pref[key] || {};
 			this.setState({
 				profile: key,
-				componentProps: this.pref[key] || {},
+				componentProps,
+				filterCount: Object.keys(componentProps)
+					.filter(item => item !== 'search' && item !== 'result'),
 			});
 		}
 	};
 
 	handleComponentPropChange = (component, newProps) => {
-		this.setState({
+		this.setState(state => ({
+			...state,
 			componentProps: {
-				...this.state.componentProps,
+				...state.componentProps,
 				[component]: {
-					...this.state.componentProps[component],
+					...state.componentProps[component],
 					...newProps,
 				},
 			},
-		}, this.savePreferences);
+		}), this.savePreferences);
 	};
 
 	handleSaveProfile = () => {
