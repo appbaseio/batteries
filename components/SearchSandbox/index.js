@@ -252,7 +252,7 @@ export default class SearchSandbox extends Component {
 							</Button>
 						</Dropdown>
 						<Button onClick={this.openSandbox} size="large" type="primary">
-							Open in Codesanbox
+							Open in Codesandbox
 						</Button>
 					</div>
 					{
