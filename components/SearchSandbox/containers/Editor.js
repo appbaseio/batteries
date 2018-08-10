@@ -198,7 +198,10 @@ export default class Editor extends Component {
 
 		const { dataField } = this.state.listComponentProps;
 		const menu = (
-			<Menu onClick={this.handleDataFieldChange}>
+			<Menu
+				onClick={this.handleDataFieldChange}
+				style={{ maxHeight: 300, overflowY: 'scroll' }}
+			>
 				{
 					fields.map(item => (
 						<Menu.Item key={item}>{item}</Menu.Item>
@@ -218,7 +221,7 @@ export default class Editor extends Component {
 					>
 						{multiListTypes.dataField.description}
 					</div>
-					<Dropdown overlay={menu}>
+					<Dropdown overlay={menu} trigger={['click']}>
 						<Button
 							style={{
 								width: '100%',

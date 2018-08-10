@@ -238,7 +238,10 @@ export default class RSWrapper extends Component {
 				key: 'field',
 				render: (selected, x, index) => {
 					const menu = (
-						<Menu onClick={this.handleSearchDataFieldChange}>
+						<Menu
+							onClick={this.handleSearchDataFieldChange}
+							style={{ maxHeight: 300, overflowY: 'scroll' }}
+						>
 							{
 								fields
 									.filter(item => (
@@ -252,7 +255,7 @@ export default class RSWrapper extends Component {
 						</Menu>
 					);
 					return (
-						<Dropdown overlay={menu}>
+						<Dropdown overlay={menu} trigger={['click']}>
 							<Button style={{ marginLeft: 8 }}>
 								{selected} <Icon type="down" />
 							</Button>
@@ -374,7 +377,10 @@ export default class RSWrapper extends Component {
 		const { dataField } = this.state.componentProps;
 		const fields = this.getAvailableDataField();
 		const menu = (
-			<Menu onClick={this.handleDataFieldChange}>
+			<Menu
+				onClick={this.handleDataFieldChange}
+				style={{ maxHeight: 300, overflowY: 'scroll' }}
+			>
 				{
 					fields.map(item => (
 						<Menu.Item key={item}>{item}</Menu.Item>
@@ -411,7 +417,7 @@ export default class RSWrapper extends Component {
 						this.props.id === 'search'
 							? this.renderDataFieldTable()
 							: (
-								<Dropdown overlay={menu}>
+								<Dropdown overlay={menu} trigger={['click']}>
 									<Button
 										style={{
 											width: '100%',

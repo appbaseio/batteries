@@ -204,7 +204,10 @@ export default class SearchSandbox extends Component {
 		if (!this.state.mappings) return 'Loading...';
 
 		const menu = (
-			<Menu onClick={this.handleProfileChange}>
+			<Menu
+				onClick={this.handleProfileChange}
+				style={{ maxHeight: 300, overflowY: 'scroll' }}
+			>
 				{
 					this.state.profileList.map(item => (
 						<Menu.Item key={item}>{item}</Menu.Item>
@@ -243,7 +246,7 @@ export default class SearchSandbox extends Component {
 							padding: '10px 20px 0',
 						}}
 					>
-						<Dropdown overlay={menu}>
+						<Dropdown overlay={menu} trigger={['click']}>
 							<Button size="large" style={{ marginLeft: 8 }}>
 								Search Profile - {this.state.profile} <Icon type="down" />
 							</Button>
