@@ -19,6 +19,7 @@ import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
 import { generateDataField, generateFieldWeights } from '../utils/dataField';
+import constants from '../utils/constants';
 
 import { deleteStyles, rowStyles, formWrapper, componentStyles } from '../styles';
 
@@ -518,7 +519,7 @@ export default class RSWrapper extends Component {
 				</Row>
 
 				<Modal
-					title={`Edit ${this.props.component} Props`}
+					title={constants[this.props.component]}
 					visible={this.state.showModal}
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
