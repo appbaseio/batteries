@@ -114,7 +114,7 @@ export default class Mappings extends Component {
 						});
 					}
 				})
-				.catch((e) => {
+				.catch(() => {
 					this.setState({
 						editable: false,
 					});
@@ -447,7 +447,7 @@ export default class Mappings extends Component {
 	)
 
 	render() {
-		if (this.state.loadingError) return <p style={{ padding: 20 }}>{this.state.loadingError}</p>
+		if (this.state.loadingError) return <p style={{ padding: 20 }}>{this.state.loadingError}</p>;
 		if (this.state.isLoading && !this.state.mapping) return <Loader show message="Fetching mappings... Please wait!" />;
 		if (this.state.mappingsError) {
 			return (
