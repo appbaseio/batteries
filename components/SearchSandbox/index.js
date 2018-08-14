@@ -123,13 +123,15 @@ export default class SearchSandbox extends Component {
 	};
 
 	handleComponentPropChange = (component, newProps) => {
+		// strip out onData prop from result component
+		const { onData, ...validProps } = newProps;
 		this.setState(state => ({
 			...state,
 			componentProps: {
 				...state.componentProps,
 				[component]: {
 					...state.componentProps[component],
-					...newProps,
+					...validProps,
 				},
 			},
 		}), this.savePreferences);
@@ -201,7 +203,23 @@ export default class SearchSandbox extends Component {
 	}
 
 	render() {
-		if (!this.state.mappings) return 'Loading...';
+		const vcenter = {
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'center',
+			justifyContent: 'center',
+			padding: 20,
+			height: 300,
+			fontSize: 16,
+			lineHeight: 26,
+		};
+
+		if (!this.state.mappings) {
+			return <div style={vcenter}>Loading...</div>;
+		}
+		if (!Object.keys(this.state.mappings).length) {
+			return <div style={vcenter}>No data found. Please insert data to use this feature</div>;
+		}
 
 		const menu = (
 			<Menu
@@ -246,11 +264,17 @@ export default class SearchSandbox extends Component {
 							padding: '10px 20px 0',
 						}}
 					>
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button size="large" style={{ marginLeft: 8 }}>
-								Search Profile - {this.state.profile} <Icon type="down" />
-							</Button>
-						</Dropdown>
+						{
+							this.props.isDashboard
+								? (
+									<Dropdown overlay={menu} trigger={['click']}>
+										<Button size="large" style={{ marginLeft: 8 }}>
+											Search Profile - {this.state.profile} <Icon type="down" />
+										</Button>
+									</Dropdown>
+								)
+								: null
+						}
 						<Button onClick={this.openSandbox} size="large" type="primary">
 							Open in Codesandbox
 						</Button>
