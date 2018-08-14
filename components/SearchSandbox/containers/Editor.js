@@ -13,6 +13,7 @@ import {
 	Menu,
 	Tree,
 	Popover,
+	Tooltip,
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
@@ -56,6 +57,20 @@ export default class Editor extends Component {
 
 		return fields;
 	};
+
+	copyJSON = (code) => {
+		const el = document.createElement('textarea');
+		el.value = JSON.stringify(code);
+		document.body.appendChild(el);
+		el.select();
+		document.execCommand('copy');
+		document.body.removeChild(el);
+		this.setState({
+			copied: true,
+		}, () => setTimeout(() => this.setState({
+			copied: false,
+		}), 300));
+	}
 
 	showModal = () => {
 		this.setState({
@@ -278,8 +293,21 @@ export default class Editor extends Component {
 		<div style={{ textAlign: 'right' }}>
 			<Popover
 				placement="leftTop"
-				content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
-				title="JSON Result"
+				content={<div>
+								<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>
+             </div>}
+				title={
+					<Row>
+						<Col span={22}>
+							<h6 style={{ display: 'inline-block' }}>JSON Result</h6>
+						</Col>
+						<Col span={2}>
+							<Tooltip visible={this.state.copied} title="Copied">
+								<Button shape="circle" icon="copy" size="small" onClick={() => this.copyJSON(res)} />
+							</Tooltip>
+						</Col>
+					</Row>
+				}
 			>
 				<Button>
 					View as JSON
