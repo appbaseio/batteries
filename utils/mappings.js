@@ -67,7 +67,7 @@ export function reIndex(mappings, appId, excludeFields) {
 				if (data.body && data.body.response_info.failures.length) {
 					reject(data.body.response_info.failures);
 				}
-				if (data.message) {
+				if (data.message !== 'App has been successfully reindexed') {
 					reject(data.message);
 				}
 				resolve(data.body.response_info.took);
