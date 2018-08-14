@@ -293,9 +293,7 @@ export default class Editor extends Component {
 		<div style={{ textAlign: 'right' }}>
 			<Popover
 				placement="leftTop"
-				content={<div>
-								<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>
-             </div>}
+				content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
 				title={
 					<Row>
 						<Col span={22}>
@@ -303,7 +301,12 @@ export default class Editor extends Component {
 						</Col>
 						<Col span={2}>
 							<Tooltip visible={this.state.copied} title="Copied">
-								<Button shape="circle" icon="copy" size="small" onClick={() => this.copyJSON(res)} />
+								<Button
+									shape="circle"
+									icon="copy"
+									size="small"
+									onClick={() => this.copyJSON(res)}
+								/>
 							</Tooltip>
 						</Col>
 					</Row>
