@@ -151,7 +151,6 @@ export default class SearchSandbox extends Component {
 	handleSaveProfile = () => {
 		const { value } = this.profileInput.current.input;
 		const componentProps = this.newComponentProps || {};
-		this.newComponentProps = null;
 		if (this.state.profileList.includes(value)) {
 			this.setState({
 				profileModalError: 'A search profile with the same name already exists',
@@ -165,9 +164,11 @@ export default class SearchSandbox extends Component {
 				profileModalError: '',
 			});
 		}
+		this.newComponentProps = null;
 	};
 
 	handleCancel = () => {
+		this.newComponentProps = null;
 		this.setState({
 			showNewProfileModal: false,
 			profileModalError: '',

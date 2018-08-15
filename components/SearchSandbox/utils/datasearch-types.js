@@ -33,6 +33,6 @@ export default {
 		label: 'Fuzziness',
 		description: '',
 		input: 'number',
-		default: 2,
+		default: 0,
 	},
 };
