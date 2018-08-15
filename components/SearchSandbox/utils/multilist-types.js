@@ -1,4 +1,4 @@
-export default ({
+export default {
 	dataField: {
 		label: 'Data Field',
 		description: 'Select the field you want to generate filter for',
@@ -23,4 +23,10 @@ export default ({
 		input: 'bool',
 		default: true,
 	},
-});
+	showCount: {
+		label: 'Show Count',
+		description: 'This will show a count of the number of occurences besides each list item',
+		input: 'bool',
+		default: true,
+	},
+};

@@ -1,17 +1,5 @@
 import React, { Component } from 'react';
-import {
-	Row,
-	Col,
-	Form,
-	Input,
-	Switch,
-	Button,
-	Modal,
-	Table,
-	Menu,
-	Icon,
-	Dropdown,
-} from 'antd';
+import { Row, Col, Form, Input, Switch, Button, Modal, Table, Menu, Icon, Dropdown } from 'antd';
 
 import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
 
@@ -71,40 +59,40 @@ export default class RSWrapper extends Component {
 		const { types } = propsMap[this.props.component].dataField;
 
 		if (this.props.id === 'search') {
-			return Object.keys(this.props.mappings)
-				.filter(field => types.includes(this.props.mappings[field].type));
+			return Object.keys(this.props.mappings).filter(field =>
+				types.includes(this.props.mappings[field].type));
 		}
 
-		const fields = Object.keys(this.props.mappings)
-			.filter((field) => {
-				let fieldsToCheck = [
-					this.props.mappings[field],
+		const fields = Object.keys(this.props.mappings).filter((field) => {
+			let fieldsToCheck = [this.props.mappings[field]];
+
+			if (this.props.mappings[field].originalFields) {
+				fieldsToCheck = [
+					...fieldsToCheck,
+					...Object.values(this.props.mappings[field].originalFields),
 				];
+			}
 
-				if (this.props.mappings[field].originalFields) {
-					fieldsToCheck = [
-						...fieldsToCheck,
-						...Object.values(this.props.mappings[field].originalFields),
-					];
-				}
-
-				return fieldsToCheck.some(item => types.includes(item.type));
-			});
+			return fieldsToCheck.some(item => types.includes(item.type));
+		});
 
 		return fields;
 	};
 
 	setError = (error) => {
-		this.setState({
-			error,
-		}, () => {
-			setTimeout(() => {
-				this.setState({
-					error: '',
-				});
-			}, 3000);
-		});
-	}
+		this.setState(
+			{
+				error,
+			},
+			() => {
+				setTimeout(() => {
+					this.setState({
+						error: '',
+					});
+				}, 3000);
+			},
+		);
+	};
 
 	resetComponentProps = () => {
 		this.setState({
@@ -150,7 +138,7 @@ export default class RSWrapper extends Component {
 				[name]: value,
 			},
 		});
-	}
+	};
 
 	handlePropChange = (e) => {
 		const { name, value } = e.target;
@@ -166,11 +154,9 @@ export default class RSWrapper extends Component {
 		const field = item.key;
 		const index = item.item.props.value;
 
-		const dataField = Object.assign(
-			[],
-			this.state.componentProps.dataField,
-			{ [index]: field },
-		);
+		const dataField = Object.assign([], this.state.componentProps.dataField, {
+			[index]: field,
+		});
 		this.setState({
 			componentProps: {
 				...this.state.componentProps,
@@ -183,31 +169,26 @@ export default class RSWrapper extends Component {
 		this.setState({
 			componentProps: {
 				...this.state.componentProps,
-				dataField: this.state.componentProps.dataField
-					.filter((i, index) => index !== deleteIndex),
-				fieldWeights: this.state.componentProps.fieldWeights
-					.filter((i, index) => index !== deleteIndex),
+				dataField: this.state.componentProps.dataField.filter((i, index) => index !== deleteIndex),
+				fieldWeights: this.state.componentProps.fieldWeights.filter((i, index) => index !== deleteIndex),
 			},
 		});
-	}
+	};
 
 	handleSearchWeightChange = (index, value) => {
-		const fieldWeights = Object.assign(
-			[],
-			this.state.componentProps.fieldWeights,
-			{ [index]: value },
-		);
+		const fieldWeights = Object.assign([], this.state.componentProps.fieldWeights, {
+			[index]: value,
+		});
 		this.setState({
 			componentProps: {
 				...this.state.componentProps,
 				fieldWeights,
 			},
 		});
-	}
+	};
 
 	handleAddFieldRow = () => {
-		const field = this.getAvailableDataField()
-			.find(item => !this.state.componentProps.dataField.includes(item));
+		const field = this.getAvailableDataField().find(item => !this.state.componentProps.dataField.includes(item));
 
 		if (field) {
 			this.setState({
@@ -218,7 +199,7 @@ export default class RSWrapper extends Component {
 				},
 			});
 		}
-	}
+	};
 
 	renderDeleteButton = (x, y, index) => (
 		<Button
@@ -243,16 +224,15 @@ export default class RSWrapper extends Component {
 							onClick={this.handleSearchDataFieldChange}
 							style={{ maxHeight: 300, overflowY: 'scroll' }}
 						>
-							{
-								fields
-									.filter(item => (
-										item === selected
-										|| !this.state.componentProps.dataField.includes(item)
-									))
-									.map(item => (
-										<Menu.Item key={item} value={index}>{item}</Menu.Item>
-									))
-							}
+							{fields
+								.filter(item =>
+										item === selected ||
+										!this.state.componentProps.dataField.includes(item))
+								.map(item => (
+									<Menu.Item key={item} value={index}>
+										{item}
+									</Menu.Item>
+								))}
 						</Menu>
 					);
 					return (
@@ -296,30 +276,27 @@ export default class RSWrapper extends Component {
 					pagination={false}
 					rowClassName={rowStyles}
 				/>
-				{
-					fields.length === this.state.componentProps.dataField.length
-						? null
-						: (
-							<div style={{ paddingTop: 12, textAlign: 'right' }}>
-								<Button
-									onClick={this.handleAddFieldRow}
-									type="primary"
-									style={{ marginBottom: 16 }}
-								>
-									Add a new field
-								</Button>
-							</div>
-						)
-				}
+				{fields.length === this.state.componentProps.dataField.length ? null : (
+					<div style={{ paddingTop: 12, textAlign: 'right' }}>
+						<Button
+							onClick={this.handleAddFieldRow}
+							type="primary"
+							style={{ marginBottom: 16 }}
+						>
+							Add a new field
+						</Button>
+					</div>
+				)}
 			</React.Fragment>
 		);
-	}
+	};
 
 	renderFormItem = (item, name) => {
 		let FormInput = null;
-		const value = this.props.componentProps[name] !== undefined
-			? this.props.componentProps[name]
-			: item.default;
+		const value =
+			this.props.componentProps[name] !== undefined
+				? this.props.componentProps[name]
+				: item.default;
 
 		switch (item.input) {
 			case 'bool': {
@@ -357,21 +334,14 @@ export default class RSWrapper extends Component {
 		}
 
 		return (
-			<Form.Item
-				label={item.label}
-				colon={false}
-				key={name}
-			>
-				<div
-					style={{ margin: '0 0 6px' }}
-					className="ant-form-extra"
-				>
+			<Form.Item label={item.label} colon={false} key={name}>
+				<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
 					{item.description}
 				</div>
 				{FormInput}
 			</Form.Item>
 		);
-	}
+	};
 
 	renderPropsForm = () => {
 		const propNames = propsMap[this.props.component];
@@ -382,65 +352,47 @@ export default class RSWrapper extends Component {
 				onClick={this.handleDataFieldChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{
-					fields.map(item => (
-						<Menu.Item key={item}>{item}</Menu.Item>
-					))
-				}
+				{fields.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
 			</Menu>
 		);
 
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
-				<Form.Item
-					label={propNames.dataField.label}
-					colon={false}
-				>
-					<div
-						style={{ margin: '0 0 6px' }}
-						className="ant-form-extra"
-					>
+				<Form.Item label={propNames.dataField.label} colon={false}>
+					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
 						{propNames.dataField.description}
 					</div>
-					{
-						this.state.error
-							? (
-								<div
-									style={{ color: 'tomato', margin: '0 0 6px' }}
-									className="ant-form-extra"
-								>
-									{this.state.error}
-								</div>
-							)
-							: null
-					}
-					{
-						this.props.id === 'search'
-							? this.renderDataFieldTable()
-							: (
-								<Dropdown overlay={menu} trigger={['click']}>
-									<Button
-										style={{
-											width: '100%',
-											display: 'flex',
-											justifyContent: 'space-between',
-											alignItems: 'center',
-										}}
-									>
-										{dataField} <Icon type="down" />
-									</Button>
-								</Dropdown>
-							)
-					}
+					{this.state.error ? (
+						<div
+							style={{ color: 'tomato', margin: '0 0 6px' }}
+							className="ant-form-extra"
+						>
+							{this.state.error}
+						</div>
+					) : null}
+					{this.props.id === 'search' ? (
+						this.renderDataFieldTable()
+					) : (
+						<Dropdown overlay={menu} trigger={['click']}>
+							<Button
+								style={{
+									width: '100%',
+									display: 'flex',
+									justifyContent: 'space-between',
+									alignItems: 'center',
+								}}
+							>
+								{dataField} <Icon type="down" />
+							</Button>
+						</Dropdown>
+					)}
 				</Form.Item>
-				{
-					Object.keys(propNames)
+				{Object.keys(propNames)
 					.filter(item => item !== 'dataField')
-					.map(item => this.renderFormItem(propNames[item], item))
-				}
+					.map(item => this.renderFormItem(propNames[item], item))}
 			</Form>
 		);
-	}
+	};
 
 	render() {
 		if (!this.props.componentProps.dataField) return null;
@@ -460,34 +412,26 @@ export default class RSWrapper extends Component {
 		return (
 			<div>
 				<Row gutter={8}>
-					{
-						this.props.full
-							? (
-								<Col span={24} style={{ textAlign: 'right', paddingBottom: 16 }}>
-									<Button
-										icon="edit"
-										shape="circle"
-										size="large"
-										onClick={this.showModal}
-									/>
-									{
-										this.props.showDelete
-											? (
-												<Button
-													icon="delete"
-													shape="circle"
-													type="danger"
-													size="large"
-													style={{ marginLeft: 8 }}
-													onClick={() => this.props.onDelete(this.props.id)}
-												/>
-											)
-											: null
-									}
-								</Col>
-							)
-							: null
-					}
+					{this.props.full ? (
+						<Col span={24} style={{ textAlign: 'right', paddingBottom: 16 }}>
+							<Button
+								icon="edit"
+								shape="circle"
+								size="large"
+								onClick={this.showModal}
+							/>
+							{this.props.showDelete ? (
+								<Button
+									icon="delete"
+									shape="circle"
+									type="danger"
+									size="large"
+									style={{ marginLeft: 8 }}
+									onClick={() => this.props.onDelete(this.props.id)}
+								/>
+							) : null}
+						</Col>
+					) : null}
 					<Col span={this.props.full ? 24 : 22}>
 						<RSComponent
 							componentId={this.props.id}
@@ -499,23 +443,20 @@ export default class RSWrapper extends Component {
 							)}
 							{...otherProps}
 							className={componentStyles}
+							fuzziness={this.props.componentProps.fuzziness || 2}
 							size={parseInt(this.props.componentProps.size || 10, 10)}
 						/>
 					</Col>
-					{
-						this.props.full
-							? null
-							: (
-								<Col span={2} style={{ textAlign: 'right' }}>
-									<Button
-										icon="edit"
-										shape="circle"
-										size="large"
-										onClick={this.showModal}
-									/>
-								</Col>
-							)
-					}
+					{this.props.full ? null : (
+						<Col span={2} style={{ textAlign: 'right' }}>
+							<Button
+								icon="edit"
+								shape="circle"
+								size="large"
+								onClick={this.showModal}
+							/>
+						</Col>
+					)}
 				</Row>
 
 				<Modal

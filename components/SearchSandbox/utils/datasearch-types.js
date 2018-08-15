@@ -1,4 +1,4 @@
-export default ({
+export default {
 	dataField: {
 		label: 'Data Field',
 		description: 'Select the fields you want to perform search on',
@@ -29,4 +29,10 @@ export default ({
 		input: 'number',
 		default: 10,
 	},
-});
+	fuzziness: {
+		label: 'Fuzziness',
+		description: '',
+		input: 'number',
+		default: 2,
+	},
+};

@@ -21,11 +21,7 @@ const generateDataField = (component, selectedFields, mappings) => {
 	if (multiple) {
 		let resultFields = [];
 		selectedFields.forEach((item) => {
-			resultFields = [
-				item,
-				...resultFields,
-				...getSubFields(mappings, item, types),
-			];
+			resultFields = [item, ...resultFields, ...getSubFields(mappings, item, types)];
 		});
 		return resultFields;
 	}
@@ -35,12 +31,11 @@ const generateDataField = (component, selectedFields, mappings) => {
 };
 
 const getSubFieldWeights = (mappings, field, defaultWeight = 1) => [
-	...mappings[field].fields
-		.map((item) => {
-			let weight = 1;
-			if (item === 'keyword') weight = defaultWeight;
-			return parseInt(weight, 10);
-		}),
+	...mappings[field].fields.map((item) => {
+		let weight = 1;
+		if (item === 'keyword') weight = defaultWeight;
+		return parseInt(weight, 10);
+	}),
 ];
 
 const generateFieldWeights = (selectedFields, weights, mappings) => {

@@ -40,7 +40,10 @@ export default class SearchSandbox extends Component {
 			getPreferences(this.props.appId)
 				.then((pref) => {
 					this.pref = pref || {};
-					const profileList = Array.from(new Set([...this.state.profileList, ...Object.keys(this.pref)]));
+					const profileList = Array.from(new Set([
+						...this.state.profileList,
+						...Object.keys(this.pref),
+					]));
 					const componentProps = this.pref[this.state.profile] || {};
 					this.setState({
 						componentProps,
