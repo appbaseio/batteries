@@ -406,6 +406,7 @@ export default class RSWrapper extends Component {
 					this.props.componentProps.fieldWeights,
 					this.props.mappings,
 				),
+				highlightField: this.props.componentProps.dataField,
 			};
 		}
 

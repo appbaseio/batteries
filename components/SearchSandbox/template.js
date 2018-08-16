@@ -104,25 +104,26 @@ function getApp(config) {
 		},
 	};
 
-	Object.keys(config.componentProps)
-		.forEach((item) => {
-			const Component = types[item] || MultiList;
-			const name = names[item] || 'MultiList';
-			let otherProps = {};
+	Object.keys(config.componentProps).forEach((item) => {
+		const Component = types[item] || MultiList;
+		const name = names[item] || 'MultiList';
+		let otherProps = {};
 
-			if (item === 'result') {
-				otherProps = resultComponentProps;
-			} else if (item === 'search') {
-				otherProps = {
-					fieldWeights: generateFieldWeights(
-						config.componentProps.search.dataField,
-						config.componentProps.search.fieldWeights,
-						config.mappings,
-					),
-				};
-			}
+		if (item === 'result') {
+			otherProps = resultComponentProps;
+		} else if (item === 'search') {
+			otherProps = {
+				fieldWeights: generateFieldWeights(
+					config.componentProps.search.dataField,
+					config.componentProps.search.fieldWeights,
+					config.mappings,
+				),
+				highlightField: config.componentProps.search.dataField,
+			};
+		}
 
-			let currentCode = reactElementToJSXString(<Component
+		let currentCode = reactElementToJSXString(
+			<Component
 				componentId={item}
 				{...config.componentProps[item]}
 				{...otherProps}
@@ -131,31 +132,36 @@ function getApp(config) {
 					config.componentProps[item].dataField,
 					config.mappings,
 				)}
-			/>, { showFunctions: true });
+			/>,
+			{ showFunctions: true },
+		);
 
-			currentCode = currentCode.split('\n').slice(1).join('\n\t\t\t\t\t');
+		currentCode = currentCode
+			.split('\n')
+			.slice(1)
+			.join('\n\t\t\t\t\t');
 
-			if (item === 'search') {
-				searchCode = `${searchCode}
+		if (item === 'search') {
+			searchCode = `${searchCode}
 					 <DataSearch
 						style={{ marginBottom: 20 }}
 					${currentCode}
 `;
-			} else if (item === 'result') {
-				resultCode = `${resultCode}
+		} else if (item === 'result') {
+			resultCode = `${resultCode}
 					 <ReactiveList
 					 	style={{ marginTop: 20 }}
 						onData={onData}
 					${currentCode}
 `;
-			} else {
-				listCode = `${listCode}
+		} else {
+			listCode = `${listCode}
 					 <MultiList
 						style={{ marginBottom: 20 }}
 					${currentCode}
 `;
-			}
-		});
+		}
+	});
 
 	return `
 const App = () => (
@@ -189,7 +195,7 @@ ReactDOM.render(
 }
 
 export default function getSearchTemplate(config) {
-	return (`${HEADER}${getApp(config)}`);
+	return `${HEADER}${getApp(config)}`;
 }
 
 function getTemplateStyles() {
