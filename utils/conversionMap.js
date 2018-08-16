@@ -3,7 +3,7 @@ export default {
 	object: [],
 
 	integer: ['float', 'long', 'text'],
-	long: ['integer', 'text'],
+	long: ['integer', 'text', 'float'],
 	float: ['integer', 'double', 'text'],
 	double: ['integer', 'float', 'text'],
 
