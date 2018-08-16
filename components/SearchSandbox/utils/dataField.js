@@ -17,6 +17,9 @@ const getSubFields = (mappings, field, types) => [
 // generates the dataField prop for reactivesearch component
 // based on the selected-field(s)
 const generateDataField = (component, selectedFields, mappings) => {
+	// no need to get subfields if it is a result component
+	if (component === 'ReactiveList') return selectedFields;
+
 	const { types, multiple } = propsMap[component].dataField;
 	if (multiple) {
 		let resultFields = [];

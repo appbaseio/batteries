@@ -169,8 +169,10 @@ export default class RSWrapper extends Component {
 		this.setState({
 			componentProps: {
 				...this.state.componentProps,
-				dataField: this.state.componentProps.dataField.filter((i, index) => index !== deleteIndex),
-				fieldWeights: this.state.componentProps.fieldWeights.filter((i, index) => index !== deleteIndex),
+				dataField: this.state.componentProps.dataField
+					.filter((i, index) => index !== deleteIndex),
+				fieldWeights: this.state.componentProps.fieldWeights
+					.filter((i, index) => index !== deleteIndex),
 			},
 		});
 	};
@@ -188,7 +190,8 @@ export default class RSWrapper extends Component {
 	};
 
 	handleAddFieldRow = () => {
-		const field = this.getAvailableDataField().find(item => !this.state.componentProps.dataField.includes(item));
+		const field = this.getAvailableDataField()
+			.find(item => !this.state.componentProps.dataField.includes(item));
 
 		if (field) {
 			this.setState({
