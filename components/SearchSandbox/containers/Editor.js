@@ -39,21 +39,18 @@ export default class Editor extends Component {
 
 	getAvailableDataField = () => {
 		const { types } = multiListTypes.dataField;
-		const fields = Object.keys(this.props.mappings)
-			.filter((field) => {
-				let fieldsToCheck = [
-					this.props.mappings[field],
+		const fields = Object.keys(this.props.mappings).filter((field) => {
+			let fieldsToCheck = [this.props.mappings[field]];
+
+			if (this.props.mappings[field].originalFields) {
+				fieldsToCheck = [
+					...fieldsToCheck,
+					...Object.values(this.props.mappings[field].originalFields),
 				];
+			}
 
-				if (this.props.mappings[field].originalFields) {
-					fieldsToCheck = [
-						...fieldsToCheck,
-						...Object.values(this.props.mappings[field].originalFields),
-					];
-				}
-
-				return fieldsToCheck.some(item => types.includes(item.type));
-			});
+			return fieldsToCheck.some(item => types.includes(item.type));
+		});
 
 		return fields;
 	};
@@ -65,12 +62,20 @@ export default class Editor extends Component {
 		el.select();
 		document.execCommand('copy');
 		document.body.removeChild(el);
-		this.setState({
-			copied: true,
-		}, () => setTimeout(() => this.setState({
-			copied: false,
-		}), 300));
-	}
+		this.setState(
+			{
+				copied: true,
+			},
+			() =>
+				setTimeout(
+					() =>
+						this.setState({
+							copied: false,
+						}),
+					300,
+				),
+		);
+	};
 
 	showModal = () => {
 		this.setState({
@@ -85,7 +90,7 @@ export default class Editor extends Component {
 				dataField: dataFields.length ? dataFields[0] : '',
 			},
 		});
-	}
+	};
 
 	handleOk = () => {
 		// only set to store if dataField is valid
@@ -96,9 +101,12 @@ export default class Editor extends Component {
 				this.state.listComponentProps,
 			);
 			this.props.setFilterCount(this.props.filterCount + 1);
-			this.setState({
-				showModal: false,
-			}, this.resetNewComponentData);
+			this.setState(
+				{
+					showModal: false,
+				},
+				this.resetNewComponentData,
+			);
 		} else {
 			this.setState({
 				showModal: false,
@@ -107,9 +115,12 @@ export default class Editor extends Component {
 	};
 
 	handleCancel = () => {
-		this.setState({
-			showModal: false,
-		}, this.resetNewComponentData);
+		this.setState(
+			{
+				showModal: false,
+			},
+			this.resetNewComponentData,
+		);
 	};
 
 	handleDataFieldChange = (item) => {
@@ -130,7 +141,7 @@ export default class Editor extends Component {
 				[name]: value,
 			},
 		});
-	}
+	};
 
 	handlePropChange = (e) => {
 		const { name, value, type } = e.target;
@@ -183,30 +194,23 @@ export default class Editor extends Component {
 		}
 
 		return (
-			<Form.Item
-				label={item.label}
-				colon={false}
-				key={name}
-			>
-				<div
-					style={{ margin: '0 0 6px' }}
-					className="ant-form-extra"
-				>
+			<Form.Item label={item.label} colon={false} key={name}>
+				<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
 					{item.description}
 				</div>
 				{FormInput}
 			</Form.Item>
 		);
-	}
+	};
 
 	renderPropsForm = () => {
 		const fields = this.getAvailableDataField();
 		if (!fields.length) {
 			return (
 				<p>
-					There are no compatible fields present in your data
-					mappings. <a href="/mappings">You can edit your mappings</a> to
-					add filters (agggregation components).
+					There are no compatible fields present in your data mappings.{' '}
+					<a href="/mappings">You can edit your mappings</a> to add filters (agggregation
+					components).
 				</p>
 			);
 		}
@@ -217,23 +221,13 @@ export default class Editor extends Component {
 				onClick={this.handleDataFieldChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{
-					fields.map(item => (
-						<Menu.Item key={item}>{item}</Menu.Item>
-					))
-				}
+				{fields.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
 			</Menu>
 		);
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
-				<Form.Item
-					label={multiListTypes.dataField.label}
-					colon={false}
-				>
-					<div
-						style={{ margin: '0 0 6px' }}
-						className="ant-form-extra"
-					>
+				<Form.Item label={multiListTypes.dataField.label} colon={false}>
+					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
 						{multiListTypes.dataField.description}
 					</div>
 					<Dropdown overlay={menu} trigger={['click']}>
@@ -249,14 +243,12 @@ export default class Editor extends Component {
 						</Button>
 					</Dropdown>
 				</Form.Item>
-				{
-					Object.keys(multiListTypes)
+				{Object.keys(multiListTypes)
 					.filter(item => item !== 'dataField')
-					.map(item => this.renderFormItem(multiListTypes[item], item))
-				}
+					.map(item => this.renderFormItem(multiListTypes[item], item))}
 			</Form>
 		);
-	}
+	};
 
 	renderAsTree = (res, key = '0') => {
 		if (!res) return null;
@@ -276,11 +268,15 @@ export default class Editor extends Component {
 					/>
 				);
 			}
-			const hasObject = (res[item] === undefined && typeof item !== 'string');
+			const hasObject = res[item] === undefined && typeof item !== 'string';
 			const node = hasObject ? item : res[item];
 			return (
 				<TreeNode
-					title={typeof item !== 'string' ? 'Object' : `${node || Array.isArray(res) ? item : `${item}: null`}`}
+					title={
+						typeof item !== 'string'
+							? 'Object'
+							: `${node || Array.isArray(res) ? item : `${item}: null`}`
+					}
 					key={`${key}-${index + 1}`}
 				>
 					{this.renderAsTree(node, `${key}-${index + 1}`)}
@@ -312,33 +308,23 @@ export default class Editor extends Component {
 					</Row>
 				}
 			>
-				<Button>
-					View as JSON
-				</Button>
+				<Button>View as JSON</Button>
 			</Popover>
 		</div>
-	)
+	);
 
 	render() {
 		let resultComponentProps = this.props.componentProps.result || {};
 		resultComponentProps = {
 			size: 5,
 			pagination: true,
+			sortBy: 'asc',
 			...resultComponentProps,
 			onData: res => (
 				<div className={listItem} key={res._id}>
-					<ExpandCollapse
-						previewHeight="390px"
-						expandText="Show more"
-					>
-						{
-							this.renderAsJSON(res)
-						}
-						{
-							<Tree showLine>
-								{this.renderAsTree(res)}
-							</Tree>
-						}
+					<ExpandCollapse previewHeight="390px" expandText="Show more">
+						{this.renderAsJSON(res)}
+						{<Tree showLine>{this.renderAsTree(res)}</Tree>}
 					</ExpandCollapse>
 				</div>
 			),
@@ -365,23 +351,21 @@ export default class Editor extends Component {
 								Add New Filter
 							</Button>
 						</Card>
-						{
-							Object.keys(this.props.componentProps)
-								.filter(item => item !== 'search' && item !== 'result')
-								.map(config => (
-									<Card key={config} style={{ marginTop: 20 }}>
-										<RSWrapper
-											id={config}
-											component="MultiList"
-											mappings={this.props.mappings}
-											componentProps={this.props.componentProps[config] || {}}
-											onPropChange={this.props.onPropChange}
-											onDelete={this.props.deleteComponent}
-											full
-										/>
-									</Card>
-								))
-						}
+						{Object.keys(this.props.componentProps)
+							.filter(item => item !== 'search' && item !== 'result')
+							.map(config => (
+								<Card key={config} style={{ marginTop: 20 }}>
+									<RSWrapper
+										id={config}
+										component="MultiList"
+										mappings={this.props.mappings}
+										componentProps={this.props.componentProps[config] || {}}
+										onPropChange={this.props.onPropChange}
+										onDelete={this.props.deleteComponent}
+										full
+									/>
+								</Card>
+							))}
 					</Col>
 					<Col span={18}>
 						<Card>

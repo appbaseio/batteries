@@ -150,6 +150,16 @@ export default class RSWrapper extends Component {
 		});
 	};
 
+	handleDropdownChange = (e, name) => {
+		const value = e.key;
+		this.setState({
+			componentProps: {
+				...this.state.componentProps,
+				[name]: value,
+			},
+		});
+	};
+
 	handleSearchDataFieldChange = (item) => {
 		const field = item.key;
 		const index = item.item.props.value;
@@ -323,6 +333,39 @@ export default class RSWrapper extends Component {
 				);
 				break;
 			}
+			case 'dropdown': {
+				const dropdownOptions = propsMap[this.props.component][name].options;
+				const selectedValue = dropdownOptions
+					.filter(option => option.key === this.state.componentProps[name])[0].label;
+
+				const menu = (
+					<Menu
+						onClick={e => this.handleDropdownChange(e, name)}
+						style={{ maxHeight: 300, overflowY: 'scroll' }}
+					>
+						{dropdownOptions.map(({ label, key }) => (
+							<Menu.Item key={key}>{label}</Menu.Item>
+						))}
+					</Menu>
+				);
+
+
+				FormInput = (
+					<Dropdown overlay={menu} trigger={['click']}>
+						<Button
+							style={{
+								width: '100%',
+								display: 'flex',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+							}}
+						>
+							{selectedValue} <Icon type="down" />
+						</Button>
+					</Dropdown>
+				);
+				break;
+			}
 			default: {
 				FormInput = (
 					<Input
@@ -447,7 +490,7 @@ export default class RSWrapper extends Component {
 							)}
 							{...otherProps}
 							className={componentStyles}
-							fuzziness={this.props.componentProps.fuzziness || 2}
+							fuzziness={this.props.componentProps.fuzziness || 0}
 							size={parseInt(this.props.componentProps.size || 10, 10)}
 						/>
 					</Col>
