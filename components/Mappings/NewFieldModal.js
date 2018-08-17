@@ -31,6 +31,7 @@ export default class NewFieldModal extends Component {
 		super(props);
 
 		this.usecases = textUsecases;
+		this.input = React.createRef();
 		this.state = this.getInitialState();
 	}
 
@@ -78,7 +79,7 @@ export default class NewFieldModal extends Component {
 			this.setState(() => this.getInitialState());
 			this.props.onClose();
 		} else {
-			this.input.focus();
+			this.input.current.focus();
 			this.setState({
 				error: 'Please enter a valid field name',
 			});
@@ -86,11 +87,12 @@ export default class NewFieldModal extends Component {
 	}
 
 	render() {
+		const { fieldType, esType } = this.state;
 		const menu = (
 			<Menu onClick={e => this.handleEsTypeChange(e.key)}>
 				{this.props.types.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
-				{this.state.fieldType ?	<Menu.Item key={this.state.fieldType}>{`Create type ${this.state.fieldType}`}
-                            </Menu.Item> : null}
+				{fieldType && !this.props.types.includes(fieldType) ?	<Menu.Item key={fieldType}>{`Create type ${fieldType}`}
+                                                          </Menu.Item> : null}
 			</Menu>
 		);
 		return (
@@ -129,9 +131,9 @@ export default class NewFieldModal extends Component {
 						<span style={{ width: 150, marginRight: 12 }}>
 							<Dropdown overlay={menu}>
 								<Input
-									innerRef={(el) => { this.input = el; }}
 									type="text"
 									name="fieldType"
+									value={this.state.fieldType}
 									placeholder="Select or Create Type"
 									defaultValue={this.state.esType}
 									onChange={this.handleNewFieldChange}
@@ -152,7 +154,7 @@ export default class NewFieldModal extends Component {
 							}
 						</select> */}
 						<Input
-							innerRef={(el) => { this.input = el; }}
+							ref={this.input}
 							type="text"
 							name="name"
 							placeholder="Enter field name"
