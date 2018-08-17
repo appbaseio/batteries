@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { string } from 'prop-types';
-import Tooltip from 'rc-tooltip';
+import { Tooltip, Icon } from 'antd';
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
 import { getCredentials, checkUserStatus } from '../../utils';
@@ -422,8 +422,8 @@ export default class Mappings extends Component {
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
 					Get an appbase.io account to edit mappings
-					<Tooltip overlay={hoverMessage} mouseLeaveDelay={0}>
-						<i className="fas fa-info-circle" />
+					<Tooltip title={hoverMessage}>
+						<span><Icon type="info-circle" /></span>
 					</Tooltip>
 				</p>
 				<Button href="https://appbase.io" target="_blank">
@@ -435,8 +435,8 @@ export default class Mappings extends Component {
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
 					Upgrade your plan to edit mappings
-					<Tooltip overlay={hoverMessage} mouseLeaveDelay={0}>
-						<i className="fas fa-info-circle" />
+					<Tooltip title={hoverMessage}>
+						<span><Icon type="info-circle" /></span>
 					</Tooltip>
 				</p>
 				<Button href="/billing" target="_blank">
@@ -488,15 +488,15 @@ export default class Mappings extends Component {
 					<Header>
 						<span>
 							Field Name
-							<Tooltip overlay={fieldNameMessage} mouseLeaveDelay={0}>
-								<i className="fas fa-info-circle" />
+							<Tooltip title={fieldNameMessage}>
+								<span><Icon type="info-circle" /></span>
 							</Tooltip>
 						</span>
 						<div>
 							<span className="col">
 								Use case
-								<Tooltip overlay={usecaseMessage} mouseLeaveDelay={0}>
-									<i className="fas fa-info-circle" />
+								<Tooltip title={usecaseMessage}>
+									<span><Icon type="info-circle" /></span>
 								</Tooltip>
 							</span>
 							<span className="col">

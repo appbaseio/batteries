@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import Tooltip from 'rc-tooltip';
-import { Creatable } from 'react-select';
+import { Tooltip, Icon, Menu, Dropdown } from 'antd';
 import 'react-select/dist/react-select.css';
 
 import Modal from '../shared/Modal';
@@ -43,8 +42,8 @@ export default class NewFieldModal extends Component {
 		error: '',
 	});
 
-	handleEsTypeChange = ({ label }) => {
-		this.setState({ esType: label });
+	handleEsTypeChange = (label) => {
+		this.setState({ esType: label, fieldType: null });
 	}
 
 	handleNewFieldChange = (e) => {
@@ -87,6 +86,13 @@ export default class NewFieldModal extends Component {
 	}
 
 	render() {
+		const menu = (
+			<Menu onClick={e => this.handleEsTypeChange(e.key)}>
+				{this.props.types.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
+				{this.state.fieldType ?	<Menu.Item key={this.state.fieldType}>{`Create type ${this.state.fieldType}`}
+                            </Menu.Item> : null}
+			</Menu>
+		);
 		return (
 			<Modal show={this.props.show} onClose={this.props.onClose}>
 				<h3>Add New Field</h3>
@@ -98,8 +104,8 @@ export default class NewFieldModal extends Component {
 						</span>
 						<span className="col col--grow">
 							Field Name
-							<Tooltip overlay={fieldNameMessage} mouseLeaveDelay={0}>
-								<i className="fas fa-info-circle" />
+							<Tooltip title={fieldNameMessage}>
+								<span><Icon type="info-circle" /></span>
 							</Tooltip>
 						</span>
 						{
@@ -107,8 +113,8 @@ export default class NewFieldModal extends Component {
 								? (
 									<span className="col">
 										Use case
-										<Tooltip overlay={usecaseMessage} mouseLeaveDelay={0}>
-											<i className="fas fa-info-circle" />
+										<Tooltip title={usecaseMessage}>
+											<span><Icon type="info-circle" /></span>
 										</Tooltip>
 									</span>
 								)
@@ -117,23 +123,20 @@ export default class NewFieldModal extends Component {
 						<span className="col">
 							Data Type
 						</span>
+
 					</Header>
 					<div style={{ padding: '10px 0', display: 'flex' }}>
 						<span style={{ width: 150, marginRight: 12 }}>
-							<Creatable
-								value={{ label: this.state.esType, value: this.state.esType }}
-								placeholder="Select or Create Type"
-								promptTextCreator={label => `Create type "${label}"`}
-								onChange={this.handleEsTypeChange}
-								options={
-									this.props.types
-										.map(item => ({
-											value: item,
-											label: item,
-										}))
-								}
-								clearable={false}
-							/>
+							<Dropdown overlay={menu}>
+								<Input
+									innerRef={(el) => { this.input = el; }}
+									type="text"
+									name="fieldType"
+									placeholder="Select or Create Type"
+									defaultValue={this.state.esType}
+									onChange={this.handleNewFieldChange}
+								/>
+							</Dropdown>
 						</span>
 						{/* <select
 							className={dropdown}
