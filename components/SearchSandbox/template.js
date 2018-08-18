@@ -79,6 +79,70 @@ const renderAsTree = (res, key = '0') => {
 };
 `;
 
+export function getComponentCode(config) {
+	let allProps = config.componentProps || {};
+	let componentStyle = {};
+	switch (config.component) {
+		case 'ReactiveList': {
+			allProps = {
+				size: 5,
+				pagination: true,
+				...config.componentProps,
+				react: {
+					and: Object.values(config.componentProps.react.and),
+				},
+				onData: '{onData}',
+			};
+			componentStyle = { marginTop: 20 };
+			break;
+		}
+		case 'DataSearch': {
+			allProps = {
+				componentId: config.componentId,
+				...config.componentProps,
+				fieldWeights: generateFieldWeights(
+					config.componentProps.dataField,
+					config.componentProps.fieldWeights,
+					config.mappings,
+				),
+				dataField: generateDataField(
+					'DataSearch',
+					config.componentProps.dataField,
+					config.mappings,
+				),
+				highlightField: config.componentProps.dataField,
+			};
+			componentStyle = { marginBottom: 20 };
+			break;
+		}
+		case 'MultiList': {
+			allProps = {
+				componentId: config.componentId,
+				...config.componentProps,
+				dataField: generateDataField(
+					'MultiList',
+					config.componentProps.dataField,
+					config.mappings,
+				),
+			};
+			componentStyle = { marginBottom: 20 };
+			break;
+		}
+		default:
+			return 'Nothing to Display';
+	}
+	let code = reactElementToJSXString(
+			<div
+				style={componentStyle}
+				{...allProps}
+			/>,
+		{ showFunctions: false },
+	);
+	code = code.replace('div', config.component);
+
+	return code;
+}
+
 function getApp(config) {
 	let listCode = '';
 	let searchCode = '';
