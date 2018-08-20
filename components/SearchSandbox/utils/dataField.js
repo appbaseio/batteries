@@ -19,9 +19,14 @@ const getSubFields = (mappings, field, types) => [
 const generateDataField = (component, selectedFields, mappings) => {
 	// no need to get subfields if it is a result component
 	if (component === 'ReactiveList') {
-		const dataField = mappings[selectedFields].fields.length > 0 ?
-			`${selectedFields}.${mappings[selectedFields].originalFields.keyword.type}` : selectedFields;
-		return dataField;
+		let dataField = '';
+		if (mappings[selectedFields].fields.length > 0) {
+			dataField = mappings[selectedFields].originalFields.keyword
+				? `${selectedFields}.${mappings[selectedFields].originalFields.keyword.type}`
+				: `${selectedFields}.${mappings[selectedFields].originalFields.raw.type}`;
+			return dataField;
+		}
+		return selectedFields;
 	}
 
 	const { types, multiple } = propsMap[component].dataField;

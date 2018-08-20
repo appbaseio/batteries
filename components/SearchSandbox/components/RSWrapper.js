@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Input, Switch, Button, Modal, Table, Menu, Icon, Dropdown } from 'antd';
+import { Row, Col, Form, Input, Switch, Button, Modal, Table, Menu, Icon, Dropdown, Popover } from 'antd';
 
 import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
 
@@ -8,6 +8,7 @@ import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
 import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
+import { getComponentCode } from '../template';
 
 import { deleteStyles, rowStyles, formWrapper, componentStyles } from '../styles';
 
@@ -213,6 +214,24 @@ export default class RSWrapper extends Component {
 			});
 		}
 	};
+
+	renderComponentCode = () => {
+		const config = {
+			componentId: this.props.id,
+			component: this.props.component,
+			mappings: this.props.mappings,
+			componentProps: this.props.componentProps,
+		};
+		const code = getComponentCode(config);
+		return (<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
+							<Button
+								icon="code-o"
+								shape="circle"
+								size="large"
+								style={{ marginLeft: 8 }}
+							/>
+          </Popover>);
+	}
 
 	renderDeleteButton = (x, y, index) => (
 		<Button
@@ -438,7 +457,7 @@ export default class RSWrapper extends Component {
 					.map(item => this.renderFormItem(propNames[item], item))}
 			</Form>
 		);
-	};
+	}
 
 	render() {
 		if (!this.props.componentProps.dataField) return null;
@@ -467,6 +486,7 @@ export default class RSWrapper extends Component {
 								size="large"
 								onClick={this.showModal}
 							/>
+							{this.renderComponentCode()}
 							{this.props.showDelete ? (
 								<Button
 									icon="delete"
@@ -479,7 +499,7 @@ export default class RSWrapper extends Component {
 							) : null}
 						</Col>
 					) : null}
-					<Col span={this.props.full ? 24 : 22}>
+					<Col span={this.props.full ? 24 : 20}>
 						<RSComponent
 							componentId={this.props.id}
 							{...this.props.componentProps}
@@ -495,13 +515,14 @@ export default class RSWrapper extends Component {
 						/>
 					</Col>
 					{this.props.full ? null : (
-						<Col span={2} style={{ textAlign: 'right' }}>
+						<Col span={4} style={{ textAlign: 'right' }}>
 							<Button
 								icon="edit"
 								shape="circle"
 								size="large"
 								onClick={this.showModal}
 							/>
+							{this.renderComponentCode()}
 						</Col>
 					)}
 				</Row>
