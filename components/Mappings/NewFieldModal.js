@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Tooltip, Icon, Menu, Dropdown } from 'antd';
-import 'react-select/dist/react-select.css';
 
 import Modal from '../shared/Modal';
 import { Header, Input, Button, dropdown } from './styles';
@@ -44,7 +43,7 @@ export default class NewFieldModal extends Component {
 	});
 
 	handleEsTypeChange = (label) => {
-		this.setState({ esType: label, fieldType: null });
+		this.setState({ esType: label, fieldType: label });
 	}
 
 	handleNewFieldChange = (e) => {
