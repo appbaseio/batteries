@@ -1,5 +1,4 @@
 import React from 'react';
-import { DataSearch, ReactiveList, MultiList } from '@appbaseio/reactivesearch';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 
 import { generateDataField, generateFieldWeights } from './utils/dataField';
@@ -138,9 +137,17 @@ export function getComponentCode(config) {
 			/>,
 		{ showFunctions: false },
 	);
+
+	code = code.replace('onData="{onData}"', 'onData = {onData}');
 	code = code.replace('div', config.component);
 
 	return code;
+}
+
+function sandboxCodeFormat(code) {
+	return code
+	.split('\n')
+	.join('\n\t\t\t\t');
 }
 
 function getApp(config) {
@@ -148,82 +155,60 @@ function getApp(config) {
 	let searchCode = '';
 	let resultCode = '';
 
-	const types = {
-		search: DataSearch,
-		result: ReactiveList,
-	};
-
-	const names = {
-		search: 'DataSearch',
-		result: 'ReactiveList',
-	};
-
+	let componentConfig = {};
+	let searchComponentProps = config.componentProps.search || {};
 	let resultComponentProps = config.componentProps.result || {};
-	resultComponentProps = {
-		size: 5,
-		pagination: true,
-		...resultComponentProps,
-		react: {
-			and: Object.keys(config.componentProps).filter(item => item !== 'result'),
-		},
-	};
 
 	Object.keys(config.componentProps).forEach((item) => {
-		const Component = types[item] || MultiList;
-		const name = names[item] || 'MultiList';
-		let otherProps = {};
-
-		if (item === 'result') {
-			otherProps = resultComponentProps;
-		} else if (item === 'search') {
-			otherProps = {
-				fieldWeights: generateFieldWeights(
-					config.componentProps.search.dataField,
-					config.componentProps.search.fieldWeights,
-					config.mappings,
-				),
-				highlightField: config.componentProps.search.dataField,
-			};
-		}
-
-		let currentCode = reactElementToJSXString(
-			<Component
-				componentId={item}
-				{...config.componentProps[item]}
-				{...otherProps}
-				dataField={generateDataField(
-					name,
-					config.componentProps[item].dataField,
-					config.mappings,
-				)}
-			/>,
-			{ showFunctions: true },
-		);
-
-		currentCode = currentCode
-			.split('\n')
-			.slice(1)
-			.join('\n\t\t\t\t\t');
-
-		if (item === 'search') {
-			searchCode = `${searchCode}
-					 <DataSearch
-						style={{ marginBottom: 20 }}
-					${currentCode}
-`;
-		} else if (item === 'result') {
-			resultCode = `${resultCode}
-					 <ReactiveList
-					 	style={{ marginTop: 20 }}
-						onData={onData}
-					${currentCode}
-`;
-		} else {
-			listCode = `${listCode}
-					 <MultiList
-						style={{ marginBottom: 20 }}
-					${currentCode}
-`;
+		switch (item) {
+			case 'search': {
+				searchComponentProps = {
+					...searchComponentProps,
+					highlightField: config.componentProps.search.dataField,
+				};
+				componentConfig = {
+					component: 'DataSearch',
+					mappings: config.mappings,
+					componentProps: searchComponentProps,
+					componentId: item,
+				};
+				searchCode = getComponentCode(componentConfig, true);
+				break;
+			}
+			case 'result': {
+				resultComponentProps = config.componentProps.result || {};
+				resultComponentProps = {
+					size: 5,
+					pagination: true,
+					...resultComponentProps,
+					react: {
+						and: Object.keys(config.componentProps).filter(component => component !== 'result'),
+					},
+				};
+				componentConfig = {
+					component: 'ReactiveList',
+					mappings: config.mappings,
+					componentProps: resultComponentProps,
+				};
+				resultCode = getComponentCode(componentConfig, true);
+				break;
+			}
+			default: {
+				const listComponentProps = {
+					dataField:	config.componentProps[item].dataField,
+				};
+				componentConfig = {
+					component: 'MultiList',
+					mappings: config.mappings,
+					componentId: item,
+					componentProps: listComponentProps,
+				};
+				if (listCode) {
+					listCode = `${listCode}\n${getComponentCode(componentConfig, true)}`;
+				} else {
+					listCode = getComponentCode(componentConfig, true);
+				}
+			}
 		}
 	});
 
@@ -237,15 +222,15 @@ const App = () => (
 		<Row gutter={16} style={{ padding: 20 }}>
 			<Col span={12}>
 				<Card>
-				${listCode}
+				${sandboxCodeFormat(listCode)}
 				</Card>
 			</Col>
 			<Col span={12}>
-				${searchCode}
+				${sandboxCodeFormat(searchCode)}
 
 				<SelectedFilters />
 
-				${resultCode}
+				${sandboxCodeFormat(resultCode)}
 			</Col>
 		</Row>
 	</ReactiveBase>
