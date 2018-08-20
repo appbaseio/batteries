@@ -172,11 +172,10 @@ function getApp(config) {
 					componentProps: searchComponentProps,
 					componentId: item,
 				};
-				searchCode = getComponentCode(componentConfig, true);
+				searchCode = getComponentCode(componentConfig);
 				break;
 			}
 			case 'result': {
-				resultComponentProps = config.componentProps.result || {};
 				resultComponentProps = {
 					size: 5,
 					pagination: true,
@@ -190,7 +189,7 @@ function getApp(config) {
 					mappings: config.mappings,
 					componentProps: resultComponentProps,
 				};
-				resultCode = getComponentCode(componentConfig, true);
+				resultCode = getComponentCode(componentConfig);
 				break;
 			}
 			default: {
@@ -204,9 +203,9 @@ function getApp(config) {
 					componentProps: listComponentProps,
 				};
 				if (listCode) {
-					listCode = `${listCode}\n${getComponentCode(componentConfig, true)}`;
+					listCode = `${listCode}\n${getComponentCode(componentConfig)}`;
 				} else {
-					listCode = getComponentCode(componentConfig, true);
+					listCode = getComponentCode(componentConfig);
 				}
 			}
 		}
