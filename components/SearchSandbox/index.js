@@ -180,6 +180,7 @@ export default class SearchSandbox extends Component {
 			credentials: this.props.credentials || null,
 			componentProps: this.state.componentProps,
 			mappings: this.state.mappings,
+			attribution: this.props.attribution || null,
 		};
 		const code = getSearchTemplate(config);
 		const html = '<div id="root"></div>';
@@ -292,22 +293,6 @@ export default class SearchSandbox extends Component {
 							{props => React.cloneElement(child, { ...props })}
 						</SandboxContext.Consumer>
 					))}
-					{this.props.message ? (
-						<Affix
-							style={{
-								position: 'fixed',
-								bottom: '10px',
-								right: '35px',
-								padding: '5px',
-								background: 'white',
-								boxShadow: '0px 0px 1px rgba(0,0,0,.2)',
-							}}
-						>
-							{this.props.message.link ? <a href={this.props.message.link} rel="noopener noreferrer" target="_blank">
-								{this.props.message.text}
-                                  </a> : this.props.message.text}
-						</Affix>
-					) : null}
 				</div>
 
 				<Modal
