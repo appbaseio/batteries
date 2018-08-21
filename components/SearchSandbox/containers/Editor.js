@@ -205,7 +205,7 @@ export default class Editor extends Component {
 			return (
 				<p>
 					There are no compatible fields present in your data
-					mappings. <a href="/mappings">You can edit your mappings</a> to
+					mappings. <a href={this.props.mappingsURL}>You can edit your mappings</a> to
 					add filters (agggregation components).
 				</p>
 			);
@@ -422,3 +422,7 @@ export default class Editor extends Component {
 		);
 	}
 }
+
+Editor.defaultProps = {
+	mappingsURL: '/mappings',
+};
