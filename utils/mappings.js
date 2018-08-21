@@ -18,7 +18,6 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_mapping`, {
 			method: 'GET',
-			credentials: 'include',
 			headers: {
 				...getAuthHeaders(credentials),
 				'Content-Type': 'application/json',
