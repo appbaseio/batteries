@@ -21,6 +21,7 @@ import {
 	Switch,
 	Tree,
 	Popover,
+	Affix
 } from 'antd';
 import ExpandCollapse from 'react-expand-collapse';
 
@@ -84,6 +85,7 @@ export function getComponentCode(config) {
 	switch (config.component) {
 		case 'ReactiveList': {
 			allProps = {
+				componentId: 'SearchResult',
 				size: 5,
 				pagination: true,
 				...config.componentProps,
@@ -131,10 +133,10 @@ export function getComponentCode(config) {
 			return 'Nothing to Display';
 	}
 	let code = reactElementToJSXString(
-			<div
-				style={componentStyle}
-				{...allProps}
-			/>,
+		<div
+			style={componentStyle}
+			{...allProps}
+		/>,
 		{ showFunctions: false },
 	);
 
@@ -211,6 +213,26 @@ function getApp(config) {
 		}
 	});
 
+	let attributionContainer = '';
+
+	if (config.attribution) {
+		const attributionText = config.attribution.link ? `<a href="${config.attribution.link}" rel="noopener noreferrer" target="_blank">
+					${config.attribution.text}
+				</a>` : `${config.attribution.text}`;
+		attributionContainer = `<Affix
+			style={{
+				position: "fixed",
+				bottom: "20px",
+				left: "25px",
+				padding: "5px 10px",
+				background:'white',
+				boxShadow: "0px 0px 2px rgba(0,0,0,0.3)"
+			}}
+		>
+			${attributionText}
+		</Affix>`;
+	}
+
 	return `
 const App = () => (
 	<ReactiveBase
@@ -231,6 +253,7 @@ const App = () => (
 
 				${sandboxCodeFormat(resultCode)}
 			</Col>
+			${attributionContainer}
 		</Row>
 	</ReactiveBase>
 );

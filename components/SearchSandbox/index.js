@@ -180,6 +180,7 @@ export default class SearchSandbox extends Component {
 			credentials: this.props.credentials || null,
 			componentProps: this.state.componentProps,
 			mappings: this.state.mappings,
+			attribution: this.props.attribution || null,
 		};
 		const code = getSearchTemplate(config);
 		const html = '<div id="root"></div>';
