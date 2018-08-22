@@ -320,6 +320,7 @@ export default class Editor extends Component {
 			size: 5,
 			pagination: true,
 			sortBy: 'asc',
+			paginationAt: 'bottom',
 			...resultComponentProps,
 			onData: res => (
 				<div className={listItem} key={res._id}>

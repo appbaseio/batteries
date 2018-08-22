@@ -137,7 +137,7 @@ export function getComponentCode(config) {
 			style={componentStyle}
 			{...allProps}
 		/>,
-		{ showFunctions: false },
+		{ showFunctions: false, useBooleanShorthandSyntax: false },
 	);
 
 	code = code.replace('onData="{onData}"', 'onData = {onData}');

@@ -220,7 +220,7 @@ export default class RSWrapper extends Component {
 			componentId: this.props.id,
 			component: this.props.component,
 			mappings: this.props.mappings,
-			componentProps: this.props.componentProps,
+			componentProps: { ...this.props.componentProps },
 		};
 		const code = getComponentCode(config);
 		return (<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
@@ -354,9 +354,9 @@ export default class RSWrapper extends Component {
 			}
 			case 'dropdown': {
 				const dropdownOptions = propsMap[this.props.component][name].options;
-				const selectedValue = dropdownOptions
-					.filter(option => option.key === this.state.componentProps[name])[0].label;
-
+				const selectedDropdown = dropdownOptions
+					.find(option => option.key === this.state.componentProps[name]);
+				const selectedValue = selectedDropdown ? selectedDropdown.label : 'Default Option';
 				const menu = (
 					<Menu
 						onClick={e => this.handleDropdownChange(e, name)}
