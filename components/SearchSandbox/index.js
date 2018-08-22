@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Menu, Button, Dropdown, Icon, Modal, Input, Affix } from 'antd';
 import { css } from 'emotion';
 import { getParameters } from 'codesandbox/lib/api/define';
+import PropTypes from 'prop-types';
 
 import { getMappings, getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
@@ -330,6 +331,15 @@ export default class SearchSandbox extends Component {
 		);
 	}
 }
+
+SearchSandbox.propTypes = {
+	appId: PropTypes.string,
+	appName: PropTypes.string.isRequired,
+	attribution: PropTypes.object,
+	credentials: PropTypes.string.isRequired,
+	isDashboard: PropTypes.bool,
+	url: PropTypes.string.isRequired,
+};
 
 SearchSandbox.defaultProps = {
 	isDashboard: false,
