@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Button, Dropdown, Icon, Modal, Input } from 'antd';
+import { Menu, Button, Dropdown, Icon, Modal, Input, Affix } from 'antd';
 import { css } from 'emotion';
 import { getParameters } from 'codesandbox/lib/api/define';
 
@@ -40,10 +40,7 @@ export default class SearchSandbox extends Component {
 			getPreferences(this.props.appId)
 				.then((pref) => {
 					this.pref = pref || {};
-					const profileList = Array.from(new Set([
-						...this.state.profileList,
-						...Object.keys(this.pref),
-					]));
+					const profileList = Array.from(new Set([...this.state.profileList, ...Object.keys(this.pref)]));
 					const componentProps = this.pref[this.state.profile] || {};
 					this.setState({
 						componentProps,
@@ -183,6 +180,7 @@ export default class SearchSandbox extends Component {
 			credentials: this.props.credentials || null,
 			componentProps: this.state.componentProps,
 			mappings: this.state.mappings,
+			attribution: this.props.attribution || null,
 		};
 		const code = getSearchTemplate(config);
 		const html = '<div id="root"></div>';
@@ -295,6 +293,22 @@ export default class SearchSandbox extends Component {
 							{props => React.cloneElement(child, { ...props })}
 						</SandboxContext.Consumer>
 					))}
+					{this.props.message ? (
+						<Affix
+							style={{
+								position: 'fixed',
+								bottom: '10px',
+								right: '35px',
+								padding: '5px',
+								background: 'white',
+								boxShadow: '0px 0px 1px rgba(0,0,0,.2)',
+							}}
+						>
+							{this.props.message.link ? <a href={this.props.message.link} rel="noopener noreferrer" target="_blank">
+								{this.props.message.text}
+                                  </a> : this.props.message.text}
+						</Affix>
+					) : null}
 				</div>
 
 				<Modal

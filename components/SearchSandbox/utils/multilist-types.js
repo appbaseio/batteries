@@ -2,7 +2,7 @@ export default {
 	dataField: {
 		label: 'Data Field',
 		description: 'Select the field you want to generate filter for',
-		types: ['keyword'],
+		types: ['keyword', 'integer'],
 		input: 'dropdown',
 		multiple: false,
 	},
