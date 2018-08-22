@@ -220,7 +220,7 @@ export default class RSWrapper extends Component {
 			componentId: this.props.id,
 			component: this.props.component,
 			mappings: this.props.mappings,
-			componentProps: { ...this.props.componentProps },
+			componentProps: this.props.componentProps,
 		};
 		const code = getComponentCode(config);
 		return (<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
