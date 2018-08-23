@@ -25,4 +25,18 @@ export default {
 		input: 'bool',
 		default: true,
 	},
+	includeFields: {
+		label: 'Include Fields',
+		description: 'Set fields you want to Include',
+		input: 'multiDropdown',
+		options: [],
+		default: [],
+	},
+	excludeFields: {
+		label: 'Exclude Fields',
+		description: 'Set fields you want to Exclude',
+		input: 'multiDropdown',
+		options: [],
+		default: [],
+	},
 };

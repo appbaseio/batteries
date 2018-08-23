@@ -54,8 +54,10 @@ export default class SearchSandbox extends Component {
 		}
 
 		getMappings(this.props.appName, this.props.credentials, this.props.url).then((res) => {
+			const mappingsType = Object.keys(res).length > 0 ? Object.keys(res)[0] : '';
 			this.setState({
 				mappings: getMappingsTree(res),
+				mappingsType,
 			});
 		});
 	}
@@ -260,6 +262,7 @@ export default class SearchSandbox extends Component {
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
 			mappings: this.state.mappings,
+			mappingsType: this.state.mappingsType,
 			componentProps: this.state.componentProps,
 			onPropChange: this.handleComponentPropChange,
 			filterCount: this.state.filterCount,

@@ -384,6 +384,7 @@ export default class Editor extends Component {
 								id="result"
 								component="ReactiveList"
 								mappings={this.props.mappings}
+								mappingsType={this.props.mappingsType}
 								componentProps={resultComponentProps}
 								onPropChange={this.props.onPropChange}
 								full

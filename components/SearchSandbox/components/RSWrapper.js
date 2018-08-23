@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Input, Switch, Button, Modal, Table, Menu, Icon, Dropdown, Popover } from 'antd';
+import { Row, Col, Form, Input, Switch, Button, Modal, Table, Menu, Icon, Dropdown, Popover, Select } from 'antd';
 
 import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
 
@@ -10,7 +10,7 @@ import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 
-import { deleteStyles, rowStyles, formWrapper, componentStyles } from '../styles';
+import { deleteStyles, rowStyles, formWrapper, componentStyles, fieldBadge, label } from '../styles';
 
 const componentMap = {
 	DataSearch,
@@ -188,6 +188,19 @@ export default class RSWrapper extends Component {
 		});
 	};
 
+	handleMultipleDropdown = (value, name) => {
+		let selectedValue = value;
+		if (selectedValue.includes('*')) {
+			selectedValue = ['*'];
+		}
+		this.setState({
+			componentProps: {
+				...this.state.componentProps,
+				[name]: selectedValue,
+			},
+		});
+	}
+
 	handleSearchWeightChange = (index, value) => {
 		const fieldWeights = Object.assign([], this.state.componentProps.fieldWeights, {
 			[index]: value,
@@ -351,6 +364,81 @@ export default class RSWrapper extends Component {
 					/>
 				);
 				break;
+			}
+			case 'multiDropdown': {
+				const { Option } = Select;
+
+				let dropdownOptions = propsMap[this.props.component][name].options || [];
+				const placeholder = propsMap[this.props.component][name].description || '';
+				const label = propsMap[this.props.component][name].label;
+
+				let dropdownValue = [];
+				let disable = false;
+				let allFields = '';
+
+				switch (name) {
+					case 'includeFields': {
+						allFields = '* ( Include all Fields )';
+						dropdownValue = this.state.componentProps.includeFields;
+
+						if (dropdownValue.includes('*')) {
+							dropdownValue = ['*'];
+							dropdownOptions = [];
+						}
+
+						const excludeFields = this.state.componentProps.excludeFields || [];
+						if (excludeFields.includes('*')) {
+							disable = true;
+							dropdownValue = [];
+						}
+						dropdownOptions = Object.keys(this.props.mappings).filter(v => !excludeFields.includes(v));
+						break;
+					}
+					case 'excludeFields': {
+						allFields = '* ( Exclude all Fields )';
+						dropdownValue = this.state.componentProps.excludeFields || [];
+
+						if (dropdownValue.includes('*')) {
+							dropdownValue = ['*'];
+							dropdownOptions = [];
+						}
+
+						const includeFields = this.state.componentProps.includeFields || [];
+						if (includeFields.includes('*')) {
+							disable = true;
+							dropdownValue = [];
+						}
+						dropdownOptions = Object.keys(this.props.mappings).filter(v => !includeFields.includes(v));
+						break;
+					}
+					default:
+				}
+				return 	(
+				<div className="ant-row ant-form-item ant-form-item-no-colon">
+					<div className="ant-form-item-label">
+						<label className={label} title={label}>
+							{label}
+						</label>
+					</div>
+					<Select
+						key={name}
+						mode="multiple"
+						style={{ width: '100%' }}
+						disabled={disable}
+						placeholder={placeholder}
+						value={dropdownValue}
+						onChange={selectedValue => this.handleMultipleDropdown(selectedValue, name)}
+					>
+						{allFields ? <Option key="*">{allFields}</Option> : null}
+						{dropdownOptions.map(option => (
+						<Option key={option}>{option}
+							<span className={fieldBadge}>
+								{this.props.mappingsType}
+							</span>
+						</Option>))}
+					</Select>
+    </div>
+				);
 			}
 			case 'dropdown': {
 				const dropdownOptions = propsMap[this.props.component][name].options;
