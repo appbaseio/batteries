@@ -63,6 +63,6 @@ export default {
 		description: 'Sets the query format, can be or or and. Defaults to or.',
 		input: 'dropdown',
 		options: [{ label: 'Or', key: 'or' }, { label: 'And', key: 'and' }],
-		default: 'or',
+		default: 'Or',
 	},
 };
