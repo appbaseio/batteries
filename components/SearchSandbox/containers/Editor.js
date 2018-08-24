@@ -18,6 +18,7 @@ import {
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
 import PropTypes from 'prop-types';
+import AceEditor from 'react-ace';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
@@ -35,6 +36,7 @@ export default class Editor extends Component {
 			listComponentProps: {
 				dataField: dataFields.length ? dataFields[0] : '',
 			},
+			editorValue: '',
 		};
 	}
 
@@ -314,6 +316,60 @@ export default class Editor extends Component {
 		</div>
 	);
 
+	getFormattedJSON = (res) => {
+		const JSOnObject = res;
+		let str = '';
+		Object.keys(res).map(key =>
+			str += `\t${key} : ${JSOnObject[key]}\n`);
+			str = `{\n${str}}`;
+		return str;
+	}
+
+	renderJSONEditor = res => (
+		<div style={{ textAlign: 'right' }}>
+			<Popover
+				placement="leftTop"
+				content={<AceEditor
+				    mode="json"
+						value={this.state.editorValue ? this.state.editorValue : this.getFormattedJSON(res)}
+				    onChange={value => console.log(value)}
+				    name="UNIQUE_ID_OF_DIV"
+						fontSize={14}
+					  showPrintMargin
+					  showGutter
+					  highlightActiveLine
+					  setOptions={{
+						  enableBasicAutocompletion: false,
+						  enableLiveAutocompletion: false,
+						  enableSnippets: false,
+						  showLineNumbers: true,
+						  tabSize: 2,
+						}}
+				    editorProps={{ $blockScrolling: true }}
+				/>}
+				title={
+					<Row>
+						<Col span={22}>
+							<h6 style={{ display: 'inline-block' }}>JSON Result</h6>
+						</Col>
+						<Col span={2}>
+							<Tooltip visible={this.state.copied} title="Copied">
+								<Button
+									shape="circle"
+									icon="copy"
+									size="small"
+									onClick={() => this.copyJSON(res)}
+								/>
+							</Tooltip>
+						</Col>
+					</Row>
+				}
+			>
+				<Button>Edit JSON</Button>
+			</Popover>
+		</div>
+	);
+
 	render() {
 		let resultComponentProps = this.props.componentProps.result || {};
 		resultComponentProps = {
@@ -325,6 +381,7 @@ export default class Editor extends Component {
 				<div className={listItem} key={res._id}>
 					<ExpandCollapse previewHeight="390px" expandText="Show more">
 						{this.renderAsJSON(res)}
+						{this.renderJSONEditor(res)}
 						{<Tree showLine>{this.renderAsTree(res)}</Tree>}
 					</ExpandCollapse>
 				</div>
