@@ -30,7 +30,7 @@ export default {
 		description: 'Set fields you want to Include',
 		input: 'multiDropdown',
 		options: [],
-		default: [],
+		default: ['*'],
 	},
 	excludeFields: {
 		label: 'Exclude Fields',

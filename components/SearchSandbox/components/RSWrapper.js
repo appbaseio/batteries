@@ -379,14 +379,14 @@ export default class RSWrapper extends Component {
 				switch (name) {
 					case 'includeFields': {
 						allFields = '* ( Include all Fields )';
-						dropdownValue = this.state.componentProps.includeFields;
+						dropdownValue = this.state.componentProps.includeFields || propsMap[this.props.component][name].default;
 
 						if (dropdownValue.includes('*')) {
 							dropdownValue = ['*'];
 							dropdownOptions = [];
 						}
 
-						const excludeFields = this.state.componentProps.excludeFields || [];
+						const excludeFields = this.state.componentProps.excludeFields || propsMap[this.props.component].excludeFields.default;
 						if (excludeFields.includes('*')) {
 							disable = true;
 							dropdownValue = [];
@@ -396,14 +396,14 @@ export default class RSWrapper extends Component {
 					}
 					case 'excludeFields': {
 						allFields = '* ( Exclude all Fields )';
-						dropdownValue = this.state.componentProps.excludeFields || [];
+						dropdownValue = this.state.componentProps.excludeFields || propsMap[this.props.component][name].default;
 
 						if (dropdownValue.includes('*')) {
 							dropdownValue = ['*'];
 							dropdownOptions = [];
 						}
 
-						const includeFields = this.state.componentProps.includeFields || [];
+						const includeFields = this.state.componentProps.includeFields || propsMap[this.props.component].includeFields.default;
 						if (includeFields.includes('*')) {
 							disable = true;
 							dropdownValue = [];
