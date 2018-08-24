@@ -325,7 +325,7 @@ SearchSandbox.propTypes = {
 	attribution: PropTypes.object,
 	credentials: PropTypes.string.isRequired,
 	isDashboard: PropTypes.bool,
-	url: PropTypes.string.isRequired,
+	url: PropTypes.string,
 };
 
 SearchSandbox.defaultProps = {

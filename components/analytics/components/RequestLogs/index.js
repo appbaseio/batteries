@@ -10,7 +10,7 @@ import Loader from './../../../shared/Loader/Spinner';
 const { TabPane } = Tabs;
 
 const normalizeData = data =>
-	data.map((i) => {
+	data.map(i => {
 		const timeDuration = getTimeDuration(get(i, '_source.timestamp'));
 		return {
 			id: get(i, '_id'),
@@ -27,7 +27,7 @@ const filterHits = (hits = []) => {
 	const successHits = [];
 	const errorHits = [];
 	const searchHits = [];
-	hits.forEach((h) => {
+	hits.forEach(h => {
 		const status = get(h, '_source.response.status');
 		if (get(h, '_source.classifier') === 'search') {
 			searchHits.push(h);
@@ -61,7 +61,7 @@ class RequestLogs extends React.Component {
 	}
 	componentDidMount() {
 		getRequestLogs(this.props.appName)
-			.then((res) => {
+			.then(res => {
 				const filteredHits = filterHits(res.hits);
 				this.setState({
 					logs: res.hits,
@@ -88,7 +88,7 @@ class RequestLogs extends React.Component {
 				});
 			});
 	}
-	changeActiveTabKey = (tab) => {
+	changeActiveTabKey = tab => {
 		this.setState(
 			{
 				activeTabKey: tab,
@@ -96,7 +96,7 @@ class RequestLogs extends React.Component {
 			() => this.redirectTo(tab),
 		);
 	};
-	redirectTo = (tab) => {
+	redirectTo = tab => {
 		if (this.props.changeUrlOnTabChange) {
 			window.history.pushState(
 				null,
@@ -105,7 +105,7 @@ class RequestLogs extends React.Component {
 			);
 		}
 	};
-	handleLogClick = (record) => {
+	handleLogClick = record => {
 		this.currentRequest =
 			this.state.logs && find(this.state.logs, o => get(o, '_id') === record.id);
 		this.setState({
@@ -202,10 +202,14 @@ class RequestLogs extends React.Component {
 							handleCancel={this.handleCancel}
 							headers={get(this.currentRequest, '_source.request.headers', {})}
 							request={
-								JSON.parse(get(this.currentRequest, '_source.request.body') || null) || {}
+								JSON.parse(
+									get(this.currentRequest, '_source.request.body') || null,
+								) || {}
 							}
 							response={
-								JSON.parse(get(this.currentRequest, '_source.response.body') || null) || {}
+								JSON.parse(
+									get(this.currentRequest, '_source.response.body') || null,
+								) || {}
 							}
 							time={get(this.currentRequest, '_source.timestamp', '')}
 							method={get(this.currentRequest, '_source.request.method', '')}

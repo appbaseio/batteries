@@ -38,7 +38,7 @@ export default {
 		input: 'multiDropdown',
 		options: [],
 		default: [],
-  },
+	},
 	pages: {
 		label: 'Number of Pages',
 		description: 'Number of user selectable pages to be displayed when pagination is enabled. ',
@@ -49,7 +49,11 @@ export default {
 		label: 'Pagination position',
 		description: 'Determines the position where to show the pagination.',
 		input: 'dropdown',
-		options: [{ label: 'Top', key: 'top' }, { label: 'Bottom', key: 'bottom' }, { label: 'Both', key: 'both' }],
+		options: [
+			{ label: 'Top', key: 'top' },
+			{ label: 'Bottom', key: 'bottom' },
+			{ label: 'Both', key: 'both' },
+		],
 		default: 'bottom',
 	},
 	showResultStats: {

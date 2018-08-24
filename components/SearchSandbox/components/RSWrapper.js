@@ -1,5 +1,19 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Input, Switch, Button, Modal, Table, Menu, Icon, Dropdown, Popover, Select } from 'antd';
+import {
+	Row,
+	Col,
+	Form,
+	Input,
+	Switch,
+	Button,
+	Modal,
+	Table,
+	Menu,
+	Icon,
+	Dropdown,
+	Popover,
+	Select,
+} from 'antd';
 
 import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
 
@@ -10,7 +24,14 @@ import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 
-import { deleteStyles, rowStyles, formWrapper, componentStyles, fieldBadge, label } from '../styles';
+import {
+	deleteStyles,
+	rowStyles,
+	formWrapper,
+	componentStyles,
+	fieldBadge,
+	label,
+} from '../styles';
 
 const componentMap = {
 	DataSearch,
@@ -61,10 +82,11 @@ export default class RSWrapper extends Component {
 
 		if (this.props.id === 'search') {
 			return Object.keys(this.props.mappings).filter(field =>
-				types.includes(this.props.mappings[field].type));
+				types.includes(this.props.mappings[field].type),
+			);
 		}
 
-		const fields = Object.keys(this.props.mappings).filter((field) => {
+		const fields = Object.keys(this.props.mappings).filter(field => {
 			let fieldsToCheck = [this.props.mappings[field]];
 
 			if (this.props.mappings[field].originalFields) {
@@ -80,7 +102,7 @@ export default class RSWrapper extends Component {
 		return fields;
 	};
 
-	setError = (error) => {
+	setError = error => {
 		this.setState(
 			{
 				error,
@@ -180,10 +202,12 @@ export default class RSWrapper extends Component {
 		this.setState({
 			componentProps: {
 				...this.state.componentProps,
-				dataField: this.state.componentProps.dataField
-					.filter((i, index) => index !== deleteIndex),
-				fieldWeights: this.state.componentProps.fieldWeights
-					.filter((i, index) => index !== deleteIndex),
+				dataField: this.state.componentProps.dataField.filter(
+					(i, index) => index !== deleteIndex,
+				),
+				fieldWeights: this.state.componentProps.fieldWeights.filter(
+					(i, index) => index !== deleteIndex,
+				),
 			},
 		});
 	};
@@ -199,7 +223,7 @@ export default class RSWrapper extends Component {
 				[name]: selectedValue,
 			},
 		});
-	}
+	};
 
 	handleSearchWeightChange = (index, value) => {
 		const fieldWeights = Object.assign([], this.state.componentProps.fieldWeights, {
@@ -214,8 +238,9 @@ export default class RSWrapper extends Component {
 	};
 
 	handleAddFieldRow = () => {
-		const field = this.getAvailableDataField()
-			.find(item => !this.state.componentProps.dataField.includes(item));
+		const field = this.getAvailableDataField().find(
+			item => !this.state.componentProps.dataField.includes(item),
+		);
 
 		if (field) {
 			this.setState({
@@ -237,20 +262,11 @@ export default class RSWrapper extends Component {
 		};
 		const code = getComponentCode(config);
 		return (
-			<Popover
-				content={<pre>{code}</pre>}
-				placement="leftTop"
-				title="Code"
-			>
-				<Button
-					icon="code-o"
-					shape="circle"
-					size="large"
-					style={{ marginLeft: 8 }}
-				/>
+			<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
+				<Button icon="code-o" shape="circle" size="large" style={{ marginLeft: 8 }} />
 			</Popover>
 		);
-	}
+	};
 
 	renderDeleteButton = (x, y, index) => (
 		<Button
@@ -276,9 +292,10 @@ export default class RSWrapper extends Component {
 							style={{ maxHeight: 300, overflowY: 'scroll' }}
 						>
 							{fields
-								.filter(item =>
-										item === selected ||
-										!this.state.componentProps.dataField.includes(item))
+								.filter(item => (
+									item === selected
+									|| !this.state.componentProps.dataField.includes(item)
+								))
 								.map(item => (
 									<Menu.Item key={item} value={index}>
 										{item}
@@ -386,8 +403,8 @@ export default class RSWrapper extends Component {
 					case 'includeFields': {
 						allFields = '* ( Include all Fields )';
 						dropdownValue =
-							this.state.componentProps.includeFields
-							|| propsMap[this.props.component][name].default;
+							this.state.componentProps.includeFields ||
+							propsMap[this.props.component][name].default;
 
 						if (dropdownValue.includes('*')) {
 							dropdownValue = ['*'];
@@ -395,21 +412,22 @@ export default class RSWrapper extends Component {
 						}
 
 						const excludeFields =
-							this.state.componentProps.excludeFields
-							|| propsMap[this.props.component].excludeFields.default;
+							this.state.componentProps.excludeFields ||
+							propsMap[this.props.component].excludeFields.default;
 						if (excludeFields.includes('*')) {
 							disable = true;
 							dropdownValue = [];
 						}
-						dropdownOptions = Object.keys(this.props.mappings)
-							.filter(v => !excludeFields.includes(v));
+						dropdownOptions = Object.keys(this.props.mappings).filter(
+							v => !excludeFields.includes(v),
+						);
 						break;
 					}
 					case 'excludeFields': {
 						allFields = '* ( Exclude all Fields )';
 						dropdownValue =
-							this.state.componentProps.excludeFields
-							|| propsMap[this.props.component][name].default;
+							this.state.componentProps.excludeFields ||
+							propsMap[this.props.component][name].default;
 
 						if (dropdownValue.includes('*')) {
 							dropdownValue = ['*'];
@@ -417,16 +435,17 @@ export default class RSWrapper extends Component {
 						}
 
 						const includeFields =
-							this.state.componentProps.includeFields
-							|| propsMap[this.props.component].includeFields.default;
+							this.state.componentProps.includeFields ||
+							propsMap[this.props.component].includeFields.default;
 
 						if (includeFields.includes('*')) {
 							disable = true;
 							dropdownValue = [];
 						}
 
-						dropdownOptions = Object.keys(this.props.mappings)
-							.filter(v => !includeFields.includes(v));
+						dropdownOptions = Object.keys(this.props.mappings).filter(
+							v => !includeFields.includes(v),
+						);
 						break;
 					}
 					default:
@@ -446,25 +465,29 @@ export default class RSWrapper extends Component {
 							disabled={disable}
 							placeholder={placeholder}
 							value={dropdownValue}
-							onChange={selectedValue => this.handleMultipleDropdown(selectedValue, name)}
+							onChange={selectedValue =>
+								this.handleMultipleDropdown(selectedValue, name)
+							}
 						>
 							{allFields ? <Option key="*">{allFields}</Option> : null}
 							{dropdownOptions.map(option => (
-							<Option key={option}>{option}
-								<span className={fieldBadge}>
-									{this.props.mappingsType}
-								</span>
-							</Option>))}
+								<Option key={option}>
+									{option}
+									<span className={fieldBadge}>{this.props.mappingsType}</span>
+								</Option>
+							))}
 						</Select>
 					</div>
 				);
 			}
 			case 'dropdown': {
 				const dropdownOptions = propsMap[this.props.component][name].options;
-				const selectedDropdown = dropdownOptions
-					.find(option => option.key === this.state.componentProps[name]);
+				const selectedDropdown = dropdownOptions.find(
+					option => option.key === this.state.componentProps[name],
+				);
 				const selectedValue = selectedDropdown
-					? selectedDropdown.label : propsMap[this.props.component][name].default;
+					? selectedDropdown.label
+					: propsMap[this.props.component][name].default;
 				const menu = (
 					<Menu
 						onClick={e => this.handleDropdownChange(e, name)}
@@ -565,7 +588,7 @@ export default class RSWrapper extends Component {
 					.map(item => this.renderFormItem(propNames[item], item))}
 			</Form>
 		);
-	}
+	};
 
 	render() {
 		if (!this.props.componentProps.dataField) return null;

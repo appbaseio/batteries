@@ -7,7 +7,7 @@ const LoadingOverlay = styled('div')`
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0,0,0,0.7);
+	background-color: rgba(0, 0, 0, 0.7);
 	z-index: 999;
 	color: #fff;
 	display: flex;
@@ -20,7 +20,7 @@ const LoadingOverlay = styled('div')`
 	font-weight: 300;
 `;
 
-export default (props) => {
+const Loader = (props) => {
 	if (props.show) {
 		return (
 			<LoadingOverlay>
@@ -30,3 +30,5 @@ export default (props) => {
 	}
 	return null;
 };
+
+export default Loader;

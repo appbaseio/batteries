@@ -57,7 +57,8 @@ export default {
 	},
 	URLParams: {
 		label: 'URLParams',
-		description: 'Enable creating a URL query string parameter based on the selected value of the list. This is useful for sharing URLs with the component state. ',
+		description:
+			'Enable creating a URL query string parameter based on the selected value of the list. This is useful for sharing URLs with the component state. ',
 		input: 'bool',
 		default: false,
 	},

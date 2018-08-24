@@ -11,7 +11,7 @@ export const card = css`
 	margin: 25px auto;
 	background-color: #fff;
 	border-radius: 3px;
-	box-shadow: 0 3px 5px 0 rgba(0,0,0,0.05);
+	box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.05);
 	box-sizing: border-box;
 
 	i {
@@ -65,10 +65,10 @@ export const heading = css`
 
 export const row = css`
 	box-sizing: border-box;
-	background-color: rgba(0,0,0,0.02);
+	background-color: rgba(0, 0, 0, 0.02);
 	padding: 15px 0 15px 15px;
 	margin: 15px 0;
-	border: 1px solid rgba(0,0,0,0.05);
+	border: 1px solid rgba(0, 0, 0, 0.05);
 `;
 
 export const title = css`
@@ -84,7 +84,7 @@ export const dropdown = css`
 	min-width: 150px;
 	height: 34px;
 	border: 1px solid #f8f8f8;
-	box-shadow: 0 3px 5px 0 rgba(0,0,0,0.05);
+	box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.05);
 	background-color: #fff;
 	border-radius: 2px;
 	outline-color: #c7f4ff;
@@ -100,7 +100,7 @@ export const item = css`
 	padding: 10px;
 	margin-bottom: 2px;
 	align-items: center;
-	background-color: rgba(255,255,255,0.8);
+	background-color: rgba(255, 255, 255, 0.8);
 `;
 
 export const subItem = css`
@@ -114,9 +114,9 @@ export const Footer = styled('footer')`
 	bottom: 0;
 	width: 100%;
 	height: 66px;
-	box-shadow: 0 -3px 5px 0 rgba(0,0,0,0.02);
+	box-shadow: 0 -3px 5px 0 rgba(0, 0, 0, 0.02);
 	background-color: #fff;
-	transition: all .3s ease;
+	transition: all 0.3s ease;
 	border-bottom-left-radius: 3px;
 	border-bottom-right-radius: 3px;
 	padding: 0 20px;
@@ -133,15 +133,16 @@ export const Button = styled('a')`
 	align-items: center;
 	color: #53683b;
 	font-weight: 600;
-	background-color: ${props => (props.ghost ? grey : green)};;
+	background-color: ${props => (props.ghost ? grey : green)};
 	text-transform: uppercase;
-	box-shadow: 0 3px 3px 0 rgba(0,0,0,0.1);
+	box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.1);
 	cursor: pointer;
 	margin-left: 12px;
 
-	&:hover, &:focus {
+	&:hover,
+	&:focus {
 		background-color: ${props => (props.ghost ? greyHover : greenHover)};
-		box-shadow: 0 5px 5px 0 rgba(0,0,0,0.1);
+		box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.1);
 		text-decoration: none;
 	}
 `;
@@ -149,7 +150,7 @@ export const Button = styled('a')`
 export const deleteBtn = css`
 	display: flex;
 	flex-grow: 1;
-	alignItems: center;
+	alignitems: center;
 	flex-direction: row;
 	cursor: pointer;
 
@@ -165,13 +166,15 @@ export const deleteBtn = css`
 		cursor: pointer;
 		color: #444;
 		margin-left: 15px;
-		transition: all .3s ease;
+		transition: all 0.3s ease;
 	}
 
-	&:hover a, &:focus a {
+	&:hover a,
+	&:focus a {
 		display: inline;
 
-		&:hover, &:focus {
+		&:hover,
+		&:focus {
 			color: #222;
 		}
 	}
@@ -183,7 +186,7 @@ export const Input = styled('input')`
 	min-width: 150px;
 	height: 34px;
 	border: 1px solid #f8f8f8;
-	box-shadow: 0 3px 5px 0 rgba(0,0,0,0.05);
+	box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.05);
 	background-color: #fff;
 	border-radius: 2px;
 	outline-color: #c7f4ff;

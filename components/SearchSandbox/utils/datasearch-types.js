@@ -54,7 +54,8 @@ export default {
 	},
 	filterLabel: {
 		label: 'Filter label',
-		description: 'An optional label to display for the component in the global selected filters view. Applicable when show filter is true.',
+		description:
+			'An optional label to display for the component in the global selected filters view. Applicable when show filter is true.',
 		input: 'string',
 		default: '',
 	},

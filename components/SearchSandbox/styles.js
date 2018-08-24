@@ -112,4 +112,13 @@ const label = css`
 	margin: 20px 0;
 `;
 
-export { listItem, title, formWrapper, rowStyles, deleteStyles, componentStyles, fieldBadge, label };
+export {
+	listItem,
+	title,
+	formWrapper,
+	rowStyles,
+	deleteStyles,
+	componentStyles,
+	fieldBadge,
+	label,
+};

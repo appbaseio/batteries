@@ -14,7 +14,7 @@ class NoResultsSearch extends React.Component {
 	}
 	componentDidMount() {
 		getNoResultSearches(this.props.appName)
-			.then((res) => {
+			.then(res => {
 				this.setState({
 					noResults: res,
 					isFetching: false,
