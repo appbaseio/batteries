@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
+import PropTypes from 'prop-types';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
@@ -319,6 +320,7 @@ export default class Editor extends Component {
 			size: 5,
 			pagination: true,
 			sortBy: 'asc',
+			paginationAt: 'bottom',
 			...resultComponentProps,
 			onData: res => (
 				<div className={listItem} key={res._id}>
@@ -407,6 +409,10 @@ export default class Editor extends Component {
 		);
 	}
 }
+
+Editor.propTypes = {
+	mappingsURL: PropTypes.string.isRequired,
+};
 
 Editor.defaultProps = {
 	mappingsURL: '/mappings',

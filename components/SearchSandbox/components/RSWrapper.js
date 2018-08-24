@@ -442,9 +442,10 @@ export default class RSWrapper extends Component {
 			}
 			case 'dropdown': {
 				const dropdownOptions = propsMap[this.props.component][name].options;
-				const selectedValue = dropdownOptions
-					.filter(option => option.key === this.state.componentProps[name])[0].label;
-
+				const selectedDropdown = dropdownOptions
+					.find(option => option.key === this.state.componentProps[name]);
+				const selectedValue = selectedDropdown
+					? selectedDropdown.label : propsMap[this.props.component][name].default;
 				const menu = (
 					<Menu
 						onClick={e => this.handleDropdownChange(e, name)}
