@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Button, Dropdown, Icon, Modal, Input, Affix } from 'antd';
+import { Menu, Button, Dropdown, Icon, Modal, Input } from 'antd';
 import { css } from 'emotion';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
@@ -55,8 +55,10 @@ export default class SearchSandbox extends Component {
 		}
 
 		getMappings(this.props.appName, this.props.credentials, this.props.url).then((res) => {
+			const mappingsType = Object.keys(res).length > 0 ? Object.keys(res)[0] : '';
 			this.setState({
 				mappings: getMappingsTree(res),
+				mappingsType,
 			});
 		});
 	}
@@ -261,6 +263,7 @@ export default class SearchSandbox extends Component {
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
 			mappings: this.state.mappings,
+			mappingsType: this.state.mappingsType,
 			componentProps: this.state.componentProps,
 			onPropChange: this.handleComponentPropChange,
 			filterCount: this.state.filterCount,
@@ -294,22 +297,6 @@ export default class SearchSandbox extends Component {
 							{props => React.cloneElement(child, { ...props })}
 						</SandboxContext.Consumer>
 					))}
-					{this.props.message ? (
-						<Affix
-							style={{
-								position: 'fixed',
-								bottom: '10px',
-								right: '35px',
-								padding: '5px',
-								background: 'white',
-								boxShadow: '0px 0px 1px rgba(0,0,0,.2)',
-							}}
-						>
-							{this.props.message.link ? <a href={this.props.message.link} rel="noopener noreferrer" target="_blank">
-								{this.props.message.text}
-                                  </a> : this.props.message.text}
-						</Affix>
-					) : null}
 				</div>
 
 				<Modal
@@ -338,7 +325,7 @@ SearchSandbox.propTypes = {
 	attribution: PropTypes.object,
 	credentials: PropTypes.string.isRequired,
 	isDashboard: PropTypes.bool,
-	url: PropTypes.string.isRequired,
+	url: PropTypes.string,
 };
 
 SearchSandbox.defaultProps = {

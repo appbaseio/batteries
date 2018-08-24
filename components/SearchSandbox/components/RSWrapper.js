@@ -1,5 +1,19 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Input, Switch, Button, Modal, Table, Menu, Icon, Dropdown, Popover } from 'antd';
+import {
+	Row,
+	Col,
+	Form,
+	Input,
+	Switch,
+	Button,
+	Modal,
+	Table,
+	Menu,
+	Icon,
+	Dropdown,
+	Popover,
+	Select,
+} from 'antd';
 
 import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
 
@@ -10,7 +24,14 @@ import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 
-import { deleteStyles, rowStyles, formWrapper, componentStyles } from '../styles';
+import {
+	deleteStyles,
+	rowStyles,
+	formWrapper,
+	componentStyles,
+	fieldBadge,
+	label,
+} from '../styles';
 
 const componentMap = {
 	DataSearch,
@@ -180,10 +201,21 @@ export default class RSWrapper extends Component {
 		this.setState({
 			componentProps: {
 				...this.state.componentProps,
-				dataField: this.state.componentProps.dataField
-					.filter((i, index) => index !== deleteIndex),
-				fieldWeights: this.state.componentProps.fieldWeights
-					.filter((i, index) => index !== deleteIndex),
+				dataField: this.state.componentProps.dataField.filter((i, index) => index !== deleteIndex),
+				fieldWeights: this.state.componentProps.fieldWeights.filter((i, index) => index !== deleteIndex),
+			},
+		});
+	};
+
+	handleMultipleDropdown = (value, name) => {
+		let selectedValue = value;
+		if (selectedValue.includes('*')) {
+			selectedValue = ['*'];
+		}
+		this.setState({
+			componentProps: {
+				...this.state.componentProps,
+				[name]: selectedValue,
 			},
 		});
 	};
@@ -201,8 +233,7 @@ export default class RSWrapper extends Component {
 	};
 
 	handleAddFieldRow = () => {
-		const field = this.getAvailableDataField()
-			.find(item => !this.state.componentProps.dataField.includes(item));
+		const field = this.getAvailableDataField().find(item => !this.state.componentProps.dataField.includes(item));
 
 		if (field) {
 			this.setState({
@@ -223,15 +254,12 @@ export default class RSWrapper extends Component {
 			componentProps: this.props.componentProps,
 		};
 		const code = getComponentCode(config);
-		return (<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
-							<Button
-								icon="code-o"
-								shape="circle"
-								size="large"
-								style={{ marginLeft: 8 }}
-							/>
-          </Popover>);
-	}
+		return (
+			<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
+				<Button icon="code-o" shape="circle" size="large" style={{ marginLeft: 8 }} />
+			</Popover>
+		);
+	};
 
 	renderDeleteButton = (x, y, index) => (
 		<Button
@@ -257,9 +285,10 @@ export default class RSWrapper extends Component {
 							style={{ maxHeight: 300, overflowY: 'scroll' }}
 						>
 							{fields
-								.filter(item =>
-										item === selected ||
-										!this.state.componentProps.dataField.includes(item))
+								.filter(item => (
+									item === selected
+									|| !this.state.componentProps.dataField.includes(item)
+								))
 								.map(item => (
 									<Menu.Item key={item} value={index}>
 										{item}
@@ -352,22 +381,110 @@ export default class RSWrapper extends Component {
 				);
 				break;
 			}
+			case 'multiDropdown': {
+				const { Option } = Select;
+
+				let dropdownOptions = propsMap[this.props.component][name].options || [];
+				const placeholder = propsMap[this.props.component][name].description || '';
+				const { label: currentLabel } = propsMap[this.props.component][name];
+
+				let dropdownValue = [];
+				let disable = false;
+				let allFields = '';
+
+				switch (name) {
+					case 'includeFields': {
+						allFields = '* ( Include all Fields )';
+						dropdownValue =
+							this.state.componentProps.includeFields ||
+							propsMap[this.props.component][name].default;
+
+						if (dropdownValue.includes('*')) {
+							dropdownValue = ['*'];
+							dropdownOptions = [];
+						}
+
+						const excludeFields =
+							this.state.componentProps.excludeFields ||
+							propsMap[this.props.component].excludeFields.default;
+						if (excludeFields.includes('*')) {
+							disable = true;
+							dropdownValue = [];
+						}
+						dropdownOptions = Object.keys(this.props.mappings).filter(v => !excludeFields.includes(v));
+						break;
+					}
+					case 'excludeFields': {
+						allFields = '* ( Exclude all Fields )';
+						dropdownValue =
+							this.state.componentProps.excludeFields ||
+							propsMap[this.props.component][name].default;
+
+						if (dropdownValue.includes('*')) {
+							dropdownValue = ['*'];
+							dropdownOptions = [];
+						}
+
+						const includeFields =
+							this.state.componentProps.includeFields ||
+							propsMap[this.props.component].includeFields.default;
+
+						if (includeFields.includes('*')) {
+							disable = true;
+							dropdownValue = [];
+						}
+
+						dropdownOptions = Object.keys(this.props.mappings).filter(v => !includeFields.includes(v));
+						break;
+					}
+					default:
+				}
+
+				return (
+					<div className="ant-row ant-form-item ant-form-item-no-colon">
+						<div className="ant-form-item-label">
+							<label className={label} title={currentLabel}>
+								{currentLabel}
+							</label>
+						</div>
+						<Select
+							key={name}
+							mode="multiple"
+							style={{ width: '100%' }}
+							disabled={disable}
+							placeholder={placeholder}
+							value={dropdownValue}
+							onChange={selectedValue =>
+								this.handleMultipleDropdown(selectedValue, name)
+							}
+						>
+							{allFields ? <Option key="*">{allFields}</Option> : null}
+							{dropdownOptions.map(option => (
+								<Option key={option}>
+									{option}
+									<span className={fieldBadge}>{this.props.mappingsType}</span>
+								</Option>
+							))}
+						</Select>
+					</div>
+				);
+			}
 			case 'dropdown': {
 				const dropdownOptions = propsMap[this.props.component][name].options;
-				const selectedValue = dropdownOptions
-					.filter(option => option.key === this.state.componentProps[name])[0].label;
-
+				const selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
+				const selectedValue = selectedDropdown
+					? selectedDropdown.label
+					: propsMap[this.props.component][name].default;
 				const menu = (
 					<Menu
 						onClick={e => this.handleDropdownChange(e, name)}
 						style={{ maxHeight: 300, overflowY: 'scroll' }}
 					>
-						{dropdownOptions.map(({ label, key }) => (
-							<Menu.Item key={key}>{label}</Menu.Item>
+						{dropdownOptions.map(({ label: dropLabel, key }) => (
+							<Menu.Item key={key}>{dropLabel}</Menu.Item>
 						))}
 					</Menu>
 				);
-
 
 				FormInput = (
 					<Dropdown overlay={menu} trigger={['click']}>
@@ -385,6 +502,7 @@ export default class RSWrapper extends Component {
 				);
 				break;
 			}
+
 			default: {
 				FormInput = (
 					<Input
@@ -457,7 +575,7 @@ export default class RSWrapper extends Component {
 					.map(item => this.renderFormItem(propNames[item], item))}
 			</Form>
 		);
-	}
+	};
 
 	render() {
 		if (!this.props.componentProps.dataField) return null;

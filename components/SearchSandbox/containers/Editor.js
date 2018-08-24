@@ -14,11 +14,19 @@ import {
 	Tree,
 	Popover,
 	Tooltip,
+	notification,
+	Popconfirm,
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
 import PropTypes from 'prop-types';
 import AceEditor from 'react-ace';
+import brace from 'brace';
+
+import 'brace/mode/json';
+import 'brace/theme/monokai';
+
+import Appbase from 'appbase-js';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
@@ -37,7 +45,15 @@ export default class Editor extends Component {
 				dataField: dataFields.length ? dataFields[0] : '',
 			},
 			editorValue: '',
+			isValidJSON: true,
+			editorObjectId: '',
+			renderKey: Date.now(),
 		};
+		this.appbaseRef = new Appbase({
+			appname: this.props.appName,
+			url: this.props.url,
+			credentials: this.props.credentials,
+		});
 	}
 
 	getAvailableDataField = () => {
@@ -156,6 +172,97 @@ export default class Editor extends Component {
 		});
 	};
 
+	handleUpdateJSON = (updatedJSONString) => {
+		const updatedJSON = JSON.parse(updatedJSONString);
+		let responseMessage = {
+			message: 'Update JSON',
+			description: 'JSON was successfully Updated.',
+			duration: 4,
+		};
+		this.appbaseRef
+			.update({
+				type: this.props.mappingsType,
+				id: this.state.editorObjectId,
+				body: {
+					doc: updatedJSON,
+				},
+			})
+			.on('data', (res) => {
+				this.setState({
+					renderKey: res._timestamp,
+				});
+			})
+			.on('error', () => {
+				responseMessage = {
+					message: 'Update JSON',
+					description: 'There were error in Updating JSON. Try again Later.',
+					duration: 2,
+				};
+			});
+			notification.open(responseMessage);
+	};
+
+	handleDeleteJSON = (id) => {
+		let responseMessage = {
+			message: 'Delete JSON',
+			description: 'You have successfully deleted JSON.',
+			duration: 4,
+		};
+		this.appbaseRef
+			.delete({
+				type: this.props.mappingsType,
+				id,
+			})
+			.on('data', (res) => {
+				this.setState({
+					renderKey: res._timestamp,
+				});
+			})
+			.on('error', () => {
+				responseMessage = {
+					message: 'Delete JSON',
+					description: 'There were error in Deleting JSON. Try again Later.',
+					duration: 2,
+				};
+			});
+			notification.open(responseMessage);
+	};
+
+	handleEditingJSON = (value) => {
+		let isValidJSON = true;
+		try {
+			JSON.parse(value);
+		} catch (e) {
+			isValidJSON = false;
+		}
+		this.setState({
+			editorValue: value,
+			isValidJSON,
+		});
+	};
+
+	handleInitialEditorValue = (res) => {
+		const objectJSON = res;
+
+		const id = objectJSON._id;
+		delete objectJSON._id;
+		delete objectJSON._index;
+
+		const stringifiedJSON = JSON.stringify(objectJSON, null, '\t');
+
+		this.setState({
+			editorObjectId: id,
+			editorValue: stringifiedJSON,
+		});
+	};
+
+	resetEditorValues = () => {
+		this.setState({
+			editorObjectId: '',
+			editorValue: '',
+		});
+	};
+
 	renderFormItem = (item, name) => {
 		let FormInput = null;
 		// always set to default value
@@ -211,9 +318,9 @@ export default class Editor extends Component {
 		if (!fields.length) {
 			return (
 				<p>
-					There are no compatible fields present in your data
-					mappings. <a href={this.props.mappingsURL}>You can edit your mappings</a> to
-					add filters (agggregation components).
+					There are no compatible fields present in your data mappings.{' '}
+					<a href={this.props.mappingsURL}>You can edit your mappings</a> to add filters
+					(agggregation components).
 				</p>
 			);
 		}
@@ -289,85 +396,82 @@ export default class Editor extends Component {
 	};
 
 	renderAsJSON = res => (
-		<div style={{ textAlign: 'right' }}>
-			<Popover
-				placement="leftTop"
-				content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
-				title={
-					<Row>
-						<Col span={22}>
-							<h6 style={{ display: 'inline-block' }}>JSON Result</h6>
-						</Col>
-						<Col span={2}>
-							<Tooltip visible={this.state.copied} title="Copied">
-								<Button
-									shape="circle"
-									icon="copy"
-									size="small"
-									onClick={() => this.copyJSON(res)}
-								/>
-							</Tooltip>
-						</Col>
-					</Row>
-				}
-			>
-				<Button>View as JSON</Button>
-			</Popover>
-		</div>
+		<Popover
+			placement="leftTop"
+			content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
+			title={
+				<Row>
+					<Col span={22}>
+						<h6 style={{ display: 'inline-block' }}>JSON Result</h6>
+					</Col>
+					<Col span={2}>
+						<Tooltip visible={this.state.copied} title="Copied">
+							<Button
+								shape="circle"
+								icon="copy"
+								size="small"
+								onClick={() => this.copyJSON(res)}
+							/>
+						</Tooltip>
+					</Col>
+				</Row>
+			}
+		>
+			<Button shape="circle" icon="code-o" style={{ marginRight: '5px' }} />
+		</Popover>
 	);
 
-	getFormattedJSON = (res) => {
-		const JSOnObject = res;
-		let str = '';
-		Object.keys(res).map(key =>
-			str += `\t${key} : ${JSOnObject[key]}\n`);
-			str = `{\n${str}}`;
-		return str;
-	}
+	renderDeleteJSON = res => (
+		<Popconfirm title="Are you sure to delete this JSON?" placement="bottomRight" onConfirm={() => this.handleDeleteJSON(res._id)} okText="Yes">
+			<Button shape="circle" icon="delete" style={{ marginRight: '5px' }} />
+		</Popconfirm>
+	);
 
 	renderJSONEditor = res => (
-		<div style={{ textAlign: 'right' }}>
-			<Popover
-				placement="leftTop"
-				content={<AceEditor
-				    mode="json"
-						value={this.state.editorValue ? this.state.editorValue : this.getFormattedJSON(res)}
-				    onChange={value => console.log(value)}
-				    name="UNIQUE_ID_OF_DIV"
-						fontSize={14}
-					  showPrintMargin
-					  showGutter
-					  highlightActiveLine
-					  setOptions={{
-						  enableBasicAutocompletion: false,
-						  enableLiveAutocompletion: false,
-						  enableSnippets: false,
-						  showLineNumbers: true,
-						  tabSize: 2,
-						}}
-				    editorProps={{ $blockScrolling: true }}
-				/>}
-				title={
-					<Row>
-						<Col span={22}>
-							<h6 style={{ display: 'inline-block' }}>JSON Result</h6>
-						</Col>
-						<Col span={2}>
-							<Tooltip visible={this.state.copied} title="Copied">
-								<Button
-									shape="circle"
-									icon="copy"
-									size="small"
-									onClick={() => this.copyJSON(res)}
-								/>
-							</Tooltip>
-						</Col>
-					</Row>
-				}
-			>
-				<Button>Edit JSON</Button>
-			</Popover>
-		</div>
+		<Popover
+			placement="leftTop"
+			onVisibleChange={visible =>
+				(visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
+			}
+			content={
+				<AceEditor
+					mode="json"
+					value={this.state.editorValue}
+					onChange={value => this.handleEditingJSON(value)}
+					theme="monokai"
+					name="editor-JSON"
+					fontSize={14}
+					showPrintMargin
+					style={{ maxHeight: '250px' }}
+					showGutter
+					highlightActiveLine
+					setOptions={{
+						showLineNumbers: true,
+						tabSize: 2,
+					}}
+					editorProps={{ $blockScrolling: true }}
+				/>
+			}
+			title={
+				<Row>
+					<Col span={21}>
+						<h6 style={{ display: 'inline-block' }}>Edit JSON</h6>
+					</Col>
+					<Col span={3}>
+						<Button
+							size="small"
+							type="primary"
+							disabled={!this.state.isValidJSON}
+							onClick={() => this.handleUpdateJSON(this.state.editorValue)}
+						>
+							Update
+						</Button>
+					</Col>
+				</Row>
+			}
+		>
+			<Button shape="circle" icon="edit" style={{ marginRight: '5px' }} />
+		</Popover>
 	);
 
 	render() {
@@ -376,13 +480,17 @@ export default class Editor extends Component {
 			size: 5,
 			pagination: true,
 			sortBy: 'asc',
+			paginationAt: 'bottom',
 			...resultComponentProps,
 			onData: res => (
 				<div className={listItem} key={res._id}>
 					<ExpandCollapse previewHeight="390px" expandText="Show more">
-						{this.renderAsJSON(res)}
-						{this.renderJSONEditor(res)}
 						{<Tree showLine>{this.renderAsTree(res)}</Tree>}
+						<div style={{ textAlign: 'right' }}>
+							{this.renderAsJSON(res)}
+							{this.renderJSONEditor(res)}
+							{this.renderDeleteJSON(res)}
+						</div>
 					</ExpandCollapse>
 				</div>
 			),
@@ -441,7 +549,9 @@ export default class Editor extends Component {
 							<RSWrapper
 								id="result"
 								component="ReactiveList"
+								key={this.state.renderKey}
 								mappings={this.props.mappings}
+								mappingsType={this.props.mappingsType}
 								componentProps={resultComponentProps}
 								onPropChange={this.props.onPropChange}
 								full

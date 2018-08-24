@@ -5,30 +5,34 @@ const mappingES2 = {
 	inventory: {
 		mappings: {
 			_default_: {
-				dynamic_templates: [{
-					for_string: {
-						mapping: {
-							fielddata: {
-								format: 'disabled',
+				dynamic_templates: [
+					{
+						for_string: {
+							mapping: {
+								fielddata: {
+									format: 'disabled',
+								},
 							},
+							match: '*',
+							match_mapping_type: 'string',
 						},
-						match: '*',
-						match_mapping_type: 'string',
 					},
-				}],
+				],
 			},
 			data: {
-				dynamic_templates: [{
-					for_string: {
-						mapping: {
-							fielddata: {
-								format: 'disabled',
+				dynamic_templates: [
+					{
+						for_string: {
+							mapping: {
+								fielddata: {
+									format: 'disabled',
+								},
 							},
+							match: '*',
+							match_mapping_type: 'string',
 						},
-						match: '*',
-						match_mapping_type: 'string',
 					},
-				}],
+				],
 				properties: {
 					order_no: {
 						type: 'integer',
@@ -57,30 +61,34 @@ const mappingES5 = {
 	inventory: {
 		mappings: {
 			_default_: {
-				dynamic_templates: [{
-					for_string: {
-						mapping: {
-							fielddata: {
-								format: 'disabled',
+				dynamic_templates: [
+					{
+						for_string: {
+							mapping: {
+								fielddata: {
+									format: 'disabled',
+								},
 							},
+							match: '*',
+							match_mapping_type: 'string',
 						},
-						match: '*',
-						match_mapping_type: 'string',
 					},
-				}],
+				],
 			},
 			data: {
-				dynamic_templates: [{
-					for_string: {
-						mapping: {
-							fielddata: {
-								format: 'disabled',
+				dynamic_templates: [
+					{
+						for_string: {
+							mapping: {
+								fielddata: {
+									format: 'disabled',
+								},
 							},
+							match: '*',
+							match_mapping_type: 'string',
 						},
-						match: '*',
-						match_mapping_type: 'string',
 					},
-				}],
+				],
 				properties: {
 					order_no: {
 						type: 'integer',

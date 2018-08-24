@@ -132,13 +132,10 @@ export function getComponentCode(config) {
 		default:
 			return 'Nothing to Display';
 	}
-	let code = reactElementToJSXString(
-		<div
-			style={componentStyle}
-			{...allProps}
-		/>,
-		{ showFunctions: false },
-	);
+	let code = reactElementToJSXString(<div style={componentStyle} {...allProps} />, {
+		showFunctions: false,
+		useBooleanShorthandSyntax: false,
+	});
 
 	code = code.replace('onData="{onData}"', 'onData = {onData}');
 	code = code.replace('div', config.component);
@@ -147,9 +144,7 @@ export function getComponentCode(config) {
 }
 
 function sandboxCodeFormat(code) {
-	return code
-	.split('\n')
-	.join('\n\t\t\t\t');
+	return code.split('\n').join('\n\t\t\t\t');
 }
 
 function getApp(config) {
@@ -196,7 +191,7 @@ function getApp(config) {
 			}
 			default: {
 				const listComponentProps = {
-					dataField:	config.componentProps[item].dataField,
+					dataField: config.componentProps[item].dataField,
 				};
 				componentConfig = {
 					component: 'MultiList',
@@ -216,9 +211,11 @@ function getApp(config) {
 	let attributionContainer = '';
 
 	if (config.attribution) {
-		const attributionText = config.attribution.link ? `<a href="${config.attribution.link}" rel="noopener noreferrer" target="_blank">
+		const attributionText = config.attribution.link
+			? `<a href="${config.attribution.link}" rel="noopener noreferrer" target="_blank">
 					${config.attribution.text}
-				</a>` : `${config.attribution.text}`;
+				</a>`
+			: `${config.attribution.text}`;
 		attributionContainer = `<Affix
 			style={{
 				position: "fixed",

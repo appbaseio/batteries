@@ -13,7 +13,7 @@ const requestOpt = css`
 	border-radius: 3px;
 	border: solid 1px #00ff88;
 `;
-const getQueryParams = (paramObj) => {
+const getQueryParams = paramObj => {
 	let queryString = '';
 	Object.keys(paramObj).forEach((o, i) => {
 		if (i === 0) {
@@ -24,7 +24,7 @@ const getQueryParams = (paramObj) => {
 	});
 	return queryString;
 };
-export const getTimeDuration = (time) => {
+export const getTimeDuration = time => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
 		const timeD = parseInt(timeInMs / (24 * 60 * 60 * 1000), 10);
@@ -63,7 +63,7 @@ export const getTimeDuration = (time) => {
 		time: parseInt(timeInMs / 1000, 10),
 	};
 };
-export const popularFiltersCol = (plan) => {
+export const popularFiltersCol = plan => {
 	if (!plan || plan === 'free') {
 		return [
 			{
@@ -91,7 +91,7 @@ export const popularFiltersCol = (plan) => {
 		},
 	];
 };
-export const popularResultsCol = (plan) => {
+export const popularResultsCol = plan => {
 	if (!plan || plan === 'free') {
 		return [
 			{
@@ -119,7 +119,7 @@ export const popularResultsCol = (plan) => {
 		},
 	];
 };
-export const defaultColumns = (plan) => {
+export const defaultColumns = plan => {
 	if (!plan || plan === 'free') {
 		return [
 			{
@@ -147,7 +147,7 @@ export const defaultColumns = (plan) => {
 		},
 	];
 };
-export const popularSearchesFull = (plan) => {
+export const popularSearchesFull = plan => {
 	if (!plan || plan === 'free') {
 		return defaultColumns(plan);
 	}
@@ -332,7 +332,7 @@ export const popularSearchesFull = (plan) => {
 // 		],
 // 	},
 // };
-export const popularResultsFull = (plan) => {
+export const popularResultsFull = plan => {
 	if (plan === 'free') {
 		return defaultColumns(plan);
 	}
@@ -406,11 +406,11 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 		})
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -433,12 +433,12 @@ export function getPopularSearches(appName, clickanalytics = true) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popularSearches);
 				// resolve(data.body.popularSearches);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -461,11 +461,11 @@ export function getNoResultSearches(appName, clickanalytics = true) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.noResultSearches);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -484,11 +484,11 @@ export function getPopularResults(appName, clickanalytics = true) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popularResults);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -507,11 +507,11 @@ export function getPopularFilters(appName, clickanalytics = true) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popularFilters);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -528,11 +528,11 @@ export function getRequestLogs(appName) {
 		})
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});

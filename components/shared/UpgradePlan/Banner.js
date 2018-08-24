@@ -14,9 +14,7 @@ const desc = css`
 	font-size: 16px;
 	margin-top: 5px;
 `;
-const UpgradePlan = ({
- title, description, buttonText, href, isHorizontal,
-}) => (
+const UpgradePlan = ({ title, description, buttonText, href, isHorizontal }) => (
 	<Card css="margin-bottom: 20px">
 		<Flex justifyContent="space-between" flexDirection={isHorizontal ? 'row' : 'column'}>
 			<Flex flexDirection="column">

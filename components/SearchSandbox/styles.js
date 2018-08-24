@@ -96,4 +96,29 @@ const componentStyles = css`
 	}
 `;
 
-export { listItem, title, formWrapper, rowStyles, deleteStyles, componentStyles };
+const fieldBadge = css`
+	margin-left: 10px;
+	font-size: 10px;
+	background-color: #a2a4aa;
+	border-radius: 3px;
+	padding: 1px 2px;
+	color: #fff;
+`;
+
+const label = css`
+	font-weight: 700;
+	color: rgba(0, 0, 0, 0.85);
+	font-size: 14px;
+	margin: 20px 0;
+`;
+
+export {
+	listItem,
+	title,
+	formWrapper,
+	rowStyles,
+	deleteStyles,
+	componentStyles,
+	fieldBadge,
+	label,
+};

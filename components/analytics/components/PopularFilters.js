@@ -14,7 +14,7 @@ class PopularFilters extends React.Component {
 	}
 	componentDidMount() {
 		getPopularFilters(this.props.appName)
-			.then((res) => {
+			.then(res => {
 				this.setState({
 					popularFilters: res,
 					isFetching: false,
