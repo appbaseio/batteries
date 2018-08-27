@@ -175,8 +175,8 @@ export default class Editor extends Component {
 	handleUpdateJSON = (updatedJSONString) => {
 		const updatedJSON = JSON.parse(updatedJSONString);
 		let responseMessage = {
-			message: 'Update JSON',
-			description: 'JSON was successfully Updated.',
+			message: 'Edit successfully saved',
+			description: 'The desired result data was successfully updated.',
 			duration: 4,
 		};
 		this.appbaseRef
@@ -189,7 +189,7 @@ export default class Editor extends Component {
 			})
 			.on('data', (res) => {
 				this.setState({
-					renderKey: res._timestamp,
+					renderKey: res._timestamp, // eslint-disable-line
 				});
 			})
 			.on('error', () => {
@@ -242,11 +242,7 @@ export default class Editor extends Component {
 	};
 
 	handleInitialEditorValue = (res) => {
-		const objectJSON = res;
-
-		const id = objectJSON._id;
-		delete objectJSON._id;
-		delete objectJSON._index;
+		const { _id: id, _index: del, ...objectJSON } = res;
 
 		const stringifiedJSON = JSON.stringify(objectJSON, null, '\t');
 
@@ -430,6 +426,7 @@ export default class Editor extends Component {
 	renderJSONEditor = res => (
 		<Popover
 			placement="leftTop"
+			trigger="click"
 			onVisibleChange={visible =>
 				(visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
 			}
@@ -486,12 +483,12 @@ export default class Editor extends Component {
 				<div className={listItem} key={res._id}>
 					<ExpandCollapse previewHeight="390px" expandText="Show more">
 						{<Tree showLine>{this.renderAsTree(res)}</Tree>}
-						<div style={{ textAlign: 'right' }}>
-							{this.renderAsJSON(res)}
-							{this.renderJSONEditor(res)}
-							{this.renderDeleteJSON(res)}
-						</div>
 					</ExpandCollapse>
+					<div style={{ marginTop: 10, textAlign: 'right' }}>
+						{this.renderAsJSON(res)}
+						{this.renderJSONEditor(res)}
+						{this.renderDeleteJSON(res)}
+					</div>
 				</div>
 			),
 			react: {
