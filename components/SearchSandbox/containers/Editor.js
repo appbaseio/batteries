@@ -21,7 +21,7 @@ import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
 import PropTypes from 'prop-types';
 import AceEditor from 'react-ace';
-import brace from 'brace';
+import brace from 'brace'; // eslint-disable-line
 
 import 'brace/mode/json';
 import 'brace/theme/monokai';
