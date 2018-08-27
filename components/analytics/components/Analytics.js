@@ -2,7 +2,7 @@ import React from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import Flex from '../../shared/Flex';
-import { popularFiltersCol, popularResultsCol } from './../utils';
+import { popularFiltersCol, popularResultsCol, noResultSearchesCol } from './../utils';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
 
@@ -42,6 +42,7 @@ const Analytics = ({
 					<Searches
 						onClick={() => redirectTo('noResultSearches')}
 						dataSource={noResults}
+						columns={noResultSearchesCol}
 						title="No Result Searches"
 						plan={plan}
 					/>

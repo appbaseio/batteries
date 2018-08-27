@@ -14,7 +14,7 @@ class PopularSearches extends React.Component {
 	}
 	componentDidMount() {
 		getPopularSearches(this.props.appName)
-			.then(res => {
+			.then((res) => {
 				this.setState({
 					popularSearches: res,
 					isFetching: false,
