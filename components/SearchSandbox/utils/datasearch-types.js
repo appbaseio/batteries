@@ -20,13 +20,13 @@ export default {
 		label: 'Auto Suggest',
 		description: 'This will enable search component to fetch suggestions as you type',
 		input: 'bool',
-		default: false,
+		default: true,
 	},
 	highlight: {
 		label: 'Highlight results',
 		description: 'This will enable search highlighting',
 		input: 'bool',
-		default: true,
+		default: false,
 	},
 	size: {
 		label: 'Size',
