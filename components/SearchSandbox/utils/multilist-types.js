@@ -31,9 +31,9 @@ export default {
 		options: [{ label: 'Or', key: 'or' }, { label: 'And', key: 'and' }],
 		default: 'or',
 	},
-	showSearch: {
-		label: 'Show search',
-		description: 'This will render the search component within MultiList',
+	showCheckbox: {
+		label: 'Show Checkbox',
+		description: 'Show checkbox icon for each list item.',
 		input: 'bool',
 		default: true,
 	},
@@ -43,15 +43,15 @@ export default {
 		input: 'bool',
 		default: true,
 	},
-	showFilter: {
-		label: 'Show Filter',
-		description: 'Show as filter when a value is selected in a global selected filters view.',
+	showSearch: {
+		label: 'Show search',
+		description: 'This will render the search component within MultiList',
 		input: 'bool',
 		default: true,
 	},
-	showCheckbox: {
-		label: 'Show Checkbox',
-		description: 'Show checkbox icon for each list item.',
+	showFilter: {
+		label: 'Show Filter',
+		description: 'Show as filter when a value is selected in a global selected filters view.',
 		input: 'bool',
 		default: true,
 	},

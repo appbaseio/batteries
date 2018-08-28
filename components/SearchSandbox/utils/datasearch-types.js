@@ -6,12 +6,6 @@ export default {
 		input: 'dropdown',
 		multiple: true,
 	},
-	autosuggest: {
-		label: 'Auto Suggest',
-		description: 'This will enable search component to fetch suggestions as you type',
-		input: 'bool',
-		default: true,
-	},
 	title: {
 		label: 'Title',
 		description: '',
@@ -22,11 +16,17 @@ export default {
 		description: '',
 		input: 'string',
 	},
+	autosuggest: {
+		label: 'Auto Suggest',
+		description: 'This will enable search component to fetch suggestions as you type',
+		input: 'bool',
+		default: false,
+	},
 	highlight: {
 		label: 'Highlight results',
 		description: 'This will enable search highlighting',
 		input: 'bool',
-		default: false,
+		default: true,
 	},
 	size: {
 		label: 'Size',
