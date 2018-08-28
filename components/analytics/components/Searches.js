@@ -2,7 +2,9 @@ import React from 'react';
 import { Card, Table, Button } from 'antd';
 import { defaultColumns } from './../utils';
 
-const Searches = ({ title, dataSource, columns, showViewOption, onClick, plan, pagination }) => (
+const Searches = ({
+ title, dataSource, columns, showViewOption, onClick, plan, pagination,
+}) => (
 	<Card title={title}>
 		<Table
 			rowKey={record => record.key}
@@ -21,6 +23,7 @@ const Searches = ({ title, dataSource, columns, showViewOption, onClick, plan, p
 Searches.defaultProps = {
 	showViewOption: true,
 	pagination: false,
+	clickAnalytics: true,
 };
 
 export default Searches;

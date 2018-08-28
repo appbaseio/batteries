@@ -43,14 +43,14 @@ class Main extends React.Component {
 		// Comment out the below code to test paid user
 		// COMMENT START
 		checkUserStatus().then(
-			response => {
+			(response) => {
 				if (response.isPaidUser) {
 					this.setState(
 						{ isPaidUser: response.isPaidUser, currentPlan: response.plan },
 						() => {
 							// COMMENT END
 							getAnalytics(this.props.appName, this.state.currentPlan)
-								.then(res => {
+								.then((res) => {
 									this.setState({
 										noResults: res.noResultSearches,
 										popularSearches: res.popularSearches,
@@ -90,7 +90,7 @@ class Main extends React.Component {
 			window.location.reload();
 		}
 	}
-	changeActiveTabKey = tab => {
+	changeActiveTabKey = (tab) => {
 		this.setState(
 			{
 				activeTabKey: tab,
@@ -98,7 +98,7 @@ class Main extends React.Component {
 			() => this.redirectTo(tab),
 		);
 	};
-	redirectTo = tab => {
+	redirectTo = (tab) => {
 		window.history.pushState(
 			null,
 			null,

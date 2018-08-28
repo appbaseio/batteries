@@ -14,7 +14,7 @@ class PopularResults extends React.Component {
 	}
 	componentDidMount() {
 		getPopularResults(this.props.appName)
-			.then(res => {
+			.then((res) => {
 				this.setState({
 					popularResults: res,
 					isFetching: false,

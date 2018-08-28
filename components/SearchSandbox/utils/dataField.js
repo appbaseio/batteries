@@ -9,12 +9,12 @@ const propsMap = {
 };
 
 const getSubFields = (mappings, field, types) =>
-	(mappings[field].fields.length
-		? [
-				...mappings[field].fields
-					.filter(item => types.includes(mappings[field].originalFields[item].type))
-					.map(item => `${field}.${item}`),
-		  ]
+	(mappings[field] && mappings[field].fields && mappings[field].fields.length
+			? [
+			...mappings[field].fields
+				.filter(item => types.includes(mappings[field].originalFields[item].type))
+				.map(item => `${field}.${item}`),
+			]
 		: [field]);
 
 // generates the dataField prop for reactivesearch component
@@ -46,7 +46,7 @@ const generateDataField = (component, selectedFields, mappings) => {
 };
 
 const getSubFieldWeights = (mappings, field, defaultWeight = 1) =>
-	(mappings[field].fields.length
+	(mappings[field] && mappings[field].fields && mappings[field].fields.length
 		? [
 				...mappings[field].fields.map((item) => {
 					let weight = 1;

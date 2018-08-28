@@ -82,11 +82,10 @@ export default class RSWrapper extends Component {
 
 		if (this.props.id === 'search') {
 			return Object.keys(this.props.mappings).filter(field =>
-				types.includes(this.props.mappings[field].type),
-			);
+				types.includes(this.props.mappings[field].type));
 		}
 
-		const fields = Object.keys(this.props.mappings).filter(field => {
+		const fields = Object.keys(this.props.mappings).filter((field) => {
 			let fieldsToCheck = [this.props.mappings[field]];
 
 			if (this.props.mappings[field].originalFields) {
@@ -102,7 +101,7 @@ export default class RSWrapper extends Component {
 		return fields;
 	};
 
-	setError = error => {
+	setError = (error) => {
 		this.setState(
 			{
 				error,
@@ -202,12 +201,8 @@ export default class RSWrapper extends Component {
 		this.setState({
 			componentProps: {
 				...this.state.componentProps,
-				dataField: this.state.componentProps.dataField.filter(
-					(i, index) => index !== deleteIndex,
-				),
-				fieldWeights: this.state.componentProps.fieldWeights.filter(
-					(i, index) => index !== deleteIndex,
-				),
+				dataField: this.state.componentProps.dataField.filter((i, index) => index !== deleteIndex),
+				fieldWeights: this.state.componentProps.fieldWeights.filter((i, index) => index !== deleteIndex),
 			},
 		});
 	};
@@ -238,9 +233,7 @@ export default class RSWrapper extends Component {
 	};
 
 	handleAddFieldRow = () => {
-		const field = this.getAvailableDataField().find(
-			item => !this.state.componentProps.dataField.includes(item),
-		);
+		const field = this.getAvailableDataField().find(item => !this.state.componentProps.dataField.includes(item));
 
 		if (field) {
 			this.setState({
@@ -418,9 +411,7 @@ export default class RSWrapper extends Component {
 							disable = true;
 							dropdownValue = [];
 						}
-						dropdownOptions = Object.keys(this.props.mappings).filter(
-							v => !excludeFields.includes(v),
-						);
+						dropdownOptions = Object.keys(this.props.mappings).filter(v => !excludeFields.includes(v));
 						break;
 					}
 					case 'excludeFields': {
@@ -443,9 +434,7 @@ export default class RSWrapper extends Component {
 							dropdownValue = [];
 						}
 
-						dropdownOptions = Object.keys(this.props.mappings).filter(
-							v => !includeFields.includes(v),
-						);
+						dropdownOptions = Object.keys(this.props.mappings).filter(v => !includeFields.includes(v));
 						break;
 					}
 					default:
@@ -482,9 +471,7 @@ export default class RSWrapper extends Component {
 			}
 			case 'dropdown': {
 				const dropdownOptions = propsMap[this.props.component][name].options;
-				const selectedDropdown = dropdownOptions.find(
-					option => option.key === this.state.componentProps[name],
-				);
+				const selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
 				const selectedValue = selectedDropdown
 					? selectedDropdown.label
 					: propsMap[this.props.component][name].default;
