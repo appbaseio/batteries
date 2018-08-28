@@ -8,11 +8,14 @@ const propsMap = {
 	ReactiveList: reactiveListTypes,
 };
 
-const getSubFields = (mappings, field, types) => [
-	...mappings[field].fields
-		.filter(item => types.includes(mappings[field].originalFields[item].type))
-		.map(item => `${field}.${item}`),
-];
+const getSubFields = (mappings, field, types) =>
+	(mappings[field] && mappings[field].fields && mappings[field].fields.length
+			? [
+			...mappings[field].fields
+				.filter(item => types.includes(mappings[field].originalFields[item].type))
+				.map(item => `${field}.${item}`),
+			]
+		: [field]);
 
 // generates the dataField prop for reactivesearch component
 // based on the selected-field(s)
@@ -42,13 +45,16 @@ const generateDataField = (component, selectedFields, mappings) => {
 	return validFields ? validFields[0] : null;
 };
 
-const getSubFieldWeights = (mappings, field, defaultWeight = 1) => [
-	...mappings[field].fields.map((item) => {
-		let weight = 1;
-		if (item === 'keyword') weight = defaultWeight;
-		return parseInt(weight, 10);
-	}),
-];
+const getSubFieldWeights = (mappings, field, defaultWeight = 1) =>
+	(mappings[field] && mappings[field].fields && mappings[field].fields.length
+		? [
+				...mappings[field].fields.map((item) => {
+					let weight = 1;
+					if (item === 'keyword') weight = defaultWeight;
+					return parseInt(weight, 10);
+				}),
+			]
+		: null);
 
 const generateFieldWeights = (selectedFields, weights, mappings) => {
 	let resultWeights = [];
