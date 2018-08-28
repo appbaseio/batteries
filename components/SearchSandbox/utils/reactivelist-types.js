@@ -19,25 +19,17 @@ export default {
 		options: [{ label: 'Ascending', key: 'asc' }, { label: 'Descending', key: 'desc' }],
 		default: 'asc',
 	},
+	stream: {
+		label: 'Stream',
+		description: 'Whether to stream new result updates in the UI.',
+		input: 'bool',
+		default: false,
+	},
 	pagination: {
 		label: 'Show pagination',
 		description: 'This will render the pagination component with the results',
 		input: 'bool',
 		default: true,
-	},
-	includeFields: {
-		label: 'Include Fields',
-		description: 'Set fields you want to Include',
-		input: 'multiDropdown',
-		options: [],
-		default: ['*'],
-	},
-	excludeFields: {
-		label: 'Exclude Fields',
-		description: 'Set fields you want to Exclude',
-		input: 'multiDropdown',
-		options: [],
-		default: [],
 	},
 	pages: {
 		label: 'Number of Pages',
@@ -56,17 +48,25 @@ export default {
 		],
 		default: 'bottom',
 	},
+	includeFields: {
+		label: 'Include Fields',
+		description: 'Set fields you want to Include',
+		input: 'multiDropdown',
+		options: [],
+		default: ['*'],
+	},
+	excludeFields: {
+		label: 'Exclude Fields',
+		description: 'Set fields you want to Exclude',
+		input: 'multiDropdown',
+		options: [],
+		default: [],
+	},
 	showResultStats: {
 		label: 'Show Result Stats',
 		description: 'Whether to show result stats in the form of results found and time taken. ',
 		input: 'bool',
 		default: true,
-	},
-	stream: {
-		label: 'Stream',
-		description: 'Whether to stream new result updates in the UI.',
-		input: 'bool',
-		default: false,
 	},
 	loader: {
 		label: 'Loading Message',
