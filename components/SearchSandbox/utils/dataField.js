@@ -25,8 +25,8 @@ const generateDataField = (component, selectedFields, mappings) => {
 		let dataField = '';
 		if (mappings[selectedFields].fields.length > 0) {
 			dataField = mappings[selectedFields].originalFields.keyword
-				? `${selectedFields}.${mappings[selectedFields].originalFields.keyword.type}`
-				: `${selectedFields}.${mappings[selectedFields].originalFields.raw.type}`;
+				? `${selectedFields}.keyword`
+				: `${selectedFields}.raw`;
 			return dataField;
 		}
 		return selectedFields;

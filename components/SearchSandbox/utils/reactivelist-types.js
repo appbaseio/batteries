@@ -10,7 +10,7 @@ export default {
 		label: 'Sort Order',
 		description: 'Sort the results by one of Best Match, Ascending or Descending order.',
 		input: 'dropdown',
-		options: [{label: 'Best Match', key: '_score' }, { label: 'Ascending', key: 'asc' }, { label: 'Descending', key: 'desc' }],
+		options: [{ label: 'Best Match', key: '_score' }, { label: 'Ascending', key: 'asc' }, { label: 'Descending', key: 'desc' }],
 		default: '_score',
 	},
 	size: {
