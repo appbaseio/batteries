@@ -48,6 +48,7 @@ export default class Editor extends Component {
 			isValidJSON: true,
 			editorObjectId: '',
 			renderKey: Date.now(),
+			showVideo: false,
 		};
 		this.appbaseRef = new Appbase({
 			appname: this.props.appName,
@@ -140,6 +141,12 @@ export default class Editor extends Component {
 			},
 			this.resetNewComponentData,
 		);
+	};
+
+	handleVideoModal = () => {
+		this.setState({
+				showVideo: !this.state.showVideo,
+			});
 	};
 
 	handleDataFieldChange = (item) => {
@@ -496,6 +503,8 @@ export default class Editor extends Component {
 			},
 		};
 
+		const title = <span>Search Preview <Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">Watch Video</Button></span>;
+
 		return (
 			<ReactiveBase
 				app={this.props.appName}
@@ -504,7 +513,7 @@ export default class Editor extends Component {
 			>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
-						<Card title="Configure Search">
+						<Card title={title}>
 							<Button
 								style={{ width: '100%' }}
 								size="large"
@@ -565,6 +574,15 @@ export default class Editor extends Component {
 						destroyOnClose
 					>
 						{this.renderPropsForm()}
+					</Modal>
+					<Modal
+						title="Dejavu Video"
+						visible={this.state.showVideo}
+						onOk={this.handleVideoModal}
+						onCancel={this.handleVideoModal}
+						destroyOnClose
+					>
+						<iframe width="100%" src="https://www.youtube.com/embed/qhDuRd2pJIY" frameBorder="0" title="Dejavu" allow="autoplay; encrypted-media" allowFullScreen />
 					</Modal>
 				</Row>
 			</ReactiveBase>
