@@ -562,6 +562,7 @@ export default class Editor extends Component {
 						visible={this.state.showModal}
 						onOk={this.handleOk}
 						onCancel={this.handleCancel}
+						okText="Add"
 						destroyOnClose
 					>
 						{this.renderPropsForm()}
