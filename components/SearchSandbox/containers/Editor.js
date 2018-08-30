@@ -583,7 +583,7 @@ export default class Editor extends Component {
 						onCancel={this.handleVideoModal}
 						destroyOnClose
 					>
-						<iframe width="100%" src="https://www.youtube.com/embed/qhDuRd2pJIY" frameBorder="0" title="Dejavu" allow="autoplay; encrypted-media" allowFullScreen />
+						<iframe width="100%" src="https://www.youtube.com/embed/f5SHz80r9Ro" frameBorder="0" title="Dejavu" allow="autoplay; encrypted-media" allowFullScreen />
 					</Modal>
 				</Row>
 			</ReactiveBase>
