@@ -257,10 +257,12 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
  * Get the popular seraches
  * @param {string} appName
  */
-export function getPopularSearches(appName, clickanalytics = true) {
+export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		fetch(
-			`${ACC_API}/analytics/${appName}/popularsearches${getQueryParams({ clickanalytics })}`,
+			`${ACC_API}/analytics/${appName}/popularsearches${getQueryParams({
+				clickanalytics,
+			})}?size=${size}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -285,9 +287,9 @@ export function getPopularSearches(appName, clickanalytics = true) {
  * Get the no results seraches
  * @param {string} appName
  */
-export function getNoResultSearches(appName) {
+export function getNoResultSearches(appName, size = 100) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/analytics/${appName}/noresultsearches`, {
+		fetch(`${ACC_API}/analytics/${appName}/noresultsearches?size=${size}`, {
 			method: 'GET',
 			credentials: 'include',
 			headers: {
@@ -305,10 +307,12 @@ export function getNoResultSearches(appName) {
 			});
 	});
 }
-export function getPopularResults(appName, clickanalytics = true) {
+export function getPopularResults(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		fetch(
-			`${ACC_API}/analytics/${appName}/popularResults${getQueryParams({ clickanalytics })}`,
+			`${ACC_API}/analytics/${appName}/popularResults${getQueryParams({
+				clickanalytics,
+			})}?size=${size}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -328,10 +332,12 @@ export function getPopularResults(appName, clickanalytics = true) {
 			});
 	});
 }
-export function getPopularFilters(appName, clickanalytics = true) {
+export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		fetch(
-			`${ACC_API}/analytics/${appName}/popularFilters${getQueryParams({ clickanalytics })}`,
+			`${ACC_API}/analytics/${appName}/popularFilters${getQueryParams({
+				clickanalytics,
+			})}?size=${size}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -352,9 +358,9 @@ export function getPopularFilters(appName, clickanalytics = true) {
 	});
 }
 // To fetch request logs
-export function getRequestLogs(appName) {
+export function getRequestLogs(appName, size = 100) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appName}/logs`, {
+		fetch(`${ACC_API}/app/${appName}/logs?size=${size}`, {
 			method: 'GET',
 			credentials: 'include',
 			headers: {
