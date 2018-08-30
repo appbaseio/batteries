@@ -577,13 +577,13 @@ export default class Editor extends Component {
 						{this.renderPropsForm()}
 					</Modal>
 					<Modal
-						title="Dejavu Video"
+						title="Search Preview: 1 min walkthrough"
 						visible={this.state.showVideo}
 						onOk={this.handleVideoModal}
 						onCancel={this.handleVideoModal}
 						destroyOnClose
 					>
-						<iframe width="100%" src="https://www.youtube.com/embed/f5SHz80r9Ro" frameBorder="0" title="Dejavu" allow="autoplay; encrypted-media" allowFullScreen />
+						<iframe width="460" height="240" src="https://www.youtube.com/embed/f5SHz80r9Ro" frameBorder="0" title="Dejavu" allow="autoplay; encrypted-media" allowFullScreen />
 					</Modal>
 				</Row>
 			</ReactiveBase>
