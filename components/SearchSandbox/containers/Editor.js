@@ -420,7 +420,7 @@ export default class Editor extends Component {
 				</Row>
 			}
 		>
-			<Button shape="circle" icon="code-o" style={{ marginRight: '5px' }} />
+			<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
 		</Popover>
 	);
 
