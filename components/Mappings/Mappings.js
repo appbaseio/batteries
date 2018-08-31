@@ -102,6 +102,8 @@ export default class Mappings extends Component {
 			showFeedback: false,
 			timeTaken: '0',
 			synonyms: [],
+			credentials: '',
+			showSynonymModal: false,
 		};
 
 		this.usecases = textUsecases;
@@ -134,31 +136,32 @@ export default class Mappings extends Component {
 					});
 				});
 
-			getCredentials(this.props.appId)
-				.then((user) => {
-					const { username, password } = user;
-					return this.fetchSynonyms(`${username}:${password}`);
-				})
-				.then(synonyms =>
-					this.setState({
-						synonyms,
-					}));
-
-			getCredentials(this.props.appId)
-				.then((user) => {
-					const { username, password } = user;
-					return getMappings(this.props.appName, `${username}:${password}`);
-				})
-				.then(this.handleMapping)
-				.catch((e) => {
-					console.error(e);
-					this.setState({
-						mappingsError: e,
-						showError: true,
-						isLoading: false,
-					});
-				});
+			getCredentials(this.props.appId).then((user) => {
+				const { username, password } = user;
+				this.setState({
+					credentials: `${username}:${password}`,
+				}, () => this.initializeData(this.state.credentials));
+			});
 		}
+	}
+
+	initializeData= (credentials) => {
+		getMappings(this.props.appName, credentials)
+			.then(this.handleMapping)
+			.catch((e) => {
+				console.error(e);
+				this.setState({
+					mappingsError: e,
+					showError: true,
+					isLoading: false,
+				});
+			});
+
+		this.fetchSynonyms(credentials)
+		.then(synonyms =>
+			this.setState({
+				synonyms,
+			}));
 	}
 
 	getType = (type) => {
@@ -190,6 +193,12 @@ export default class Mappings extends Component {
 		this.setState({
 			isLoading: false,
 			mapping: res ? transformToES5(res) : res,
+		});
+	};
+
+	handleSynonymModal = () => {
+		this.setState({
+			showSynonymModal: !this.state.showSynonymModal,
 		});
 	};
 
@@ -243,13 +252,15 @@ export default class Mappings extends Component {
 		});
 	};
 
-	fetchSynonyms = (credentials, url) =>
-		getSettings(this.props.appName, credentials, url).then(data =>
+	fetchSynonyms = (credentials) => {
+		const url = this.props.url;
+		return getSettings(this.props.appName, credentials, url).then(data =>
 				(data[this.props.appName].settings.index.analysis.filter.synonyms_filter
 					? data[
 							this.props.appName
-					  ].settings.index.analysis.filter.synonyms_filter.synonyms.join(',')
+					  ].settings.index.analysis.filter.synonyms_filter.synonyms.join('\n')
 					: ''));
+	};
 
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
@@ -477,32 +488,42 @@ export default class Mappings extends Component {
 			</div>
 		));
 
-	updateSynonyms = (credentials, url) => {
-		let updatedResponse = false;
-		closeIndex(this.props.appName, credentials, this.props.url)
+	updateSynonyms = () => {
+		const credentials = this.props.credentials || this.state.credentials;
+		const { url } = this.props;
+
+		closeIndex(this.props.appName, credentials, url)
 			.then(() =>
 				updateSynonyms(
 					this.props.appName,
+					credentials,
 					url,
-					this.props.url,
-					this.state.synonyms.split(','),
+					this.state.synonyms.split('\n'),
 				))
-			.then((data) => {
-				updatedResponse = data.acknowledged;
-				return openIndex(this.props.appName, credentials, this.props.url);
+			.then(data => data.acknowledged)
+			.then((isUpdated) => {
+				if (isUpdated) {
+					this.fetchSynonyms(credentials)
+					.then(newSynonyms => this.setState({
+						synonyms: newSynonyms,
+						showSynonymModal: false,
+					}));
+				} else {
+					this.setState({
+						showSynonymModal: false,
+						showError: true,
+						errorMessage: 'Unable to update Synonyms',
+					});
+				}
 			})
-			.catch(() => openIndex(this.props.appName, credentials, this.props.url));
-		if (updatedResponse) {
-			const newSynonyms = this.fetchSynonyms(credentials, url);
-			this.setState({
-				synonyms: newSynonyms,
+			.catch(() => {
+				openIndex(this.props.appName, credentials, url);
+				this.setState({
+					showSynonymModal: false,
+					showError: true,
+					errorMessage: 'Unable to update Synonyms',
+				});
 			});
-		} else {
-			this.setState({
-				showError: true,
-				errorMessage: 'Unable to update Synonyms',
-			});
-		}
 	};
 
 	render() {
@@ -539,30 +560,12 @@ export default class Mappings extends Component {
 							<p>Add new synonyms or edit the existing ones.</p>
 						</HeaderWrapper>
 						{this.state.editable ? (
-							<Button ghost onClick={this.updateSynonyms}>
-								Update Synonym
+							<Button ghost onClick={this.handleSynonymModal}>
+								{this.state.synonyms ? 'Edit' : 'Add'} Synonym
 							</Button>
 						) : (
 							this.renderPromotionalButtons('synonyms', synonymMessage)
 						)}
-					</div>
-					<div
-						style={{
-							borderBottom: '1px solid #eee',
-							padding: 20,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-						}}
-					>
-						<TextArea
-							disabled={!this.state.editable}
-							name="synonyms"
-							value={this.state.synonyms}
-							onChange={this.handleChange}
-							placeholder="Comma separated Synonymns"
-							autosize={{ minRows: 2, maxRows: 4 }}
-						/>
 					</div>
 				</div>
 				<div className={card}>
@@ -655,6 +658,25 @@ export default class Mappings extends Component {
 						timeTaken={this.state.timeTaken}
 						onClose={() => window.location.reload()}
 					/>
+					<Modal
+						show={this.state.showSynonymModal}
+						onClose={this.handleSynonymModal}
+					>
+						<TextArea
+							disabled={!this.state.editable}
+							name="synonyms"
+							value={this.state.synonyms}
+							onChange={this.handleChange}
+							placeholder="Comma separated Synonymns"
+							autosize={{ minRows: 2, maxRows: 4 }}
+						/>
+						<Button onClick={this.updateSynonyms} style={{ float: 'right', margin: '10px 0' }}>
+							{this.state.synonyms ? 'Save' : 'Add'} Synonym
+						</Button>
+						<Button ghost onClick={this.handleSynonymModal} style={{ float: 'right', margin: '10px' }}>
+							Cancel
+						</Button>
+					</Modal>
 				</div>
 			</React.Fragment>
 		);

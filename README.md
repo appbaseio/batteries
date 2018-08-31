@@ -1,5 +1,5 @@
 # batteries
-Private plug-able modules for appbase dashboard
+Public plug-able modules for use within appbase.io dashboard, dejavu, and reactive apps.
 
 ## Setup
 

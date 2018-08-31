@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getNoResultSearches, popularSearchesFull } from './../utils';
+import { getNoResultSearches, noResultSearchesCol } from './../utils';
 import Loader from './../../shared/Loader/Spinner';
 
 class NoResultsSearch extends React.Component {
@@ -14,7 +14,7 @@ class NoResultsSearch extends React.Component {
 	}
 	componentDidMount() {
 		getNoResultSearches(this.props.appName)
-			.then(res => {
+			.then((res) => {
 				this.setState({
 					noResults: res,
 					isFetching: false,
@@ -34,7 +34,7 @@ class NoResultsSearch extends React.Component {
 		return (
 			<Searches
 				showViewOption={false}
-				columns={popularSearchesFull(this.props.plan)}
+				columns={noResultSearchesCol}
 				dataSource={this.state.noResults}
 				title="No Results Searches"
 				pagination={{
@@ -45,7 +45,6 @@ class NoResultsSearch extends React.Component {
 	}
 }
 NoResultsSearch.propTypes = {
-	plan: PropTypes.string,
 	appName: PropTypes.string,
 };
 export default NoResultsSearch;

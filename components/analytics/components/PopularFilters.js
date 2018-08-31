@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getPopularFilters, popularSearchesFull } from './../utils';
+import { getPopularFilters, popularFiltersFull } from './../utils';
 import Loader from './../../shared/Loader/Spinner';
 
 class PopularFilters extends React.Component {
@@ -14,7 +14,7 @@ class PopularFilters extends React.Component {
 	}
 	componentDidMount() {
 		getPopularFilters(this.props.appName)
-			.then(res => {
+			.then((res) => {
 				this.setState({
 					popularFilters: res,
 					isFetching: false,
@@ -34,7 +34,7 @@ class PopularFilters extends React.Component {
 		return (
 			<Searches
 				showViewOption={false}
-				columns={popularSearchesFull(this.props.plan)}
+				columns={popularFiltersFull(this.props.plan)}
 				dataSource={this.state.popularFilters}
 				title="Popular Filters"
 				pagination={{

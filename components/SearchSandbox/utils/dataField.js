@@ -8,11 +8,24 @@ const propsMap = {
 	ReactiveList: reactiveListTypes,
 };
 
-const getSubFields = (mappings, field, types) => [
-	...mappings[field].fields
-		.filter(item => types.includes(mappings[field].originalFields[item].type))
-		.map(item => `${field}.${item}`),
-];
+const getSubFields = (mappings, field, types) =>
+	(mappings[field] && mappings[field].fields && mappings[field].fields.length
+			? [
+				...mappings[field].fields
+				.filter(item => types.includes(mappings[field].originalFields[item].type))
+				.map(item => `${field}.${item}`),
+			]
+		: [field]);
+
+const getKeywordField = fields => Object.keys(fields).find((item) => {
+	if (
+		fields[item].type === 'keyword'
+		|| (fields[item].index === 'not_analyzed' && fields[item].type === 'string')
+	) {
+		return true;
+	}
+	return false;
+});
 
 // generates the dataField prop for reactivesearch component
 // based on the selected-field(s)
@@ -21,9 +34,8 @@ const generateDataField = (component, selectedFields, mappings) => {
 	if (component === 'ReactiveList') {
 		let dataField = '';
 		if (mappings[selectedFields].fields.length > 0) {
-			dataField = mappings[selectedFields].originalFields.keyword
-				? `${selectedFields}.${mappings[selectedFields].originalFields.keyword.type}`
-				: `${selectedFields}.${mappings[selectedFields].originalFields.raw.type}`;
+			const subField = getKeywordField(mappings[selectedFields].originalFields);
+			dataField = `${selectedFields}${subField ? `.${subField}` : ''}`;
 			return dataField;
 		}
 		return selectedFields;
@@ -42,13 +54,16 @@ const generateDataField = (component, selectedFields, mappings) => {
 	return validFields ? validFields[0] : null;
 };
 
-const getSubFieldWeights = (mappings, field, defaultWeight = 1) => [
-	...mappings[field].fields.map((item) => {
-		let weight = 1;
-		if (item === 'keyword') weight = defaultWeight;
-		return parseInt(weight, 10);
-	}),
-];
+const getSubFieldWeights = (mappings, field, defaultWeight = 1) =>
+	(mappings[field] && mappings[field].fields && mappings[field].fields.length
+		? [
+			...mappings[field].fields.map((item) => {
+				let weight = 1;
+				if (item === 'keyword') weight = defaultWeight;
+				return parseInt(weight, 10);
+			}),
+		]
+		: []);
 
 const generateFieldWeights = (selectedFields, weights, mappings) => {
 	let resultWeights = [];

@@ -3,7 +3,6 @@ import { css } from 'emotion';
 import moment from 'moment';
 import { ACC_API } from './../../utils';
 import Flex from '../shared/Flex';
-// import logs from './logsData';
 
 const requestOpt = css`
 	color: #00ff88;
@@ -13,7 +12,7 @@ const requestOpt = css`
 	border-radius: 3px;
 	border: solid 1px #00ff88;
 `;
-const getQueryParams = paramObj => {
+const getQueryParams = (paramObj) => {
 	let queryString = '';
 	Object.keys(paramObj).forEach((o, i) => {
 		if (i === 0) {
@@ -24,7 +23,7 @@ const getQueryParams = paramObj => {
 	});
 	return queryString;
 };
-export const getTimeDuration = time => {
+export const getTimeDuration = (time) => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
 		const timeD = parseInt(timeInMs / (24 * 60 * 60 * 1000), 10);
@@ -63,76 +62,52 @@ export const getTimeDuration = time => {
 		time: parseInt(timeInMs / 1000, 10),
 	};
 };
-export const popularFiltersCol = plan => {
-	if (!plan || plan === 'free') {
-		return [
-			{
-				title: 'Polpular Filters',
-				dataIndex: 'key',
-			},
-			{
-				title: 'Impressions',
-				dataIndex: 'count',
-			},
-		];
-	}
-	return [
+export const popularFiltersCol = (plan) => {
+	const defaults = [
 		{
-			title: 'Polpular Filters',
+			title: 'Filters',
 			dataIndex: 'key',
 		},
 		{
 			title: 'Impressions',
 			dataIndex: 'count',
 		},
+	];
+	if (!plan || plan === 'free') {
+		return defaults;
+	}
+	return [
+		...defaults,
 		{
 			title: 'Click Rate',
 			dataIndex: 'clickrate',
 		},
 	];
 };
-export const popularResultsCol = plan => {
-	if (!plan || plan === 'free') {
-		return [
-			{
-				title: 'Polpular Results',
-				dataIndex: 'key',
-			},
-			{
-				title: 'Impressions',
-				dataIndex: 'count',
-			},
-		];
-	}
-	return [
+export const popularResultsCol = (plan) => {
+	const defaults = [
 		{
-			title: 'Polpular Results',
+			title: 'Results',
 			dataIndex: 'key',
 		},
 		{
 			title: 'Impressions',
 			dataIndex: 'count',
 		},
+	];
+	if (!plan || plan === 'free') {
+		return defaults;
+	}
+	return [
+		...defaults,
 		{
 			title: 'Click Rate',
 			dataIndex: 'clickrate',
 		},
 	];
 };
-export const defaultColumns = plan => {
-	if (!plan || plan === 'free') {
-		return [
-			{
-				title: 'Search Terms',
-				dataIndex: 'key',
-			},
-			{
-				title: 'Total Queries',
-				dataIndex: 'count',
-			},
-		];
-	}
-	return [
+export const defaultColumns = (plan) => {
+	const defaults = [
 		{
 			title: 'Search Terms',
 			dataIndex: 'key',
@@ -141,13 +116,19 @@ export const defaultColumns = plan => {
 			title: 'Total Queries',
 			dataIndex: 'count',
 		},
+	];
+	if (!plan || plan === 'free') {
+		return defaults;
+	}
+	return [
+		...defaults,
 		{
 			title: 'Click Rate',
 			dataIndex: 'clickrate',
 		},
 	];
 };
-export const popularSearchesFull = plan => {
+export const popularSearchesFull = (plan) => {
 	if (!plan || plan === 'free') {
 		return defaultColumns(plan);
 	}
@@ -167,177 +148,35 @@ export const popularSearchesFull = plan => {
 		},
 	];
 };
-// const data = {
-// 	body: {
-// 		popularSearches: [
-// 			{
-// 				key: 'Iphone X',
-// 				count: 23,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 'Oculus VR',
-// 				count: 12,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 'One Plus',
-// 				count: 5,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 		],
-// 		noResultSearches: [
-// 			{
-// 				key: 'Iphone 10',
-// 				count: 15,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 'Oclus VR',
-// 				count: 5,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 'One Plus',
-// 				count: 12,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 		],
-// 		searchVolume: [
-// 			{
-// 				key: 1531333800000,
-// 				key_as_string: '2018-07-12T00:00:00.000Z',
-// 				count: 101,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 1531420200000,
-// 				key_as_string: '2018-07-13T00:00:00.000Z',
-// 				count: 89,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 1531506600000,
-// 				key_as_string: '2018-07-14T00:00:00.000Z',
-// 				count: 115,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 1531593000000,
-// 				key_as_string: '2018-07-15T00:00:00.000Z',
-// 				count: 55,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 1531679400000,
-// 				key_as_string: '2018-07-16T00:00:00.000Z',
-// 				count: 76,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 1531765800000,
-// 				key_as_string: '2018-07-17T00:00:00.000Z',
-// 				count: 110,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 1531852200000,
-// 				key_as_string: '2018-07-18T00:00:00.000Z',
-// 				count: 125,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 		],
-// 		popularFilters: [
-// 			{
-// 				key: 'category',
-// 				value: 'apple',
-// 				count: 3,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: 'since',
-// 				value: '2016-2018',
-// 				count: 2,
-// 				clicks: 25,
-// 				clickposition: 1.82, // won't be present in popularResults
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 		],
-// 		popularResults: [
-// 			{
-// 				key: 'abcxyz',
-// 				source: JSON.stringify({
-// 					random: 'a',
-// 					stuff: 'b',
-// 				}),
-// 				count: 35,
-// 				clicks: 25,
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 			{
-// 				key: '12341',
-// 				source: JSON.stringify({
-// 					random: 'a',
-// 					stuff: 'b',
-// 				}),
-// 				count: 14,
-// 				clicks: 25,
-// 				clickrate: 12.5,
-// 				conversionrate: 1.35,
-// 			},
-// 		],
-// 	},
-// };
-export const popularResultsFull = plan => {
+export const popularResultsFull = (plan) => {
 	if (plan === 'free') {
-		return defaultColumns(plan);
+		return popularResultsCol(plan);
 	}
 	return [
-		...defaultColumns(plan),
+		...popularResultsCol(plan),
+		{
+			title: 'Clicks',
+			dataIndex: 'clicks',
+			key: 'clicks',
+		},
+		{
+			title: 'Source',
+			dataIndex: 'source',
+			key: 'source',
+		},
+		{
+			title: 'Conversion Rate',
+			dataIndex: 'conversionrate',
+			key: 'conversionrate',
+		},
+	];
+};
+export const popularFiltersFull = (plan) => {
+	if (plan === 'free') {
+		return popularFiltersCol(plan);
+	}
+	return [
+		...popularFiltersCol(plan),
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
@@ -391,11 +230,10 @@ export const requestLogs = [
  */
 export function getAnalytics(appName, userPlan, clickanalytics = true) {
 	return new Promise((resolve, reject) => {
-		// const url =
-		// 	userPlan === 'growth'
-		// 		? `${ACC_API}/analytics/${appName}/advanced`
-		// 		: `${ACC_API}/analytics/${appName}/overview`;
-		const url = `${ACC_API}/analytics/${appName}/overview`;
+		const url =
+			userPlan === 'growth'
+				? `${ACC_API}/analytics/${appName}/advanced`
+				: `${ACC_API}/analytics/${appName}/overview`;
 		const queryParams = getQueryParams({ clickanalytics });
 		fetch(url + queryParams, {
 			method: 'GET',
@@ -406,11 +244,11 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 		})
 			// Comment out this line
 			.then(res => res.json())
-			.then(res => {
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -419,10 +257,12 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
  * Get the popular seraches
  * @param {string} appName
  */
-export function getPopularSearches(appName, clickanalytics = true) {
+export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		fetch(
-			`${ACC_API}/analytics/${appName}/popularsearches${getQueryParams({ clickanalytics })}`,
+			`${ACC_API}/analytics/${appName}/popularsearches${getQueryParams({
+				clickanalytics,
+			})}?size=${size}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -433,12 +273,12 @@ export function getPopularSearches(appName, clickanalytics = true) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then(res => {
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res.popularSearches);
 				// resolve(data.body.popularSearches);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -447,79 +287,9 @@ export function getPopularSearches(appName, clickanalytics = true) {
  * Get the no results seraches
  * @param {string} appName
  */
-export function getNoResultSearches(appName, clickanalytics = true) {
+export function getNoResultSearches(appName, size = 100) {
 	return new Promise((resolve, reject) => {
-		fetch(
-			`${ACC_API}/analytics/${appName}/noresultsearches${getQueryParams({ clickanalytics })}`,
-			{
-				method: 'GET',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
-			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
-				// resolve the promise with response
-				resolve(res.noResultSearches);
-			})
-			.catch(e => {
-				reject(e);
-			});
-	});
-}
-export function getPopularResults(appName, clickanalytics = true) {
-	return new Promise((resolve, reject) => {
-		fetch(
-			`${ACC_API}/analytics/${appName}/popularResults${getQueryParams({ clickanalytics })}`,
-			{
-				method: 'GET',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
-			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
-				// resolve the promise with response
-				resolve(res.popularResults);
-			})
-			.catch(e => {
-				reject(e);
-			});
-	});
-}
-export function getPopularFilters(appName, clickanalytics = true) {
-	return new Promise((resolve, reject) => {
-		fetch(
-			`${ACC_API}/analytics/${appName}/popularFilters${getQueryParams({ clickanalytics })}`,
-			{
-				method: 'GET',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			},
-		)
-			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
-				// resolve the promise with response
-				resolve(res.popularFilters);
-			})
-			.catch(e => {
-				reject(e);
-			});
-	});
-}
-// To fetch request logs
-export function getRequestLogs(appName) {
-	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appName}/logs`, {
+		fetch(`${ACC_API}/analytics/${appName}/noresultsearches?size=${size}`, {
 			method: 'GET',
 			credentials: 'include',
 			headers: {
@@ -528,11 +298,82 @@ export function getRequestLogs(appName) {
 		})
 			// Comment out this line
 			.then(res => res.json())
-			.then(res => {
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res.noResultSearches);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+export function getPopularResults(appName, clickanalytics = true, size = 100) {
+	return new Promise((resolve, reject) => {
+		fetch(
+			`${ACC_API}/analytics/${appName}/popularResults${getQueryParams({
+				clickanalytics,
+			})}?size=${size}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			},
+		)
+			// Comment out this line
+			.then(res => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res.popularResults);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+export function getPopularFilters(appName, clickanalytics = true, size = 100) {
+	return new Promise((resolve, reject) => {
+		fetch(
+			`${ACC_API}/analytics/${appName}/popularFilters${getQueryParams({
+				clickanalytics,
+			})}?size=${size}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			},
+		)
+			// Comment out this line
+			.then(res => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res.popularFilters);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+// To fetch request logs
+export function getRequestLogs(appName, size = 100) {
+	return new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/app/${appName}/logs?size=${size}`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			// Comment out this line
+			.then(res => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
