@@ -185,6 +185,9 @@ class Main extends React.Component {
 		);
 	}
 }
+Main.defaultProps = {
+	subTab: 'analytics',
+};
 Main.propTypes = {
 	appName: PropTypes.string.isRequired,
 	subTab: PropTypes.string,
