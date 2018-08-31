@@ -651,6 +651,7 @@ export default class RSWrapper extends Component {
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 					destroyOnClose
+					okText="Save"
 				>
 					{this.renderPropsForm()}
 				</Modal>
