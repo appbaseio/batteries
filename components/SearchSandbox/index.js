@@ -67,6 +67,13 @@ export default class SearchSandbox extends Component {
 		let pref = localStorage.getItem(this.props.appName);
 		if (pref) pref = JSON.parse(pref);
 		this.pref = pref;
+		const profileList = Array.from(new Set([...this.state.profileList, ...Object.keys(this.pref)]));
+		const componentProps = this.pref[this.state.profile] || {};
+		this.setState({
+			componentProps,
+			profileList,
+			filterCount: Object.keys(componentProps).filter(item => item !== 'search' && item !== 'result'),
+		});
 	};
 
 	setLocalPref = (pref = {}) => {
