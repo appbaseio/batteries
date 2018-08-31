@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getNoResultSearches, noResultSearchesCol } from './../utils';
+import { getNoResultSearches } from './../utils';
 import Loader from './../../shared/Loader/Spinner';
 
 class NoResultsSearch extends React.Component {
@@ -34,7 +34,6 @@ class NoResultsSearch extends React.Component {
 		return (
 			<Searches
 				showViewOption={false}
-				columns={noResultSearchesCol}
 				dataSource={this.state.noResults}
 				title="No Results Searches"
 				pagination={{
