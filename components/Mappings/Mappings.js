@@ -138,14 +138,17 @@ export default class Mappings extends Component {
 
 			getCredentials(this.props.appId).then((user) => {
 				const { username, password } = user;
-				this.setState({
-					credentials: `${username}:${password}`,
-				}, () => this.initializeData(this.state.credentials));
+				this.setState(
+					{
+						credentials: `${username}:${password}`,
+					},
+					() => this.initializeData(this.state.credentials),
+				);
 			});
 		}
 	}
 
-	initializeData= (credentials) => {
+	initializeData = (credentials) => {
 		getMappings(this.props.appName, credentials)
 			.then(this.handleMapping)
 			.catch((e) => {
@@ -157,12 +160,11 @@ export default class Mappings extends Component {
 				});
 			});
 
-		this.fetchSynonyms(credentials)
-		.then(synonyms =>
+		this.fetchSynonyms(credentials).then(synonyms =>
 			this.setState({
 				synonyms,
 			}));
-	}
+	};
 
 	getType = (type) => {
 		if (type === 'string') return 'text';
@@ -492,22 +494,22 @@ export default class Mappings extends Component {
 		const credentials = this.props.credentials || this.state.credentials;
 		const { url } = this.props;
 
+		const synonyms = this.state.synonyms.split('\n').map(pair =>
+			pair
+				.split(',')
+				.map(synonym => synonym.trim())
+				.join(','));
+
 		closeIndex(this.props.appName, credentials, url)
-			.then(() =>
-				updateSynonyms(
-					this.props.appName,
-					credentials,
-					url,
-					this.state.synonyms.split('\n'),
-				))
+			.then(() => updateSynonyms(this.props.appName, credentials, url, synonyms))
 			.then(data => data.acknowledged)
 			.then((isUpdated) => {
 				if (isUpdated) {
-					this.fetchSynonyms(credentials)
-					.then(newSynonyms => this.setState({
-						synonyms: newSynonyms,
-						showSynonymModal: false,
-					}));
+					this.fetchSynonyms(credentials).then(newSynonyms =>
+						this.setState({
+							synonyms: newSynonyms,
+							showSynonymModal: false,
+						}));
 				} else {
 					this.setState({
 						showSynonymModal: false,
@@ -516,6 +518,7 @@ export default class Mappings extends Component {
 					});
 				}
 			})
+			.then(() => openIndex(this.props.appName, credentials, url))
 			.catch(() => {
 				openIndex(this.props.appName, credentials, url);
 				this.setState({
@@ -658,22 +661,28 @@ export default class Mappings extends Component {
 						timeTaken={this.state.timeTaken}
 						onClose={() => window.location.reload()}
 					/>
-					<Modal
-						show={this.state.showSynonymModal}
-						onClose={this.handleSynonymModal}
-					>
+					<Modal show={this.state.showSynonymModal} onClose={this.handleSynonymModal}>
 						<TextArea
 							disabled={!this.state.editable}
 							name="synonyms"
 							value={this.state.synonyms}
 							onChange={this.handleChange}
-							placeholder="Comma separated Synonymns"
-							autosize={{ minRows: 2, maxRows: 4 }}
+							placeholder={
+								'Enter comma separated synonym pairs. Enter additional synonym pairs separated by new lines, e.g.\nbritish, english\nqueen, monarch'
+							}
+							autosize={{ minRows: 2, maxRows: 10 }}
 						/>
-						<Button onClick={this.updateSynonyms} style={{ float: 'right', margin: '10px 0' }}>
+						<Button
+							onClick={this.updateSynonyms}
+							style={{ float: 'right', margin: '10px 0' }}
+						>
 							{this.state.synonyms ? 'Save' : 'Add'} Synonym
 						</Button>
-						<Button ghost onClick={this.handleSynonymModal} style={{ float: 'right', margin: '10px' }}>
+						<Button
+							ghost
+							onClick={this.handleSynonymModal}
+							style={{ float: 'right', margin: '10px' }}
+						>
 							Cancel
 						</Button>
 					</Modal>
