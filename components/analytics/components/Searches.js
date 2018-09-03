@@ -27,6 +27,7 @@ Searches.defaultProps = {
 	onClick: () => null,
 	title: '',
 	dataSource: [],
+	plan: '',
 	columns: [],
 };
 Searches.propTypes = {
@@ -35,8 +36,8 @@ Searches.propTypes = {
 	columns: PropTypes.array,
 	showViewOption: PropTypes.bool,
 	onClick: PropTypes.func,
-	plan: PropTypes.string.isRequired,
-	pagination: PropTypes.object,
+	plan: PropTypes.string,
+	pagination: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
 };
 
 export default Searches;

@@ -2,7 +2,9 @@ import React from 'react';
 import { Tabs, Icon, Spin } from 'antd';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import { getAnalytics, bannerMessages } from './utils';
+import {
+ getAnalytics, bannerMessages, getActiveKeyByRoutes, tabMappings,
+} from './utils';
 import UpgradePlan from '../shared/UpgradePlan/Banner';
 import Flex from '../shared/Flex';
 import Analytics from './components/Analytics';
@@ -25,6 +27,7 @@ class Main extends React.Component {
 			'popularFilters',
 			'requestLogs',
 		];
+		const activeKey = getActiveKeyByRoutes(props.tab);
 		this.state = {
 			isFetching: true,
 			noResults: [],
@@ -36,7 +39,7 @@ class Main extends React.Component {
 			isPaidUser: false,
 			// change it to plan for eg. growth, bootstrap to test user with different plans
 			currentPlan: undefined,
-			activeTabKey: this.tabKeys.includes(props.tab) ? props.tab : this.tabKeys[0],
+			activeTabKey: this.tabKeys.includes(activeKey) ? activeKey : this.tabKeys[0],
 		};
 	}
 
@@ -105,12 +108,16 @@ class Main extends React.Component {
 	};
 
 	redirectTo = (tab) => {
-		const { appName } = this.props;
-		window.history.pushState(
-			null,
-			null,
-			`${window.location.origin}/analytics/${appName}/${tab}`,
-		);
+		const { appName, onTabChange } = this.props;
+		if (onTabChange) {
+			onTabChange(tab);
+		} else {
+			window.history.pushState(
+				null,
+				null,
+				`${window.location.origin}/app/${appName}/analytics/${tabMappings[tab]}`,
+			);
+		}
 	};
 
 	render() {
@@ -125,7 +132,7 @@ class Main extends React.Component {
 			activeTabKey,
 			currentPlan,
 		} = this.state;
-		const { appName, subTab } = this.props;
+		const { appName, subTab, onSubTabChange } = this.props;
 		if (isFetching) {
 			const antIcon = (
 				<Icon type="loading" style={{ fontSize: 50, marginTop: '250px' }} spin />
@@ -174,9 +181,9 @@ class Main extends React.Component {
 							)}
 							<TabPane tab="Request Logs" key={this.tabKeys[5]}>
 								<RequestLogs
+									onTabChange={onSubTabChange}
 									tab={subTab}
 									appName={appName}
-									redirectTo={this.redirectTo}
 								/>
 							</TabPane>
 						</Tabs>
@@ -191,10 +198,14 @@ class Main extends React.Component {
 Main.defaultProps = {
 	subTab: 'all',
 	tab: 'analytics',
+	onTabChange: undefined,
+	onSubTabChange: undefined,
 };
 Main.propTypes = {
 	appName: PropTypes.string.isRequired,
 	subTab: PropTypes.string,
 	tab: PropTypes.string,
+	onTabChange: PropTypes.func, // Can be used to override redirectTo method for tabs
+	onSubTabChange: PropTypes.func, // Can be used to override redirectTo method for sub tabs ( logs )
 };
 export default Main;

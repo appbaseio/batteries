@@ -404,3 +404,22 @@ export const bannerMessages = {
 		href: 'https://docs.appbase.io',
 	},
 };
+export const tabMappings = {
+	popularSearches: 'popular-searches',
+	noResultSearches: 'no-result-searches',
+	popularResults: 'popular-results',
+	popularFilters: 'popular-filters',
+	requestLogs: 'request-logs',
+	analytics: 'analytics',
+};
+export const getActiveKeyByRoutes = (tab) => {
+	let activeKey = '';
+	Object.keys(tabMappings).every((k) => {
+		if (tabMappings[k] === tab) {
+			activeKey = k;
+			return false;
+		}
+		return true;
+	});
+	return activeKey;
+};
