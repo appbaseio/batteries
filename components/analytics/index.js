@@ -10,7 +10,7 @@ import PopularSearches from './components/PopularSearches';
 import NoResultsSearch from './components/NoResultsSearch';
 import PopularResults from './components/PopularResults';
 import PopularFilters from './components/PopularFilters';
-import { checkUserStatus } from './../../utils';
+import { checkUserStatus } from '../../utils';
 import RequestLogs from './components/RequestLogs';
 
 const { TabPane } = Tabs;
@@ -39,8 +39,11 @@ class Main extends React.Component {
 			activeTabKey: this.tabKeys.includes(props.tab) ? props.tab : this.tabKeys[0],
 		};
 	}
+
 	componentDidMount() {
 		// Comment out the below code to test paid user
+		const { appName } = this.props;
+		const { currentPlan } = this.state;
 		// COMMENT START
 		checkUserStatus().then(
 			(response) => {
@@ -49,7 +52,7 @@ class Main extends React.Component {
 						{ isPaidUser: response.isPaidUser, currentPlan: response.plan },
 						() => {
 							// COMMENT END
-							getAnalytics(this.props.appName, this.state.currentPlan)
+							getAnalytics(appName, currentPlan)
 								.then((res) => {
 									this.setState({
 										noResults: res.noResultSearches,
@@ -85,11 +88,13 @@ class Main extends React.Component {
 		);
 		// COMMENT END
 	}
+
 	componentWillReceiveProps(nextProps) {
 		if (get(nextProps, 'location.pathname') !== get(this.props, 'location.pathname')) {
 			window.location.reload();
 		}
 	}
+
 	changeActiveTabKey = (tab) => {
 		this.setState(
 			{
@@ -98,13 +103,16 @@ class Main extends React.Component {
 			() => this.redirectTo(tab),
 		);
 	};
+
 	redirectTo = (tab) => {
+		const { appName } = this.props;
 		window.history.pushState(
 			null,
 			null,
-			`${window.location.origin}/analytics/${this.props.appName}/${tab}`,
+			`${window.location.origin}/analytics/${appName}/${tab}`,
 		);
 	};
+
 	render() {
 		const {
 			noResults,
@@ -117,6 +125,7 @@ class Main extends React.Component {
 			activeTabKey,
 			currentPlan,
 		} = this.state;
+		const { appName, subTab } = this.props;
 		if (isFetching) {
 			const antIcon = (
 				<Icon type="loading" style={{ fontSize: 50, marginTop: '250px' }} spin />
@@ -148,31 +157,25 @@ class Main extends React.Component {
 								/>
 							</TabPane>
 							<TabPane tab="Popular Searches" key={this.tabKeys[1]}>
-								<PopularSearches plan={currentPlan} appName={this.props.appName} />
+								<PopularSearches plan={currentPlan} appName={appName} />
 							</TabPane>
 							<TabPane tab="No Result Searches" key={this.tabKeys[2]}>
-								<NoResultsSearch plan={currentPlan} appName={this.props.appName} />
+								<NoResultsSearch plan={currentPlan} appName={appName} />
 							</TabPane>
 							{currentPlan === 'growth' && (
 								<TabPane tab="Popular Results" key={this.tabKeys[3]}>
-									<PopularResults
-										plan={currentPlan}
-										appName={this.props.appName}
-									/>
+									<PopularResults plan={currentPlan} appName={appName} />
 								</TabPane>
 							)}
 							{currentPlan === 'growth' && (
 								<TabPane tab="Popular Filters" key={this.tabKeys[4]}>
-									<PopularFilters
-										plan={currentPlan}
-										appName={this.props.appName}
-									/>
+									<PopularFilters plan={currentPlan} appName={appName} />
 								</TabPane>
 							)}
 							<TabPane tab="Request Logs" key={this.tabKeys[5]}>
 								<RequestLogs
-									tab={this.props.subTab}
-									appName={this.props.appName}
+									tab={subTab}
+									appName={appName}
 									redirectTo={this.redirectTo}
 								/>
 							</TabPane>
@@ -186,7 +189,8 @@ class Main extends React.Component {
 	}
 }
 Main.defaultProps = {
-	subTab: 'analytics',
+	subTab: 'all',
+	tab: 'analytics',
 };
 Main.propTypes = {
 	appName: PropTypes.string.isRequired,

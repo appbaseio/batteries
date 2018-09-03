@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getNoResultSearches } from './../utils';
-import Loader from './../../shared/Loader/Spinner';
+import { getNoResultSearches } from '../utils';
+import Loader from '../../shared/Loader/Spinner';
 
 class NoResultsSearch extends React.Component {
 	constructor(props) {
@@ -12,8 +12,10 @@ class NoResultsSearch extends React.Component {
 			noResults: [],
 		};
 	}
+
 	componentDidMount() {
-		getNoResultSearches(this.props.appName)
+		const { appName } = this.props;
+		getNoResultSearches(appName)
 			.then((res) => {
 				this.setState({
 					noResults: res,
@@ -28,13 +30,14 @@ class NoResultsSearch extends React.Component {
 	}
 
 	render() {
-		if (this.state.isFetching) {
+		const { isFetching, noResults } = this.state;
+		if (isFetching) {
 			return <Loader />;
 		}
 		return (
 			<Searches
 				showViewOption={false}
-				dataSource={this.state.noResults}
+				dataSource={noResults}
 				title="No Results Searches"
 				pagination={{
 					pageSize: 10,
@@ -44,6 +47,6 @@ class NoResultsSearch extends React.Component {
 	}
 }
 NoResultsSearch.propTypes = {
-	appName: PropTypes.string,
+	appName: PropTypes.string.isRequired,
 };
 export default NoResultsSearch;

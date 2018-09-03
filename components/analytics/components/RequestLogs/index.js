@@ -5,12 +5,11 @@ import { Card, Tabs, Table } from 'antd';
 import PropTypes from 'prop-types';
 import { getRequestLogs, requestLogs, getTimeDuration } from '../../utils';
 import RequestDetails from './RequestDetails';
-import Loader from './../../../shared/Loader/Spinner';
+import Loader from '../../../shared/Loader/Spinner';
 
 const { TabPane } = Tabs;
 
-const normalizeData = data =>
-	data.map((i) => {
+const normalizeData = data => data.map((i) => {
 		const timeDuration = getTimeDuration(get(i, '_source.timestamp'));
 		return {
 			id: get(i, '_id'),
@@ -48,8 +47,9 @@ class RequestLogs extends React.Component {
 	constructor(props) {
 		super(props);
 		this.tabKeys = ['all', 'search', 'success', 'error'];
+		const { tab } = this.props;
 		this.state = {
-			activeTabKey: this.tabKeys.includes(props.tab) ? props.tab : this.tabKeys[0],
+			activeTabKey: this.tabKeys.includes(tab) ? props.tab : this.tabKeys[0],
 			logs: undefined,
 			isFetching: true,
 			hits: [],
@@ -59,8 +59,10 @@ class RequestLogs extends React.Component {
 			showDetails: false,
 		};
 	}
+
 	componentDidMount() {
-		getRequestLogs(this.props.appName)
+		const { appName } = this.props;
+		getRequestLogs(appName)
 			.then((res) => {
 				const filteredHits = filterHits(res.hits);
 				this.setState({
@@ -88,6 +90,7 @@ class RequestLogs extends React.Component {
 				});
 			});
 	}
+
 	changeActiveTabKey = (tab) => {
 		this.setState(
 			{
@@ -96,27 +99,32 @@ class RequestLogs extends React.Component {
 			() => this.redirectTo(tab),
 		);
 	};
+
 	redirectTo = (tab) => {
-		if (this.props.changeUrlOnTabChange) {
+		const { changeUrlOnTabChange, appName } = this.props;
+		if (changeUrlOnTabChange) {
 			window.history.pushState(
 				null,
 				null,
-				`${window.location.origin}/analytics/${this.props.appName}/requestLogs/${tab}`,
+				`${window.location.origin}/analytics/${appName}/requestLogs/${tab}`,
 			);
 		}
 	};
+
 	handleLogClick = (record) => {
-		this.currentRequest =
-			this.state.logs && find(this.state.logs, o => get(o, '_id') === record.id);
+		const { logs } = this.state;
+		this.currentRequest = logs && find(logs, o => get(o, '_id') === record.id);
 		this.setState({
 			showDetails: true,
 		});
 	};
+
 	handleCancel = () => {
 		this.setState({
 			showDetails: false,
 		});
 	};
+
 	render() {
 		const {
 			activeTabKey,
@@ -195,17 +203,21 @@ class RequestLogs extends React.Component {
 						/>
 					</TabPane>
 				</Tabs>
-				{showDetails &&
-					this.currentRequest && (
+				{showDetails
+					&& this.currentRequest && (
 						<RequestDetails
 							show={showDetails}
 							handleCancel={this.handleCancel}
 							headers={get(this.currentRequest, '_source.request.headers', {})}
 							request={
-								JSON.parse(get(this.currentRequest, '_source.request.body') || null) || {}
+								JSON.parse(
+									get(this.currentRequest, '_source.request.body') || null,
+								) || {}
 							}
 							response={
-								JSON.parse(get(this.currentRequest, '_source.response.body') || null) || {}
+								JSON.parse(
+									get(this.currentRequest, '_source.response.body') || null,
+								) || {}
 							}
 							time={get(this.currentRequest, '_source.timestamp', '')}
 							method={get(this.currentRequest, '_source.request.method', '')}
@@ -228,9 +240,11 @@ class RequestLogs extends React.Component {
 }
 RequestLogs.defaultProps = {
 	changeUrlOnTabChange: true,
+	tab: 'all',
 	pageSize: 10,
 };
 RequestLogs.propTypes = {
+	tab: PropTypes.string,
 	appName: PropTypes.string.isRequired,
 	changeUrlOnTabChange: PropTypes.bool,
 	pageSize: PropTypes.number,
