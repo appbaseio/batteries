@@ -101,13 +101,17 @@ class RequestLogs extends React.Component {
 	};
 
 	redirectTo = (tab) => {
-		const { changeUrlOnTabChange, appName } = this.props;
+		const { changeUrlOnTabChange, appName, onTabChange } = this.props;
 		if (changeUrlOnTabChange) {
-			window.history.pushState(
-				null,
-				null,
-				`${window.location.origin}/analytics/${appName}/requestLogs/${tab}`,
-			);
+			if (onTabChange) {
+				onTabChange(tab);
+			} else {
+				window.history.pushState(
+					null,
+					null,
+					`${window.location.origin}/app/${appName}/analytics/request-logs/${tab}`,
+				);
+			}
 		}
 	};
 
@@ -240,11 +244,13 @@ class RequestLogs extends React.Component {
 }
 RequestLogs.defaultProps = {
 	changeUrlOnTabChange: true,
+	onTabChange: undefined, // Use this to override the default redirect logic on tab change
 	tab: 'all',
 	pageSize: 10,
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
+	onTabChange: PropTypes.func,
 	appName: PropTypes.string.isRequired,
 	changeUrlOnTabChange: PropTypes.bool,
 	pageSize: PropTypes.number,
