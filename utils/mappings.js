@@ -42,6 +42,98 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 	});
 }
 
+export function getSettings(appName, credentials, url = SCALR_API) {
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/${appName}/_settings`, {
+			method: 'GET',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then((data) => {
+				resolve(data);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
+export function closeIndex(appName, credentials, url = SCALR_API) {
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/${appName}/_close`, {
+			method: 'POST',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then((data) => {
+				resolve(data);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
+export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsArray) {
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/${appName}/_settings`, {
+			method: 'PUT',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				analysis: {
+					filter: {
+						synonyms_filter: {
+							type: 'synonym',
+							synonyms: synonymsArray,
+						},
+					},
+					analyzer: {
+						search_analyzer: {
+							tokenizer: 'standard',
+							filter: ['lowercase', 'synonyms_filter'],
+						},
+					},
+				},
+			}),
+		})
+			.then(res => res.json())
+			.then((data) => {
+				resolve(data);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
+export function openIndex(appName, credentials, url = SCALR_API) {
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/${appName}/_open`, {
+			method: 'POST',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then((data) => {
+				resolve(data);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
 export function reIndex(mappings, appId, excludeFields) {
 	const body = {
 		mappings,
