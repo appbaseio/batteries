@@ -486,10 +486,12 @@ export default class Editor extends Component {
 			sortBy: 'asc',
 			paginationAt: 'bottom',
 			...resultComponentProps,
-			onData: res => (
+			onData: (res) => {
+				const { _id, _index, ...renderedJSON } = res;
+				return (
 				<div className={listItem} key={res._id}>
 					<ExpandCollapse previewHeight="390px" expandText="Show more">
-						{<Tree showLine>{this.renderAsTree(res)}</Tree>}
+						{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
 					</ExpandCollapse>
 					<div style={{ marginTop: 10, textAlign: 'right' }}>
 						{this.renderAsJSON(res)}
@@ -497,7 +499,8 @@ export default class Editor extends Component {
 						{this.renderDeleteJSON(res)}
 					</div>
 				</div>
-			),
+			);
+},
 			react: {
 				and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
 			},
