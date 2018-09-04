@@ -145,8 +145,8 @@ export default class Editor extends Component {
 
 	handleVideoModal = () => {
 		this.setState({
-				showVideo: !this.state.showVideo,
-			});
+			showVideo: !this.state.showVideo,
+		});
 	};
 
 	handleDataFieldChange = (item) => {
@@ -206,7 +206,7 @@ export default class Editor extends Component {
 					duration: 2,
 				};
 			});
-			notification.open(responseMessage);
+		notification.open(responseMessage);
 	};
 
 	handleDeleteJSON = (id) => {
@@ -232,7 +232,7 @@ export default class Editor extends Component {
 					duration: 2,
 				};
 			});
-			notification.open(responseMessage);
+		notification.open(responseMessage);
 	};
 
 	handleEditingJSON = (value) => {
@@ -425,7 +425,12 @@ export default class Editor extends Component {
 	);
 
 	renderDeleteJSON = res => (
-		<Popconfirm title="Are you sure to delete this JSON?" placement="bottomRight" onConfirm={() => this.handleDeleteJSON(res._id)} okText="Yes">
+		<Popconfirm
+			title="Are you sure to delete this JSON?"
+			placement="bottomRight"
+			onConfirm={() => this.handleDeleteJSON(res._id)}
+			okText="Yes"
+		>
 			<Button shape="circle" icon="delete" style={{ marginRight: '5px' }} />
 		</Popconfirm>
 	);
@@ -480,33 +485,60 @@ export default class Editor extends Component {
 
 	render() {
 		let resultComponentProps = this.props.componentProps.result || {};
+		const customSuggestions = this.props.renderSuggestions || null;
 		resultComponentProps = {
 			size: 5,
 			pagination: true,
 			sortBy: 'asc',
 			paginationAt: 'bottom',
 			...resultComponentProps,
+			renderSuggestions: ({
+				currentValue,
+				isOpen,
+				getItemProps,
+				highlightedIndex,
+				suggestions,
+				parsedSuggestions,
+				categories,
+			}) => (this.props.renderSuggestions
+					? this.props.renderSuggestions({
+							currentValue,
+							isOpen,
+							getItemProps,
+							highlightedIndex,
+							suggestions,
+							parsedSuggestions,
+							categories,
+					  })
+					: null),
 			onData: (res) => {
 				const { _id, _index, ...renderedJSON } = res;
 				return (
-				<div className={listItem} key={res._id}>
-					<ExpandCollapse previewHeight="390px" expandText="Show more">
-						{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
-					</ExpandCollapse>
-					<div style={{ marginTop: 10, textAlign: 'right' }}>
-						{this.renderAsJSON(res)}
-						{this.renderJSONEditor(res)}
-						{this.renderDeleteJSON(res)}
+					<div className={listItem} key={res._id}>
+						<ExpandCollapse previewHeight="390px" expandText="Show more">
+							{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
+						</ExpandCollapse>
+						<div style={{ marginTop: 10, textAlign: 'right' }}>
+							{this.renderAsJSON(res)}
+							{this.renderJSONEditor(res)}
+							{this.renderDeleteJSON(res)}
+						</div>
 					</div>
-				</div>
-			);
-},
+				);
+			},
 			react: {
 				and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
 			},
 		};
 
-		const title = <span>Search Preview <Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">Watch Video</Button></span>;
+		const title = (
+			<span>
+				Search Preview{' '}
+				<Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
+					Watch Video
+				</Button>
+			</span>
+		);
 
 		return (
 			<ReactiveBase
@@ -586,7 +618,15 @@ export default class Editor extends Component {
 						onCancel={this.handleVideoModal}
 						destroyOnClose
 					>
-						<iframe width="460" height="240" src="https://www.youtube.com/embed/f5SHz80r9Ro" frameBorder="0" title="Dejavu" allow="autoplay; encrypted-media" allowFullScreen />
+						<iframe
+							width="460"
+							height="240"
+							src="https://www.youtube.com/embed/f5SHz80r9Ro"
+							frameBorder="0"
+							title="Dejavu"
+							allow="autoplay; encrypted-media"
+							allowFullScreen
+						/>
 					</Modal>
 				</Row>
 			</ReactiveBase>

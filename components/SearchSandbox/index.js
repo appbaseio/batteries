@@ -269,6 +269,7 @@ export default class SearchSandbox extends Component {
 			credentials: this.props.credentials || null,
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
+			renderSuggestions: this.props.renderSuggestions || null,
 			mappings: this.state.mappings,
 			mappingsType: this.state.mappingsType,
 			componentProps: this.state.componentProps,
@@ -333,6 +334,7 @@ SearchSandbox.propTypes = {
 	credentials: PropTypes.string.isRequired,
 	isDashboard: PropTypes.bool,
 	url: PropTypes.string,
+	renderSuggestions: PropTypes.func,
 };
 
 SearchSandbox.defaultProps = {
