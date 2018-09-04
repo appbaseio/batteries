@@ -236,7 +236,7 @@ export default class RSWrapper extends Component {
 	};
 
 	handleAddFieldRow = () => {
-		const field = this.getAvailableDataField('categoryField').find(item => !this.state.componentProps.dataField.includes(item));
+		const field = this.getAvailableDataField('dataField').find(item => !this.state.componentProps.dataField.includes(item));
 
 		if (field) {
 			this.setState({
