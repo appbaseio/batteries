@@ -15,11 +15,12 @@ import {
 	Select,
 } from 'antd';
 
-import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
+import { DataSearch, MultiList, ReactiveList, CategorySearch } from '@appbaseio/reactivesearch';
 
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
+import categorySearchTypes from '../utils/categorysearch-types';
 import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
@@ -34,6 +35,7 @@ import {
 } from '../styles';
 
 const componentMap = {
+	CategorySearch,
 	DataSearch,
 	MultiList,
 	ReactiveList,
@@ -43,6 +45,7 @@ const propsMap = {
 	DataSearch: dataSearchTypes,
 	MultiList: multiListTypes,
 	ReactiveList: reactiveListTypes,
+	CategorySearch: categorySearchTypes,
 };
 
 export default class RSWrapper extends Component {
@@ -57,7 +60,7 @@ export default class RSWrapper extends Component {
 
 		if (!props.componentProps.dataField) {
 			// set default dataField for the component if not defined
-			const dataFields = this.getAvailableDataField();
+			const dataFields = this.getAvailableDataField('dataField');
 			const { multiple } = propsMap[this.props.component].dataField;
 			let otherProps = {};
 			if (props.id === 'search') {
@@ -77,8 +80,8 @@ export default class RSWrapper extends Component {
 		});
 	}
 
-	getAvailableDataField = () => {
-		const { types } = propsMap[this.props.component].dataField;
+	getAvailableDataField = (fieldType) => {
+		const { types } = propsMap[this.props.component][fieldType];
 
 		if (this.props.id === 'search') {
 			return Object.keys(this.props.mappings).filter(field =>
@@ -233,7 +236,7 @@ export default class RSWrapper extends Component {
 	};
 
 	handleAddFieldRow = () => {
-		const field = this.getAvailableDataField().find(item => !this.state.componentProps.dataField.includes(item));
+		const field = this.getAvailableDataField('categoryField').find(item => !this.state.componentProps.dataField.includes(item));
 
 		if (field) {
 			this.setState({
@@ -272,7 +275,7 @@ export default class RSWrapper extends Component {
 	);
 
 	renderDataFieldTable = () => {
-		const fields = this.getAvailableDataField();
+		const fields = this.getAvailableDataField('dataField');
 		const columns = [
 			{
 				title: 'Field',
@@ -285,10 +288,9 @@ export default class RSWrapper extends Component {
 							style={{ maxHeight: 300, overflowY: 'scroll' }}
 						>
 							{fields
-								.filter(item => (
-									item === selected
-									|| !this.state.componentProps.dataField.includes(item)
-								))
+								.filter(item =>
+										item === selected ||
+										!this.state.componentProps.dataField.includes(item))
 								.map(item => (
 									<Menu.Item key={item} value={index}>
 										{item}
@@ -470,11 +472,21 @@ export default class RSWrapper extends Component {
 				);
 			}
 			case 'dropdown': {
-				const dropdownOptions = propsMap[this.props.component][name].options;
-				const selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
-				const selectedValue = selectedDropdown
-					? selectedDropdown.label
-					: propsMap[this.props.component][name].default;
+				let dropdownOptions = [];
+				let selectedValue = '';
+				let selectedDropdown = {};
+				if (name === 'categoryField') {
+					this.getAvailableDataField('categoryField').forEach(field =>
+						dropdownOptions.push({ label: field, key: field }));
+					selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
+					selectedValue = selectedDropdown ? selectedDropdown.label : 'Select a field';
+				} else {
+					dropdownOptions = propsMap[this.props.component][name].options;
+					selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
+					selectedValue = selectedDropdown
+						? selectedDropdown.label
+						: propsMap[this.props.component][name].default;
+				}
 				const menu = (
 					<Menu
 						onClick={e => this.handleDropdownChange(e, name)}
@@ -529,7 +541,7 @@ export default class RSWrapper extends Component {
 	renderPropsForm = () => {
 		const propNames = propsMap[this.props.component];
 		const { dataField } = this.state.componentProps;
-		const fields = this.getAvailableDataField();
+		const fields = this.getAvailableDataField('dataField');
 		const menu = (
 			<Menu
 				onClick={this.handleDataFieldChange}
@@ -627,6 +639,7 @@ export default class RSWrapper extends Component {
 								this.props.mappings,
 							)}
 							{...otherProps}
+							categoryField="country_name"
 							className={componentStyles}
 							fuzziness={this.props.componentProps.fuzziness || 0}
 							size={parseInt(this.props.componentProps.size || 10, 10)}

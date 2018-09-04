@@ -270,6 +270,7 @@ export default class SearchSandbox extends Component {
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
 			mappings: this.state.mappings,
+			useCategorySearch: this.props.useCategorySearch,
 			mappingsType: this.state.mappingsType,
 			componentProps: this.state.componentProps,
 			onPropChange: this.handleComponentPropChange,
@@ -333,9 +334,11 @@ SearchSandbox.propTypes = {
 	credentials: PropTypes.string.isRequired,
 	isDashboard: PropTypes.bool,
 	url: PropTypes.string,
+	useCategorySearch: PropTypes.bool,
 };
 
 SearchSandbox.defaultProps = {
 	isDashboard: false,
 	url: SCALR_API,
+	useCategorySearch: false,
 };

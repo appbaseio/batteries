@@ -116,6 +116,25 @@ export function getComponentCode(config) {
 			componentStyle = { marginBottom: 20 };
 			break;
 		}
+		case 'CategorySearch': {
+			allProps = {
+				componentId: config.componentId,
+				...config.componentProps,
+				fieldWeights: generateFieldWeights(
+					config.componentProps.dataField,
+					config.componentProps.fieldWeights,
+					config.mappings,
+				),
+				dataField: generateDataField(
+					'DataSearch',
+					config.componentProps.dataField,
+					config.mappings,
+				),
+				highlightField: config.componentProps.dataField,
+			};
+			componentStyle = { marginBottom: 20 };
+			break;
+		}
 		case 'MultiList': {
 			allProps = {
 				componentId: config.componentId,
@@ -164,7 +183,7 @@ function getApp(config) {
 					highlightField: config.componentProps.search.dataField,
 				};
 				componentConfig = {
-					component: 'DataSearch',
+					component: config.component,
 					mappings: config.mappings,
 					componentProps: searchComponentProps,
 					componentId: item,

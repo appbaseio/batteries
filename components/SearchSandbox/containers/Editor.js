@@ -546,7 +546,7 @@ export default class Editor extends Component {
 						<Card>
 							<RSWrapper
 								id="search"
-								component="DataSearch"
+								component={this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'}
 								mappings={this.props.mappings}
 								componentProps={this.props.componentProps.search || {}}
 								onPropChange={this.props.onPropChange}
