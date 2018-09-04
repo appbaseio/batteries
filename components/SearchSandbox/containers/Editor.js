@@ -485,7 +485,6 @@ export default class Editor extends Component {
 
 	render() {
 		let resultComponentProps = this.props.componentProps.result || {};
-		const customSuggestions = this.props.renderSuggestions || null;
 		resultComponentProps = {
 			size: 5,
 			pagination: true,
