@@ -475,18 +475,26 @@ export default class RSWrapper extends Component {
 				let dropdownOptions = [];
 				let selectedValue = '';
 				let selectedDropdown = {};
+				let noOptionsMessage = '';
+
 				if (name === 'categoryField') {
+					noOptionsMessage = <p style={{ lineHeight: '1.5' }}>There are no compatible fields present in your data mappings. <a href={this.props.mappingsURL}>You can edit your mappings</a> (agggregation components)</p>;
+
 					this.getAvailableDataField('categoryField').forEach(field =>
 						dropdownOptions.push({ label: field, key: field }));
-					if (!this.state.componentProps.categoryField) {
-						this.props.onPropChange(this.props.id, {
-							categoryField: dropdownOptions[0].label,
-						});
-					}
-					selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
-					selectedValue = selectedDropdown
+
+					if (dropdownOptions.length) {
+						if (!this.state.componentProps.categoryField) {
+							this.props.onPropChange(this.props.id, {
+								categoryField: dropdownOptions[0].label,
+							});
+						}
+
+						selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
+						selectedValue = selectedDropdown
 						? selectedDropdown.label
 						: dropdownOptions[0].label;
+					}
 				} else {
 					dropdownOptions = propsMap[this.props.component][name].options;
 					selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
@@ -505,7 +513,7 @@ export default class RSWrapper extends Component {
 					</Menu>
 				);
 
-				FormInput = (
+				FormInput = dropdownOptions.length ? (
 					<Dropdown overlay={menu} trigger={['click']}>
 						<Button
 							style={{
@@ -518,7 +526,7 @@ export default class RSWrapper extends Component {
 							{selectedValue} <Icon type="down" />
 						</Button>
 					</Dropdown>
-				);
+				) : noOptionsMessage;
 				break;
 			}
 
