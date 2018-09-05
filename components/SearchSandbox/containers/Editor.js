@@ -426,7 +426,7 @@ export default class Editor extends Component {
 
 	renderDeleteJSON = res => (
 		<Popconfirm
-			title="Are you sure to delete this JSON?"
+			title="Are you sure you want to delete this JSON?"
 			placement="bottomRight"
 			onConfirm={() => this.handleDeleteJSON(res._id)}
 			okText="Yes"
