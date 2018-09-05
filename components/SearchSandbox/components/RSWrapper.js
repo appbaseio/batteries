@@ -83,7 +83,7 @@ export default class RSWrapper extends Component {
 	getAvailableDataField = (fieldType) => {
 		const { types } = propsMap[this.props.component][fieldType];
 
-		if (this.props.id === 'search') {
+		if (this.props.id === 'search' && fieldType !== 'categoryField') {
 			return Object.keys(this.props.mappings).filter(field =>
 				types.includes(this.props.mappings[field].type));
 		}
@@ -478,8 +478,15 @@ export default class RSWrapper extends Component {
 				if (name === 'categoryField') {
 					this.getAvailableDataField('categoryField').forEach(field =>
 						dropdownOptions.push({ label: field, key: field }));
+					if (!this.state.componentProps.categoryField) {
+						this.props.onPropChange(this.props.id, {
+							categoryField: dropdownOptions[0].label,
+						});
+					}
 					selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
-					selectedValue = selectedDropdown ? selectedDropdown.label : 'Select a field';
+					selectedValue = selectedDropdown
+						? selectedDropdown.label
+						: dropdownOptions[0].label;
 				} else {
 					dropdownOptions = propsMap[this.props.component][name].options;
 					selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
