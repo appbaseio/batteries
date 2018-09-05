@@ -491,25 +491,6 @@ export default class Editor extends Component {
 			sortBy: 'asc',
 			paginationAt: 'bottom',
 			...resultComponentProps,
-			renderSuggestions: ({
-				currentValue,
-				isOpen,
-				getItemProps,
-				highlightedIndex,
-				suggestions,
-				parsedSuggestions,
-				categories,
-			}) => (this.props.renderSuggestions
-					? this.props.renderSuggestions({
-							currentValue,
-							isOpen,
-							getItemProps,
-							highlightedIndex,
-							suggestions,
-							parsedSuggestions,
-							categories,
-					  })
-					: null),
 			onData: (res) => {
 				const { _id, _index, ...renderedJSON } = res;
 				return (
@@ -530,6 +511,13 @@ export default class Editor extends Component {
 			},
 		};
 
+		let searchComponentProps = this.props.componentProps.search || {};
+		searchComponentProps = {
+			...searchComponentProps,
+			renderSuggestions: res => (this.props.renderSuggestions
+					? this.props.renderSuggestions(res)
+					: null),
+		};
 		const title = (
 			<span>
 				Search Preview{' '}
@@ -579,7 +567,7 @@ export default class Editor extends Component {
 								id="search"
 								component="DataSearch"
 								mappings={this.props.mappings}
-								componentProps={this.props.componentProps.search || {}}
+								componentProps={searchComponentProps}
 								onPropChange={this.props.onPropChange}
 							/>
 						</Card>
