@@ -150,6 +150,12 @@ export function reIndex(mappings, appId, excludeFields) {
 			},
 			body: JSON.stringify(body),
 		})
+			.then((res) => {
+				if (res.status === 504) {
+					resolve('~100');
+				}
+				return res;
+			})
 			.then(res => res.json())
 			.then((data) => {
 				if (data.error) {
