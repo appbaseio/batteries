@@ -1,5 +1,7 @@
 import React from 'react';
-import { Tabs, Icon, Spin } from 'antd';
+import {
+ Tabs, Icon, Spin, notification,
+} from 'antd';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import {
@@ -85,8 +87,11 @@ class Main extends React.Component {
 				this.setState({
 					isFetching: false,
 				});
-				// eslint-disable-next-line
-				toastr.error('Error', 'Something went wrong');
+
+				notification.error({
+					message: 'Error',
+					description: 'Something went wrong',
+				});
 			},
 		);
 		// COMMENT END
