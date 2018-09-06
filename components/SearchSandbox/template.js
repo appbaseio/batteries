@@ -85,22 +85,28 @@ export function getComponentCode(config) {
 	switch (config.component) {
 		case 'ReactiveList': {
 			allProps = {
-				componentId: 'SearchResult',
+				componentId: config.componentId,
 				size: 5,
 				pagination: true,
 				...config.componentProps,
 				react: {
 					and: Object.values(config.componentProps.react.and),
 				},
+				dataField: generateDataField(
+					'ReactiveList',
+					config.componentProps.dataField,
+					config.mappings,
+				),
 				onData: '{onData}',
 			};
 			componentStyle = { marginTop: 20 };
 			break;
 		}
 		case 'DataSearch': {
+			const { categoryField, ...restProps } = config.componentProps;
 			allProps = {
 				componentId: config.componentId,
-				...config.componentProps,
+				...restProps,
 				fieldWeights: generateFieldWeights(
 					config.componentProps.dataField,
 					config.componentProps.fieldWeights,
@@ -130,6 +136,11 @@ export function getComponentCode(config) {
 					config.componentProps.dataField,
 					config.mappings,
 				),
+				categoryField: generateDataField(
+					'MultiList',
+					config.componentProps.categoryField,
+					config.mappings,
+				),
 				highlightField: config.componentProps.dataField,
 			};
 			componentStyle = { marginBottom: 20 };
@@ -156,7 +167,7 @@ export function getComponentCode(config) {
 		useBooleanShorthandSyntax: false,
 	});
 
-	code = code.replace('onData="{onData}"', 'onData = {onData}');
+	code = code.replace('onData="{onData}"', 'onData={onData}');
 	code = code.replace('div', config.component);
 
 	return code;

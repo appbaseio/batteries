@@ -26,13 +26,13 @@ export default {
 		label: 'Highlight Results',
 		description: 'Enable highlighting within results.',
 		input: 'bool',
-		default: true,
+		default: false,
 	},
 	autosuggest: {
 		label: 'Auto Suggest',
 		description: 'Enable auto suggestions as you type.',
 		input: 'bool',
-		default: false,
+		default: true,
 	},
 	size: {
 		label: 'Size',

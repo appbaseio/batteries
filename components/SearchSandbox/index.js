@@ -340,5 +340,5 @@ SearchSandbox.propTypes = {
 SearchSandbox.defaultProps = {
 	isDashboard: false,
 	url: SCALR_API,
-	useCategorySearch: false,
+	useCategorySearch: true,
 };

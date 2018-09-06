@@ -619,6 +619,21 @@ export default class RSWrapper extends Component {
 				highlightField: this.props.componentProps.dataField,
 			};
 		}
+		if (this.props.component === 'CategorySearch') {
+			otherProps = {
+				categoryField: generateDataField(
+					'MultiList',
+					this.props.componentProps.categoryField,
+					this.props.mappings,
+				),
+				fieldWeights: generateFieldWeights(
+					this.props.componentProps.dataField,
+					this.props.componentProps.fieldWeights,
+					this.props.mappings,
+				),
+				highlightField: this.props.componentProps.dataField,
+			};
+		}
 
 		return (
 			<div>
@@ -654,7 +669,6 @@ export default class RSWrapper extends Component {
 								this.props.mappings,
 							)}
 							{...otherProps}
-							categoryField="country_name"
 							className={componentStyles}
 							fuzziness={this.props.componentProps.fuzziness || 0}
 							size={parseInt(this.props.componentProps.size || 10, 10)}

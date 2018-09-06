@@ -49,6 +49,7 @@ export default class Editor extends Component {
 			editorObjectId: '',
 			renderKey: Date.now(),
 			showVideo: false,
+			isEditable: false,
 		};
 		this.appbaseRef = new Appbase({
 			appname: this.props.appName,
@@ -145,8 +146,8 @@ export default class Editor extends Component {
 
 	handleVideoModal = () => {
 		this.setState({
-				showVideo: !this.state.showVideo,
-			});
+			showVideo: !this.state.showVideo,
+		});
 	};
 
 	handleDataFieldChange = (item) => {
@@ -196,6 +197,7 @@ export default class Editor extends Component {
 			})
 			.on('data', (res) => {
 				this.setState({
+					isEditable: false,
 					renderKey: res._timestamp, // eslint-disable-line
 				});
 			})
@@ -206,7 +208,7 @@ export default class Editor extends Component {
 					duration: 2,
 				};
 			});
-			notification.open(responseMessage);
+		notification.open(responseMessage);
 	};
 
 	handleDeleteJSON = (id) => {
@@ -232,8 +234,14 @@ export default class Editor extends Component {
 					duration: 2,
 				};
 			});
-			notification.open(responseMessage);
+		notification.open(responseMessage);
 	};
+
+	handleEditing = () => {
+		this.setState({
+			isEditable: !this.state.isEditable,
+		});
+	}
 
 	handleEditingJSON = (value) => {
 		let isValidJSON = true;
@@ -263,6 +271,7 @@ export default class Editor extends Component {
 		this.setState({
 			editorObjectId: '',
 			editorValue: '',
+			isEditable: false,
 		});
 	};
 
@@ -398,34 +407,13 @@ export default class Editor extends Component {
 		});
 	};
 
-	renderAsJSON = res => (
-		<Popover
-			placement="leftTop"
-			content={<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>}
-			title={
-				<Row>
-					<Col span={22}>
-						<h6 style={{ display: 'inline-block' }}>JSON Result</h6>
-					</Col>
-					<Col span={2}>
-						<Tooltip visible={this.state.copied} title="Copied">
-							<Button
-								shape="circle"
-								icon="copy"
-								size="small"
-								onClick={() => this.copyJSON(res)}
-							/>
-						</Tooltip>
-					</Col>
-				</Row>
-			}
-		>
-			<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
-		</Popover>
-	);
-
 	renderDeleteJSON = res => (
-		<Popconfirm title="Are you sure to delete this JSON?" placement="bottomRight" onConfirm={() => this.handleDeleteJSON(res._id)} okText="Yes">
+		<Popconfirm
+			title="Are you sure to delete this JSON?"
+			placement="bottomRight"
+			onConfirm={() => this.handleDeleteJSON(res._id)}
+			okText="Yes"
+		>
 			<Button shape="circle" icon="delete" style={{ marginRight: '5px' }} />
 		</Popconfirm>
 	);
@@ -438,43 +426,68 @@ export default class Editor extends Component {
 				(visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
 			}
 			content={
-				<AceEditor
-					mode="json"
-					value={this.state.editorValue}
-					onChange={value => this.handleEditingJSON(value)}
-					theme="monokai"
-					name="editor-JSON"
-					fontSize={14}
-					showPrintMargin
-					style={{ maxHeight: '250px' }}
-					showGutter
-					highlightActiveLine
-					setOptions={{
-						showLineNumbers: true,
-						tabSize: 2,
-					}}
-					editorProps={{ $blockScrolling: true }}
-				/>
+				this.state.isEditable ? (
+					<AceEditor
+						mode="json"
+						value={this.state.editorValue}
+						onChange={value => this.handleEditingJSON(value)}
+						theme="monokai"
+						name="editor-JSON"
+						fontSize={14}
+						showPrintMargin
+						style={{ maxHeight: '250px' }}
+						showGutter
+						highlightActiveLine
+						setOptions={{
+							showLineNumbers: true,
+							tabSize: 2,
+						}}
+						editorProps={{ $blockScrolling: true }}
+					/>
+				) : (
+					<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>
+				)
 			}
 			title={
 				<Row>
-					<Col span={21}>
-						<h6 style={{ display: 'inline-block' }}>Edit JSON</h6>
+					<Col span={this.state.isEditable ? 19 : 18}>
+						<h5 style={{ display: 'inline-block' }}>{this.state.isEditable ? 'Edit JSON' : 'JSON Result'}</h5>
 					</Col>
-					<Col span={3}>
-						<Button
-							size="small"
-							type="primary"
-							disabled={!this.state.isValidJSON}
-							onClick={() => this.handleUpdateJSON(this.state.editorValue)}
-						>
-							Update
-						</Button>
+					<Col span={this.state.isEditable ? 5 : 6}>
+						<Tooltip visible={this.state.copied} title="Copied">
+							<Button
+								shape="circle"
+								icon="copy"
+								size="small"
+								onClick={() => this.copyJSON(res)}
+							/>
+						</Tooltip>
+						{this.state.isEditable ? (
+							<Button
+								size="small"
+								type="primary"
+								style={{ marginLeft: '5px' }}
+								disabled={!this.state.isValidJSON}
+								onClick={() => this.handleUpdateJSON(this.state.editorValue)}
+							>
+								Update
+							</Button>
+						) : (
+							<Button
+								size="small"
+								type="primary"
+								style={{ marginLeft: '5px' }}
+								disabled={!this.state.isValidJSON}
+								onClick={() => this.handleEditing()}
+							>
+								Edit
+							</Button>
+						)}
 					</Col>
 				</Row>
 			}
 		>
-			<Button shape="circle" icon="edit" style={{ marginRight: '5px' }} />
+			<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
 		</Popover>
 	);
 
@@ -489,24 +502,30 @@ export default class Editor extends Component {
 			onData: (res) => {
 				const { _id, _index, ...renderedJSON } = res;
 				return (
-				<div className={listItem} key={res._id}>
-					<ExpandCollapse previewHeight="390px" expandText="Show more">
-						{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
-					</ExpandCollapse>
-					<div style={{ marginTop: 10, textAlign: 'right' }}>
-						{this.renderAsJSON(res)}
-						{this.renderJSONEditor(res)}
-						{this.renderDeleteJSON(res)}
+					<div className={listItem} key={res._id}>
+						<ExpandCollapse previewHeight="390px" expandText="Show more">
+							{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
+						</ExpandCollapse>
+						<div style={{ marginTop: 10, textAlign: 'right' }}>
+							{this.renderJSONEditor(res)}
+							{this.renderDeleteJSON(res)}
+						</div>
 					</div>
-				</div>
-			);
-},
+				);
+			},
 			react: {
 				and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
 			},
 		};
 
-		const title = <span>Search Preview <Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">Watch Video</Button></span>;
+		const title = (
+			<span>
+				Search Preview{' '}
+				<Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
+					Watch Video
+				</Button>
+			</span>
+		);
 
 		return (
 			<ReactiveBase
@@ -586,7 +605,15 @@ export default class Editor extends Component {
 						onCancel={this.handleVideoModal}
 						destroyOnClose
 					>
-						<iframe width="460" height="240" src="https://www.youtube.com/embed/f5SHz80r9Ro" frameBorder="0" title="Dejavu" allow="autoplay; encrypted-media" allowFullScreen />
+						<iframe
+							width="460"
+							height="240"
+							src="https://www.youtube.com/embed/f5SHz80r9Ro"
+							frameBorder="0"
+							title="Dejavu"
+							allow="autoplay; encrypted-media"
+							allowFullScreen
+						/>
 					</Modal>
 				</Row>
 			</ReactiveBase>
