@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { string } from 'prop-types';
-import { Tooltip, Icon, Input } from 'antd';
+import { Tooltip, Icon, Input, Popover } from 'antd';
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
 import { getCredentials, checkUserStatus } from '../../utils';
@@ -192,9 +192,11 @@ export default class Mappings extends Component {
 
 	handleMapping = (res) => {
 		this.originalMapping = res;
+		const mappingsType = Object.keys(res).length > 0 ? Object.keys(res)[0] : '';
 		this.setState({
 			isLoading: false,
 			mapping: res ? transformToES5(res) : res,
+			mappingsType,
 		});
 	};
 
@@ -354,6 +356,34 @@ export default class Mappings extends Component {
 		return null;
 	};
 
+	getIcon = (type) => {
+		switch (type) {
+			case 'text':
+			case 'string':
+			case 'keyword':
+				return <Icon type="file-text" theme="outlined" />;
+			case 'long':
+			case 'integer':
+				return <Icon>#</Icon>;
+			case 'geo_point':
+			case 'geo_shape':
+				return <Icon type="environment" theme="outlined" />;
+			case 'date':
+				return <Icon type="calendar" theme="outlined" />;
+			case 'double':
+			case 'float':
+				return <Icon>π</Icon>;
+			case 'boolean':
+				return <Icon type="check" theme="outlined" />;
+			case 'object':
+				return <Icon>{'{...}'}</Icon>;
+			case 'image':
+				return <Icon type="file-jpg" theme="outlined" />;
+			default:
+				return <Icon type="file-unknown" theme="outlined" />;
+		}
+	};
+
 	renderMapping = (type, fields, originalFields, address = '') => {
 		if (fields) {
 			return (
@@ -379,10 +409,23 @@ export default class Mappings extends Component {
 								`${address ? `${address}.` : ''}${field}.properties`,
 							);
 						}
+						const properties = fields[field];
+						let type = 'default';
+						if (properties.type) {
+							type = properties.type;
+						}
+						const mappingInfo = (
+							<Popover content={<pre>{JSON.stringify(properties, null, ' ')}</pre>}>
+								{this.getIcon(type)}
+							</Popover>
+						);
 						return (
 							<div key={field} className={item}>
 								<div className={deleteBtn}>
-									<span title={field}>{field}</span>
+									<span title={field}>
+										{mappingInfo}
+										{field}
+									</span>
 									{this.state.editable ? (
 										<a
 											onClick={() => {
