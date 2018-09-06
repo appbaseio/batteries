@@ -1,6 +1,6 @@
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { getAppInfo as fetchAppInfo } from '../../utils/app';
+import { getAppInfo as fetchAppInfo, deleteApp as DeleteApp } from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
 import { getCredentials } from '../../utils';
 
@@ -32,5 +32,14 @@ export function getAppCredentials(appId) {
 		return getCredentials(appId)
 			.then(res => dispatch(createAction(AppConstants.APP.GET_CREDENTIALS_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_CREDENTIALS_ERROR, null, error)));
+	};
+}
+
+export function deleteApp(appId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.DELETE_APP));
+		return DeleteApp(appId)
+			.then(res => dispatch(createAction(AppConstants.APP.DELETE_APP_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.DELETE_APP_ERROR, null, error)));
 	};
 }
