@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Card, Table, Button } from 'antd';
-import { defaultColumns } from './../utils';
+import { defaultColumns } from '../utils';
 
 const Searches = ({
  title, dataSource, columns, showViewOption, onClick, plan, pagination,
@@ -23,7 +24,20 @@ const Searches = ({
 Searches.defaultProps = {
 	showViewOption: true,
 	pagination: false,
-	clickAnalytics: true,
+	onClick: () => null,
+	title: '',
+	dataSource: [],
+	plan: '',
+	columns: [],
+};
+Searches.propTypes = {
+	title: PropTypes.string,
+	dataSource: PropTypes.array,
+	columns: PropTypes.array,
+	showViewOption: PropTypes.bool,
+	onClick: PropTypes.func,
+	plan: PropTypes.string,
+	pagination: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
 };
 
 export default Searches;

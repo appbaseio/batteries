@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import { Modal, Button, Tabs } from 'antd';
-import Grid from './../../../shared/Grid';
+import Grid from '../../../shared/Grid';
 import { getTimeDuration } from '../../utils';
 
 const { TabPane } = Tabs;
@@ -71,6 +71,7 @@ const RequestDetails = ({
 };
 RequestDetails.defaultProps = {
 	show: false,
+	handleCancel: () => null,
 };
 RequestDetails.propTypes = {
 	show: PropTypes.bool,

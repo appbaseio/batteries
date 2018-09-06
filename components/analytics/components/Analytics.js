@@ -2,7 +2,7 @@ import React from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import Flex from '../../shared/Flex';
-import { popularFiltersCol, popularResultsCol } from './../utils';
+import { popularFiltersCol, popularResultsCol } from '../utils';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
 
@@ -70,7 +70,17 @@ const Analytics = ({
 		</React.Fragment>
 	);
 };
+Analytics.defaultProps = {
+	loading: false,
+	noResults: [],
+	popularSearches: [],
+	searchVolume: [],
+	popularResults: [],
+	redirectTo: () => null,
+	popularFilters: [],
+};
 Analytics.propTypes = {
+	loading: PropTypes.bool,
 	noResults: PropTypes.array,
 	popularSearches: PropTypes.array,
 	plan: PropTypes.string.isRequired,

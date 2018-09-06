@@ -1,7 +1,7 @@
 import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
-import { ACC_API } from './../../utils';
+import { ACC_API } from '../../utils';
 import Flex from '../shared/Flex';
 
 const requestOpt = css`
@@ -230,8 +230,7 @@ export const requestLogs = [
  */
 export function getAnalytics(appName, userPlan, clickanalytics = true) {
 	return new Promise((resolve, reject) => {
-		const url =
-			userPlan === 'growth'
+		const url =			userPlan === 'growth'
 				? `${ACC_API}/analytics/${appName}/advanced`
 				: `${ACC_API}/analytics/${appName}/overview`;
 		const queryParams = getQueryParams({ clickanalytics });
@@ -404,4 +403,23 @@ export const bannerMessages = {
 		isHorizontal: true,
 		href: 'https://docs.appbase.io',
 	},
+};
+export const tabMappings = {
+	popularSearches: 'popular-searches',
+	noResultSearches: 'no-result-searches',
+	popularResults: 'popular-results',
+	popularFilters: 'popular-filters',
+	requestLogs: 'request-logs',
+	analytics: 'analytics',
+};
+export const getActiveKeyByRoutes = (tab) => {
+	let activeKey = '';
+	Object.keys(tabMappings).every((k) => {
+		if (tabMappings[k] === tab) {
+			activeKey = k;
+			return false;
+		}
+		return true;
+	});
+	return activeKey;
 };

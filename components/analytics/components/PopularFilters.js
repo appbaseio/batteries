@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getPopularFilters, popularFiltersFull } from './../utils';
-import Loader from './../../shared/Loader/Spinner';
+import { getPopularFilters, popularFiltersFull } from '../utils';
+import Loader from '../../shared/Loader/Spinner';
 
 class PopularFilters extends React.Component {
 	constructor(props) {
@@ -12,8 +12,10 @@ class PopularFilters extends React.Component {
 			popularFilters: [],
 		};
 	}
+
 	componentDidMount() {
-		getPopularFilters(this.props.appName)
+		const { appName } = this.props;
+		getPopularFilters(appName)
 			.then((res) => {
 				this.setState({
 					popularFilters: res,
@@ -28,14 +30,16 @@ class PopularFilters extends React.Component {
 	}
 
 	render() {
-		if (this.state.isFetching) {
+		const { isFetching, popularFilters } = this.state;
+		const { plan } = this.props;
+		if (isFetching) {
 			return <Loader />;
 		}
 		return (
 			<Searches
 				showViewOption={false}
-				columns={popularFiltersFull(this.props.plan)}
-				dataSource={this.state.popularFilters}
+				columns={popularFiltersFull(plan)}
+				dataSource={popularFilters}
 				title="Popular Filters"
 				pagination={{
 					pageSize: 10,
@@ -45,8 +49,8 @@ class PopularFilters extends React.Component {
 	}
 }
 PopularFilters.propTypes = {
-	plan: PropTypes.string,
-	appName: PropTypes.string,
+	plan: PropTypes.string.isRequired,
+	appName: PropTypes.string.isRequired,
 };
 
 export default PopularFilters;

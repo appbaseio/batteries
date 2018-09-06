@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getPopularSearches, popularSearchesFull } from './../utils';
-import Loader from './../../shared/Loader/Spinner';
+import { getPopularSearches, popularSearchesFull } from '../utils';
+import Loader from '../../shared/Loader/Spinner';
 
 class PopularSearches extends React.Component {
 	constructor(props) {
@@ -12,8 +12,10 @@ class PopularSearches extends React.Component {
 			popularSearches: [],
 		};
 	}
+
 	componentDidMount() {
-		getPopularSearches(this.props.appName)
+		const { appName } = this.props;
+		getPopularSearches(appName)
 			.then((res) => {
 				this.setState({
 					popularSearches: res,
@@ -28,14 +30,16 @@ class PopularSearches extends React.Component {
 	}
 
 	render() {
-		if (this.state.isFetching) {
+		const { isFetching, popularSearches } = this.state;
+		const { plan } = this.props;
+		if (isFetching) {
 			return <Loader />;
 		}
 		return (
 			<Searches
 				showViewOption={false}
-				columns={popularSearchesFull(this.props.plan)}
-				dataSource={this.state.popularSearches}
+				columns={popularSearchesFull(plan)}
+				dataSource={popularSearches}
 				title="Popular Searches"
 				pagination={{
 					pageSize: 10,
@@ -45,8 +49,8 @@ class PopularSearches extends React.Component {
 	}
 }
 PopularSearches.propTypes = {
-	plan: PropTypes.string,
-	appName: PropTypes.string,
+	plan: PropTypes.string.isRequired,
+	appName: PropTypes.string.isRequired,
 };
 
 export default PopularSearches;
