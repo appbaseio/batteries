@@ -51,8 +51,9 @@ export default class Editor extends Component {
 			showVideo: false,
 			isEditable: false,
 		};
-		this.appbaseRef = new Appbase({
-			appname: this.props.appName,
+
+		this.appbaseRef = Appbase({
+			app: this.props.appName,
 			url: this.props.url,
 			credentials: this.props.credentials,
 		});
@@ -195,20 +196,21 @@ export default class Editor extends Component {
 					doc: updatedJSON,
 				},
 			})
-			.on('data', (res) => {
+			.then((res) => {
 				this.setState({
 					isEditable: false,
 					renderKey: res._timestamp, // eslint-disable-line
 				});
+				notification.open(responseMessage);
 			})
-			.on('error', () => {
+			.catch(() => {
 				responseMessage = {
 					message: 'Update JSON',
 					description: 'There were error in Updating JSON. Try again Later.',
 					duration: 2,
 				};
+				notification.open(responseMessage);
 			});
-		notification.open(responseMessage);
 	};
 
 	handleDeleteJSON = (id) => {
@@ -222,19 +224,20 @@ export default class Editor extends Component {
 				type: this.props.mappingsType,
 				id,
 			})
-			.on('data', (res) => {
+			.then((res) => {
 				this.setState({
 					renderKey: res._timestamp,
 				});
+				notification.open(responseMessage);
 			})
-			.on('error', () => {
+			.catch(() => {
 				responseMessage = {
 					message: 'Delete JSON',
 					description: 'There were error in Deleting JSON. Try again Later.',
 					duration: 2,
 				};
+				notification.open(responseMessage);
 			});
-		notification.open(responseMessage);
 	};
 
 	handleEditing = () => {
