@@ -1,7 +1,9 @@
 import React from 'react';
 import find from 'lodash/find';
 import get from 'lodash/get';
-import { Card, Tabs, Table } from 'antd';
+import {
+ Card, Tabs, Table, notification,
+} from 'antd';
 import PropTypes from 'prop-types';
 import { getRequestLogs, requestLogs, getTimeDuration } from '../../utils';
 import RequestDetails from './RequestDetails';
@@ -83,8 +85,11 @@ class RequestLogs extends React.Component {
 					});
 				}, 60000);
 			})
-			.catch(() => {
-				// toastr.error('Error', get(e, 'responseJSON.message', 'Unable to fetch logs.'));
+			.catch((e) => {
+				notification.error({
+					message: 'Error',
+					description: get(e, 'responseJSON.message', 'Unable to fetch logs.'),
+				});
 				this.setState({
 					isFetching: false,
 				});

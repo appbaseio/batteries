@@ -4,6 +4,28 @@ export const BILLING_API = 'https://transactions.appbase.io';
 // export const ACC_API = 'https://accapi-staging.bottleneck.io';
 // export const SCALR_API = 'https://api-staging.bottleneck.io';
 
+// Get credentials if permissions are already present
+export function getCredntialsFromPermissions(permissions = []) {
+	let result = permissions.find(
+		permission => permission.read
+			&& permission.write
+			&& permission.referers.includes('*')
+			&& permission.include_fields.includes('*'),
+	);
+	if (!result) {
+		result = permissions.find(
+			permission => permission.read && permission.write && permission.referers.includes('*'),
+		);
+	}
+	if (!result) {
+		result = permissions.find(permission => permission.read && permission.write);
+	}
+	if (!result) {
+		result = permissions.find(permission => permission.read);
+	}
+	return result;
+}
+
 export function getCredentials(appId) {
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
@@ -15,24 +37,7 @@ export function getCredentials(appId) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				let result = data.body.find(permission =>
-						permission.read &&
-						permission.write &&
-						permission.referers.includes('*') &&
-						permission.include_fields.includes('*'));
-				if (!result) {
-					result = data.body.find(permission =>
-							permission.read &&
-							permission.write &&
-							permission.referers.includes('*'));
-				}
-				if (!result) {
-					result = data.body.find(permission => permission.read && permission.write);
-				}
-				if (!result) {
-					result = data.body.find(permission => permission.read);
-				}
-				resolve(result);
+				resolve(getCredntialsFromPermissions(data.body));
 			})
 			.catch((e) => {
 				reject(e);
