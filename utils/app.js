@@ -66,3 +66,16 @@ export const deletePermission = (appId, username) => new Promise((resolve, rejec
 			.then(data => resolve(data))
 			.catch(error => reject(error));
 	});
+
+export const deleteApp = appId => new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/app/${appId}`, {
+			method: 'DELETE',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then(data => resolve(data))
+			.catch(error => reject(error));
+	});
