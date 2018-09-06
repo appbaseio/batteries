@@ -192,11 +192,9 @@ export default class Mappings extends Component {
 
 	handleMapping = (res) => {
 		this.originalMapping = res;
-		const mappingsType = Object.keys(res).length > 0 ? Object.keys(res)[0] : '';
 		this.setState({
 			isLoading: false,
 			mapping: res ? transformToES5(res) : res,
-			mappingsType,
 		});
 	};
 
