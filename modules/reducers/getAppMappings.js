@@ -20,8 +20,12 @@ function getAppMappings(state = initialState, action) {
 			return {
 				...state,
 				isFetching: false,
-				rawMappings: Object.assign({}, state.rawMappings, { [action.meta.appName]: action.payload }),
-				traversedMappings: Object.assign({}, state.traversedMappings, { [action.meta.appName]: traverseMapping(action.payload) }),
+				rawMappings: Object.assign({}, state.rawMappings, {
+					[action.meta.appName]: action.payload,
+				}),
+				traversedMappings: Object.assign({}, state.traversedMappings, {
+					[action.meta.appName]: traverseMapping(action.payload),
+				}),
 			};
 		case AppConstants.APP.GET_MAPPINGS_ERROR:
 			return {

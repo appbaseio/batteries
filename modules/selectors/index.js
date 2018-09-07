@@ -9,7 +9,11 @@ const appInfo = state => get(state, '$getAppInfo.apps');
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
 const getRawMappingsByAppName = createSelector(rawMappings, appName, getCollectionByKey);
-const getTraversedMappingsByAppName = createSelector(traversedMappings, appName, getCollectionByKey);
+const getTraversedMappingsByAppName = createSelector(
+	traversedMappings,
+	appName,
+	getCollectionByKey,
+);
 const getAppInfoByName = createSelector(appInfo, appName, getCollectionByKey);
 
 export { getRawMappingsByAppName, getTraversedMappingsByAppName, getAppInfoByName };

@@ -9,12 +9,16 @@ import { getCredentials } from '../../utils';
  * To fetch app details
  * @param {string} appId
  */
-export function getAppInfo(appId, appName) {
+export function getAppInfo(appId, name) {
 	return (dispatch, getState) => {
-		const appname = appName || get(getState(), '$getCurrentApp.name', 'default');
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.GET_INFO));
 		return fetchAppInfo(appId)
-			.then(res => dispatch(createAction(AppConstants.APP.GET_INFO_SUCCESS, res, null, { appName: appname })))
+			.then(res => dispatch(
+					createAction(AppConstants.APP.GET_INFO_SUCCESS, res, null, {
+						appName,
+					}),
+				))
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_INFO_ERROR, null, error)));
 	};
 }
@@ -23,7 +27,9 @@ export function getAppMappings(appName, credentials, url) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.GET_MAPPINGS));
 		return getMappings(appName, credentials, url)
-			.then(res => dispatch(createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, { appName })))
+			.then(res => dispatch(
+					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, { appName }),
+				))
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_MAPPINGS_ERROR, null, error)));
 	};
 }
