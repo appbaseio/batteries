@@ -3,6 +3,7 @@ import getUserStatus from './getUserStatus';
 import getAppInfo from './getAppInfo';
 import getAppMappings from './getAppMappings';
 import getAppCredentials from './getAppCredentials';
+import getCurrentApp from './getCurrentApp';
 import { createRequestReducer } from './utils';
 
 export default {
@@ -35,4 +36,5 @@ export default {
 		AppConstants.APP.DELETE_APP_SUCCESS,
 		AppConstants.APP.DELETE_APP_ERROR,
 	),
+	$getCurrentApp: getCurrentApp,
 };

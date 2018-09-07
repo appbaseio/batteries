@@ -4,8 +4,8 @@ import { traverseMapping } from '../../utils/mappings';
 const initialState = {
 	isFetching: false,
 	error: undefined,
-	rawMappings: undefined,
-	traversedMappings: undefined,
+	rawMappings: {},
+	traversedMappings: {},
 };
 
 function getAppMappings(state = initialState, action) {
@@ -20,8 +20,8 @@ function getAppMappings(state = initialState, action) {
 			return {
 				...state,
 				isFetching: false,
-				rawMappings: action.payload,
-				traversedMappings: traverseMapping(action.payload),
+				rawMappings: Object.assign({}, state.rawMappings, { [action.meta.appName]: action.payload }),
+				traversedMappings: Object.assign({}, state.traversedMappings, { [action.meta.appName]: traverseMapping(action.payload) }),
 			};
 		case AppConstants.APP.GET_MAPPINGS_ERROR:
 			return {
