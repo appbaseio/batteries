@@ -3,7 +3,7 @@ import AppConstants from '../constants';
 const initialAppState = {
 	isFetching: false,
 	error: undefined,
-	app: undefined,
+	apps: undefined,
 };
 
 function app(state = initialAppState, action) {
@@ -18,7 +18,7 @@ function app(state = initialAppState, action) {
 			return {
 				...state,
 				isFetching: false,
-				app: action.payload,
+				apps: Object.assign({}, state.apps, { [action.meta.appName]: action.payload }),
 			};
 		case AppConstants.APP.GET_INFO_ERROR:
 			return {
