@@ -5,7 +5,7 @@ export const BILLING_API = 'https://transactions.appbase.io';
 // export const SCALR_API = 'https://api-staging.bottleneck.io';
 
 // Get credentials if permissions are already present
-export function getCredntialsFromPermissions(permissions = []) {
+export function getCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
 		permission => permission.read
 			&& permission.write
@@ -37,7 +37,7 @@ export function getCredentials(appId) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				resolve(getCredntialsFromPermissions(data.body));
+				resolve(getCredentialsFromPermissions(data.body));
 			})
 			.catch((e) => {
 				reject(e);
