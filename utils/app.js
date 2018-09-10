@@ -79,3 +79,29 @@ export const deleteApp = appId => new Promise((resolve, reject) => {
 			.then(data => resolve(data))
 			.catch(error => reject(error));
 	});
+
+export const getShare = appId => new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/app/${appId}/share`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then(data => resolve(data.body))
+			.catch(error => reject(error));
+	});
+
+export const getAppPlan = appName => new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/app/${appName}/plan`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then(data => resolve(data.body))
+			.catch(error => reject(error));
+	});

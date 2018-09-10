@@ -1,7 +1,12 @@
 import get from 'lodash/get';
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { getAppInfo as fetchAppInfo, deleteApp as DeleteApp } from '../../utils/app';
+import {
+	getAppInfo as fetchAppInfo,
+	deleteApp as DeleteApp,
+	getShare,
+	getAppPlan as fetchAppPlan,
+} from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
 import { getCredentials } from '../../utils';
 
@@ -49,6 +54,24 @@ export function deleteApp(appId) {
 		return DeleteApp(appId)
 			.then(res => dispatch(createAction(AppConstants.APP.DELETE_APP_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.DELETE_APP_ERROR, null, error)));
+	};
+}
+
+export function getSharedApp(appId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.GET_SHARE));
+		return getShare(appId)
+			.then(res => dispatch(createAction(AppConstants.APP.GET_SHARE_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.GET_SHARE_ERROR, null, error)));
+	};
+}
+
+export function getAppPlan(appName) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.GET_PLAN));
+		return fetchAppPlan(appName)
+			.then(res => dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
 	};
 }
 

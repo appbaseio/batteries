@@ -4,7 +4,7 @@ import getAppInfo from './getAppInfo';
 import getAppMappings from './getAppMappings';
 import getAppCredentials from './getAppCredentials';
 import getCurrentApp from './getCurrentApp';
-import { createRequestReducer } from './utils';
+import { createRequestReducer, computeAppPlanState } from './utils';
 
 export default {
 	$getUserStatus: getUserStatus,
@@ -15,6 +15,12 @@ export default {
 		AppConstants.APP.PERMISSION.GET,
 		AppConstants.APP.PERMISSION.GET_SUCCESS,
 		AppConstants.APP.PERMISSION.GET_ERROR,
+	),
+	$getAppPlan: createRequestReducer(
+		AppConstants.APP.GET_PLAN,
+		AppConstants.APP.GET_PLAN_SUCCESS,
+		AppConstants.APP.GET_PLAN_ERROR,
+		computeAppPlanState,
 	),
 	$createAppPermission: createRequestReducer(
 		AppConstants.APP.PERMISSION.CREATE,
@@ -35,6 +41,11 @@ export default {
 		AppConstants.APP.DELETE_APP,
 		AppConstants.APP.DELETE_APP_SUCCESS,
 		AppConstants.APP.DELETE_APP_ERROR,
+	),
+	$getSharedApp: createRequestReducer(
+		AppConstants.APP.GET_SHARE,
+		AppConstants.APP.GET_SHARE_SUCCESS,
+		AppConstants.APP.GET_SHARE_ERROR,
 	),
 	$getCurrentApp: getCurrentApp,
 };
