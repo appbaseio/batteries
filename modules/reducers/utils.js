@@ -31,6 +31,18 @@ export const createRequestReducer = (requestAction, successAction, errorAction, 
 		}
 	};
 
+const getPlanFromTier = (tier) => {
+	switch (tier) {
+		case 'bootstrap-monthly':
+		case 'bootstrap-annual':
+			return 'bootstrap';
+		case 'growth-monthly':
+		case 'growth-annual':
+			return 'growth';
+		default:
+			return 'free';
+	}
+};
 export const computeAppPlanState = (data = {}) => {
 	const isBootstrapMonthly = data.tier === 'bootstrap-monthly';
 	const isBootstrapAnnual = data.tier === 'bootstrap-annual';
@@ -42,6 +54,9 @@ export const computeAppPlanState = (data = {}) => {
 		isBootstrapAnnual,
 		isGrowthMonthly,
 		isGrowthAnnual,
+		isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
+		isGrowth: isGrowthMonthly || isGrowthAnnual,
 		isPaid: isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual,
+		plan: getPlanFromTier(data.tier),
 	};
 };
