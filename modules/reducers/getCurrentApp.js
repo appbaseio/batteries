@@ -1,8 +1,8 @@
 import AppConstants from '../constants';
 
 const initialState = {
-    id: undefined,
-    name: undefined,
+	id: undefined,
+	name: undefined,
 };
 
 function getCurrentApp(state = initialState, action) {
@@ -11,13 +11,13 @@ function getCurrentApp(state = initialState, action) {
 			return {
 				...state,
 				id: action.payload.id,
-                name: action.payload.name,
-            };
-        case AppConstants.APP.CLEAR_CURRENT_APP:
+				name: action.payload.name,
+			};
+		case AppConstants.APP.CLEAR_CURRENT_APP:
 			return {
 				...state,
 				id: undefined,
-                name: undefined,
+				name: undefined,
 			};
 		default:
 			return state;
