@@ -6,6 +6,7 @@ import {
 	deleteApp as DeleteApp,
 	getShare,
 	getAppPlan as fetchAppPlan,
+	createShare,
 } from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
 import { getCredentials } from '../../utils';
@@ -63,6 +64,15 @@ export function getSharedApp(appId) {
 		return getShare(appId)
 			.then(res => dispatch(createAction(AppConstants.APP.GET_SHARE_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_SHARE_ERROR, null, error)));
+	};
+}
+
+export function createAppShare(appId, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.CREATE_SHARE));
+		return createShare(appId, payload)
+			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SHARE_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.CREATE_SHARE_ERROR, null, error)));
 	};
 }
 

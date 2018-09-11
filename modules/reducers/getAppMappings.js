@@ -4,6 +4,7 @@ import { traverseMapping } from '../../utils/mappings';
 const initialState = {
 	isFetching: false,
 	error: undefined,
+	success: false,
 	rawMappings: {},
 	traversedMappings: {},
 };
@@ -15,6 +16,7 @@ function getAppMappings(state = initialState, action) {
 				...state,
 				isFetching: true,
 				error: undefined,
+				success: false,
 			};
 		case AppConstants.APP.GET_MAPPINGS_SUCCESS:
 			return {
@@ -26,6 +28,7 @@ function getAppMappings(state = initialState, action) {
 				traversedMappings: Object.assign({}, state.traversedMappings, {
 					[action.meta.appName]: traverseMapping(action.payload),
 				}),
+				success: true,
 			};
 		case AppConstants.APP.GET_MAPPINGS_ERROR:
 			return {

@@ -1,5 +1,6 @@
 const initialState = {
 	isFetching: false,
+	success: false,
 	error: undefined,
 	results: undefined,
 };
@@ -11,11 +12,13 @@ export const createRequestReducer = (requestAction, successAction, errorAction, 
 					...state,
 					isFetching: true,
 					error: undefined,
+					success: false,
 				};
 			case successAction:
 				return {
 					...state,
 					isFetching: false,
+					success: true,
 					results: action.payload,
 					...(extendState && extendState(action.payload)),
 				};

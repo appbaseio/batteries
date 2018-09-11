@@ -47,5 +47,10 @@ export default {
 		AppConstants.APP.GET_SHARE_SUCCESS,
 		AppConstants.APP.GET_SHARE_ERROR,
 	),
+	$createAppShare: createRequestReducer(
+		AppConstants.APP.CREATE_SHARE,
+		AppConstants.APP.CREATE_SHARE_SUCCESS,
+		AppConstants.APP.CREATE_SHARE_ERROR,
+	),
 	$getCurrentApp: getCurrentApp,
 };
