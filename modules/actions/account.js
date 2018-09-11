@@ -10,7 +10,11 @@ export function getUserStatus() {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET));
 		return checkUserStatus()
-			.then(res => dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_ERROR, null, error)));
+			.then((res) => {
+				dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_SUCCESS, res));
+			})
+			.catch((error) => {
+				dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_ERROR, null, error));
+			});
 	};
 }
