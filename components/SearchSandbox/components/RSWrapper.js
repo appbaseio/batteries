@@ -13,6 +13,8 @@ import {
 	Dropdown,
 	Popover,
 	Select,
+	Card,
+	Avatar,
 } from 'antd';
 
 import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
@@ -23,6 +25,7 @@ import reactiveListTypes from '../utils/reactivelist-types';
 import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
+import PreviewList from './PreviewList';
 
 import {
 	deleteStyles,
@@ -45,6 +48,8 @@ const propsMap = {
 	ReactiveList: reactiveListTypes,
 };
 
+const { Meta } = Card;
+
 export default class RSWrapper extends Component {
 	constructor(props) {
 		super(props);
@@ -53,6 +58,7 @@ export default class RSWrapper extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
+			previewModal: false,
 		};
 
 		if (!props.componentProps.dataField) {
@@ -126,6 +132,17 @@ export default class RSWrapper extends Component {
 		this.setState({
 			showModal: true,
 		});
+	};
+
+	getNestedValue = (obj, path) => {
+		const keys = path.split('.');
+		let currentObject = obj;
+
+		keys.forEach(key => (currentObject = currentObject[key]));
+		if (typeof currentObject === 'object') {
+			return JSON.stringify(currentObject);
+		}
+		return currentObject;
 	};
 
 	handleOk = () => {
@@ -246,6 +263,22 @@ export default class RSWrapper extends Component {
 		}
 	};
 
+	handlePreviewModal = () => {
+		this.setState({
+			previewModal: !this.state.previewModal,
+		});
+	};
+
+	handleSavePreview = (values) => {
+		this.props.onPropChange(this.props.id, {
+			meta: true,
+			metaFields: values,
+		});
+		this.setState({
+			previewModal: false,
+		});
+	}
+
 	renderComponentCode = () => {
 		const config = {
 			componentId: this.props.id,
@@ -285,10 +318,9 @@ export default class RSWrapper extends Component {
 							style={{ maxHeight: 300, overflowY: 'scroll' }}
 						>
 							{fields
-								.filter(item => (
-									item === selected
-									|| !this.state.componentProps.dataField.includes(item)
-								))
+								.filter(item =>
+										item === selected ||
+										!this.state.componentProps.dataField.includes(item))
 								.map(item => (
 									<Menu.Item key={item} value={index}>
 										{item}
@@ -581,6 +613,10 @@ export default class RSWrapper extends Component {
 		if (!this.props.componentProps.dataField) return null;
 		const RSComponent = componentMap[this.props.component];
 
+		if (this.props.componentProps.metaFields) {
+
+		}
+
 		let otherProps = {};
 		if (this.props.id === 'search') {
 			otherProps = {
@@ -591,6 +627,47 @@ export default class RSWrapper extends Component {
 				),
 				highlightField: this.props.componentProps.dataField,
 			};
+		}
+
+		if (this.props.id === 'result' && this.props.componentProps.metaFields) {
+			const {
+ url, title, image, description,
+} = this.props.componentProps.metaFields;
+			otherProps = {
+showResultStats: false,
+			onAllData: results =>
+				results.map(res => (
+					<Card key={res._id} style={{ border: 0, margin: '14px 0px' }}>
+						<Meta
+							avatar={<Avatar src={this.getNestedValue(res, image)} />}
+							title={title ? this.getNestedValue(res, title) : 'NA'}
+							description={
+								description ? (
+									<div className="ant-card-meta-description">
+										{this.getNestedValue(res, description)}
+										{url ? (
+											<Button
+												type="primary"
+												size="small"
+												href={url}
+												target="_blank"
+												style={{ marginTop: '12px', display: 'table' }}
+											>
+												Link
+											</Button>
+										) : null}
+									</div>
+								) : (
+									'NA'
+								)
+							}
+						/>
+						<div style={{ marginTop: 10, textAlign: 'right' }}>
+							{this.props.renderJSONEditor(res)}
+							{this.props.renderDeleteJSON(res)}
+						</div>
+     </Card>)),
+						};
 		}
 
 		return (
@@ -605,6 +682,15 @@ export default class RSWrapper extends Component {
 								onClick={this.showModal}
 							/>
 							{this.renderComponentCode()}
+							{this.props.component === 'ReactiveList' ? (
+								<Button
+									icon="eye-o"
+									shape="circle"
+									size="large"
+									style={{ marginLeft: 8 }}
+									onClick={this.handlePreviewModal}
+								/>
+							) : null}
 							{this.props.showDelete ? (
 								<Button
 									icon="delete"
@@ -655,6 +741,22 @@ export default class RSWrapper extends Component {
 				>
 					{this.renderPropsForm()}
 				</Modal>
+				{this.props.component === 'ReactiveList' ? (
+					<PreviewList
+						options={Object.keys(this.props.mappings)}
+						componentProps={this.state.componentProps}
+						componentId={this.props.id}
+						getNestedValue={this.getNestedValue}
+						handlePreviewModal={this.handlePreviewModal}
+						handleSavePreview={this.handleSavePreview}
+						visible={this.state.previewModal}
+						dataField={generateDataField(
+							this.props.component,
+							this.props.componentProps.dataField,
+							this.props.mappings,
+						)}
+					/>
+				) : null}
 			</div>
 		);
 	}
