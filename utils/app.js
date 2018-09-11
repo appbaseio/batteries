@@ -117,3 +117,17 @@ export const getAppPlan = appName => new Promise((resolve, reject) => {
 			.then(data => resolve(data.body))
 			.catch(error => reject(error));
 	});
+
+export const createSubscription = (token, plan) => new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/subscription`, {
+			headers: {
+				'content-type': 'application/json',
+			},
+			method: 'POST',
+			credentials: 'include',
+			body: JSON.stringify({ token, plan }),
+		})
+			.then(res => res.json())
+			.then(data => resolve(data.body))
+			.catch(error => reject(error));
+	});

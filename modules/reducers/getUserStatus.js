@@ -5,6 +5,7 @@ const initialAccountState = {
 	error: undefined,
 	isPaidUser: undefined,
 	plan: undefined,
+	success: false,
 };
 
 function account(state = initialAccountState, action) {
@@ -16,6 +17,7 @@ function account(state = initialAccountState, action) {
 				error: undefined,
 				isPaidUser: undefined,
 				plan: undefined,
+				success: false,
 			};
 		case AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_SUCCESS:
 			return {
@@ -23,6 +25,7 @@ function account(state = initialAccountState, action) {
 				isFetching: false,
 				isPaidUser: action.payload.isPaidUser,
 				plan: action.payload.plan,
+				success: true,
 			};
 		case AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_ERROR:
 			return {
