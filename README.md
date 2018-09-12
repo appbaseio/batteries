@@ -15,7 +15,7 @@ git submodule update --recursive --remote
 2. Installation:
 
 ```bash
-yarn add emotion react-emotion rc-tooltip react-select antd @appbaseio/reactivesearch react-expand-collapse codesandbox react-element-to-jsx-string appbase-js react-ace brace recharts moment lodash reselect
+yarn add emotion react-emotion antd @appbaseio/reactivesearch react-expand-collapse codesandbox react-element-to-jsx-string appbase-js react-ace brace recharts moment lodash reselect
 yarn add -D babel-plugin-emotion babel-plugin-import
 ```
 
@@ -52,9 +52,9 @@ import batteriesReducers from 'batteries/modules/reducers';
 createStore(combineReducers({ ...rootReducer, ...batteriesReducers })),
 ```
 
-4. Import: 
+4. Import:
 
-- Desired actions from `batteries/modules/actions`
-- Selectors from `batteries/modules/selectors`
+-   Desired actions from `batteries/modules/actions`
+-   Selectors from `batteries/modules/selectors`
 
 and connect your component to the redux store powered by batteries.
