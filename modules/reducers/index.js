@@ -4,7 +4,12 @@ import getAppInfo from './getAppInfo';
 import getAppMappings from './getAppMappings';
 import getCurrentApp from './getCurrentApp';
 import createRequestReducer from './request';
-import { computeAppPlanState, computeAppPermissionState } from './utils';
+import {
+	computeAppPlanState,
+	computeAppPermissionState,
+	computeAppMappingState,
+	computeAppAnalyticsState,
+} from './utils';
 
 export default {
 	$getUserStatus: getUserStatus,
@@ -21,6 +26,18 @@ export default {
 		AppConstants.APP.GET_PLAN_SUCCESS,
 		AppConstants.APP.GET_PLAN_ERROR,
 		computeAppPlanState,
+	),
+	$getAppAnalytics: createRequestReducer(
+		AppConstants.APP.GET_ANALYTICS,
+		AppConstants.APP.GET_ANALYTICS_SUCCESS,
+		AppConstants.APP.GET_ANALYTICS_ERROR,
+		computeAppAnalyticsState,
+	),
+	$getAppMetrics: createRequestReducer(
+		AppConstants.APP.GET_METRICS,
+		AppConstants.APP.GET_METRICS_SUCCESS,
+		AppConstants.APP.GET_METRICS_ERROR,
+		computeAppMappingState,
 	),
 	$createAppPermission: createRequestReducer(
 		AppConstants.APP.PERMISSION.CREATE,

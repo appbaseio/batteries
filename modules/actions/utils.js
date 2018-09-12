@@ -5,10 +5,10 @@ const formatError = (error = {}) => {
 		if (errorObj && errorObj.length) {
 			errorToBeReturned.message = errorObj[0] && errorObj[0].message;
 		}
-		errorToBeReturned.actual = errorObj;
+		errorToBeReturned.actual = error;
 		return errorToBeReturned;
 	} catch (e) {
-		return error;
+		return e;
 	}
 };
 /**
@@ -26,7 +26,7 @@ export function createAction(actionId, payload, error, meta) {
 	if (payload !== undefined) {
 		action.payload = payload;
 	}
-	if (arguments.length > 2 || error !== undefined) {
+	if (error !== undefined) {
 		action.error = formatError(error);
 	}
 	if (meta !== undefined) {

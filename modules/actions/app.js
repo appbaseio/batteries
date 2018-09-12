@@ -8,9 +8,9 @@ import {
 	getAppPlan as fetchAppPlan,
 	createShare,
 	createSubscription as CreateSubscription,
+	getAppMetrics as GetAppMetrics,
 } from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
-import { getCredentials } from '../../utils';
 
 /**
  * To fetch app details
@@ -72,8 +72,28 @@ export function getAppPlan(appName) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.GET_PLAN));
 		return fetchAppPlan(appName)
-			.then(res => dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res)))
+			.then(res => dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res, null, { appName })))
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
+	};
+}
+/**
+ * To get the metrics of an app
+ * @param {*} id // App id ( optional )
+ * @param {*} name // App name ( optional )
+ */
+export function getAppMetrics(id, name) {
+	return (dispatch, getState) => {
+		const appId = id || get(getState(), '$getCurrentApp.id', 'default');
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		dispatch(createAction(AppConstants.APP.GET_METRICS));
+		return GetAppMetrics(appId)
+			.then(res => dispatch(
+					createAction(AppConstants.APP.GET_METRICS_SUCCESS, res, null, { appName }),
+				))
+			.catch((error) => {
+				console.log('THSI IS ERROR', error);
+				dispatch(createAction(AppConstants.APP.GET_METRICS_ERROR, null, error));
+			});
 	};
 }
 

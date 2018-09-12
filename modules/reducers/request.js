@@ -20,7 +20,7 @@ const createRequestReducer = (requestAction, successAction, errorAction, extendS
 					isFetching: false,
 					success: true,
 					results: action.payload,
-					...(extendState && extendState(action.payload)),
+					...(extendState && extendState(action, state)),
 				};
 
 			case errorAction:
