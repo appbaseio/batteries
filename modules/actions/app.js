@@ -102,7 +102,9 @@ export function createAppSubscription(stripeToken, plan) {
 		dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION));
 		return CreateSubscription(stripeToken, plan)
 			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_ERROR, null, error)));
+			.catch((error) => {
+				dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_ERROR, null, error));
+			});
 	};
 }
 export function setCurrentApp(appName, appId) {
