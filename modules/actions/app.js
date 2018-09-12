@@ -41,15 +41,6 @@ export function getAppMappings(appName, credentials, url) {
 	};
 }
 
-export function getAppCredentials(appId) {
-	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.GET_CREDENTIALS));
-		return getCredentials(appId)
-			.then(res => dispatch(createAction(AppConstants.APP.GET_CREDENTIALS_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.GET_CREDENTIALS_ERROR, null, error)));
-	};
-}
-
 export function deleteApp(appId) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.DELETE_APP));

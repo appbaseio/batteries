@@ -2,19 +2,19 @@ import AppConstants from '../constants';
 import getUserStatus from './getUserStatus';
 import getAppInfo from './getAppInfo';
 import getAppMappings from './getAppMappings';
-import getAppCredentials from './getAppCredentials';
 import getCurrentApp from './getCurrentApp';
-import { createRequestReducer, computeAppPlanState } from './utils';
+import createRequestReducer from './request';
+import { computeAppPlanState, computeAppPermissionState } from './utils';
 
 export default {
 	$getUserStatus: getUserStatus,
 	$getAppInfo: getAppInfo,
 	$getAppMappings: getAppMappings,
-	$getAppCredentials: getAppCredentials,
 	$getAppPermissions: createRequestReducer(
 		AppConstants.APP.PERMISSION.GET,
 		AppConstants.APP.PERMISSION.GET_SUCCESS,
 		AppConstants.APP.PERMISSION.GET_ERROR,
+		computeAppPermissionState,
 	),
 	$getAppPlan: createRequestReducer(
 		AppConstants.APP.GET_PLAN,
