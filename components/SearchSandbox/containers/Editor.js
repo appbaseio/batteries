@@ -20,10 +20,6 @@ import {
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
 import PropTypes from 'prop-types';
-import brace from 'brace'; // eslint-disable-line
-
-import 'brace/mode/json';
-import 'brace/theme/monokai';
 
 import Appbase from 'appbase-js';
 

@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 
-import AceEditor from 'react-ace';
-
 const Editor = (props) => {
 	if (typeof window !== 'undefined') {
 		const AceEditor = require('react-ace').default; // eslint-disable-line
+		require('brace').default; // eslint-disable-line
 		require('brace/mode/json'); // eslint-disable-line
 		require('brace/theme/monokai'); // eslint-disable-line
 		return <AceEditor {...props} />;
@@ -24,8 +23,8 @@ class Ace extends Component {
 
 	render() {
 		return this.state.mounted ? (
-			<Editor {...this.props} />
-		) : <AceEditor {...this.props} />;
+			<Editor {...this.props} editorProps={{ $blockScrolling: true }} />
+		) : null;
 	}
 }
 
