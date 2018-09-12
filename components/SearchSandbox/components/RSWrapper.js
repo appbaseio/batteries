@@ -53,6 +53,8 @@ export default class RSWrapper extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
+			isInputActive: false,
+			searchterm: '',
 		};
 
 		if (!props.componentProps.dataField) {
@@ -172,15 +174,30 @@ export default class RSWrapper extends Component {
 		});
 	};
 
+	handleDropdownBlur = () => {
+		this.setState({
+			isInputActive: false,
+		});
+	}
+
 	handleDropdownChange = (e, name) => {
 		const value = e.key;
 		this.setState({
+			isInputActive: false,
 			componentProps: {
 				...this.state.componentProps,
 				[name]: value,
 			},
 		});
 	};
+
+	handleDropdownSearch = (e) => {
+		const { target: { name, value } } = e;
+		this.setState({
+			isInputActive: true,
+			[name]: value,
+		});
+	}
 
 	handleSearchDataFieldChange = (item) => {
 		const field = item.key;
@@ -470,11 +487,20 @@ export default class RSWrapper extends Component {
 				);
 			}
 			case 'dropdown': {
-				const dropdownOptions = propsMap[this.props.component][name].options;
+				let dropdownOptions = propsMap[this.props.component][name].options;
 				const selectedDropdown = dropdownOptions.find(option => option.key === this.state.componentProps[name]);
 				const selectedValue = selectedDropdown
 					? selectedDropdown.label
 					: propsMap[this.props.component][name].default;
+
+				if (this.state.isInputActive) {
+					dropdownOptions = dropdownOptions.filter(option => option.label.startsWith(this.state.searchterm));
+				}
+
+				if (!dropdownOptions.length) {
+					dropdownOptions.push({ label: 'No options', key: '' });
+				}
+
 				const menu = (
 					<Menu
 						onClick={e => this.handleDropdownChange(e, name)}
@@ -488,16 +514,19 @@ export default class RSWrapper extends Component {
 
 				FormInput = (
 					<Dropdown overlay={menu} trigger={['click']}>
-						<Button
+						<Input
 							style={{
 								width: '100%',
 								display: 'flex',
 								justifyContent: 'space-between',
 								alignItems: 'center',
 							}}
-						>
-							{selectedValue} <Icon type="down" />
-						</Button>
+							name="searchterm"
+							onBlur={this.handleDropdownBlur}
+							value={this.state.isInputActive ? this.state.searchterm : selectedValue}
+							defaultValue={selectedValue}
+							onChange={this.handleDropdownSearch}
+						/>
 					</Dropdown>
 				);
 				break;
