@@ -92,6 +92,7 @@ export const getShare = appId => new Promise((resolve, reject) => {
 			.then(data => resolve(data.body))
 			.catch(error => reject(error));
 	});
+
 export const createShare = (appId, payload) => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/share`, {
 			method: 'POST',
@@ -105,6 +106,7 @@ export const createShare = (appId, payload) => new Promise((resolve, reject) => 
 			.then(data => resolve(data.body))
 			.catch(error => reject(error));
 	});
+
 export const getAppPlan = appName => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appName}/plan`, {
 			method: 'GET',
