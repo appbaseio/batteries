@@ -175,6 +175,7 @@ class Mappings extends Component {
 			credentials,
 			url,
 			mapping,
+			appbaseCredentials,
 			isFetchingMapping,
 		} = this.props;
 
@@ -199,8 +200,13 @@ class Mappings extends Component {
 			// 1. get app plan
 			fetchAppPlan(appName);
 
-			// 2. get credentials - before fetching mappings and synonyms
-			getPermission(appId);
+			if (appbaseCredentials && !mapping) {
+				// 2. get mappings if we have credentials
+				getAppMappings(appName, appbaseCredentials);
+			} else if (!appbaseCredentials) {
+				// 2. get credentials (if not found) - before fetching mappings and synonyms
+				getPermission(appId);
+			}
 		}
 	}
 
