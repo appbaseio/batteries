@@ -20,14 +20,10 @@ import {
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
 import PropTypes from 'prop-types';
-import AceEditor from 'react-ace';
-import brace from 'brace'; // eslint-disable-line
-
-import 'brace/mode/json';
-import 'brace/theme/monokai';
 
 import Appbase from 'appbase-js';
 
+import Ace from './AceEditor';
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import { listItem, formWrapper } from '../styles';
@@ -430,7 +426,7 @@ export default class Editor extends Component {
 			}
 			content={
 				this.state.isEditable ? (
-					<AceEditor
+					<Ace
 						mode="json"
 						value={this.state.editorValue}
 						onChange={value => this.handleEditingJSON(value)}
