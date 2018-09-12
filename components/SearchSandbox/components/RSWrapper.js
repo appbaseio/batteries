@@ -13,11 +13,9 @@ import {
 	Dropdown,
 	Popover,
 	Select,
-	Card,
-	Avatar,
 } from 'antd';
 
-import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
+import { DataSearch, MultiList, ReactiveList, ResultList } from '@appbaseio/reactivesearch';
 
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
@@ -40,6 +38,7 @@ const componentMap = {
 	DataSearch,
 	MultiList,
 	ReactiveList,
+	ResultList,
 };
 
 const propsMap = {
@@ -47,8 +46,6 @@ const propsMap = {
 	MultiList: multiListTypes,
 	ReactiveList: reactiveListTypes,
 };
-
-const { Meta } = Card;
 
 export default class RSWrapper extends Component {
 	constructor(props) {
@@ -277,7 +274,7 @@ export default class RSWrapper extends Component {
 		this.setState({
 			previewModal: false,
 		});
-	}
+	};
 
 	renderComponentCode = () => {
 		const config = {
@@ -611,11 +608,7 @@ export default class RSWrapper extends Component {
 
 	render() {
 		if (!this.props.componentProps.dataField) return null;
-		const RSComponent = componentMap[this.props.component];
-
-		if (this.props.componentProps.metaFields) {
-
-		}
+		let RSComponent = componentMap[this.props.component];
 
 		let otherProps = {};
 		if (this.props.id === 'search') {
@@ -630,45 +623,37 @@ export default class RSWrapper extends Component {
 		}
 
 		if (this.props.id === 'result' && this.props.componentProps.metaFields) {
+			RSComponent = componentMap.ResultList;
 			const {
- url, title, image, description,
-} = this.props.componentProps.metaFields;
+				url, title, image, description,
+			} = this.props.componentProps.metaFields;
 			otherProps = {
-showResultStats: false,
-			onAllData: results =>
-				results.map(res => (
-					<Card key={res._id} style={{ border: 0, margin: '14px 0px' }}>
-						<Meta
-							avatar={<Avatar src={this.getNestedValue(res, image)} />}
-							title={title ? this.getNestedValue(res, title) : 'NA'}
-							description={
-								description ? (
-									<div className="ant-card-meta-description">
-										{this.getNestedValue(res, description)}
-										{url ? (
-											<Button
-												type="primary"
-												size="small"
-												href={url}
-												target="_blank"
-												style={{ marginTop: '12px', display: 'table' }}
-											>
-												Link
-											</Button>
-										) : null}
-									</div>
-								) : (
-									'NA'
-								)
-							}
-						/>
-						<div style={{ marginTop: 10, textAlign: 'right' }}>
-							{this.props.renderJSONEditor(res)}
-							{this.props.renderDeleteJSON(res)}
-						</div>
-     </Card>)),
-						};
+				pagination: true,
+				target: '_blank',
+				onData: res => ({
+					image: this.getNestedValue(res, image),
+					url: this.getNestedValue(res, url),
+					title: this.getNestedValue(res, title) || 'Choose a valid Title Field',
+					description: this.getNestedValue(res, description) ? (
+						<React.Fragment>
+							{this.getNestedValue(res, description)}
+							<div style={{ marginTop: 10, textAlign: 'right' }}>
+								{this.props.renderJSONEditor(res)}
+								{this.props.renderDeleteJSON(res)}
+							</div>
+						</React.Fragment>
+					) : (
+						'Choose a valid description field'
+					),
+				}),
+				react: {
+					and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
+				},
+			};
 		}
+
+		const showPreview =
+			this.props.component === 'ReactiveList' || this.props.component === 'ResultList';
 
 		return (
 			<div>
@@ -682,7 +667,7 @@ showResultStats: false,
 								onClick={this.showModal}
 							/>
 							{this.renderComponentCode()}
-							{this.props.component === 'ReactiveList' ? (
+							{showPreview ? (
 								<Button
 									icon="eye-o"
 									shape="circle"
@@ -737,11 +722,12 @@ showResultStats: false,
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 					destroyOnClose
+					key="EditModal"
 					okText="Save"
 				>
 					{this.renderPropsForm()}
 				</Modal>
-				{this.props.component === 'ReactiveList' ? (
+				{showPreview ? (
 					<PreviewList
 						options={Object.keys(this.props.mappings)}
 						componentProps={this.state.componentProps}

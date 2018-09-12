@@ -1,9 +1,7 @@
 import React from 'react';
-import { Modal, Dropdown, Menu, Button, Icon, Card, Avatar, message } from 'antd';
+import { Modal, Dropdown, Menu, Button, Icon, message } from 'antd';
 
-import { ReactiveList } from '@appbaseio/reactivesearch';
-
-const { Meta } = Card;
+import { ResultList } from '@appbaseio/reactivesearch';
 
 class PreviewList extends React.Component {
 	constructor() {
@@ -85,41 +83,15 @@ class PreviewList extends React.Component {
 		} = this.state;
 		let resultComponentProps = this.props.componentProps.result || {};
 		resultComponentProps = {
-			size: 5,
 			pagination: true,
-			sortBy: 'asc',
-			paginationAt: 'bottom',
-			...resultComponentProps,
-			showResultStats: false,
-			onAllData: results =>
-				results.map(res => (
-					<Card key={res._id}>
-						<Meta
-							avatar={<Avatar src={this.props.getNestedValue(res, image)} />}
-							title={title ? this.props.getNestedValue(res, title) : 'NA'}
-							description={
-								description ? (
-									<div className="ant-card-meta-description">
-										{this.props.getNestedValue(res, description)}
-										{url ? (
-											<Button
-												type="primary"
-												size="small"
-												href={url}
-												target="_blank"
-												style={{ marginTop: '12px', display: 'table' }}
-											>
-												Link
-											</Button>
-										) : null}
-									</div>
-								) : (
-									'NA'
-								)
-							}
-						/>
-					</Card>
-				)),
+			size: 4,
+			target: '_blank',
+			onData: res => ({
+				image: this.props.getNestedValue(res, image),
+				url: this.props.getNestedValue(res, url),
+				title: this.props.getNestedValue(res, title) || 'Choose a valid Title Field',
+				description: this.props.getNestedValue(res, description) || 'Choose a valid description field',
+			}),
 			react: {
 				and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
 			},
@@ -133,7 +105,7 @@ class PreviewList extends React.Component {
 				title="Customize List Preview"
 			>
 				{this.options.map(option => this.renderDropdown(option))}
-				<ReactiveList
+				<ResultList
 					componentId={this.props.componentId}
 					{...resultComponentProps}
 					dataField={this.props.dataField}
