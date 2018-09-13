@@ -38,7 +38,7 @@ export default class SearchSandbox extends Component {
 
 	componentDidMount() {
 		if (this.props.isDashboard) {
-			getPreferences(this.props.appId)
+			getPreferences(this.props.appName)
 				.then((pref) => {
 					this.pref = pref || {};
 					const profileList = Array.from(new Set([...this.state.profileList, ...Object.keys(this.pref)]));
@@ -97,7 +97,7 @@ export default class SearchSandbox extends Component {
 		};
 
 		if (this.props.isDashboard) {
-			setPreferences(this.props.appId, this.pref).catch(() => this.setLocalPref(this.pref));
+			setPreferences(this.props.appName, this.pref).catch(() => this.setLocalPref(this.pref));
 		} else {
 			this.setLocalPref(this.pref);
 		}
