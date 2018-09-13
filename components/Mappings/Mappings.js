@@ -25,11 +25,10 @@ import {
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
-import { getRawMappingsByAppName } from '../../modules/selectors';
+import { getRawMappingsByAppName, getAppPermissionsByName } from '../../modules/selectors';
 import {
 	getPermission as getPermissionFromAppbase,
 	setCurrentApp,
-	getAppPlan,
 	getAppMappings as getMappings,
 } from '../../modules/actions';
 
@@ -156,7 +155,7 @@ class Mappings extends Component {
 			this.init();
 		}
 
-		if (prevProps.appbaseCredentials !== appbaseCredentials) {
+		if (appbaseCredentials && prevProps.appbaseCredentials !== appbaseCredentials) {
 			// handle mappings + synonyms if credentials have changed
 			if (!isFetchingMapping) {
 				getAppMappings(appName, appbaseCredentials);
@@ -184,7 +183,6 @@ class Mappings extends Component {
 
 		if (mapping && !isFetchingMapping) {
 			// if mapping already exists:
-
 			// set existing mappings:
 			this.handleMapping(mapping);
 
@@ -195,10 +193,7 @@ class Mappings extends Component {
 			getAppMappings(appName, credentials, url);
 		} else {
 			// this executes only for appbase.io hosted apps
-			const { fetchAppPlan, getPermission } = this.props;
-
-			// 1. get app plan
-			fetchAppPlan(appName);
+			const { getPermission } = this.props;
 
 			if (appbaseCredentials && !mapping) {
 				// 2. get mappings if we have credentials
@@ -600,7 +595,7 @@ class Mappings extends Component {
 		if (this.props.loadingError) {
 			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
 		}
-		if (this.state.isLoading && !this.state.mapping) {
+		if ((this.props.isFetchingMapping || this.state.isLoading) && !this.state.mapping) {
 			return <Loader show message="Fetching mappings... Please wait!" />;
 		}
 		if (this.state.mappingsError) {
@@ -613,6 +608,7 @@ class Mappings extends Component {
 				/>
 			);
 		}
+		if (!this.state.mapping) return null;
 		return (
 			<React.Fragment>
 				<div className={card}>
@@ -683,7 +679,7 @@ class Mappings extends Component {
 							</div>
 						</Header>
 						{
-							(!this.state.mappings || !Object.keys(this.state.mapping).length)
+							(!this.state.mapping || !Object.keys(this.state.mapping).length)
 								? (
 									<p style={{ padding: '40px 0', color: '#999', textAlign: 'center' }}>
 										No data or mappings found
@@ -779,7 +775,6 @@ Mappings.propTypes = {
 	mapping: object,
 	getAppMappings: func.isRequired,
 	updateCurrentApp: func.isRequired,
-	fetchAppPlan: func.isRequired,
 	getPermission: func.isRequired,
 	isFetchingMapping: bool.isRequired,
 };
@@ -793,19 +788,18 @@ Mappings.defaultProps = {
 };
 
 const mapStateToProps = (state) => {
-	const { username, password } = get(state, '$getAppPermissions.credentials') || {};
+	const { username, password } = get(getAppPermissionsByName(state), 'credentials', {});
 	return ({
 		isPaidUser: get(state, '$getUserStatus.isPaidUser'),
 		mapping: getRawMappingsByAppName(state) || null,
 		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
-		loadingError: get(state, '$getAppMappings.error') || null,
+		loadingError: get(state, '$getAppMappings.error', null),
 		isPaid: get(state, '$getAppPlan.isPaid'),
 		appbaseCredentials: username ? `${username}:${password}` : null,
 	});
 };
 
 const mapDispatchToProps = dispatch => ({
-	fetchAppPlan: appName => dispatch(getAppPlan(appName)),
 	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
 	getPermission: appId => dispatch(getPermissionFromAppbase(appId)),
 	getAppMappings: (appName, credentials, url) => {
