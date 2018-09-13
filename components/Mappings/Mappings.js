@@ -329,7 +329,7 @@ class Mappings extends Component {
 			}
 			return '';
 		});
-	}
+	};
 
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
