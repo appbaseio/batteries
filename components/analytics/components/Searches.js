@@ -28,7 +28,7 @@ Searches.defaultProps = {
 	title: '',
 	dataSource: [],
 	plan: '',
-	columns: [],
+	columns: undefined,
 };
 Searches.propTypes = {
 	title: PropTypes.string,
