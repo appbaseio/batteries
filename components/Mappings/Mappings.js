@@ -318,10 +318,17 @@ class Mappings extends Component {
 
 	fetchSynonyms = (credentials) => {
 		const { url, appName } = this.props;
-		return getSettings(appName, credentials, url).then(data =>
-				(data[appName].settings.index.analysis.filter.synonyms_filter
-					? data[appName].settings.index.analysis.filter.synonyms_filter.synonyms.join('\n')
-					: ''));
+		return getSettings(appName, credentials, url).then(data => {
+			if (data[appName].settings && data[appName].settings.index) {
+				const { index } = data[appName].settings;
+				return (
+					index.analysis.filter.synonyms_filter
+						? index.analysis.filter.synonyms_filter.synonyms.join('\n')
+						: ''
+				);
+			}
+			return '';
+		}
 	};
 
 	addField = ({ name, type, usecase }) => {
@@ -771,7 +778,7 @@ Mappings.propTypes = {
 Mappings.defaultProps = {
 	appId: null,
 	credentials: null,
-	url: null,
+	url: undefined,
 	appbaseCredentials: null,
 	mapping: null,
 };
