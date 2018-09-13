@@ -322,7 +322,7 @@ class Mappings extends Component {
 			if (data[appName].settings && data[appName].settings.index) {
 				const { index } = data[appName].settings;
 				return (
-					index.analysis.filter.synonyms_filter
+					index.analysis && index.analysis.filter.synonyms_filter
 						? index.analysis.filter.synonyms_filter.synonyms.join('\n')
 						: ''
 				);
@@ -682,6 +682,15 @@ class Mappings extends Component {
 								<span className="col">Data Type</span>
 							</div>
 						</Header>
+						{
+							(!this.state.mappings || !Object.keys(this.state.mapping).length)
+								? (
+									<p style={{ padding: '40px 0', color: '#999', textAlign: 'center' }}>
+										No data or mappings found
+									</p>
+								)
+								: null
+						}
 						{Object.keys(this.state.mapping).map((field) => {
 							if (this.state.mapping[field]) {
 								const currentMappingFields = this.state.mapping[field].properties;
