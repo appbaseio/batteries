@@ -13,9 +13,16 @@ import {
 	Dropdown,
 	Popover,
 	Select,
+	Card,
 } from 'antd';
 
-import { DataSearch, MultiList, ReactiveList, ResultList } from '@appbaseio/reactivesearch';
+import {
+	DataSearch,
+	MultiList,
+	ReactiveList,
+	ResultList,
+	ResultCard,
+} from '@appbaseio/reactivesearch';
 
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
@@ -34,11 +41,14 @@ import {
 	label,
 } from '../styles';
 
+const { Meta } = Card;
+
 const componentMap = {
 	DataSearch,
 	MultiList,
 	ReactiveList,
 	ResultList,
+	ResultCard,
 };
 
 const propsMap = {
@@ -56,6 +66,7 @@ export default class RSWrapper extends Component {
 			componentProps: props.componentProps,
 			error: '',
 			previewModal: false,
+			showCardLayout: false,
 		};
 
 		if (!props.componentProps.dataField) {
@@ -193,6 +204,12 @@ export default class RSWrapper extends Component {
 				...this.state.componentProps,
 				[name]: value,
 			},
+		});
+	};
+
+	handleLayout = () => {
+		this.setState({
+			showCardLayout: !this.state.showCardLayout,
 		});
 	};
 
@@ -621,9 +638,13 @@ export default class RSWrapper extends Component {
 				highlightField: this.props.componentProps.dataField,
 			};
 		}
+		let showLayoutToggle = false;
 
 		if (this.props.id === 'result' && this.props.componentProps.metaFields) {
-			RSComponent = componentMap.ResultList;
+			showLayoutToggle = true;
+			RSComponent = this.state.showCardLayout
+				? componentMap.ResultCard
+				: componentMap.ResultList;
 			const {
 				url, title, image, description,
 			} = this.props.componentProps.metaFields;
@@ -631,17 +652,24 @@ export default class RSWrapper extends Component {
 				pagination: true,
 				target: '_blank',
 				onData: res => ({
-					image: this.getNestedValue(res, image),
-					url: this.getNestedValue(res, url),
+					image: this.getNestedValue(res, image) || null,
+					url: this.getNestedValue(res, url) || null,
 					title: this.getNestedValue(res, title) || 'Choose a valid Title Field',
 					description: this.getNestedValue(res, description) ? (
-						<React.Fragment>
-							{this.getNestedValue(res, description)}
+						<div>
+							<Meta
+								style={{
+									maxHeight: '100px',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+								}}
+								description={this.getNestedValue(res, description)}
+							/>
 							<div style={{ marginTop: 10, textAlign: 'right' }}>
 								{this.props.renderJSONEditor(res)}
 								{this.props.renderDeleteJSON(res)}
 							</div>
-						</React.Fragment>
+						</div>
 					) : (
 						'Choose a valid description field'
 					),
@@ -651,9 +679,6 @@ export default class RSWrapper extends Component {
 				},
 			};
 		}
-
-		const showPreview =
-			this.props.component === 'ReactiveList' || this.props.component === 'ResultList';
 
 		return (
 			<div>
@@ -667,14 +692,25 @@ export default class RSWrapper extends Component {
 								onClick={this.showModal}
 							/>
 							{this.renderComponentCode()}
-							{showPreview ? (
-								<Button
-									icon="eye-o"
-									shape="circle"
-									size="large"
-									style={{ marginLeft: 8 }}
-									onClick={this.handlePreviewModal}
-								/>
+							{this.props.id === 'result' ? (
+								<React.Fragment>
+									<Button
+										icon="eye-o"
+										shape="circle"
+										size="large"
+										style={{ marginLeft: 8 }}
+										onClick={this.handlePreviewModal}
+									/>
+									{showLayoutToggle ? (
+										<Button
+											icon={this.state.showCardLayout ? 'bars' : 'appstore-o'}
+											shape="circle"
+											size="large"
+											style={{ marginLeft: 8 }}
+											onClick={this.handleLayout}
+										/>
+									) : null}
+								</React.Fragment>
 							) : null}
 							{this.props.showDelete ? (
 								<Button
@@ -727,7 +763,7 @@ export default class RSWrapper extends Component {
 				>
 					{this.renderPropsForm()}
 				</Modal>
-				{showPreview ? (
+				{this.props.id === 'result' ? (
 					<PreviewList
 						options={Object.keys(this.props.mappings)}
 						componentProps={this.state.componentProps}
