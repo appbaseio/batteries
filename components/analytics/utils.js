@@ -73,7 +73,7 @@ export const popularFiltersCol = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan === 'free') {
+	if (!plan || plan !== 'growth') {
 		return defaults;
 	}
 	return [
@@ -95,7 +95,7 @@ export const popularResultsCol = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan === 'free') {
+	if (!plan || plan !== 'growth') {
 		return defaults;
 	}
 	return [
@@ -117,7 +117,7 @@ export const defaultColumns = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan === 'free') {
+	if (!plan || plan !== 'growth') {
 		return defaults;
 	}
 	return [
@@ -129,7 +129,7 @@ export const defaultColumns = (plan) => {
 	];
 };
 export const popularSearchesFull = (plan) => {
-	if (!plan || plan === 'free') {
+	if (!plan || plan !== 'growth') {
 		return defaultColumns(plan);
 	}
 	return [
@@ -149,7 +149,7 @@ export const popularSearchesFull = (plan) => {
 	];
 };
 export const popularResultsFull = (plan) => {
-	if (plan === 'free') {
+	if (plan !== 'growth') {
 		return popularResultsCol(plan);
 	}
 	return [
@@ -172,7 +172,7 @@ export const popularResultsFull = (plan) => {
 	];
 };
 export const popularFiltersFull = (plan) => {
-	if (plan === 'free') {
+	if (plan !== 'growth') {
 		return popularFiltersCol(plan);
 	}
 	return [
