@@ -12,6 +12,7 @@ const Analytics = ({
 	searchVolume,
 	popularFilters,
 	popularResults,
+	chartWidth,
 	plan,
 	redirectTo,
 	loading,
@@ -23,11 +24,7 @@ const Analytics = ({
 	return (
 		<React.Fragment>
 			<Card title="Daily Search Volume">
-				<SearchVolumeChart
-					width={window.innerWidth - 300}
-					height={300}
-					data={searchVolume}
-				/>
+				<SearchVolumeChart width={chartWidth} height={300} data={searchVolume} />
 			</Card>
 			<Flex css="width: 100%;margin-top: 20px">
 				<div css="flex: 50%;margin-right: 10px">
@@ -78,11 +75,13 @@ Analytics.defaultProps = {
 	popularResults: [],
 	redirectTo: () => null,
 	popularFilters: [],
+	chartWidth: window.innerWidth - 300,
 };
 Analytics.propTypes = {
 	loading: PropTypes.bool,
 	noResults: PropTypes.array,
 	popularSearches: PropTypes.array,
+	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	plan: PropTypes.string.isRequired,
 	searchVolume: PropTypes.array,
 	popularResults: PropTypes.array,

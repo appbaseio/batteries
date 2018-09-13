@@ -45,6 +45,14 @@ const filterHits = (hits = []) => {
 		searchHits,
 	};
 };
+
+const parseData = (data) => {
+	try {
+		return JSON.parse(data);
+	} catch (e) {
+		return data;
+	}
+};
 class RequestLogs extends React.Component {
 	constructor(props) {
 		super(props);
@@ -219,14 +227,10 @@ class RequestLogs extends React.Component {
 							handleCancel={this.handleCancel}
 							headers={get(this.currentRequest, '_source.request.headers', {})}
 							request={
-								JSON.parse(
-									get(this.currentRequest, '_source.request.body') || null,
-								) || {}
+								parseData(get(this.currentRequest, '_source.request.body')) || {}
 							}
 							response={
-								JSON.parse(
-									get(this.currentRequest, '_source.response.body') || null,
-								) || {}
+								parseData(get(this.currentRequest, '_source.response.body')) || {}
 							}
 							time={get(this.currentRequest, '_source.timestamp', '')}
 							method={get(this.currentRequest, '_source.request.method', '')}

@@ -76,8 +76,8 @@ export function checkUserStatus() {
 			.then((res) => {
 				if (!res.plan || res.plan === 'free') {
 					resolve({
-						isPaidUser: true,
-						plan: 'growth',
+						isPaidUser: !!res.plan,
+						plan: res.plan,
 					});
 				}
 				resolve({

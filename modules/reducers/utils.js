@@ -1,47 +1,6 @@
-import get from 'lodash/get';
 import { getCredentialsFromPermissions } from '../../utils';
+import { computeMetrics, getPlanFromTier, getApiCalls } from '../helpers';
 
-const getPlanFromTier = (tier) => {
-	switch (tier) {
-		case 'bootstrap-monthly':
-		case 'bootstrap-annual':
-			return 'bootstrap';
-		case 'growth-monthly':
-		case 'growth-annual':
-			return 'growth';
-		default:
-			return 'free';
-	}
-};
-const computeMetrics = (metrics) => {
-	let totalRecords = 0;
-	let totalStorage = 0;
-	let totalCalls = 0;
-	const currentDate = new Date();
-	// current_date.setMonth(current_date.getMonth() - 1);
-	currentDate.setDate(1);
-
-	totalRecords += parseInt(get(metrics, 'overall.numDocs'), 10) || 0;
-	const dividend = 1024 ** 2;
-	totalStorage += get(metrics, 'overall.storage') / dividend || 0; // in MB
-
-	get(metrics, 'month.buckets', []).forEach((bucket) => {
-		if (bucket.key >= currentDate.getTime()) totalCalls += bucket.apiCalls.value;
-	});
-
-	return {
-		storage: totalStorage.toFixed(3),
-		records: totalRecords,
-		calls: totalCalls,
-	};
-};
-const getApiCalls = (data) => {
-	let total = 0;
-	get(data, 'month.buckets', []).forEach((bucket) => {
-		total += bucket.apiCalls.value;
-	});
-	return total;
-};
 export const computeAppPlanState = ({ payload }) => {
 	const isBootstrapMonthly = payload.tier === 'bootstrap-monthly';
 	const isBootstrapAnnual = payload.tier === 'bootstrap-annual';

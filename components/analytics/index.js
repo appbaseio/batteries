@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import {
  getAnalytics, bannerMessages, getActiveKeyByRoutes, tabMappings,
 } from './utils';
+import { getAppPlan } from '../../utils/app';
 import UpgradePlan from '../shared/UpgradePlan/Banner';
 import Flex from '../shared/Flex';
 import Analytics from './components/Analytics';
@@ -14,7 +15,7 @@ import PopularSearches from './components/PopularSearches';
 import NoResultsSearch from './components/NoResultsSearch';
 import PopularResults from './components/PopularResults';
 import PopularFilters from './components/PopularFilters';
-import { checkUserStatus } from '../../utils';
+import { computeAppPlanState } from '../../modules/reducers/utils';
 import RequestLogs from './components/RequestLogs';
 
 const { TabPane } = Tabs;
@@ -50,11 +51,12 @@ class Main extends React.Component {
 		const { appName } = this.props;
 		const { currentPlan } = this.state;
 		// COMMENT START
-		checkUserStatus().then(
+		getAppPlan(appName).then(
 			(response) => {
-				if (response.isPaidUser) {
+				const planInfo = computeAppPlanState({ payload: response });
+				if (planInfo.isPaid) {
 					this.setState(
-						{ isPaidUser: response.isPaidUser, currentPlan: response.plan },
+						{ isPaidUser: planInfo.isPaid, currentPlan: planInfo.plan },
 						() => {
 							// COMMENT END
 							getAnalytics(appName, currentPlan)
@@ -137,7 +139,9 @@ class Main extends React.Component {
 			activeTabKey,
 			currentPlan,
 		} = this.state;
-		const { appName, subTab, onSubTabChange } = this.props;
+		const {
+ appName, subTab, onSubTabChange, chartWidth,
+} = this.props;
 		if (isFetching) {
 			const antIcon = (
 				<Icon type="loading" style={{ fontSize: 50, marginTop: '250px' }} spin />
@@ -160,6 +164,7 @@ class Main extends React.Component {
 								<Analytics
 									loading={isFetching}
 									noResults={noResults}
+									chartWidth={chartWidth}
 									plan={currentPlan}
 									popularSearches={popularSearches}
 									popularFilters={popularFilters}
@@ -205,9 +210,11 @@ Main.defaultProps = {
 	tab: 'analytics',
 	onTabChange: undefined,
 	onSubTabChange: undefined,
+	chartWidth: undefined,
 };
 Main.propTypes = {
 	appName: PropTypes.string.isRequired,
+	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	subTab: PropTypes.string,
 	tab: PropTypes.string,
 	onTabChange: PropTypes.func, // Can be used to override redirectTo method for tabs
