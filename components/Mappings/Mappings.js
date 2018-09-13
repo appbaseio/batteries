@@ -318,7 +318,7 @@ class Mappings extends Component {
 
 	fetchSynonyms = (credentials) => {
 		const { url, appName } = this.props;
-		return getSettings(appName, credentials, url).then(data => {
+		return getSettings(appName, credentials, url).then((data) => {
 			if (data[appName].settings && data[appName].settings.index) {
 				const { index } = data[appName].settings;
 				return (
@@ -328,8 +328,8 @@ class Mappings extends Component {
 				);
 			}
 			return '';
-		}
-	};
+		});
+	}
 
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
