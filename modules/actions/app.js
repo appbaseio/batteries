@@ -91,7 +91,6 @@ export function getAppMetrics(id, name) {
 					createAction(AppConstants.APP.GET_METRICS_SUCCESS, res, null, { appName }),
 				))
 			.catch((error) => {
-				console.log('THSI IS ERROR', error);
 				dispatch(createAction(AppConstants.APP.GET_METRICS_ERROR, null, error));
 			});
 	};

@@ -1,3 +1,5 @@
+import get from 'lodash/get';
+
 import { createAction } from './utils';
 import AppConstants from '../constants';
 import {
@@ -6,15 +8,19 @@ import {
 	newPermission,
 	deletePermission as DeletePermission,
 } from '../../utils/app';
+
 /**
  * To fetch app permissions
  * @param {string} appId
  */
 export function getPermission(appId) {
-	return (dispatch) => {
+	return (dispatch, getState) => {
+		const appName = get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.PERMISSION.GET));
 		return fetchPermission(appId)
-			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res)))
+			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res, null, {
+				appName,
+			})))
 			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)));
 	};
 }

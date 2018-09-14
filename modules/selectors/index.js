@@ -7,6 +7,7 @@ const traversedMappings = state => get(state, '$getAppMappings.traversedMappings
 const appInfo = state => get(state, '$getAppInfo.apps');
 const appMetrics = state => get(state, '$getAppMetrics.results');
 const appAnalytics = state => get(state, '$getAppAnalytics.results');
+const appPermission = state => get(state, '$getAppPermissions.results');
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
@@ -19,6 +20,7 @@ const getTraversedMappingsByAppName = createSelector(
 const getAppInfoByName = createSelector(appInfo, appName, getCollectionByKey);
 const getAppMetricsByName = createSelector(appMetrics, appName, getCollectionByKey);
 const getAppAnalyticsByName = createSelector(appAnalytics, appName, getCollectionByKey);
+const getAppPermissionsByName = createSelector(appPermission, appName, getCollectionByKey);
 
 export {
 	getRawMappingsByAppName,
@@ -26,4 +28,5 @@ export {
 	getAppInfoByName,
 	getAppMetricsByName,
 	getAppAnalyticsByName,
+	getAppPermissionsByName,
 };

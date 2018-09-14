@@ -35,6 +35,11 @@ export const computeAppAnalyticsState = (action, state) => ({
 	}),
 });
 
-export const computeAppPermissionState = ({ payload }) => ({
-	credentials: getCredentialsFromPermissions(payload),
+export const computeAppPermissionState = (action, state) => ({
+	results: Object.assign({}, state.results, {
+		[action.meta.appName]: {
+			credentials: getCredentialsFromPermissions(action.payload),
+			results: action.payload,
+		},
+	}),
 });
