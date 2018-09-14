@@ -110,3 +110,18 @@ export function isEqual(x, y) {
 	}
 	return true;
 }
+
+export const setUserInfo = userInfo =>
+	new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/user/profile`, {
+			method: 'PUT',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(userInfo),
+		})
+			.then(res => res.json())
+			.then(data => resolve(data))
+			.catch(error => reject(error));
+	});

@@ -27,6 +27,12 @@ export default {
 		AppConstants.APP.GET_PLAN_ERROR,
 		computeAppPlanState,
 	),
+	$updateUser: createRequestReducer(
+		AppConstants.ACCOUNT.UPDATE_USER,
+		AppConstants.ACCOUNT.UPDATE_USER_SUCCESS,
+		AppConstants.ACCOUNT.UPDATE_USER_ERROR,
+		computeAppPlanState,
+	),
 	$getAppAnalytics: createRequestReducer(
 		AppConstants.APP.GET_ANALYTICS,
 		AppConstants.APP.GET_ANALYTICS_SUCCESS,
