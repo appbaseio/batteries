@@ -120,8 +120,8 @@ export const getAppPlan = appName => new Promise((resolve, reject) => {
 			.catch(error => reject(error));
 	});
 
-export const createSubscription = (token, plan) => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/subscription`, {
+export const createSubscription = (token, plan, appName) => new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/app/${appName}/subscription`, {
 			headers: {
 				'content-type': 'application/json',
 			},

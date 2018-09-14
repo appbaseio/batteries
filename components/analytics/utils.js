@@ -253,6 +253,54 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 	});
 }
 /**
+ * Get the search latency
+ * @param {string} appName
+ */
+export function getSearchLatency(appName) {
+	return new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/analytics/${appName}/latency`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			// Comment out this line
+			.then(res => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+/**
+ * Get the search latency
+ * @param {string} appName
+ */
+export function getGeoDistribution(appName) {
+	return new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/analytics/${appName}/geoip`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			// Comment out this line
+			.then(res => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+/**
  * Get the popular seraches
  * @param {string} appName
  */

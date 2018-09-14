@@ -8,7 +8,7 @@ import {
 	computeAppPlanState,
 	computeAppPermissionState,
 	computeAppMappingState,
-	computeAppAnalyticsState,
+	computeStateByAppName,
 } from './utils';
 
 export default {
@@ -34,10 +34,22 @@ export default {
 		computeAppPlanState,
 	),
 	$getAppAnalytics: createRequestReducer(
-		AppConstants.APP.GET_ANALYTICS,
-		AppConstants.APP.GET_ANALYTICS_SUCCESS,
-		AppConstants.APP.GET_ANALYTICS_ERROR,
-		computeAppAnalyticsState,
+		AppConstants.APP.ANALYTICS.GET,
+		AppConstants.APP.ANALYTICS.GET_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_ERROR,
+		computeStateByAppName,
+	),
+	$getAppSearchLatency: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_LATENCY,
+		AppConstants.APP.ANALYTICS.GET_LATENCY_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_LATENCY_ERROR,
+		computeStateByAppName,
+	),
+	$getAppGeoDistribution: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION,
+		AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_ERROR,
+		computeStateByAppName,
 	),
 	$getAppMetrics: createRequestReducer(
 		AppConstants.APP.GET_METRICS,

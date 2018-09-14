@@ -29,7 +29,7 @@ export const computeAppMappingState = (action, state) => ({
 	}),
 });
 
-export const computeAppAnalyticsState = (action, state) => ({
+export const computeStateByAppName = (action, state) => ({
 	results: Object.assign({}, state.results, {
 		[action.meta.appName]: action.payload,
 	}),

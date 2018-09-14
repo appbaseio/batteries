@@ -96,10 +96,11 @@ export function getAppMetrics(id, name) {
 	};
 }
 
-export function createAppSubscription(stripeToken, plan) {
-	return (dispatch) => {
+export function createAppSubscription(stripeToken, plan, name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name');
 		dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION));
-		return CreateSubscription(stripeToken, plan)
+		return CreateSubscription(stripeToken, plan, appName)
 			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS, res)))
 			.catch((error) => {
 				dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_ERROR, null, error));

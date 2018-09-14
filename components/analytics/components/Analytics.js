@@ -5,6 +5,8 @@ import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol } from '../utils';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
+import SearchLatency from './SearchLatency';
+import GeoDistribution from './GeoDistribution';
 
 const Analytics = ({
 	noResults,
@@ -64,6 +66,12 @@ const Analytics = ({
 					</div>
 				</Flex>
 			)}
+			{/* <Flex css="width: 100%;margin-top: 50px">
+				<SearchLatency />
+			</Flex> */}
+			<Flex css="width: 100%;margin-top: 50px">
+				<GeoDistribution />
+			</Flex>
 		</React.Fragment>
 	);
 };

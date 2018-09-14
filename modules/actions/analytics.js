@@ -1,5 +1,9 @@
 import get from 'lodash/get';
-import { getAnalytics } from '../../components/analytics/utils';
+import {
+	getAnalytics,
+	getGeoDistribution,
+	getSearchLatency,
+} from '../../components/analytics/utils';
 import { createAction } from './utils';
 import AppConstants from '../constants';
 /**
@@ -13,13 +17,52 @@ export function getAppAnalytics(name, plan, clickanalytics) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const appPlan = plan || get(getState(), '$getAppPlan.plan', 'default');
-		dispatch(createAction(AppConstants.APP.GET_ANALYTICS));
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET));
 		return getAnalytics(appName, appPlan, clickanalytics)
 			.then(res => dispatch(
-					createAction(AppConstants.APP.GET_ANALYTICS_SUCCESS, res, undefined, {
+					createAction(AppConstants.APP.ANALYTICS.GET_SUCCESS, res, undefined, {
 						appName,
 					}),
 				))
-			.catch(error => dispatch(createAction(AppConstants.APP.GET_ANALYTICS_ERROR, null, error)));
+			.catch(error => dispatch(createAction(AppConstants.APP.ANALYTICS.GET_ERROR, null, error)));
+	};
+}
+
+export function getAppSearchLatency(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_LATENCY));
+		return getSearchLatency(appName)
+			.then(res => dispatch(
+					createAction(AppConstants.APP.ANALYTICS.GET_LATENCY_SUCCESS, res, undefined, {
+						appName,
+					}),
+				))
+			.catch(error => dispatch(createAction(AppConstants.APP.ANALYTICS.GET_LATENCY_ERROR, null, error)));
+	};
+}
+
+export function getAppGeoDistribution(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION));
+		return getGeoDistribution(appName)
+			.then(res => dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_SUCCESS,
+						res,
+						undefined,
+						{
+							appName,
+						},
+					),
+				))
+			.catch(error => dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_ERROR,
+						null,
+						error,
+					),
+				));
 	};
 }
