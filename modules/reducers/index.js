@@ -92,5 +92,10 @@ export default {
 		AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS,
 		AppConstants.APP.CREATE_SUBSCRIPTION_ERROR,
 	),
+	$deleteAppSubscription: createRequestReducer(
+		AppConstants.APP.DELETE_SUBSCRIPTION,
+		AppConstants.APP.DELETE_SUBSCRIPTION_SUCCESS,
+		AppConstants.APP.DELETE_SUBSCRIPTION_ERROR,
+	),
 	$getCurrentApp: getCurrentApp,
 };

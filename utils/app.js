@@ -134,6 +134,19 @@ export const createSubscription = (token, plan, appName) => new Promise((resolve
 			.catch(error => reject(error));
 	});
 
+export const deleteSubscription = appName => new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/app/${appName}/subscription`, {
+			headers: {
+				'content-type': 'application/json',
+			},
+			method: 'DELETE',
+			credentials: 'include',
+		})
+			.then(res => res.json())
+			.then(data => resolve(data.body))
+			.catch(error => reject(error));
+	});
+
 export const getAppMetrics = appId => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/metrics`, {
 			method: 'GET',
