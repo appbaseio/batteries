@@ -4,6 +4,7 @@ import {
 	getGeoDistribution,
 	getSearchLatency,
 } from '../../components/analytics/utils';
+import { getAppPlanByName } from '../selectors';
 import { createAction } from './utils';
 import AppConstants from '../constants';
 /**
@@ -16,7 +17,7 @@ import AppConstants from '../constants';
 export function getAppAnalytics(name, plan, clickanalytics) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		const appPlan = plan || get(getState(), '$getAppPlan.plan', 'default');
+		const appPlan = plan || get(getAppPlanByName(getState()), 'plan', 'free');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET));
 		return getAnalytics(appName, appPlan, clickanalytics)
 			.then(res => dispatch(

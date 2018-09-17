@@ -5,7 +5,8 @@ import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol } from '../utils';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
-import SearchLatency from './SearchLatency';
+// import SearchLatency from './SearchLatency';
+// import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
 
 const Analytics = ({
@@ -25,7 +26,10 @@ const Analytics = ({
 	}
 	return (
 		<React.Fragment>
-			<Card title="Daily Search Volume">
+			{/* <Card title="Summary">
+				<Summary />
+			</Card> */}
+			<Card css="width: 100%;margin-top: 20px" title="Daily Search Volume">
 				<SearchVolumeChart width={chartWidth} height={300} data={searchVolume} />
 			</Card>
 			<Flex css="width: 100%;margin-top: 20px">
@@ -35,6 +39,9 @@ const Analytics = ({
 						dataSource={popularSearches}
 						title="Popular Searches"
 						plan={plan}
+						pagination={{
+							pageSize: 5,
+						}}
 					/>
 				</div>
 				<div css="flex: 50%;margin-left: 10px">
@@ -43,6 +50,9 @@ const Analytics = ({
 						dataSource={noResults}
 						title="No Result Searches"
 						plan={plan}
+						pagination={{
+							pageSize: 5,
+						}}
 					/>
 				</div>
 			</Flex>
@@ -54,6 +64,9 @@ const Analytics = ({
 							columns={popularResultsCol(plan)}
 							title="Popular Results"
 							onClick={() => redirectTo('popularResults')}
+							pagination={{
+								pageSize: 5,
+							}}
 						/>
 					</div>
 					<div css="flex: 50%;margin-left: 10px">
@@ -62,6 +75,9 @@ const Analytics = ({
 							columns={popularFiltersCol(plan)}
 							title="Popular Filters"
 							onClick={() => redirectTo('popularFilters')}
+							pagination={{
+								pageSize: 5,
+							}}
 						/>
 					</div>
 				</Flex>

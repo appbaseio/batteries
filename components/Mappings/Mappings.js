@@ -25,7 +25,7 @@ import {
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
-import { getRawMappingsByAppName, getAppPermissionsByName } from '../../modules/selectors';
+import { getRawMappingsByAppName, getAppPermissionsByName, getAppPlanByName } from '../../modules/selectors';
 import {
 	getPermission as getPermissionFromAppbase,
 	setCurrentApp,
@@ -794,7 +794,7 @@ const mapStateToProps = (state) => {
 		mapping: getRawMappingsByAppName(state) || null,
 		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
 		loadingError: get(state, '$getAppMappings.error', null),
-		isPaid: get(state, '$getAppPlan.isPaid'),
+		isPaid: get(getAppPlanByName(state), 'isPaid'),
 		appbaseCredentials: username ? `${username}:${password}` : null,
 	});
 };

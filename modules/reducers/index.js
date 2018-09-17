@@ -26,6 +26,9 @@ export default {
 		AppConstants.APP.GET_PLAN_SUCCESS,
 		AppConstants.APP.GET_PLAN_ERROR,
 		computeAppPlanState,
+		{
+			plan: 'free',
+		},
 	),
 	$updateUser: createRequestReducer(
 		AppConstants.ACCOUNT.UPDATE_USER,

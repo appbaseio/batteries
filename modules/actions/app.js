@@ -69,8 +69,9 @@ export function createAppShare(appId, payload) {
 	};
 }
 
-export function getAppPlan(appName) {
-	return (dispatch) => {
+export function getAppPlan(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.GET_PLAN));
 		return fetchAppPlan(appName)
 			.then(res => dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res, null, { appName })))

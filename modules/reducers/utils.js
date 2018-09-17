@@ -1,21 +1,27 @@
 import { getCredentialsFromPermissions } from '../../utils';
 import { computeMetrics, getPlanFromTier, getApiCalls } from '../helpers';
 
-export const computeAppPlanState = ({ payload }) => {
+export const computeAppPlanState = ({ payload, meta }, state) => {
 	const isBootstrapMonthly = payload.tier === 'bootstrap-monthly';
 	const isBootstrapAnnual = payload.tier === 'bootstrap-annual';
 	const isGrowthMonthly = payload.tier === 'growth-monthly';
 	const isGrowthAnnual = payload.tier === 'growth-annual';
 
 	return {
-		isBootstrapMonthly,
-		isBootstrapAnnual,
-		isGrowthMonthly,
-		isGrowthAnnual,
-		isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
-		isGrowth: isGrowthMonthly || isGrowthAnnual,
-		isPaid: isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual,
-		plan: getPlanFromTier(payload.tier),
+		results: Object.assign({}, state.results, {
+			[meta.appName]: {
+				...payload,
+				isBootstrapMonthly,
+				isBootstrapAnnual,
+				isGrowthMonthly,
+				isGrowthAnnual,
+				isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
+				isGrowth: isGrowthMonthly || isGrowthAnnual,
+				isPaid:
+					isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual,
+				plan: getPlanFromTier(payload.tier),
+			},
+		}),
 	};
 };
 

@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import {
  getAnalytics, bannerMessages, getActiveKeyByRoutes, tabMappings,
 } from './utils';
@@ -16,6 +17,7 @@ import NoResultsSearch from './components/NoResultsSearch';
 import PopularResults from './components/PopularResults';
 import PopularFilters from './components/PopularFilters';
 import { computeAppPlanState } from '../../modules/reducers/utils';
+import { getAppPlanByName } from '../../modules/selectors';
 import RequestLogs from './components/RequestLogs';
 
 const { TabPane } = Tabs;
@@ -38,65 +40,29 @@ class Main extends React.Component {
 			popularResults: [],
 			popularFilters: [],
 			searchVolume: [],
-			// change it to true to test paid user
-			isPaidUser: false,
-			// change it to plan for eg. growth, bootstrap to test user with different plans
-			currentPlan: undefined,
 			activeTabKey: this.tabKeys.includes(activeKey) ? activeKey : this.tabKeys[0],
 		};
 	}
 
 	componentDidMount() {
 		// Comment out the below code to test paid user
-		const { appName } = this.props;
-		const { currentPlan } = this.state;
-		// COMMENT START
-		getAppPlan(appName).then(
-			(response) => {
-				const planInfo = computeAppPlanState({ payload: response });
-				if (planInfo.isPaid) {
-					this.setState(
-						{ isPaidUser: planInfo.isPaid, currentPlan: planInfo.plan },
-						() => {
-							// COMMENT END
-							getAnalytics(appName, currentPlan)
-								.then((res) => {
-									this.setState({
-										noResults: res.noResultSearches,
-										popularSearches: res.popularSearches,
-										searchVolume: res.searchVolume,
-										popularResults: res.popularResults,
-										popularFilters: res.popularFilters,
-										isFetching: false,
-									});
-								})
-								.catch(() => {
-									this.setState({
-										isFetching: false,
-									});
-								});
-							// COMMENT START
-						},
-					);
-				} else {
-					this.setState({
-						isFetching: false,
-						isPaidUser: false,
-					});
-				}
-			},
-			() => {
+		const { appName, plan } = this.props;
+		getAnalytics(appName, plan)
+			.then((res) => {
+				this.setState({
+					noResults: res.noResultSearches,
+					popularSearches: res.popularSearches,
+					searchVolume: res.searchVolume,
+					popularResults: res.popularResults,
+					popularFilters: res.popularFilters,
+					isFetching: false,
+				});
+			})
+			.catch(() => {
 				this.setState({
 					isFetching: false,
 				});
-
-				notification.error({
-					message: 'Error',
-					description: 'Something went wrong',
-				});
-			},
-		);
-		// COMMENT END
+			});
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -135,12 +101,10 @@ class Main extends React.Component {
 			popularResults,
 			popularFilters,
 			isFetching,
-			isPaidUser,
 			activeTabKey,
-			currentPlan,
 		} = this.state;
 		const {
- appName, subTab, onSubTabChange, chartWidth,
+ appName, subTab, onSubTabChange, chartWidth, plan, isPaidUser,
 } = this.props;
 		if (isFetching) {
 			const antIcon = (
@@ -156,8 +120,8 @@ class Main extends React.Component {
 			<div className="ad-detail-page ad-dashboard row" style={{ padding: '40px' }}>
 				{isPaidUser ? (
 					<React.Fragment>
-						{bannerMessages[currentPlan] && (
-							<UpgradePlan {...bannerMessages[currentPlan]} />
+						{bannerMessages[plan] && (
+							<UpgradePlan {...bannerMessages[plan]} />
 						)}
 						<Tabs onTabClick={this.changeActiveTabKey} activeKey={activeTabKey}>
 							<TabPane tab="Analytics" key={this.tabKeys[0]}>
@@ -165,7 +129,7 @@ class Main extends React.Component {
 									loading={isFetching}
 									noResults={noResults}
 									chartWidth={chartWidth}
-									plan={currentPlan}
+									plan={plan}
 									popularSearches={popularSearches}
 									popularFilters={popularFilters}
 									popularResults={popularResults}
@@ -174,19 +138,19 @@ class Main extends React.Component {
 								/>
 							</TabPane>
 							<TabPane tab="Popular Searches" key={this.tabKeys[1]}>
-								<PopularSearches plan={currentPlan} appName={appName} />
+								<PopularSearches plan={plan} appName={appName} />
 							</TabPane>
 							<TabPane tab="No Result Searches" key={this.tabKeys[2]}>
-								<NoResultsSearch plan={currentPlan} appName={appName} />
+								<NoResultsSearch plan={plan} appName={appName} />
 							</TabPane>
-							{currentPlan === 'growth' && (
+							{plan === 'growth' && (
 								<TabPane tab="Popular Results" key={this.tabKeys[3]}>
-									<PopularResults plan={currentPlan} appName={appName} />
+									<PopularResults plan={plan} appName={appName} />
 								</TabPane>
 							)}
-							{currentPlan === 'growth' && (
+							{plan === 'growth' && (
 								<TabPane tab="Popular Filters" key={this.tabKeys[4]}>
-									<PopularFilters plan={currentPlan} appName={appName} />
+									<PopularFilters plan={plan} appName={appName} />
 								</TabPane>
 							)}
 							<TabPane tab="Request Logs" key={this.tabKeys[5]}>
@@ -217,7 +181,16 @@ Main.propTypes = {
 	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	subTab: PropTypes.string,
 	tab: PropTypes.string,
+	isPaidUser: PropTypes.bool.isRequired,
+	plan: PropTypes.string.isRequired,
 	onTabChange: PropTypes.func, // Can be used to override redirectTo method for tabs
 	onSubTabChange: PropTypes.func, // Can be used to override redirectTo method for sub tabs ( logs )
 };
-export default Main;
+const mapStateToProps = (state, ownProps) => {
+	const appPlan = getAppPlanByName(state, ownProps.appName);
+	return {
+		isPaidUser: get(appPlan, 'isPaid'),
+		plan: get(appPlan, 'plan'),
+	};
+};
+export default connect(mapStateToProps)(Main);
