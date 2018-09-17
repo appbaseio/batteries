@@ -103,8 +103,11 @@ class GeoDistribution extends React.Component {
 							<Geographies geography={geographyPaths}>
 								{(geographies, projection) => geographies.map((geography, i) => (
 										<Geography
+											// eslint-disable-next-line
 											key={i}
-											data-tip={geography.properties.count}
+											data-tip={`${geography.properties.name} (${
+												geography.properties.count
+											})`}
 											geography={geography}
 											projection={projection}
 											onClick={this.handleClick}
