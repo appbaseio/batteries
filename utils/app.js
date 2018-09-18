@@ -1,4 +1,5 @@
 import { ACC_API } from './index';
+import { doDelete, doPatch } from './requestService';
 
 export const getPermission = appId => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
@@ -26,19 +27,7 @@ export const getAppInfo = appId => new Promise((resolve, reject) => {
 			.catch(error => reject(error));
 	});
 
-export const updatePermission = (appId, username, info) => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appId}/permission/${username}`, {
-			method: 'PATCH',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(info),
-		})
-			.then(res => res.json())
-			.then(data => resolve(data))
-			.catch(error => reject(error));
-	});
+export const updatePermission = (appId, username, info) => doPatch(`${ACC_API}/app/${appId}/permission/${username}`, info);
 
 export const newPermission = (appId, info) => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
@@ -67,18 +56,7 @@ export const deletePermission = (appId, username) => new Promise((resolve, rejec
 			.catch(error => reject(error));
 	});
 
-export const deleteApp = appId => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appId}`, {
-			method: 'DELETE',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-			.then(res => res.json())
-			.then(data => resolve(data))
-			.catch(error => reject(error));
-	});
+export const deleteApp = appId => doDelete(`${ACC_API}/app/${appId}`);
 
 export const getShare = appId => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/share`, {

@@ -42,10 +42,10 @@ export function getAppMappings(appName, credentials, url) {
 	};
 }
 
-export function deleteApp(appId) {
+export function deleteApp(appName) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.DELETE_APP));
-		return DeleteApp(appId)
+		return DeleteApp(appName)
 			.then(res => dispatch(createAction(AppConstants.APP.DELETE_APP_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.DELETE_APP_ERROR, null, error)));
 	};
