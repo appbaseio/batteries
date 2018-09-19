@@ -5,7 +5,10 @@ const formatError = (error = {}) => {
 		errorToBeReturned.actual = error;
 		return errorToBeReturned;
 	} catch (e) {
-		return e;
+		return {
+			message: 'Something went wrong',
+			actual: error,
+		};
 	}
 };
 /**

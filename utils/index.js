@@ -1,3 +1,6 @@
+import get from 'lodash/get';
+import { doGet } from './requestService';
+
 export const ACC_API = 'https://accapi.appbase.io';
 export const SCALR_API = 'https://scalr.api.appbase.io';
 export const BILLING_API = 'https://transactions.appbase.io';
@@ -9,12 +12,14 @@ export function getCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
 		permission => permission.read
 			&& permission.write
-			&& permission.referers.includes('*')
-			&& permission.include_fields.includes('*'),
+			&& get(permission, 'referers', []).includes('*')
+			&& get(permission, 'include_fields', []).includes('*'),
 	);
 	if (!result) {
 		result = permissions.find(
-			permission => permission.read && permission.write && permission.referers.includes('*'),
+			permission => permission.read
+				&& permission.write
+				&& get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
@@ -110,7 +115,7 @@ export function isEqual(x, y) {
 	}
 	return true;
 }
-
+export const getUserAppsPermissions = () => doGet(`${ACC_API}/user/apps/permissions`);
 export const setUserInfo = userInfo =>
 	new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/user/profile`, {

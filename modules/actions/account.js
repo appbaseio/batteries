@@ -1,6 +1,6 @@
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { checkUserStatus, setUserInfo } from '../../utils/index';
+import { checkUserStatus, setUserInfo, getUserAppsPermissions } from '../../utils/index';
 
 /**
  * Get the user current plan
@@ -28,5 +28,20 @@ export function updateUser(info) {
 			.catch((error) => {
 				dispatch(createAction(AppConstants.ACCOUNT.UPDATE_USER_ERROR, null, error));
 			});
+	};
+}
+/**
+ * Get user's all apps permissions
+ */
+export function getUserPermissions(appName, username) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.PERMISSION.GET));
+		return getUserAppsPermissions(appName, username)
+			.then(res => dispatch(
+					createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res, null, {
+						source: 'user_apps',
+					}),
+				))
+			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)));
 	};
 }

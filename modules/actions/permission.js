@@ -18,9 +18,11 @@ export function getPermission(name) {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.PERMISSION.GET));
 		return fetchPermission(appName)
-			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res, null, {
-				appName,
-			})))
+			.then(res => dispatch(
+					createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res, null, {
+						appName,
+					}),
+				))
 			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)));
 	};
 }

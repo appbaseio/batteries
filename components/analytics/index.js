@@ -1,14 +1,11 @@
 import React from 'react';
-import {
- Tabs, Icon, Spin, notification,
-} from 'antd';
+import { Tabs, Icon, Spin } from 'antd';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
  getAnalytics, bannerMessages, getActiveKeyByRoutes, tabMappings,
 } from './utils';
-import { getAppPlan } from '../../utils/app';
 import UpgradePlan from '../shared/UpgradePlan/Banner';
 import Flex from '../shared/Flex';
 import Analytics from './components/Analytics';
@@ -16,7 +13,6 @@ import PopularSearches from './components/PopularSearches';
 import NoResultsSearch from './components/NoResultsSearch';
 import PopularResults from './components/PopularResults';
 import PopularFilters from './components/PopularFilters';
-import { computeAppPlanState } from '../../modules/reducers/utils';
 import { getAppPlanByName } from '../../modules/selectors';
 import RequestLogs from './components/RequestLogs';
 
@@ -120,9 +116,7 @@ class Main extends React.Component {
 			<div className="ad-detail-page ad-dashboard row" style={{ padding: '40px' }}>
 				{isPaidUser ? (
 					<React.Fragment>
-						{bannerMessages[plan] && (
-							<UpgradePlan {...bannerMessages[plan]} />
-						)}
+						{bannerMessages[plan] && <UpgradePlan {...bannerMessages[plan]} />}
 						<Tabs onTabClick={this.changeActiveTabKey} activeKey={activeTabKey}>
 							<TabPane tab="Analytics" key={this.tabKeys[0]}>
 								<Analytics

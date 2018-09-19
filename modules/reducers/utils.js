@@ -41,11 +41,25 @@ export const computeStateByAppName = (action, state) => ({
 	}),
 });
 
-export const computeAppPermissionState = (action, state) => ({
-	results: Object.assign({}, state.results, {
-		[action.meta.appName]: {
-			credentials: getCredentialsFromPermissions(action.payload),
-			results: action.payload,
-		},
-	}),
-});
+export const computeAppPermissionState = (action, state) => {
+	if (action.meta.source === 'user_apps') {
+		const collectResults = {};
+		Object.keys(action.payload || {}).forEach((key) => {
+			collectResults[key] = {
+				credentials: getCredentialsFromPermissions(action.payload[key]),
+				results: action.payload[key],
+			};
+		});
+		return {
+			results: Object.assign({}, state.results, collectResults),
+		};
+	}
+	return {
+		results: Object.assign({}, state.results, {
+			[action.meta.appName]: {
+				credentials: getCredentialsFromPermissions(action.payload),
+				results: action.payload,
+			},
+		}),
+	};
+};

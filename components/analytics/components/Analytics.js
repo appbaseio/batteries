@@ -57,37 +57,39 @@ const Analytics = ({
 				</div>
 			</Flex>
 			{plan === 'growth' && (
-				<Flex css="width: 100%;margin-top: 50px">
-					<div css="flex: 50%;margin-right: 10px">
-						<Searches
-							dataSource={popularResults}
-							columns={popularResultsCol(plan)}
-							title="Popular Results"
-							onClick={() => redirectTo('popularResults')}
-							pagination={{
-								pageSize: 5,
-							}}
-						/>
-					</div>
-					<div css="flex: 50%;margin-left: 10px">
-						<Searches
-							dataSource={popularFilters}
-							columns={popularFiltersCol(plan)}
-							title="Popular Filters"
-							onClick={() => redirectTo('popularFilters')}
-							pagination={{
-								pageSize: 5,
-							}}
-						/>
-					</div>
-				</Flex>
+				<React.Fragment>
+					<Flex css="width: 100%;margin-top: 50px">
+						<div css="flex: 50%;margin-right: 10px">
+							<Searches
+								dataSource={popularResults}
+								columns={popularResultsCol(plan)}
+								title="Popular Results"
+								onClick={() => redirectTo('popularResults')}
+								pagination={{
+									pageSize: 5,
+								}}
+							/>
+						</div>
+						<div css="flex: 50%;margin-left: 10px">
+							<Searches
+								dataSource={popularFilters}
+								columns={popularFiltersCol(plan)}
+								title="Popular Filters"
+								onClick={() => redirectTo('popularFilters')}
+								pagination={{
+									pageSize: 5,
+								}}
+							/>
+						</div>
+					</Flex>
+					<Flex css="width: 100%;margin-top: 50px">
+						<GeoDistribution />
+					</Flex>
+				</React.Fragment>
 			)}
 			{/* <Flex css="width: 100%;margin-top: 50px">
 				<SearchLatency />
 			</Flex> */}
-			<Flex css="width: 100%;margin-top: 50px">
-				<GeoDistribution />
-			</Flex>
 		</React.Fragment>
 	);
 };
