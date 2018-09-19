@@ -200,7 +200,7 @@ class Mappings extends Component {
 				getAppMappings(appName, appbaseCredentials);
 			} else if (!appbaseCredentials) {
 				// 2. get credentials (if not found) - before fetching mappings and synonyms
-				getPermission(appId);
+				getPermission(appName);
 			}
 		}
 	}
@@ -801,7 +801,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => ({
 	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
-	getPermission: appId => dispatch(getPermissionFromAppbase(appId)),
+	getPermission: appName => dispatch(getPermissionFromAppbase(appName)),
 	getAppMappings: (appName, credentials, url) => {
 		dispatch(getMappings(appName, credentials, url));
 	},
