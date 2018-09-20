@@ -13,9 +13,16 @@ import {
 	Dropdown,
 	Popover,
 	Select,
+	Card,
 } from 'antd';
 
-import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
+import {
+	DataSearch,
+	MultiList,
+	ReactiveList,
+	ResultList,
+	ResultCard,
+} from '@appbaseio/reactivesearch';
 
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
@@ -23,6 +30,7 @@ import reactiveListTypes from '../utils/reactivelist-types';
 import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
+import PreviewList from './PreviewList';
 
 import {
 	deleteStyles,
@@ -33,10 +41,14 @@ import {
 	label,
 } from '../styles';
 
+const { Meta } = Card;
+
 const componentMap = {
 	DataSearch,
 	MultiList,
 	ReactiveList,
+	ResultList,
+	ResultCard,
 };
 
 const propsMap = {
@@ -53,6 +65,8 @@ export default class RSWrapper extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
+			previewModal: false,
+			showCardLayout: false,
 		};
 
 		if (!props.componentProps.dataField) {
@@ -128,6 +142,17 @@ export default class RSWrapper extends Component {
 		});
 	};
 
+	getNestedValue = (obj, path) => {
+		const keys = path.split('.');
+		let currentObject = obj;
+
+		keys.forEach(key => (currentObject = currentObject[key]));
+		if (typeof currentObject === 'object') {
+			return JSON.stringify(currentObject);
+		}
+		return currentObject;
+	};
+
 	handleOk = () => {
 		this.props.onPropChange(this.props.id, this.state.componentProps);
 		this.setState({
@@ -179,6 +204,12 @@ export default class RSWrapper extends Component {
 				...this.state.componentProps,
 				[name]: value,
 			},
+		});
+	};
+
+	handleLayout = () => {
+		this.setState({
+			showCardLayout: !this.state.showCardLayout,
 		});
 	};
 
@@ -246,6 +277,22 @@ export default class RSWrapper extends Component {
 		}
 	};
 
+	handlePreviewModal = () => {
+		this.setState({
+			previewModal: !this.state.previewModal,
+		});
+	};
+
+	handleSavePreview = (values) => {
+		this.props.onPropChange(this.props.id, {
+			meta: true,
+			metaFields: values,
+		});
+		this.setState({
+			previewModal: false,
+		});
+	};
+
 	renderComponentCode = () => {
 		const config = {
 			componentId: this.props.id,
@@ -285,10 +332,9 @@ export default class RSWrapper extends Component {
 							style={{ maxHeight: 300, overflowY: 'scroll' }}
 						>
 							{fields
-								.filter(item => (
-									item === selected
-									|| !this.state.componentProps.dataField.includes(item)
-								))
+								.filter(item =>
+										item === selected ||
+										!this.state.componentProps.dataField.includes(item))
 								.map(item => (
 									<Menu.Item key={item} value={index}>
 										{item}
@@ -579,7 +625,7 @@ export default class RSWrapper extends Component {
 
 	render() {
 		if (!this.props.componentProps.dataField) return null;
-		const RSComponent = componentMap[this.props.component];
+		let RSComponent = componentMap[this.props.component];
 
 		let otherProps = {};
 		if (this.props.id === 'search') {
@@ -590,6 +636,47 @@ export default class RSWrapper extends Component {
 					this.props.mappings,
 				),
 				highlightField: this.props.componentProps.dataField,
+			};
+		}
+		let showLayoutToggle = false;
+
+		if (this.props.id === 'result' && this.props.componentProps.metaFields) {
+			showLayoutToggle = true;
+			RSComponent = this.state.showCardLayout
+				? componentMap.ResultCard
+				: componentMap.ResultList;
+			const {
+				url, title, image, description,
+			} = this.props.componentProps.metaFields;
+			otherProps = {
+				pagination: true,
+				target: '_blank',
+				onData: res => ({
+					image: this.getNestedValue(res, image) || null,
+					url: this.getNestedValue(res, url) || null,
+					title: this.getNestedValue(res, title) || 'Choose a valid Title Field',
+					description: this.getNestedValue(res, description) ? (
+						<div>
+							<Meta
+								style={{
+									maxHeight: '100px',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+								}}
+								description={this.getNestedValue(res, description)}
+							/>
+							<div style={{ marginTop: 10, textAlign: 'right' }}>
+								{this.props.renderJSONEditor(res)}
+								{this.props.renderDeleteJSON(res)}
+							</div>
+						</div>
+					) : (
+						'Choose a valid description field'
+					),
+				}),
+				react: {
+					and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
+				},
 			};
 		}
 
@@ -605,6 +692,26 @@ export default class RSWrapper extends Component {
 								onClick={this.showModal}
 							/>
 							{this.renderComponentCode()}
+							{this.props.id === 'result' ? (
+								<React.Fragment>
+									<Button
+										icon="eye-o"
+										shape="circle"
+										size="large"
+										style={{ marginLeft: 8 }}
+										onClick={this.handlePreviewModal}
+									/>
+									{showLayoutToggle ? (
+										<Button
+											icon={this.state.showCardLayout ? 'bars' : 'appstore-o'}
+											shape="circle"
+											size="large"
+											style={{ marginLeft: 8 }}
+											onClick={this.handleLayout}
+										/>
+									) : null}
+								</React.Fragment>
+							) : null}
 							{this.props.showDelete ? (
 								<Button
 									icon="delete"
@@ -651,10 +758,27 @@ export default class RSWrapper extends Component {
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 					destroyOnClose
+					key="EditModal"
 					okText="Save"
 				>
 					{this.renderPropsForm()}
 				</Modal>
+				{this.props.id === 'result' ? (
+					<PreviewList
+						options={Object.keys(this.props.mappings)}
+						componentProps={this.state.componentProps}
+						componentId={this.props.id}
+						getNestedValue={this.getNestedValue}
+						handlePreviewModal={this.handlePreviewModal}
+						handleSavePreview={this.handleSavePreview}
+						visible={this.state.previewModal}
+						dataField={generateDataField(
+							this.props.component,
+							this.props.componentProps.dataField,
+							this.props.mappings,
+						)}
+					/>
+				) : null}
 			</div>
 		);
 	}

@@ -580,6 +580,8 @@ export default class Editor extends Component {
 								mappings={this.props.mappings}
 								mappingsType={this.props.mappingsType}
 								componentProps={resultComponentProps}
+								renderJSONEditor={this.renderJSONEditor}
+								renderDeleteJSON={this.renderDeleteJSON}
 								onPropChange={this.props.onPropChange}
 								full
 								showDelete={false}
