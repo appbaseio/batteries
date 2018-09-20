@@ -482,14 +482,14 @@ export const bannerMessages = {
 		description:
 			'Get a paid plan to see actionable analytics on search volume, popular searches, no results, track clicks and conversions.',
 		buttonText: 'Upgrade Now',
-		href: '/billing',
+		href: 'billing',
 	},
 	bootstrap: {
 		title: 'Get richer analytics on clicks and conversions',
 		description:
 			'By upgrading to the Growth plan, you can get more actionable analytics on popular filters, popular results, and track clicks and conversions along with a 30-day retention.',
 		buttonText: 'Upgrade To Growth',
-		href: '/billing',
+		href: 'billing',
 		isHorizontal: true,
 	},
 	growth: {

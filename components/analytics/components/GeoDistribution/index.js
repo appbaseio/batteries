@@ -34,7 +34,7 @@ class GeoDistribution extends React.Component {
 
 	componentDidUpdate(prevProps) {
 		const { isSuccess, geoData } = this.props;
-		if (isSuccess && isSuccess !== prevProps.isSuccess && geoData && geoData.length) {
+		if (isSuccess && isSuccess !== prevProps.isSuccess && geoData) {
 			this.loadPaths();
 		}
 	}
