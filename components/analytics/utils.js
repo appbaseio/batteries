@@ -476,7 +476,7 @@ export function getRequestLogs(appName, size = 100) {
 }
 
 // Banner messages
-export const bannerMessages = {
+export const bannerMessagesAnalytics = {
 	free: {
 		title: 'Unlock the ROI impact of your search',
 		description:
