@@ -5,7 +5,7 @@ import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol } from '../utils';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
-// import SearchLatency from './SearchLatency';
+import SearchLatency from './SearchLatency';
 // import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
 
@@ -82,14 +82,14 @@ const Analytics = ({
 							/>
 						</div>
 					</Flex>
-					<Flex css="width: 100%;margin-top: 50px">
+					<Flex css="width: 100%;margin-top: 20px">
 						<GeoDistribution />
+					</Flex>
+					<Flex css="width: 100%;margin-top: 20px;margin-bottom: 20px">
+						<SearchLatency />
 					</Flex>
 				</React.Fragment>
 			)}
-			{/* <Flex css="width: 100%;margin-top: 50px">
-				<SearchLatency />
-			</Flex> */}
 		</React.Fragment>
 	);
 };
