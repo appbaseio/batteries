@@ -20,14 +20,10 @@ import {
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
 import PropTypes from 'prop-types';
-import AceEditor from 'react-ace';
-import brace from 'brace'; // eslint-disable-line
-
-import 'brace/mode/json';
-import 'brace/theme/monokai';
 
 import Appbase from 'appbase-js';
 
+import Ace from './AceEditor';
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import { listItem, formWrapper } from '../styles';
@@ -51,8 +47,9 @@ export default class Editor extends Component {
 			showVideo: false,
 			isEditable: false,
 		};
-		this.appbaseRef = new Appbase({
-			appname: this.props.appName,
+
+		this.appbaseRef = Appbase({
+			app: this.props.appName,
 			url: this.props.url,
 			credentials: this.props.credentials,
 		});
@@ -195,20 +192,21 @@ export default class Editor extends Component {
 					doc: updatedJSON,
 				},
 			})
-			.on('data', (res) => {
+			.then((res) => {
 				this.setState({
 					isEditable: false,
 					renderKey: res._timestamp, // eslint-disable-line
 				});
+				notification.open(responseMessage);
 			})
-			.on('error', () => {
+			.catch(() => {
 				responseMessage = {
 					message: 'Update JSON',
 					description: 'There were error in Updating JSON. Try again Later.',
 					duration: 2,
 				};
+				notification.open(responseMessage);
 			});
-		notification.open(responseMessage);
 	};
 
 	handleDeleteJSON = (id) => {
@@ -222,19 +220,20 @@ export default class Editor extends Component {
 				type: this.props.mappingsType,
 				id,
 			})
-			.on('data', (res) => {
+			.then((res) => {
 				this.setState({
 					renderKey: res._timestamp,
 				});
+				notification.open(responseMessage);
 			})
-			.on('error', () => {
+			.catch(() => {
 				responseMessage = {
 					message: 'Delete JSON',
 					description: 'There were error in Deleting JSON. Try again Later.',
 					duration: 2,
 				};
+				notification.open(responseMessage);
 			});
-		notification.open(responseMessage);
 	};
 
 	handleEditing = () => {
@@ -427,7 +426,7 @@ export default class Editor extends Component {
 			}
 			content={
 				this.state.isEditable ? (
-					<AceEditor
+					<Ace
 						mode="json"
 						value={this.state.editorValue}
 						onChange={value => this.handleEditingJSON(value)}

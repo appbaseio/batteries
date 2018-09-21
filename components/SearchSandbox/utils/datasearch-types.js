@@ -20,7 +20,7 @@ export default {
 		label: 'Highlight Results',
 		description: 'Enable highlighting within results.',
 		input: 'bool',
-		default: true,
+		default: false,
 	},
 	autosuggest: {
 		label: 'Auto Suggest',

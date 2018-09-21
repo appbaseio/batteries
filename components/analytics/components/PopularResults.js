@@ -1,8 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getPopularResults, popularResultsFull } from '../utils';
+import { getPopularResults, popularResultsFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
+
+const headers = {
+	key: 'Results',
+	count: 'Impressions',
+	clicks: 'Clicks',
+	clickposition: 'Click Position',
+	conversionrate: 'Conversion Rate',
+};
 
 class PopularResults extends React.Component {
 	constructor(props) {
@@ -44,6 +52,18 @@ class PopularResults extends React.Component {
 				pagination={{
 					pageSize: 10,
 				}}
+				onClickDownload={() => exportCSVFile(
+						headers,
+						popularResults.map(item => ({
+							key: item.key,
+							count: item.count,
+							clicks: item.clicks || '-',
+							clickposition: item.clickposition || '-',
+							conversionrate: item.conversionrate || '-',
+						})),
+						'popular_results',
+					)
+				}
 			/>
 		);
 	}

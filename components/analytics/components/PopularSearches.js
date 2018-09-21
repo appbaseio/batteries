@@ -1,9 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getPopularSearches, popularSearchesFull } from '../utils';
+import { getPopularSearches, popularSearchesFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 
+const headers = {
+	key: 'Search Terms',
+	count: 'Total Queries',
+	clicks: 'Clicks',
+	clickposition: 'Click Position',
+	conversionrate: 'Conversion Rate',
+};
 class PopularSearches extends React.Component {
 	constructor(props) {
 		super(props);
@@ -37,10 +44,23 @@ class PopularSearches extends React.Component {
 		}
 		return (
 			<Searches
+				showDownloadOption
 				showViewOption={false}
 				columns={popularSearchesFull(plan)}
 				dataSource={popularSearches}
 				title="Popular Searches"
+				onClickDownload={() => exportCSVFile(
+						headers,
+						popularSearches.map(item => ({
+							key: item.key,
+							count: item.count,
+							clicks: item.clicks || '-',
+							clickposition: item.clickposition || '-',
+							conversionrate: item.conversionrate || '-',
+						})),
+						'popular_searches',
+					)
+				}
 				pagination={{
 					pageSize: 10,
 				}}
