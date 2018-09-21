@@ -531,6 +531,7 @@ export default class Editor extends Component {
 				app={this.props.appName}
 				credentials={this.props.credentials}
 				url={this.props.url}
+				analytics
 			>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
