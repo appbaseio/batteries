@@ -47,9 +47,9 @@ Summary.propTypes = {
 const mapStateToProps = (state) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);
 	return {
-		avgClickRate: get(appSummary, 'avgClickRate'),
-		avgConversionRate: get(appSummary, 'avgConversionRate'),
-		totalSearches: get(appSummary, 'totalSearches'),
+		avgClickRate: get(appSummary, 'avgClickRate', 0),
+		avgConversionRate: get(appSummary, 'avgConversionRate', 0),
+		totalSearches: get(appSummary, 'totalSearches', 0),
 		isLoading: get(state, '$getAppAnalyticsSummary.isFetching'),
 		errors: [get(state, '$getAppAnalyticsSummary.error')],
 	};
