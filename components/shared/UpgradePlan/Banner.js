@@ -1,9 +1,8 @@
 import React from 'react';
-import { Card } from 'antd';
+import { Card, Button, Icon } from 'antd';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
-import { Button as UpgradeButton } from '../../Mappings/styles';
-import Flex from './../Flex';
+import Flex from '../Flex';
 
 const headingMain = css`
 	font-size: 30px;
@@ -14,7 +13,9 @@ const desc = css`
 	font-size: 16px;
 	margin-top: 5px;
 `;
-const UpgradePlan = ({ title, description, buttonText, href, isHorizontal }) => (
+const UpgradePlan = ({
+ title, description, buttonText, href, isHorizontal,
+}) => (
 	<Card css="margin-bottom: 20px">
 		<Flex justifyContent="space-between" flexDirection={isHorizontal ? 'row' : 'column'}>
 			<Flex flexDirection="column">
@@ -25,9 +26,16 @@ const UpgradePlan = ({ title, description, buttonText, href, isHorizontal }) => 
 				css="flex: 30%;min-width: 300px"
 				justifyContent={isHorizontal ? 'flex-end' : undefined}
 			>
-				<UpgradeButton css="margin-top: 20px;margin: 20px 0px;" href={href} target="_blank">
+				<Button
+					css="margin-top: 20px;margin: 20px 0px;"
+					href={href}
+					target="_blank"
+					size="large"
+					type="primary"
+				>
+					<Icon type="to-top" />
 					{buttonText}
-				</UpgradeButton>
+				</Button>
 			</Flex>
 		</Flex>
 	</Card>
