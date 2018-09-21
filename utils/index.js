@@ -31,6 +31,26 @@ export function getCredentialsFromPermissions(permissions = []) {
 	return result;
 }
 
+export function getReadCredentialsFromPermissions(permissions = []) {
+	let result = permissions.find(
+		permission => permission.read
+			&& !permission.write
+			&& get(permission, 'referers', []).includes('*')
+			&& get(permission, 'include_fields', []).includes('*'),
+	);
+	if (!result) {
+		result = permissions.find(
+			permission => permission.read
+				&& !permission.write
+				&& get(permission, 'referers', []).includes('*'),
+		);
+	}
+	if (!result) {
+		result = permissions.find(permission => permission.read && !permission.write);
+	}
+	return result || false;
+}
+
 export function getCredentials(appId) {
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
