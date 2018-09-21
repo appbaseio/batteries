@@ -255,7 +255,7 @@ class RequestLogs extends React.Component {
 	}
 }
 RequestLogs.defaultProps = {
-	changeUrlOnTabChange: true,
+	changeUrlOnTabChange: false,
 	onTabChange: undefined, // Use this to override the default redirect logic on tab change
 	tab: 'all',
 	pageSize: 10,
