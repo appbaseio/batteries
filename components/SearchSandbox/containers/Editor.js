@@ -84,10 +84,8 @@ export default class Editor extends Component {
 			{
 				copied: true,
 			},
-			() =>
-				setTimeout(
-					() =>
-						this.setState({
+			() => setTimeout(
+					() => this.setState({
 							copied: false,
 						}),
 					300,
@@ -240,7 +238,7 @@ export default class Editor extends Component {
 		this.setState({
 			isEditable: !this.state.isEditable,
 		});
-	}
+	};
 
 	handleEditingJSON = (value) => {
 		let isValidJSON = true;
@@ -342,7 +340,9 @@ export default class Editor extends Component {
 				onClick={this.handleDataFieldChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{fields.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
+				{fields.map(item => (
+					<Menu.Item key={item}>{item}</Menu.Item>
+				))}
 			</Menu>
 		);
 		return (
@@ -379,12 +379,13 @@ export default class Editor extends Component {
 			if (type === 'string' || type === 'number') {
 				return (
 					<TreeNode
-						title={
-							<div>
-								<span>{item}:</span>&nbsp;
+						title={(
+<div>
+								<span>{item}:</span>
+								&nbsp;
 								<span dangerouslySetInnerHTML={{ __html: res[item] }} />
-							</div>
-						}
+</div>
+)}
 						key={`${key}-${index + 1}`}
 					/>
 				);
@@ -408,7 +409,7 @@ export default class Editor extends Component {
 
 	renderDeleteJSON = res => (
 		<Popconfirm
-			title="Are you sure to delete this JSON?"
+			title="Are you sure you want to delete this JSON?"
 			placement="bottomRight"
 			onConfirm={() => this.handleDeleteJSON(res._id)}
 			okText="Yes"
@@ -421,8 +422,7 @@ export default class Editor extends Component {
 		<Popover
 			placement="leftTop"
 			trigger="click"
-			onVisibleChange={visible =>
-				(visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
+			onVisibleChange={visible => (visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
 			}
 			content={
 				this.state.isEditable ? (
@@ -447,10 +447,12 @@ export default class Editor extends Component {
 					<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>
 				)
 			}
-			title={
-				<Row>
+			title={(
+<Row>
 					<Col span={this.state.isEditable ? 19 : 18}>
-						<h5 style={{ display: 'inline-block' }}>{this.state.isEditable ? 'Edit JSON' : 'JSON Result'}</h5>
+						<h5 style={{ display: 'inline-block' }}>
+							{this.state.isEditable ? 'Edit JSON' : 'JSON Result'}
+						</h5>
 					</Col>
 					<Col span={this.state.isEditable ? 5 : 6}>
 						<Tooltip visible={this.state.copied} title="Copied">
@@ -483,8 +485,8 @@ export default class Editor extends Component {
 							</Button>
 						)}
 					</Col>
-				</Row>
-			}
+</Row>
+)}
 		>
 			<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
 		</Popover>
@@ -517,6 +519,11 @@ export default class Editor extends Component {
 			},
 		};
 
+		let searchComponentProps = this.props.componentProps.search || {};
+		searchComponentProps = {
+			...searchComponentProps,
+			renderSuggestions: res => (this.props.renderSuggestions ? this.props.renderSuggestions(res) : null),
+		};
 		const title = (
 			<span>
 				Search Preview{' '}
@@ -525,7 +532,6 @@ export default class Editor extends Component {
 				</Button>
 			</span>
 		);
-
 		return (
 			<ReactiveBase
 				app={this.props.appName}
@@ -552,6 +558,7 @@ export default class Editor extends Component {
 										id={config}
 										component="MultiList"
 										mappings={this.props.mappings}
+										customProps={this.props.customProps}
 										componentProps={this.props.componentProps[config] || {}}
 										onPropChange={this.props.onPropChange}
 										onDelete={this.props.deleteComponent}
@@ -566,7 +573,8 @@ export default class Editor extends Component {
 								id="search"
 								component="DataSearch"
 								mappings={this.props.mappings}
-								componentProps={this.props.componentProps.search || {}}
+								customProps={this.props.customProps}
+								componentProps={searchComponentProps}
 								onPropChange={this.props.onPropChange}
 							/>
 						</Card>
@@ -578,6 +586,7 @@ export default class Editor extends Component {
 								component="ReactiveList"
 								key={this.state.renderKey}
 								mappings={this.props.mappings}
+								customProps={this.props.customProps}
 								mappingsType={this.props.mappingsType}
 								componentProps={resultComponentProps}
 								onPropChange={this.props.onPropChange}
