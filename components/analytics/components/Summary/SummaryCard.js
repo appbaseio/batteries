@@ -9,6 +9,7 @@ const main = css`
 	background-color: rgba(229, 230, 233, 0.21);
 	border-top: 2px solid #00f68e;
 	margin-bottom: 20px;
+	margin-right: 20px;
 `;
 const titleCls = css`
 	height: 19px;

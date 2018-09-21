@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { ACC_API } from '../../utils';
+import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 
 const requestOpt = css`
@@ -326,7 +327,7 @@ export function getSearchLatency(appName) {
 	});
 }
 /**
- * Get the search latency
+ * Get the geo distribution
  * @param {string} appName
  */
 export function getGeoDistribution(appName) {
@@ -348,6 +349,13 @@ export function getGeoDistribution(appName) {
 				reject(e);
 			});
 	});
+}
+/**
+ * Get the search latency
+ * @param {string} appName
+ */
+export function getAnalyticsSummary(appName) {
+	return doGet(`${ACC_API}/analytics/${appName}/summary`);
 }
 /**
  * Get the popular seraches

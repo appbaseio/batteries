@@ -11,6 +11,7 @@ const appAnalytics = state => get(state, '$getAppAnalytics.results');
 const appPermission = state => get(state, '$getAppPermissions.results');
 const appSearchLatency = state => get(state, '$getAppSearchLatency.results');
 const appGeoDistribution = state => get(state, '$getAppGeoDistribution.results');
+const appAnalyticsSummary = state => get(state, '$getAppAnalyticsSummary.results');
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
@@ -27,12 +28,17 @@ const getAppAnalyticsByName = createSelector(appAnalytics, appName, getCollectio
 const getAppPermissionsByName = createSelector(appPermission, appName, getCollectionByKey);
 const getAppSearchLatencyByName = createSelector(appSearchLatency, appName, getCollectionByKey);
 const getAppGeoDistributionByName = createSelector(appGeoDistribution, appName, getCollectionByKey);
-
+const getAppAnalyticsSummaryByName = createSelector(
+	appAnalyticsSummary,
+	appName,
+	getCollectionByKey,
+);
 export {
 	getRawMappingsByAppName,
 	getTraversedMappingsByAppName,
 	getAppSearchLatencyByName,
 	getAppGeoDistributionByName,
+	getAppAnalyticsSummaryByName,
 	getAppInfoByName,
 	getAppMetricsByName,
 	getAppAnalyticsByName,

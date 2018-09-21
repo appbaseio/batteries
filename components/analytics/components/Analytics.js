@@ -6,7 +6,7 @@ import { popularFiltersCol, popularResultsCol } from '../utils';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
 import SearchLatency from './SearchLatency';
-// import Summary from './Summary';
+import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
 
 const Analytics = ({
@@ -26,9 +26,9 @@ const Analytics = ({
 	}
 	return (
 		<React.Fragment>
-			{/* <Card title="Summary">
+			<Card title="Summary">
 				<Summary />
-			</Card> */}
+			</Card>
 			<Card css="width: 100%;margin-top: 20px" title="Daily Search Volume">
 				<SearchVolumeChart width={chartWidth} height={300} data={searchVolume} />
 			</Card>

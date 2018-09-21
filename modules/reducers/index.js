@@ -42,6 +42,12 @@ export default {
 		AppConstants.APP.ANALYTICS.GET_ERROR,
 		computeStateByAppName,
 	),
+	$getAppAnalyticsSummary: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_SUMMARY,
+		AppConstants.APP.ANALYTICS.GET_SUMMARY_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_SUMMARY_ERROR,
+		computeStateByAppName,
+	),
 	$getAppSearchLatency: createRequestReducer(
 		AppConstants.APP.ANALYTICS.GET_LATENCY,
 		AppConstants.APP.ANALYTICS.GET_LATENCY_SUCCESS,
