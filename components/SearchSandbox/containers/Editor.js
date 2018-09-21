@@ -408,7 +408,7 @@ export default class Editor extends Component {
 
 	renderDeleteJSON = res => (
 		<Popconfirm
-			title="Are you sure to delete this JSON?"
+			title="Are you sure you want to delete this JSON?"
 			placement="bottomRight"
 			onConfirm={() => this.handleDeleteJSON(res._id)}
 			okText="Yes"
@@ -517,6 +517,13 @@ export default class Editor extends Component {
 			},
 		};
 
+		let searchComponentProps = this.props.componentProps.search || {};
+		searchComponentProps = {
+			...searchComponentProps,
+			renderSuggestions: res => (this.props.renderSuggestions
+					? this.props.renderSuggestions(res)
+					: null),
+		};
 		const title = (
 			<span>
 				Search Preview{' '}
@@ -567,7 +574,7 @@ export default class Editor extends Component {
 								id="search"
 								component="DataSearch"
 								mappings={this.props.mappings}
-								componentProps={this.props.componentProps.search || {}}
+								componentProps={searchComponentProps}
 								onPropChange={this.props.onPropChange}
 							/>
 						</Card>

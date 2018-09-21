@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Menu, Button, Dropdown, Icon, Modal, Input } from 'antd';
+import {
+ Menu, Button, Dropdown, Icon, Modal, Input,
+} from 'antd';
 import { css } from 'emotion';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
@@ -104,8 +106,7 @@ class SearchSandbox extends Component {
 		localStorage.setItem(this.props.appName, value);
 	};
 
-	getActiveConfig = () =>
-		this.state.configs.find(config => config.profile === this.state.profile);
+	getActiveConfig = () => this.state.configs.find(config => config.profile === this.state.profile);
 
 	setFilterCount = (filterCount) => {
 		this.setState({
@@ -292,6 +293,7 @@ class SearchSandbox extends Component {
 			credentials: this.props.credentials || null,
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
+			renderSuggestions: this.props.renderSuggestions || null,
 			mappings: this.state.mappings,
 			mappingsType: this.state.mappingsType,
 			componentProps: this.state.componentProps,
@@ -356,6 +358,7 @@ SearchSandbox.propTypes = {
 	credentials: PropTypes.string.isRequired,
 	isDashboard: PropTypes.bool,
 	url: PropTypes.string,
+	renderSuggestions: PropTypes.func,
 	getAppMappings: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
 };
