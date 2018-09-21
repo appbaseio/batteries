@@ -519,11 +519,6 @@ export default class Editor extends Component {
 			},
 		};
 
-		let searchComponentProps = this.props.componentProps.search || {};
-		searchComponentProps = {
-			...searchComponentProps,
-			renderSuggestions: res => (this.props.renderSuggestions ? this.props.renderSuggestions(res) : null),
-		};
 		const title = (
 			<span>
 				Search Preview{' '}
@@ -574,7 +569,7 @@ export default class Editor extends Component {
 								component="DataSearch"
 								mappings={this.props.mappings}
 								customProps={this.props.customProps}
-								componentProps={searchComponentProps}
+								componentProps={this.props.componentProps.search || {}}
 								onPropChange={this.props.onPropChange}
 							/>
 						</Card>
