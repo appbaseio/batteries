@@ -33,7 +33,7 @@ const createRequest = (
 				if (status >= 400) {
 					return reject(data);
 				}
-				if (method === 'GET') {
+				if (data.body) {
 					return resolve(data.body);
 				}
 				return resolve(data);
