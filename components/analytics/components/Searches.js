@@ -34,6 +34,11 @@ const Searches = ({
 			dataSource={dataSource}
 			columns={columns || defaultColumns(plan)}
 			pagination={pagination}
+			css={`
+				td {
+					vertical-align: top;
+				}
+			`}
 		/>
 		{showViewOption && (
 			<Button onClick={() => onClick()} css="width: 100%;height: 50px;margin-top: 10px;">

@@ -200,7 +200,16 @@ export const popularSearchesFull = (plan) => {
 };
 export const popularResultsFull = (plan) => {
 	if (plan !== 'growth') {
-		return popularResultsCol(plan);
+		return [
+			...popularResultsCol(plan),
+			{
+				title: 'Source',
+				dataIndex: 'source',
+				key: 'source',
+				width: '30%',
+				render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+			},
+		];
 	}
 	return [
 		...popularResultsCol(plan),
@@ -498,14 +507,12 @@ export const bannerMessagesAnalytics = {
 			'By upgrading to the Growth plan, you can get more actionable analytics on popular filters, popular results, and track clicks and conversions along with a 30-day retention.',
 		buttonText: 'Upgrade To Growth',
 		href: 'billing',
-		isHorizontal: true,
 	},
 	growth: {
 		title: 'Learn how to track click analytics',
 		description:
 			'See our docs on how to track search, filters, click events, conversions and your own custom events.',
 		buttonText: 'Read Docs',
-		isHorizontal: true,
 		href: 'https://docs.appbase.io',
 	},
 };

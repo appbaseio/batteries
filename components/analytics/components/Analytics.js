@@ -29,13 +29,15 @@ const Analytics = ({
 			<Card title="Summary">
 				<Summary />
 			</Card>
+
 			<Card css="width: 100%;margin-top: 20px" title="Daily Search Volume">
 				<SearchVolumeChart width={chartWidth} height={300} data={searchVolume} />
 			</Card>
+
 			<Flex css="width: 100%;margin-top: 20px">
 				<div css="flex: 50%;margin-right: 10px">
 					<Searches
-						onClick={() => redirectTo('popularSearches')}
+						onClick={() => redirectTo('popular-searches')}
 						dataSource={popularSearches}
 						title="Popular Searches"
 						plan={plan}
@@ -46,7 +48,7 @@ const Analytics = ({
 				</div>
 				<div css="flex: 50%;margin-left: 10px">
 					<Searches
-						onClick={() => redirectTo('noResultSearches')}
+						onClick={() => redirectTo('no-results-searches')}
 						dataSource={noResults}
 						title="No Result Searches"
 						plan={plan}
@@ -58,13 +60,13 @@ const Analytics = ({
 			</Flex>
 			{plan === 'growth' && (
 				<React.Fragment>
-					<Flex css="width: 100%;margin-top: 50px">
+					<Flex css="width: 100%;margin-top: 20px">
 						<div css="flex: 50%;margin-right: 10px">
 							<Searches
 								dataSource={popularResults}
 								columns={popularResultsCol(plan)}
 								title="Popular Results"
-								onClick={() => redirectTo('popularResults')}
+								onClick={() => redirectTo('popular-results')}
 								pagination={{
 									pageSize: 5,
 								}}
@@ -75,7 +77,7 @@ const Analytics = ({
 								dataSource={popularFilters}
 								columns={popularFiltersCol(plan)}
 								title="Popular Filters"
-								onClick={() => redirectTo('popularFilters')}
+								onClick={() => redirectTo('popular-filters')}
 								pagination={{
 									pageSize: 5,
 								}}
@@ -85,7 +87,7 @@ const Analytics = ({
 					<Flex css="width: 100%;margin-top: 20px">
 						<GeoDistribution />
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px;margin-bottom: 20px">
+					<Flex css="width: 100%;margin-top: 20px">
 						<SearchLatency />
 					</Flex>
 				</React.Fragment>

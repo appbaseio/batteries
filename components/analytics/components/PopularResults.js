@@ -7,6 +7,7 @@ import Loader from '../../shared/Loader/Spinner';
 const headers = {
 	key: 'Results',
 	count: 'Impressions',
+	source: 'Source',
 	clicks: 'Clicks',
 	clickposition: 'Click Position',
 	conversionrate: 'Conversion Rate',
@@ -57,6 +58,7 @@ class PopularResults extends React.Component {
 						popularResults.map(item => ({
 							key: item.key,
 							count: item.count,
+							source: item.source && item.source.replace(/,/g, ''),
 							clicks: item.clicks || '-',
 							clickposition: item.clickposition || '-',
 							conversionrate: item.conversionrate || '-',
