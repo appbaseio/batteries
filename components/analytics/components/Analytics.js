@@ -3,6 +3,7 @@ import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol } from '../utils';
+import { getFilteredResults } from '../../../utils/heplers';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
 import SearchLatency from './SearchLatency';
@@ -38,23 +39,19 @@ const Analytics = ({
 				<div css="flex: 50%;margin-right: 10px">
 					<Searches
 						onClick={() => redirectTo('popular-searches')}
-						dataSource={popularSearches}
+						dataSource={getFilteredResults(popularSearches)}
 						title="Popular Searches"
 						plan={plan}
-						pagination={{
-							pageSize: 5,
-						}}
+						css="height: 100%"
 					/>
 				</div>
 				<div css="flex: 50%;margin-left: 10px">
 					<Searches
 						onClick={() => redirectTo('no-results-searches')}
-						dataSource={noResults}
+						dataSource={getFilteredResults(noResults)}
 						title="No Result Searches"
 						plan={plan}
-						pagination={{
-							pageSize: 5,
-						}}
+						css="height: 100%"
 					/>
 				</div>
 			</Flex>
@@ -63,24 +60,20 @@ const Analytics = ({
 					<Flex css="width: 100%;margin-top: 20px">
 						<div css="flex: 50%;margin-right: 10px">
 							<Searches
-								dataSource={popularResults}
+								dataSource={getFilteredResults(popularResults)}
 								columns={popularResultsCol(plan)}
 								title="Popular Results"
 								onClick={() => redirectTo('popular-results')}
-								pagination={{
-									pageSize: 5,
-								}}
+								css="height: 100%"
 							/>
 						</div>
 						<div css="flex: 50%;margin-left: 10px">
 							<Searches
-								dataSource={popularFilters}
+								dataSource={getFilteredResults(popularFilters)}
 								columns={popularFiltersCol(plan)}
 								title="Popular Filters"
 								onClick={() => redirectTo('popular-filters')}
-								pagination={{
-									pageSize: 5,
-								}}
+								css="height: 100%"
 							/>
 						</div>
 					</Flex>

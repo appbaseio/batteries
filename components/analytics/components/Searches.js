@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
  Card, Table, Button, Tooltip, Icon,
 } from 'antd';
+import Flex from '../../shared/Flex';
 import { defaultColumns } from '../utils';
 
 const Searches = ({
@@ -14,6 +15,7 @@ const Searches = ({
 	plan,
 	pagination,
 	onClickDownload,
+	...props
 }) => (
 	<Card
 		title={title}
@@ -28,23 +30,29 @@ const Searches = ({
 				undefined
 			)
 		}
+		bodyStyle={{
+			height: '100%',
+		}}
+		{...props}
 	>
-		<Table
-			rowKey={record => record.key}
-			dataSource={dataSource}
-			columns={columns || defaultColumns(plan)}
-			pagination={pagination}
-			css={`
-				td {
-					vertical-align: top;
-				}
-			`}
-		/>
-		{showViewOption && (
-			<Button onClick={() => onClick()} css="width: 100%;height: 50px;margin-top: 10px;">
-				VIEW ALL
-			</Button>
-		)}
+		<Flex flexDirection="column" justifyContent="space-between" css="height: calc(100% - 48px)">
+			<Table
+				rowKey={record => record.key}
+				dataSource={dataSource}
+				columns={columns || defaultColumns(plan)}
+				pagination={pagination}
+				css={`
+					td {
+						vertical-align: top;
+					}
+				`}
+			/>
+			{showViewOption && (
+				<Button onClick={() => onClick()} css="width: 100%;height: 50px;margin-top: 10px;">
+					VIEW ALL
+				</Button>
+			)}
+		</Flex>
 	</Card>
 );
 

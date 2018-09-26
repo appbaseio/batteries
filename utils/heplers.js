@@ -1,5 +1,6 @@
 import { notification } from 'antd';
-// eslint-disable-next-line
+import filter from 'lodash/filter';
+
 export const displayErrors = (nextErrors = [], prevErrors = []) => {
 	nextErrors.map((error, index) => {
 		if (error && error !== prevErrors[index]) {
@@ -11,3 +12,5 @@ export const displayErrors = (nextErrors = [], prevErrors = []) => {
 		return null;
 	});
 };
+
+export const getFilteredResults = (array = []) => filter(array, (i, index) => index < 5);
