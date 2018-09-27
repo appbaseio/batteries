@@ -61,7 +61,7 @@ export default class RSWrapper extends Component {
 			const { multiple } = propsMap[this.props.component].dataField;
 			let otherProps = {};
 			if (props.id === 'search') {
-				otherProps = { fieldWeights: [2] };
+				otherProps = { fieldWeights: [1] };
 			}
 
 			props.onPropChange(props.id, {
