@@ -377,18 +377,14 @@ export default class Editor extends Component {
 		return iterable.map((item, index) => {
 			const type = typeof res[item];
 			if (type === 'string' || type === 'number') {
-				return (
-					<TreeNode
-						title={(
-<div>
-								<span>{item}:</span>
-								&nbsp;
-								<span dangerouslySetInnerHTML={{ __html: res[item] }} />
-</div>
-)}
-						key={`${key}-${index + 1}`}
-					/>
+				const title = (
+					<div>
+						<span>{item}:</span>
+						&nbsp;
+						<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+					</div>
 				);
+				return <TreeNode title={title} key={`${key}-${index + 1}`} />;
 			}
 			const hasObject = res[item] === undefined && typeof item !== 'string';
 			const node = hasObject ? item : res[item];

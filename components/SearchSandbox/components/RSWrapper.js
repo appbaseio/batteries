@@ -359,7 +359,7 @@ export default class RSWrapper extends Component {
 
 	renderFormItem = (item, name) => {
 		let FormInput = null;
-		const value =			this.props.componentProps[name] !== undefined
+		const value = this.props.componentProps[name] !== undefined
 				? this.props.componentProps[name]
 				: item.default;
 
