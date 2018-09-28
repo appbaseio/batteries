@@ -9,28 +9,40 @@ import { getAppAnalytics } from '../../modules/actions';
 import { getAppPlanByName, getAppAnalyticsByName } from '../../modules/selectors';
 import RequestLogs from './components/RequestLogs';
 
+let prevProps = {};
 class Main extends React.Component {
+	state = {
+		isLoading: true,
+	};
+
+	static getDerivedStateFromProps(props) {
+		if (prevProps.isFetching && !props.isFetching) {
+			prevProps = props;
+			return {
+				isLoading: false,
+			};
+		}
+		prevProps = props;
+		return null;
+	}
+
 	componentDidMount() {
 		// Comment out the below code to test paid user
 		const { fetchAppAnalytics } = this.props;
 		fetchAppAnalytics();
 	}
 
-	viewAll = (src) => {
-		window.location = src;
-	};
-
 	render() {
+		const { isLoading } = this.state;
 		const {
 			noResults,
 			popularSearches,
 			searchVolume,
 			popularResults,
 			popularFilters,
-			isFetching,
 		} = this.props;
 		const { appName, chartWidth, plan } = this.props;
-		if (isFetching) {
+		if (isLoading) {
 			const antIcon = (
 				<Icon type="loading" style={{ fontSize: 50, marginTop: '250px' }} spin />
 			);
@@ -43,7 +55,6 @@ class Main extends React.Component {
 		return (
 			<React.Fragment>
 				<Analytics
-					loading={isFetching}
 					noResults={noResults}
 					chartWidth={chartWidth}
 					plan={plan}
@@ -51,7 +62,6 @@ class Main extends React.Component {
 					popularFilters={popularFilters}
 					popularResults={popularResults}
 					searchVolume={searchVolume}
-					redirectTo={link => this.viewAll(link)}
 				/>
 				<div css="margin-top: 20px">
 					<RequestLogs appName={appName} />
@@ -73,7 +83,7 @@ Main.propTypes = {
 	popularFilters: PropTypes.array.isRequired,
 	searchVolume: PropTypes.array.isRequired,
 	noResults: PropTypes.array.isRequired,
-	isFetching: PropTypes.bool.isRequired,
+	isFetching: PropTypes.bool.isRequired, //eslint-disable-line
 };
 const mapStateToProps = (state) => {
 	const appPlan = getAppPlanByName(state);

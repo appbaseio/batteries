@@ -54,14 +54,14 @@ export const doDelete = (url, headers, credentials) => createRequest(url, undefi
  * @param {Object} headers
  * @param {string} credentials
  */
-export const doGet = (url, body, headers, credentials) => createRequest(url, body, headers, credentials, 'GET');
+export const doGet = (url, headers, credentials) => createRequest(url, undefined, headers, credentials, 'GET');
 /**
  * To create a get request
  * @param {string} url
  * @param {Object} headers
  * @param {string} credentials
  */
-export const doPost = (url, headers, credentials) => createRequest(url, undefined, headers, credentials, 'POST');
+export const doPost = (url, body, headers, credentials) => createRequest(url, body, headers, credentials, 'POST');
 /**
  * To create a patch request
  * @param {string} url

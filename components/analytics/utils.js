@@ -67,7 +67,7 @@ export const popularFiltersCol = (plan) => {
 	const defaults = [
 		{
 			title: 'Filters',
-			dataIndex: 'key',
+			render: item => `${item.key}=${item.value}`,
 		},
 		{
 			title: 'Impressions',
@@ -219,14 +219,16 @@ export const popularResultsFull = (plan) => {
 			key: 'clicks',
 		},
 		{
-			title: 'Source',
-			dataIndex: 'source',
-			key: 'source',
-		},
-		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversionrate',
 			key: 'conversionrate',
+		},
+		{
+			title: 'Source',
+			dataIndex: 'source',
+			key: 'source',
+			width: '30%',
+			render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
 		},
 	];
 };

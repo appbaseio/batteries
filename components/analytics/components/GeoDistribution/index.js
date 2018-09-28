@@ -24,7 +24,7 @@ class GeoDistribution extends React.Component {
 		geographyPaths: [],
 		popScale: scaleLinear()
 			.domain([0, 100, 10000])
-			.range(['#A4C7FF', '#6CA4FF', '#1A62FF']),
+			.range(['#dce6f7', '#6CA4FF', '#1A62FF']),
 	};
 
 	componentDidMount() {
@@ -70,7 +70,7 @@ class GeoDistribution extends React.Component {
 						geographyPaths: results,
 						popScale: scaleLinear()
 							.domain([0, this.max / 2, this.max])
-							.range(['#A4C7FF', '#6CA4FF', '#1A62FF']),
+							.range(['#dce6f7', '#6CA4FF', '#1A62FF']),
 					},
 					() => {
 						setTimeout(() => {

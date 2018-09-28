@@ -18,7 +18,6 @@ const Analytics = ({
 	popularResults,
 	chartWidth,
 	plan,
-	redirectTo,
 	loading,
 }) => {
 	if (loading) {
@@ -38,7 +37,7 @@ const Analytics = ({
 			<Flex css="width: 100%;margin-top: 20px">
 				<div css="flex: 50%;margin-right: 10px">
 					<Searches
-						onClick={() => redirectTo('popular-searches')}
+						href="popular-searches"
 						dataSource={getFilteredResults(popularSearches)}
 						title="Popular Searches"
 						plan={plan}
@@ -47,7 +46,7 @@ const Analytics = ({
 				</div>
 				<div css="flex: 50%;margin-left: 10px">
 					<Searches
-						onClick={() => redirectTo('no-results-searches')}
+						href="no-results-searches"
 						dataSource={getFilteredResults(noResults)}
 						title="No Result Searches"
 						plan={plan}
@@ -63,7 +62,7 @@ const Analytics = ({
 								dataSource={getFilteredResults(popularResults)}
 								columns={popularResultsCol(plan)}
 								title="Popular Results"
-								onClick={() => redirectTo('popular-results')}
+								href="popular-results"
 								css="height: 100%"
 							/>
 						</div>
@@ -72,7 +71,7 @@ const Analytics = ({
 								dataSource={getFilteredResults(popularFilters)}
 								columns={popularFiltersCol(plan)}
 								title="Popular Filters"
-								onClick={() => redirectTo('popular-filters')}
+								href="popular-filters"
 								css="height: 100%"
 							/>
 						</div>
@@ -94,7 +93,6 @@ Analytics.defaultProps = {
 	popularSearches: [],
 	searchVolume: [],
 	popularResults: [],
-	redirectTo: () => null,
 	popularFilters: [],
 	chartWidth: window.innerWidth - 300,
 };
@@ -106,7 +104,6 @@ Analytics.propTypes = {
 	plan: PropTypes.string.isRequired,
 	searchVolume: PropTypes.array,
 	popularResults: PropTypes.array,
-	redirectTo: PropTypes.func,
 	popularFilters: PropTypes.array,
 };
 
