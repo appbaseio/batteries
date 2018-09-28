@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Menu, Button, Dropdown, Icon, Modal, Input } from 'antd';
+import {
+ Menu, Button, Dropdown, Icon, Modal, Input,
+} from 'antd';
 import { css } from 'emotion';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
@@ -10,9 +12,7 @@ import { getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
-import {
-	getAppMappings as getMappings,
-} from '../../modules/actions';
+import { getAppMappings as getMappings } from '../../modules/actions';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 
 const wrapper = css`
@@ -46,10 +46,10 @@ class SearchSandbox extends Component {
 		const { mappings } = props;
 		if (!state.mappings && mappings) {
 			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
-			return ({
+			return {
 				mappings: getMappingsTree(mappings),
 				mappingsType,
-			});
+			};
 		}
 
 		return null;
@@ -60,12 +60,16 @@ class SearchSandbox extends Component {
 			getPreferences(this.props.appName)
 				.then((pref) => {
 					this.pref = pref || {};
-					const profileList = Array.from(new Set([...this.state.profileList, ...Object.keys(this.pref)]));
+					const profileList = Array.from(
+						new Set([...this.state.profileList, ...Object.keys(this.pref)]),
+					);
 					const componentProps = this.pref[this.state.profile] || {};
 					this.setState({
 						componentProps,
 						profileList,
-						filterCount: Object.keys(componentProps).filter(item => item !== 'search' && item !== 'result'),
+						filterCount: Object.keys(componentProps).filter(
+							item => item !== 'search' && item !== 'result',
+						),
 					});
 				})
 				.catch(() => this.getLocalPref());
@@ -90,12 +94,16 @@ class SearchSandbox extends Component {
 		let pref = localStorage.getItem(this.props.appName);
 		if (pref) pref = JSON.parse(pref);
 		this.pref = pref || {};
-		const profileList = Array.from(new Set([...this.state.profileList, ...Object.keys(this.pref)]));
+		const profileList = Array.from(
+			new Set([...this.state.profileList, ...Object.keys(this.pref)]),
+		);
 		const componentProps = this.pref[this.state.profile] || {};
 		this.setState({
 			componentProps,
 			profileList,
-			filterCount: Object.keys(componentProps).filter(item => item !== 'search' && item !== 'result'),
+			filterCount: Object.keys(componentProps).filter(
+				item => item !== 'search' && item !== 'result',
+			),
 		});
 	};
 
@@ -104,8 +112,7 @@ class SearchSandbox extends Component {
 		localStorage.setItem(this.props.appName, value);
 	};
 
-	getActiveConfig = () =>
-		this.state.configs.find(config => config.profile === this.state.profile);
+	getActiveConfig = () => this.state.configs.find(config => config.profile === this.state.profile);
 
 	setFilterCount = (filterCount) => {
 		this.setState({
@@ -148,14 +155,18 @@ class SearchSandbox extends Component {
 			this.newComponentProps = this.pref[this.state.profile];
 			this.setState({
 				showNewProfileModal: true,
-				filterCount: Object.keys(this.newComponentProps).filter(item => item !== 'search' && item !== 'result'),
+				filterCount: Object.keys(this.newComponentProps).filter(
+					item => item !== 'search' && item !== 'result',
+				),
 			});
 		} else {
 			const componentProps = this.pref[key] || {};
 			this.setState({
 				profile: key,
 				componentProps,
-				filterCount: Object.keys(componentProps).filter(item => item !== 'search' && item !== 'result'),
+				filterCount: Object.keys(componentProps).filter(
+					item => item !== 'search' && item !== 'result',
+				),
 			});
 		}
 	};
@@ -274,13 +285,17 @@ class SearchSandbox extends Component {
 				onClick={this.handleProfileChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{this.state.profileList.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
+				{this.state.profileList.map(item => (
+					<Menu.Item key={item}>{item}</Menu.Item>
+				))}
 				<Menu.Divider />
 				<Menu.Item key={NEW_PROFILE}>
-					<Icon type="plus" />&nbsp; Create a New Profile
+					<Icon type="plus" />
+					&nbsp; Create a New Profile
 				</Menu.Item>
 				<Menu.Item key={SAVE_AS_NEW_PROFILE}>
-					<Icon type="save" />&nbsp; Save as New Profile
+					<Icon type="save" />
+					&nbsp; Save as New Profile
 				</Menu.Item>
 			</Menu>
 		);
@@ -293,6 +308,7 @@ class SearchSandbox extends Component {
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
 			mappings: this.state.mappings,
+			customProps: this.props.customProps,
 			mappingsType: this.state.mappingsType,
 			componentProps: this.state.componentProps,
 			onPropChange: this.handleComponentPropChange,
@@ -358,6 +374,7 @@ SearchSandbox.propTypes = {
 	url: PropTypes.string,
 	getAppMappings: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
+	customProps: PropTypes.object,
 };
 
 SearchSandbox.defaultProps = {
@@ -365,6 +382,7 @@ SearchSandbox.defaultProps = {
 	attribution: null,
 	isDashboard: false,
 	url: SCALR_API,
+	customProps: {}
 };
 
 const mapStateToProps = state => ({
@@ -378,4 +396,7 @@ const mapDispatchToProps = dispatch => ({
 	},
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchSandbox);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(SearchSandbox);
