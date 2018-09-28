@@ -44,7 +44,6 @@ class PopularSearches extends React.Component {
 		}
 		return (
 			<Searches
-				showDownloadOption
 				showViewOption={false}
 				columns={popularSearchesFull(plan)}
 				dataSource={popularSearches}
