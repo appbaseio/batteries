@@ -81,14 +81,9 @@ export default class RSWrapper extends Component {
 	}
 
 	getAvailableDataField = () => {
-		let types = propsMap[this.props.component].dataField.types;
+		const { types } = propsMap[this.props.component].dataField;
 
-		if(this.props.component === 'CategorySearch'){
-			types = propsMap[this.props.component].categoryField.types;
-		}
-
-
-		if (this.props.component === 'DataSearch') {
+		if (this.props.id === 'search') {
 			return Object.keys(this.props.mappings).filter(field => types.includes(this.props.mappings[field].type));
 		}
 		const fields = Object.keys(this.props.mappings).filter((field) => {
@@ -106,6 +101,25 @@ export default class RSWrapper extends Component {
 
 		return fields;
 	};
+
+	getCategoryField = () => {
+		let types = propsMap[this.props.component].categoryField.types;
+
+		const fields = Object.keys(this.props.mappings).filter((field) => {
+			let fieldsToCheck = [this.props.mappings[field]];
+
+			if (this.props.mappings[field].originalFields) {
+				fieldsToCheck = [
+					...fieldsToCheck,
+					...Object.values(this.props.mappings[field].originalFields),
+				];
+			}
+
+			return fieldsToCheck.some(item => types.includes(item.type));
+		});
+
+		return fields;
+	}
 
 	setError = (error) => {
 		this.setState(
@@ -488,7 +502,7 @@ export default class RSWrapper extends Component {
 				if (name === 'categoryField') {
 					noOptionsMessage = <p style={{ lineHeight: '1.5' }}>There are no compatible fields present in your data mappings. <a href={this.props.mappingsURL}>You can edit your mappings</a> (agggregation components)</p>;
 
-					this.getAvailableDataField().forEach(field =>
+					this.getCategoryField().forEach(field =>
 						dropdownOptions.push({ label: field, key: field }));
 
 					if (dropdownOptions.length) {
