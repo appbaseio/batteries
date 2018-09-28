@@ -1,5 +1,5 @@
 import { ACC_API } from './index';
-import { doDelete, doPatch } from './requestService';
+import { doDelete, doPatch, doGet } from './requestService';
 
 export const getPermission = appId => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
@@ -14,18 +14,7 @@ export const getPermission = appId => new Promise((resolve, reject) => {
 			.catch(error => reject(error));
 	});
 
-export const getAppInfo = appId => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appId}`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-			.then(res => res.json())
-			.then(data => resolve(data.body))
-			.catch(error => reject(error));
-	});
+export const getAppInfo = appId => doGet(`${ACC_API}/app/${appId}`);
 
 export const updatePermission = (appId, username, info) => doPatch(`${ACC_API}/app/${appId}/permission/${username}`, info);
 
@@ -85,18 +74,7 @@ export const createShare = (appId, payload) => new Promise((resolve, reject) => 
 			.catch(error => reject(error));
 	});
 
-export const getAppPlan = appName => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appName}/plan`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-			.then(res => res.json())
-			.then(data => resolve(data.body))
-			.catch(error => reject(error));
-	});
+export const getAppPlan = appName => doGet(`${ACC_API}/app/${appName}/plan`);
 
 export const createSubscription = (token, plan, appName) => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appName}/subscription`, {

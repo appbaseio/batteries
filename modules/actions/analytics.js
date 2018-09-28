@@ -3,6 +3,7 @@ import {
 	getAnalytics,
 	getGeoDistribution,
 	getSearchLatency,
+	getAnalyticsSummary,
 } from '../../components/analytics/utils';
 import { getAppPlanByName } from '../selectors';
 import { createAction } from './utils';
@@ -13,7 +14,6 @@ import AppConstants from '../constants';
  * @param {string} plan App Plan ( Optional )
  * @param {boolean} clickanalytics Whether to return click analytics data ( Optional )
  */
-// eslint-disable-next-line
 export function getAppAnalytics(name, plan, clickanalytics) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
@@ -26,6 +26,19 @@ export function getAppAnalytics(name, plan, clickanalytics) {
 					}),
 				))
 			.catch(error => dispatch(createAction(AppConstants.APP.ANALYTICS.GET_ERROR, null, error)));
+	};
+}
+export function getAppAnalyticsSummary(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY));
+		return getAnalyticsSummary(appName)
+			.then(res => dispatch(
+					createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY_SUCCESS, res, undefined, {
+						appName,
+					}),
+				))
+			.catch(error => dispatch(createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY_ERROR, null, error)));
 	};
 }
 

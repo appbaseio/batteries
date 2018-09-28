@@ -84,10 +84,8 @@ export default class Editor extends Component {
 			{
 				copied: true,
 			},
-			() =>
-				setTimeout(
-					() =>
-						this.setState({
+			() => setTimeout(
+					() => this.setState({
 							copied: false,
 						}),
 					300,
@@ -240,7 +238,7 @@ export default class Editor extends Component {
 		this.setState({
 			isEditable: !this.state.isEditable,
 		});
-	}
+	};
 
 	handleEditingJSON = (value) => {
 		let isValidJSON = true;
@@ -342,7 +340,9 @@ export default class Editor extends Component {
 				onClick={this.handleDataFieldChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{fields.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
+				{fields.map(item => (
+					<Menu.Item key={item}>{item}</Menu.Item>
+				))}
 			</Menu>
 		);
 		return (
@@ -377,17 +377,14 @@ export default class Editor extends Component {
 		return iterable.map((item, index) => {
 			const type = typeof res[item];
 			if (type === 'string' || type === 'number') {
-				return (
-					<TreeNode
-						title={
-							<div>
-								<span>{item}:</span>&nbsp;
-								<span dangerouslySetInnerHTML={{ __html: res[item] }} />
-							</div>
-						}
-						key={`${key}-${index + 1}`}
-					/>
+				const title = (
+					<div>
+						<span>{item}:</span>
+						&nbsp;
+						<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+					</div>
 				);
+				return <TreeNode title={title} key={`${key}-${index + 1}`} />;
 			}
 			const hasObject = res[item] === undefined && typeof item !== 'string';
 			const node = hasObject ? item : res[item];
@@ -408,7 +405,7 @@ export default class Editor extends Component {
 
 	renderDeleteJSON = res => (
 		<Popconfirm
-			title="Are you sure to delete this JSON?"
+			title="Are you sure you want to delete this JSON?"
 			placement="bottomRight"
 			onConfirm={() => this.handleDeleteJSON(res._id)}
 			okText="Yes"
@@ -421,8 +418,7 @@ export default class Editor extends Component {
 		<Popover
 			placement="leftTop"
 			trigger="click"
-			onVisibleChange={visible =>
-				(visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
+			onVisibleChange={visible => (visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
 			}
 			content={
 				this.state.isEditable ? (
@@ -447,10 +443,12 @@ export default class Editor extends Component {
 					<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>
 				)
 			}
-			title={
-				<Row>
+			title={(
+<Row>
 					<Col span={this.state.isEditable ? 19 : 18}>
-						<h5 style={{ display: 'inline-block' }}>{this.state.isEditable ? 'Edit JSON' : 'JSON Result'}</h5>
+						<h5 style={{ display: 'inline-block' }}>
+							{this.state.isEditable ? 'Edit JSON' : 'JSON Result'}
+						</h5>
 					</Col>
 					<Col span={this.state.isEditable ? 5 : 6}>
 						<Tooltip visible={this.state.copied} title="Copied">
@@ -483,8 +481,8 @@ export default class Editor extends Component {
 							</Button>
 						)}
 					</Col>
-				</Row>
-			}
+</Row>
+)}
 		>
 			<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
 		</Popover>
@@ -525,12 +523,12 @@ export default class Editor extends Component {
 				</Button>
 			</span>
 		);
-
 		return (
 			<ReactiveBase
 				app={this.props.appName}
 				credentials={this.props.credentials}
 				url={this.props.url}
+				analytics
 			>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
@@ -552,6 +550,7 @@ export default class Editor extends Component {
 										id={config}
 										component="MultiList"
 										mappings={this.props.mappings}
+										customProps={this.props.customProps}
 										componentProps={this.props.componentProps[config] || {}}
 										onPropChange={this.props.onPropChange}
 										onDelete={this.props.deleteComponent}
@@ -564,8 +563,11 @@ export default class Editor extends Component {
 						<Card>
 							<RSWrapper
 								id="search"
-								component={this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'}
+								component={
+									this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'
+								}
 								mappings={this.props.mappings}
+								customProps={this.props.customProps}
 								componentProps={this.props.componentProps.search || {}}
 								onPropChange={this.props.onPropChange}
 							/>
@@ -578,6 +580,7 @@ export default class Editor extends Component {
 								component="ReactiveList"
 								key={this.state.renderKey}
 								mappings={this.props.mappings}
+								customProps={this.props.customProps}
 								mappingsType={this.props.mappingsType}
 								componentProps={resultComponentProps}
 								onPropChange={this.props.onPropChange}

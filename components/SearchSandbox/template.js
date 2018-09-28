@@ -266,6 +266,7 @@ const App = () => (
 		app="${config.appName}"
 		credentials="${config.credentials}"
 		url="${config.url}"
+		analytics
 	>
 		<Row gutter={16} style={{ padding: 20 }}>
 			<Col span={12}>

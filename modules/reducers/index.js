@@ -26,9 +26,6 @@ export default {
 		AppConstants.APP.GET_PLAN_SUCCESS,
 		AppConstants.APP.GET_PLAN_ERROR,
 		computeAppPlanState,
-		{
-			plan: 'free',
-		},
 	),
 	$updateUser: createRequestReducer(
 		AppConstants.ACCOUNT.UPDATE_USER,
@@ -40,6 +37,12 @@ export default {
 		AppConstants.APP.ANALYTICS.GET,
 		AppConstants.APP.ANALYTICS.GET_SUCCESS,
 		AppConstants.APP.ANALYTICS.GET_ERROR,
+		computeStateByAppName,
+	),
+	$getAppAnalyticsSummary: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_SUMMARY,
+		AppConstants.APP.ANALYTICS.GET_SUMMARY_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_SUMMARY_ERROR,
 		computeStateByAppName,
 	),
 	$getAppSearchLatency: createRequestReducer(

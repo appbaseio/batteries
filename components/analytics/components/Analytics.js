@@ -3,10 +3,11 @@ import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol } from '../utils';
+import { getFilteredResults } from '../../../utils/heplers';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
 import SearchLatency from './SearchLatency';
-// import Summary from './Summary';
+import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
 
 const Analytics = ({
@@ -26,66 +27,60 @@ const Analytics = ({
 	}
 	return (
 		<React.Fragment>
-			{/* <Card title="Summary">
+			<Card title="Summary">
 				<Summary />
-			</Card> */}
+			</Card>
+
 			<Card css="width: 100%;margin-top: 20px" title="Daily Search Volume">
 				<SearchVolumeChart width={chartWidth} height={300} data={searchVolume} />
 			</Card>
+
 			<Flex css="width: 100%;margin-top: 20px">
 				<div css="flex: 50%;margin-right: 10px">
 					<Searches
-						onClick={() => redirectTo('popularSearches')}
-						dataSource={popularSearches}
+						onClick={() => redirectTo('popular-searches')}
+						dataSource={getFilteredResults(popularSearches)}
 						title="Popular Searches"
 						plan={plan}
-						pagination={{
-							pageSize: 5,
-						}}
+						css="height: 100%"
 					/>
 				</div>
 				<div css="flex: 50%;margin-left: 10px">
 					<Searches
-						onClick={() => redirectTo('noResultSearches')}
-						dataSource={noResults}
+						onClick={() => redirectTo('no-results-searches')}
+						dataSource={getFilteredResults(noResults)}
 						title="No Result Searches"
 						plan={plan}
-						pagination={{
-							pageSize: 5,
-						}}
+						css="height: 100%"
 					/>
 				</div>
 			</Flex>
 			{plan === 'growth' && (
 				<React.Fragment>
-					<Flex css="width: 100%;margin-top: 50px">
+					<Flex css="width: 100%;margin-top: 20px">
 						<div css="flex: 50%;margin-right: 10px">
 							<Searches
-								dataSource={popularResults}
+								dataSource={getFilteredResults(popularResults)}
 								columns={popularResultsCol(plan)}
 								title="Popular Results"
-								onClick={() => redirectTo('popularResults')}
-								pagination={{
-									pageSize: 5,
-								}}
+								onClick={() => redirectTo('popular-results')}
+								css="height: 100%"
 							/>
 						</div>
 						<div css="flex: 50%;margin-left: 10px">
 							<Searches
-								dataSource={popularFilters}
+								dataSource={getFilteredResults(popularFilters)}
 								columns={popularFiltersCol(plan)}
 								title="Popular Filters"
-								onClick={() => redirectTo('popularFilters')}
-								pagination={{
-									pageSize: 5,
-								}}
+								onClick={() => redirectTo('popular-filters')}
+								css="height: 100%"
 							/>
 						</div>
 					</Flex>
 					<Flex css="width: 100%;margin-top: 20px">
 						<GeoDistribution />
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px;margin-bottom: 20px">
+					<Flex css="width: 100%;margin-top: 20px">
 						<SearchLatency />
 					</Flex>
 				</React.Fragment>

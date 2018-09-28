@@ -3,8 +3,6 @@ import { Icon, Spin } from 'antd';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bannerMessagesAnalytics } from './utils';
-import UpgradePlan from '../shared/UpgradePlan/Banner';
 import Flex from '../shared/Flex';
 import Analytics from './components/Analytics';
 import { getAppAnalytics } from '../../modules/actions';
@@ -14,11 +12,13 @@ import RequestLogs from './components/RequestLogs';
 class Main extends React.Component {
 	componentDidMount() {
 		// Comment out the below code to test paid user
-		const { fetchAppAnalytics, isAnalyticsFetched } = this.props;
-		if (!isAnalyticsFetched) {
-			fetchAppAnalytics();
-		}
+		const { fetchAppAnalytics } = this.props;
+		fetchAppAnalytics();
 	}
+
+	viewAll = (src) => {
+		window.location = src;
+	};
 
 	render() {
 		const {
@@ -29,9 +29,7 @@ class Main extends React.Component {
 			popularFilters,
 			isFetching,
 		} = this.props;
-		const {
- appName, chartWidth, plan, isPaidUser,
-} = this.props;
+		const { appName, chartWidth, plan } = this.props;
 		if (isFetching) {
 			const antIcon = (
 				<Icon type="loading" style={{ fontSize: 50, marginTop: '250px' }} spin />
@@ -43,29 +41,22 @@ class Main extends React.Component {
 			);
 		}
 		return (
-			<div className="ad-detail-page ad-dashboard row" style={{ padding: '40px' }}>
-				{isPaidUser ? (
-					<React.Fragment>
-						{bannerMessagesAnalytics[plan] && (
-							<UpgradePlan {...bannerMessagesAnalytics[plan]} />
-						)}
-						<Analytics
-							loading={isFetching}
-							noResults={noResults}
-							chartWidth={chartWidth}
-							plan={plan}
-							popularSearches={popularSearches}
-							popularFilters={popularFilters}
-							popularResults={popularResults}
-							searchVolume={searchVolume}
-							redirectTo={tab => this.changeActiveTabKey(tab)}
-						/>
-						<RequestLogs appName={appName} />
-					</React.Fragment>
-				) : (
-					<UpgradePlan {...bannerMessagesAnalytics.free} />
-				)}
-			</div>
+			<React.Fragment>
+				<Analytics
+					loading={isFetching}
+					noResults={noResults}
+					chartWidth={chartWidth}
+					plan={plan}
+					popularSearches={popularSearches}
+					popularFilters={popularFilters}
+					popularResults={popularResults}
+					searchVolume={searchVolume}
+					redirectTo={link => this.viewAll(link)}
+				/>
+				<div css="margin-top: 20px">
+					<RequestLogs appName={appName} />
+				</div>
+			</React.Fragment>
 		);
 	}
 }
@@ -75,7 +66,6 @@ Main.defaultProps = {
 Main.propTypes = {
 	appName: PropTypes.string.isRequired,
 	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-	isPaidUser: PropTypes.bool.isRequired,
 	plan: PropTypes.string.isRequired,
 	fetchAppAnalytics: PropTypes.func.isRequired,
 	popularSearches: PropTypes.array.isRequired,
@@ -84,13 +74,11 @@ Main.propTypes = {
 	searchVolume: PropTypes.array.isRequired,
 	noResults: PropTypes.array.isRequired,
 	isFetching: PropTypes.bool.isRequired,
-	isAnalyticsFetched: PropTypes.bool.isRequired,
 };
 const mapStateToProps = (state) => {
 	const appPlan = getAppPlanByName(state);
 	const appAnalytics = getAppAnalyticsByName(state);
 	return {
-		isPaidUser: get(appPlan, 'isPaid'),
 		plan: get(appPlan, 'plan'),
 		appName: get(state, '$getCurrentApp.name'),
 		popularSearches: get(appAnalytics, 'popularSearches', []),
@@ -99,7 +87,6 @@ const mapStateToProps = (state) => {
 		searchVolume: get(appAnalytics, 'searchVolume', []),
 		noResults: get(appAnalytics, 'noResultSearches', []),
 		isFetching: get(state, '$getAppAnalytics.isFetching'),
-		isAnalyticsFetched: !!appAnalytics,
 	};
 };
 const mapDispatchToProps = dispatch => ({

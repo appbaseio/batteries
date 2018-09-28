@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { ACC_API } from '../../utils';
+import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 
 const requestOpt = css`
@@ -199,7 +200,16 @@ export const popularSearchesFull = (plan) => {
 };
 export const popularResultsFull = (plan) => {
 	if (plan !== 'growth') {
-		return popularResultsCol(plan);
+		return [
+			...popularResultsCol(plan),
+			{
+				title: 'Source',
+				dataIndex: 'source',
+				key: 'source',
+				width: '30%',
+				render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+			},
+		];
 	}
 	return [
 		...popularResultsCol(plan),
@@ -326,7 +336,7 @@ export function getSearchLatency(appName) {
 	});
 }
 /**
- * Get the search latency
+ * Get the geo distribution
  * @param {string} appName
  */
 export function getGeoDistribution(appName) {
@@ -348,6 +358,13 @@ export function getGeoDistribution(appName) {
 				reject(e);
 			});
 	});
+}
+/**
+ * Get the search latency
+ * @param {string} appName
+ */
+export function getAnalyticsSummary(appName) {
+	return doGet(`${ACC_API}/analytics/${appName}/summary`);
 }
 /**
  * Get the popular seraches
@@ -490,14 +507,12 @@ export const bannerMessagesAnalytics = {
 			'By upgrading to the Growth plan, you can get more actionable analytics on popular filters, popular results, and track clicks and conversions along with a 30-day retention.',
 		buttonText: 'Upgrade To Growth',
 		href: 'billing',
-		isHorizontal: true,
 	},
 	growth: {
 		title: 'Learn how to track click analytics',
 		description:
 			'See our docs on how to track search, filters, click events, conversions and your own custom events.',
 		buttonText: 'Read Docs',
-		isHorizontal: true,
 		href: 'https://docs.appbase.io',
 	},
 };
