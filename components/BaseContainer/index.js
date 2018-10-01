@@ -23,7 +23,6 @@ class BaseContainer extends Component {
 	}
 
 	static getDerivedStateFromProps(props) {
-		console.log('THIS IS THE THING HERE', props.isLoading, previousProps.isLoading);
 		if (previousProps.isLoading && !props.isLoading) {
 			previousProps = props;
 			return {
