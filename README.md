@@ -59,7 +59,7 @@ createStore(combineReducers({ ...rootReducer, ...batteriesReducers })),
 
 and connect your component to the redux store powered by batteries.
 
-5. Usage:
+## Usage
 ### BaseContainer
 Use this component to provide the basic data to `batteries` components.
 By default it executes the following tasks.
