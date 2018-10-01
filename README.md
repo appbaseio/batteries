@@ -73,7 +73,7 @@ By default it executes the following tasks.
 | appId | `no` | `string` | - | App id|
 | shouldFetchAppPlan | `no` | `boolean` | `true` | To define that whether the component should fetch app plan or not |
 | shouldFetchAppInfo | `no` |`boolean` | `true` | To define that whether the component should fetch app information or not|
-|component | `no` | `function` | Render prop function |
+|component | `no` | `function` | - | Render prop function |
 
 ## Example
 ```js
