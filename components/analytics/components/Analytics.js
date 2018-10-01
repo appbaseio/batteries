@@ -26,11 +26,11 @@ const Analytics = ({
 	}
 	return (
 		<React.Fragment>
-			<Card title="Summary">
+			<Card css="margin-bottom: 20px" title="Summary">
 				<Summary />
 			</Card>
 
-			<Card css="width: 100%;margin-top: 20px" title="Daily Search Volume">
+			<Card css="width: 100%;" title="Daily Search Volume">
 				<SearchVolumeChart width={chartWidth} height={300} data={searchVolume} />
 			</Card>
 
