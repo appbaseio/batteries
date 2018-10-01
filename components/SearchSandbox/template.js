@@ -3,7 +3,12 @@ import reactElementToJSXString from 'react-element-to-jsx-string';
 
 import { generateDataField, generateFieldWeights } from './utils/dataField';
 
-const HEADER = `
+const getHeader = (config) => {
+	const isMetaDataPresent = config.componentProps.result.metaFields
+														&& config.componentProps.result.metaFields.title
+														&& config.componentProps.result.metaFields.description;
+	const showTree = !isMetaDataPresent;
+	return `
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -16,6 +21,7 @@ import {
 } from '@appbaseio/reactivesearch';
 import {
 	Row,
+	Button,
 	Col,
 	Card,
 	Switch,
@@ -23,29 +29,12 @@ import {
 	Popover,
 	Affix
 } from 'antd';
-import ExpandCollapse from 'react-expand-collapse';
-
 import 'antd/dist/antd.css';
+${showTree ? `import ExpandCollapse from 'react-expand-collapse';
+
 import './styles.css';
 
 const { TreeNode } = Tree;
-
-function onData(res) {
-	return (
-		<div className="list-item" key={res._id}>
-			<ExpandCollapse
-				previewHeight="390px"
-				expandText="Show more"
-			>
-				{
-					<Tree showLine>
-						{renderAsTree(res)}
-					</Tree>
-				}
-			</ExpandCollapse>
-		</div>
-	);
-};
 
 const renderAsTree = (res, key = '0') => {
 	if (!res) return null;
@@ -77,10 +66,65 @@ const renderAsTree = (res, key = '0') => {
 		);
 	});
 };
+
+function onData(res) {
+	return (
+		<div className="list-item" key={res._id}>
+			<ExpandCollapse
+				previewHeight="390px"
+				expandText="Show more"
+			>
+				{
+					<Tree showLine>
+						{renderAsTree(res)}
+					</Tree>
+				}
+			</ExpandCollapse>
+		</div>
+	);
+};
+
+` : `
+function getNestedValue(obj, path) {
+  const keys = path.split('.');
+  let currentObject = obj;
+
+  keys.forEach(key => (currentObject = currentObject[key]));
+  if (typeof currentObject === 'object') {
+    return JSON.stringify(currentObject);
+  }
+  return currentObject;
+}
+
+function onData(res) {
+	let {image,url,description,title} = ${JSON.stringify(config.componentProps.result.metaFields)};
+	image = getNestedValue(res,image);
+	title = getNestedValue(res,title);
+	url = getNestedValue(res,url);
+	description = getNestedValue(res,description)
+	return (
+		<Row type="flex" gutter={16} key={res._id} style={{margin:'20px auto',borderBottom:'1px solid #ededed'}}>
+			<Col span={image ? 6 : 0}>
+				{image &&  <img src={image} alt={title} /> }
+			</Col>
+			<Col span={image ? 18 : 24}>
+				<h3 style={{ fontWeight: '600' }}>{title || 'Choose a valid Title Field'}</h3>
+				<p style={{ fontSize: '1em' }}>{description || 'Choose a valid description field'}</p>
+			</Col>
+			<div style={{padding:'20px'}}>
+				{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+: null}
+			</div>
+		</Row>
+	);
+};
+`}
 `;
+};
 
 export function getComponentCode(config) {
 	let allProps = config.componentProps || {};
+	const { metaFields, ...otherProps } = allProps;
 	let componentStyle = {};
 	switch (config.component) {
 		case 'ReactiveList': {
@@ -88,7 +132,7 @@ export function getComponentCode(config) {
 				componentId: 'SearchResult',
 				size: 5,
 				pagination: true,
-				...config.componentProps,
+				...otherProps,
 				react: {
 					and: Object.values(config.componentProps.react.and),
 				},
@@ -236,6 +280,7 @@ const App = () => (
 		app="${config.appName}"
 		credentials="${config.credentials}"
 		url="${config.url}"
+		analytics
 	>
 		<Row gutter={16} style={{ padding: 20 }}>
 			<Col span={12}>
@@ -263,7 +308,7 @@ ReactDOM.render(
 }
 
 export default function getSearchTemplate(config) {
-	return `${HEADER}${getApp(config)}`;
+	return `${getHeader(config)}${getApp(config)}`;
 }
 
 function getTemplateStyles() {

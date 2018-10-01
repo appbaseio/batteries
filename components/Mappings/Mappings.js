@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import { string } from 'prop-types';
+import {
+	string,
+	object,
+	func,
+	bool,
+} from 'prop-types';
 import { Tooltip, Icon, Input } from 'antd';
+import get from 'lodash/get';
+import { connect } from 'react-redux';
+
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
-import { getCredentials, checkUserStatus } from '../../utils';
+import { isEqual } from '../../utils';
 import {
-	getMappings,
 	updateMapping,
 	transformToES5,
 	hasAggs,
@@ -18,6 +25,12 @@ import {
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
+import { getRawMappingsByAppName, getAppPermissionsByName, getAppPlanByName } from '../../modules/selectors';
+import {
+	getPermission as getPermissionFromAppbase,
+	setCurrentApp,
+	getAppMappings as getMappings,
+} from '../../modules/actions';
 
 import {
 	card,
@@ -67,24 +80,25 @@ const synonymMessage = () => (
 	</div>
 );
 
-const FeedbackModal = props => (
-	<Modal show={props.show} onClose={props.onClose}>
+// eslint-disable-next-line
+const FeedbackModal = ({ show, onClose, timeTaken }) => (
+	<Modal show={show} onClose={onClose}>
 		<h3>Re-index successful</h3>
 
 		<p>
 			The mappings have been updated and the data has been successfully re-indexed in{' '}
-			{props.timeTaken}ms.
+			{timeTaken}ms.
 		</p>
 
 		<div style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}>
-			<Button ghost onClick={props.onClose}>
+			<Button ghost onClick={onClose}>
 				Done
 			</Button>
 		</div>
 	</Modal>
 );
 
-export default class Mappings extends Component {
+class Mappings extends Component {
 	constructor(props) {
 		super(props);
 
@@ -98,7 +112,6 @@ export default class Mappings extends Component {
 			errorLength: 0,
 			deletedPaths: [],
 			editable: false,
-			loadingError: null,
 			showFeedback: false,
 			timeTaken: '0',
 			synonyms: [],
@@ -110,67 +123,110 @@ export default class Mappings extends Component {
 		this.originalMapping = null;
 	}
 
-	componentDidMount() {
-		if (this.props.url) {
-			getMappings(this.props.appName, this.props.credentials, this.props.url)
-				.then(this.handleMapping)
-				.catch((loadingError) => {
-					this.setState({
-						loadingError,
-						isLoading: false,
-					});
-				});
-		} else {
-			// check if it is a paid user
-			checkUserStatus()
-				.then((res) => {
-					if (res.isPaidUser) {
-						this.setState({
-							editable: true,
-						});
-					}
-				})
-				.catch(() => {
-					this.setState({
-						editable: false,
-					});
-				});
-
-			getCredentials(this.props.appId).then((user) => {
-				const { username, password } = user;
-				this.setState(
-					{
-						credentials: `${username}:${password}`,
-					},
-					() => this.initializeData(this.state.credentials),
-				);
+	static getDerivedStateFromProps(props, state) {
+		// TODO: add logic for handling trial plans
+		if (props.isPaid && !state.editable) {
+			return ({
+				editable: true,
 			});
+		}
+
+		return null;
+	}
+
+	componentDidMount() {
+		this.init();
+	}
+
+	componentDidUpdate(prevProps) {
+		const {
+			appName,
+			appbaseCredentials,
+			mapping,
+			getAppMappings,
+			isFetchingMapping,
+		} = this.props;
+
+		if (!isEqual(prevProps.mapping, mapping)) {
+			this.handleMapping(mapping);
+		}
+
+		if (prevProps.appName !== appName) {
+			this.init();
+		}
+
+		if (appbaseCredentials && prevProps.appbaseCredentials !== appbaseCredentials) {
+			// handle mappings + synonyms if credentials have changed
+			if (!isFetchingMapping) {
+				getAppMappings(appName, appbaseCredentials);
+			}
+			this.initializeSynonymsData();
 		}
 	}
 
-	initializeData = (credentials) => {
-		getMappings(this.props.appName, credentials)
-			.then(this.handleMapping)
-			.catch((e) => {
-				console.error(e);
+	// eslint-disable-next-line
+	init() {
+		const {
+			appName,
+			appId,
+			updateCurrentApp,
+			getAppMappings,
+			credentials,
+			url,
+			mapping,
+			appbaseCredentials,
+			isFetchingMapping,
+		} = this.props;
+
+		// initialise or update current app state
+		updateCurrentApp(appName, appId);
+
+		if (mapping && !isFetchingMapping) {
+			// if mapping already exists:
+			// set existing mappings:
+			this.handleMapping(mapping);
+
+			// get synonyms
+			this.initializeSynonymsData();
+		} else if (url) {
+			// get mappings for non-appbase apps
+			getAppMappings(appName, credentials, url);
+		} else {
+			// this executes only for appbase.io hosted apps
+			const { getPermission } = this.props;
+
+			if (appbaseCredentials && !mapping) {
+				// 2. get mappings if we have credentials
+				getAppMappings(appName, appbaseCredentials);
+			} else if (!appbaseCredentials) {
+				// 2. get credentials (if not found) - before fetching mappings and synonyms
+				getPermission(appName);
+			}
+		}
+	}
+
+	initializeSynonymsData = () => {
+		const { appbaseCredentials } = this.props;
+
+		this.fetchSynonyms(appbaseCredentials)
+			.then((synonyms) => {
 				this.setState({
-					mappingsError: e,
-					showError: true,
-					isLoading: false,
+					synonyms,
 				});
 			});
-
-		this.fetchSynonyms(credentials).then(synonyms =>
-			this.setState({
-				synonyms,
-			}));
 	};
 
+	/**
+	 * used for rendering types in mappings view
+	 */
 	getType = (type) => {
 		if (type === 'string') return 'text';
 		return type;
 	};
 
+	/**
+	 * used for rendering usecase in mappings view
+	 */
 	getUsecase = (fields) => {
 		const hasAggsFlag = hasAggs(fields);
 		let hasSearchFlag = 0;
@@ -183,7 +239,8 @@ export default class Mappings extends Component {
 	};
 
 	setMapping = (field, type, usecase) => {
-		const mapping = updateMapping(this.state.mapping, field, type, usecase);
+		const { mapping: currentMapping } = this.state;
+		const mapping = updateMapping(currentMapping, field, type, usecase);
 		this.setState({
 			mapping,
 			dirty: true,
@@ -255,13 +312,18 @@ export default class Mappings extends Component {
 	};
 
 	fetchSynonyms = (credentials) => {
-		const url = this.props.url;
-		return getSettings(this.props.appName, credentials, url).then(data =>
-				(data[this.props.appName].settings.index.analysis.filter.synonyms_filter
-					? data[
-							this.props.appName
-					  ].settings.index.analysis.filter.synonyms_filter.synonyms.join('\n')
-					: ''));
+		const { url, appName } = this.props;
+		return getSettings(appName, credentials, url).then((data) => {
+			if (data[appName].settings && data[appName].settings.index) {
+				const { index } = data[appName].settings;
+				return (
+					index.analysis && index.analysis.filter.synonyms_filter
+						? index.analysis.filter.synonyms_filter.synonyms.join('\n')
+						: ''
+				);
+			}
+			return '';
+		});
 	};
 
 	addField = ({ name, type, usecase }) => {
@@ -530,10 +592,10 @@ export default class Mappings extends Component {
 	};
 
 	render() {
-		if (this.state.loadingError) {
-			return <p style={{ padding: 20 }}>{this.state.loadingError}</p>;
+		if (this.props.loadingError) {
+			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
 		}
-		if (this.state.isLoading && !this.state.mapping) {
+		if ((this.props.isFetchingMapping || this.state.isLoading) && !this.state.mapping) {
 			return <Loader show message="Fetching mappings... Please wait!" />;
 		}
 		if (this.state.mappingsError) {
@@ -546,6 +608,7 @@ export default class Mappings extends Component {
 				/>
 			);
 		}
+		if (!this.state.mapping) return null;
 		return (
 			<React.Fragment>
 				<div className={card}>
@@ -615,6 +678,15 @@ export default class Mappings extends Component {
 								<span className="col">Data Type</span>
 							</div>
 						</Header>
+						{
+							(!this.state.mapping || !Object.keys(this.state.mapping).length)
+								? (
+									<p style={{ padding: '40px 0', color: '#999', textAlign: 'center' }}>
+										No data or mappings found
+									</p>
+								)
+								: null
+						}
 						{Object.keys(this.state.mapping).map((field) => {
 							if (this.state.mapping[field]) {
 								const currentMappingFields = this.state.mapping[field].properties;
@@ -699,4 +771,41 @@ Mappings.propTypes = {
 	appName: string.isRequired,
 	credentials: string,
 	url: string,
+	appbaseCredentials: string,
+	mapping: object,
+	getAppMappings: func.isRequired,
+	updateCurrentApp: func.isRequired,
+	getPermission: func.isRequired,
+	isFetchingMapping: bool.isRequired,
 };
+
+Mappings.defaultProps = {
+	appId: null,
+	credentials: null,
+	url: undefined,
+	appbaseCredentials: null,
+	mapping: null,
+};
+
+const mapStateToProps = (state) => {
+	const { username, password } = get(getAppPermissionsByName(state), 'credentials', {});
+	return ({
+		appName: get(state, '$getCurrentApp.name'),
+		appId: get(state, '$getCurrentApp.id'),
+		mapping: getRawMappingsByAppName(state) || null,
+		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
+		loadingError: get(state, '$getAppMappings.error', null),
+		isPaid: get(getAppPlanByName(state), 'isPaid'),
+		appbaseCredentials: username ? `${username}:${password}` : null,
+	});
+};
+
+const mapDispatchToProps = dispatch => ({
+	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
+	getPermission: appName => dispatch(getPermissionFromAppbase(appName)),
+	getAppMappings: (appName, credentials, url) => {
+		dispatch(getMappings(appName, credentials, url));
+	},
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Mappings);

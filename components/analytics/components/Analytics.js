@@ -3,8 +3,12 @@ import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol } from '../utils';
+import { getFilteredResults } from '../../../utils/heplers';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
+import SearchLatency from './SearchLatency';
+import Summary from './Summary';
+import GeoDistribution from './GeoDistribution';
 
 const Analytics = ({
 	noResults,
@@ -12,8 +16,8 @@ const Analytics = ({
 	searchVolume,
 	popularFilters,
 	popularResults,
+	chartWidth,
 	plan,
-	redirectTo,
 	loading,
 }) => {
 	if (loading) {
@@ -22,50 +26,63 @@ const Analytics = ({
 	}
 	return (
 		<React.Fragment>
-			<Card title="Daily Search Volume">
-				<SearchVolumeChart
-					width={window.innerWidth - 300}
-					height={300}
-					data={searchVolume}
-				/>
+			<Card title="Summary">
+				<Summary />
 			</Card>
+
+			<Card css="width: 100%;margin-top: 20px" title="Daily Search Volume">
+				<SearchVolumeChart width={chartWidth} height={300} data={searchVolume} />
+			</Card>
+
 			<Flex css="width: 100%;margin-top: 20px">
 				<div css="flex: 50%;margin-right: 10px">
 					<Searches
-						onClick={() => redirectTo('popularSearches')}
-						dataSource={popularSearches}
+						href="popular-searches"
+						dataSource={getFilteredResults(popularSearches)}
 						title="Popular Searches"
 						plan={plan}
+						css="height: 100%"
 					/>
 				</div>
 				<div css="flex: 50%;margin-left: 10px">
 					<Searches
-						onClick={() => redirectTo('noResultSearches')}
-						dataSource={noResults}
+						href="no-results-searches"
+						dataSource={getFilteredResults(noResults)}
 						title="No Result Searches"
 						plan={plan}
+						css="height: 100%"
 					/>
 				</div>
 			</Flex>
 			{plan === 'growth' && (
-				<Flex css="width: 100%;margin-top: 50px">
-					<div css="flex: 50%;margin-right: 10px">
-						<Searches
-							dataSource={popularResults}
-							columns={popularResultsCol(plan)}
-							title="Popular Results"
-							onClick={() => redirectTo('popularResults')}
-						/>
-					</div>
-					<div css="flex: 50%;margin-left: 10px">
-						<Searches
-							dataSource={popularFilters}
-							columns={popularFiltersCol(plan)}
-							title="Popular Filters"
-							onClick={() => redirectTo('popularFilters')}
-						/>
-					</div>
-				</Flex>
+				<React.Fragment>
+					<Flex css="width: 100%;margin-top: 20px">
+						<div css="flex: 50%;margin-right: 10px">
+							<Searches
+								dataSource={getFilteredResults(popularResults)}
+								columns={popularResultsCol(plan)}
+								title="Popular Results"
+								href="popular-results"
+								css="height: 100%"
+							/>
+						</div>
+						<div css="flex: 50%;margin-left: 10px">
+							<Searches
+								dataSource={getFilteredResults(popularFilters)}
+								columns={popularFiltersCol(plan)}
+								title="Popular Filters"
+								href="popular-filters"
+								css="height: 100%"
+							/>
+						</div>
+					</Flex>
+					<Flex css="width: 100%;margin-top: 20px">
+						<GeoDistribution />
+					</Flex>
+					<Flex css="width: 100%;margin-top: 20px">
+						<SearchLatency />
+					</Flex>
+				</React.Fragment>
 			)}
 		</React.Fragment>
 	);
@@ -76,17 +93,17 @@ Analytics.defaultProps = {
 	popularSearches: [],
 	searchVolume: [],
 	popularResults: [],
-	redirectTo: () => null,
 	popularFilters: [],
+	chartWidth: window.innerWidth - 300,
 };
 Analytics.propTypes = {
 	loading: PropTypes.bool,
 	noResults: PropTypes.array,
 	popularSearches: PropTypes.array,
+	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	plan: PropTypes.string.isRequired,
 	searchVolume: PropTypes.array,
 	popularResults: PropTypes.array,
-	redirectTo: PropTypes.func,
 	popularFilters: PropTypes.array,
 };
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { ACC_API } from '../../utils';
+import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 
 const requestOpt = css`
@@ -18,7 +19,7 @@ const getQueryParams = (paramObj) => {
 		if (i === 0) {
 			queryString = `?${o}=${paramObj[o]}`;
 		} else {
-			queryString = `&${o}=${paramObj[o]}`;
+			queryString += `&${o}=${paramObj[o]}`;
 		}
 	});
 	return queryString;
@@ -66,14 +67,14 @@ export const popularFiltersCol = (plan) => {
 	const defaults = [
 		{
 			title: 'Filters',
-			dataIndex: 'key',
+			render: item => `${item.key}=${item.value}`,
 		},
 		{
 			title: 'Impressions',
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan === 'free') {
+	if (!plan || plan !== 'growth') {
 		return defaults;
 	}
 	return [
@@ -95,7 +96,7 @@ export const popularResultsCol = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan === 'free') {
+	if (!plan || plan !== 'growth') {
 		return defaults;
 	}
 	return [
@@ -117,7 +118,7 @@ export const defaultColumns = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan === 'free') {
+	if (!plan || plan !== 'growth') {
 		return defaults;
 	}
 	return [
@@ -128,8 +129,57 @@ export const defaultColumns = (plan) => {
 		},
 	];
 };
+export const ConvertToCSV = (objArray) => {
+	const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+	let str = '';
+
+	for (let i = 0; i < array.length; i += 1) {
+		let line = '';
+		// eslint-disable-next-line
+		for (var index in array[i]) {
+			if (line !== '') line += ',';
+			line += array[i][index];
+		}
+
+		str += `${line}\r\n`;
+	}
+
+	return str;
+};
+export const exportCSVFile = (headers, items, fileTitle) => {
+	if (headers) {
+		items.unshift(headers);
+	}
+
+	// Convert Object to JSON
+	const jsonObject = JSON.stringify(items);
+
+	const csv = ConvertToCSV(jsonObject);
+
+	const exportedFilenmae = fileTitle ? `${fileTitle}.csv` : 'export.csv';
+
+	const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+	if (navigator.msSaveBlob) {
+		// IE 10+
+		navigator.msSaveBlob(blob, exportedFilenmae);
+	} else {
+		const link = document.createElement('a');
+		if (link.download !== undefined) {
+			// feature detection
+			// Browsers that support HTML5 download attribute
+			const url = URL.createObjectURL(blob);
+			link.setAttribute('href', url);
+			link.setAttribute('download', exportedFilenmae);
+			link.style.visibility = 'hidden';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+	}
+};
+
 export const popularSearchesFull = (plan) => {
-	if (!plan || plan === 'free') {
+	if (!plan || plan !== 'growth') {
 		return defaultColumns(plan);
 	}
 	return [
@@ -149,8 +199,17 @@ export const popularSearchesFull = (plan) => {
 	];
 };
 export const popularResultsFull = (plan) => {
-	if (plan === 'free') {
-		return popularResultsCol(plan);
+	if (plan !== 'growth') {
+		return [
+			...popularResultsCol(plan),
+			{
+				title: 'Source',
+				dataIndex: 'source',
+				key: 'source',
+				width: '30%',
+				render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+			},
+		];
 	}
 	return [
 		...popularResultsCol(plan),
@@ -160,19 +219,21 @@ export const popularResultsFull = (plan) => {
 			key: 'clicks',
 		},
 		{
-			title: 'Source',
-			dataIndex: 'source',
-			key: 'source',
-		},
-		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversionrate',
 			key: 'conversionrate',
 		},
+		{
+			title: 'Source',
+			dataIndex: 'source',
+			key: 'source',
+			width: '30%',
+			render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+		},
 	];
 };
 export const popularFiltersFull = (plan) => {
-	if (plan === 'free') {
+	if (plan !== 'growth') {
 		return popularFiltersCol(plan);
 	}
 	return [
@@ -253,6 +314,61 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 	});
 }
 /**
+ * Get the search latency
+ * @param {string} appName
+ */
+export function getSearchLatency(appName) {
+	return new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/analytics/${appName}/latency`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			// Comment out this line
+			.then(res => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+/**
+ * Get the geo distribution
+ * @param {string} appName
+ */
+export function getGeoDistribution(appName) {
+	return new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/analytics/${appName}/geoip`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			// Comment out this line
+			.then(res => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+/**
+ * Get the search latency
+ * @param {string} appName
+ */
+export function getAnalyticsSummary(appName) {
+	return doGet(`${ACC_API}/analytics/${appName}/summary`);
+}
+/**
  * Get the popular seraches
  * @param {string} appName
  */
@@ -261,7 +377,8 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularsearches${getQueryParams({
 				clickanalytics,
-			})}?size=${size}`,
+				size,
+			})}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -311,7 +428,8 @@ export function getPopularResults(appName, clickanalytics = true, size = 100) {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularResults${getQueryParams({
 				clickanalytics,
-			})}?size=${size}`,
+				size,
+			})}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -336,7 +454,8 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularFilters${getQueryParams({
 				clickanalytics,
-			})}?size=${size}`,
+				size,
+			})}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -359,13 +478,18 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 // To fetch request logs
 export function getRequestLogs(appName, size = 100) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appName}/logs?size=${size}`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
+		fetch(
+			`${ACC_API}/app/${appName}/logs?${getQueryParams({
+				size,
+			})}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 			// Comment out this line
 			.then(res => res.json())
 			.then((res) => {
@@ -379,28 +503,26 @@ export function getRequestLogs(appName, size = 100) {
 }
 
 // Banner messages
-export const bannerMessages = {
+export const bannerMessagesAnalytics = {
 	free: {
 		title: 'Unlock the ROI impact of your search',
 		description:
 			'Get a paid plan to see actionable analytics on search volume, popular searches, no results, track clicks and conversions.',
 		buttonText: 'Upgrade Now',
-		href: '/billing',
+		href: 'billing',
 	},
 	bootstrap: {
 		title: 'Get richer analytics on clicks and conversions',
 		description:
 			'By upgrading to the Growth plan, you can get more actionable analytics on popular filters, popular results, and track clicks and conversions along with a 30-day retention.',
 		buttonText: 'Upgrade To Growth',
-		href: '/billing',
-		isHorizontal: true,
+		href: 'billing',
 	},
 	growth: {
 		title: 'Learn how to track click analytics',
 		description:
 			'See our docs on how to track search, filters, click events, conversions and your own custom events.',
 		buttonText: 'Read Docs',
-		isHorizontal: true,
 		href: 'https://docs.appbase.io',
 	},
 };

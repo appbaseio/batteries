@@ -1,7 +1,10 @@
 import React from 'react';
-import { Modal, Dropdown, Menu, Button, Icon, message } from 'antd';
+import {
+ Modal, Dropdown, Menu, Button, Icon, message, Row, Col,
+} from 'antd';
+import { ReactiveList } from '@appbaseio/reactivesearch';
 
-import { ResultList } from '@appbaseio/reactivesearch';
+import getNestedValue from '../utils';
 
 class PreviewList extends React.Component {
 	constructor() {
@@ -46,6 +49,13 @@ class PreviewList extends React.Component {
 		this.props.handleSavePreview(values);
 	}
 
+	resetSelectedOption = (optionName) => {
+		const name = optionName;
+		this.setState({
+			[name]: '',
+		});
+	}
+
 	renderDropdown = (name) => {
 		const options = this.options.filter(option => option !== name);
 		const usedValue = [];
@@ -73,6 +83,7 @@ class PreviewList extends React.Component {
 						{this.state[name] || 'Choose Option'} <Icon type="down" />
 					</Button>
 				</Dropdown>
+				{this.state[name] ? <Button icon="undo" style={{ marginLeft: '10px' }} shape="circle" onClick={() => this.resetSelectedOption(name)} /> : null}
 			</div>
 		);
 	};
@@ -83,18 +94,18 @@ class PreviewList extends React.Component {
 		} = this.state;
 		let resultComponentProps = this.props.componentProps.result || {};
 		resultComponentProps = {
-			pagination: true,
-			size: 4,
-			target: '_blank',
-			onData: res => ({
-				image: this.props.getNestedValue(res, image),
-				url: this.props.getNestedValue(res, url),
-				title: this.props.getNestedValue(res, title) || 'Choose a valid Title Field',
-				description: this.props.getNestedValue(res, description) || 'Choose a valid description field',
-			}),
-			react: {
-				and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
-			},
+			...resultComponentProps,
+			onData: res => (
+			<Row type="flex" gutter={16} key={res._id}>
+				<Col span={getNestedValue(res, image) ? 6 : 0}>
+					<img src={getNestedValue(res, image)} alt={getNestedValue(res, title) || 'Choose a valid Title Field for alt'} />
+				</Col>
+				<Col span={getNestedValue(res, image) ? 18 : 24}>
+					<h3 style={{ fontWeight: '600' }}>{getNestedValue(res, title) || 'Choose a valid Title Field'}</h3>
+					<p style={{ fontSize: '1em' }}>{getNestedValue(res, description) || 'Choose a valid description field'}</p>
+				</Col>
+			</Row>
+			),
 		};
 		return (
 			<Modal
@@ -105,8 +116,10 @@ class PreviewList extends React.Component {
 				title="Customize List Preview"
 			>
 				{this.options.map(option => this.renderDropdown(option))}
-				<ResultList
+				<ReactiveList
 					componentId={this.props.componentId}
+					pagination
+					paginationAt="bottom"
 					{...resultComponentProps}
 					dataField={this.props.dataField}
 				/>

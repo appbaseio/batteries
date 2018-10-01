@@ -25,7 +25,9 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 		})
 			.then(res => res.json())
 			.then((data) => {
-				const types = Object.keys(data[appName].mappings).filter(type => !REMOVED_KEYS.includes(type));
+				const types = Object.keys(data[appName].mappings).filter(
+					type => !REMOVED_KEYS.includes(type),
+				);
 
 				let mappings = {};
 				types.forEach((type) => {
@@ -181,8 +183,8 @@ export function hasAggs(field) {
 	let hasAggsFlag = false;
 	Object.keys(field).forEach((subField) => {
 		if (
-			field[subField].type === 'keyword' ||
-			(field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
+			field[subField].type === 'keyword'
+			|| (field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
 		) {
 			hasAggsFlag = true;
 		}

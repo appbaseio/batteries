@@ -1,3 +1,5 @@
+import get from 'lodash/get';
+
 import { createAction } from './utils';
 import AppConstants from '../constants';
 import {
@@ -6,27 +8,33 @@ import {
 	newPermission,
 	deletePermission as DeletePermission,
 } from '../../utils/app';
+
 /**
  * To fetch app permissions
- * @param {string} appId
+ * @param {string} name
  */
-export function getPermission(appId) {
-	return (dispatch) => {
+export function getPermission(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.PERMISSION.GET));
-		return fetchPermission(appId)
-			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res)))
+		return fetchPermission(appName)
+			.then(res => dispatch(
+					createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res, null, {
+						appName,
+					}),
+				))
 			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)));
 	};
 }
 /**
  * Creates a new permission
- * @param {string} appId
+ * @param {string} appName
  * @param {object} payload
  */
-export function createPermission(appId, payload) {
+export function createPermission(appName, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PERMISSION.CREATE));
-		return newPermission(appId, payload)
+		return newPermission(appName, payload)
 			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.CREATE_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.CREATE_ERROR, null, error)));
 	};
@@ -34,27 +42,27 @@ export function createPermission(appId, payload) {
 
 /**
  * Updates a permission
- * @param {string} appId
+ * @param {string} appName
  * @param {string} username
  * @param {object} payload
  */
-export function updatePermission(appId, username, payload) {
+export function updatePermission(appName, username, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PERMISSION.UPDATE));
-		return UpdatePermission(appId, username, payload)
+		return UpdatePermission(appName, username, payload)
 			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.UPDATE_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.UPDATE_ERROR, null, error)));
 	};
 }
 /**
  * Deletes a permission
- * @param {string} appId
+ * @param {string} appName
  * @param {string} username
  */
-export function deletePermission(appId, username) {
+export function deletePermission(appName, username) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PERMISSION.DELETE));
-		return DeletePermission(appId, username)
+		return DeletePermission(appName, username)
 			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.DELETE_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.DELETE_ERROR, null, error)));
 	};
