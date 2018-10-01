@@ -58,3 +58,28 @@ createStore(combineReducers({ ...rootReducer, ...batteriesReducers })),
 -   Selectors from `batteries/modules/selectors`
 
 and connect your component to the redux store powered by batteries.
+
+5. Usage:
+### BaseContainer
+Use this component to provide the basic data to `batteries` components.
+By default it executes the following tasks.
+- Sets the app name & app id in redux store.
+- Fetches the basic app information
+- Fetches the app plan
+## Props
+| Prop  | Required  | Type | Default Value | Description |
+| :------------ |:---------------:| :---------------:|:---------------:| :-----|
+| appName | `yes` | `string` | - | Name of the app.|
+| appId | `no` | `string` | - | App id|
+| shouldFetchAppPlan | `no` | `boolean` | `true` | To define that whether the component should fetch app plan or not |
+| shouldFetchAppInfo | `no` |`boolean` | `true` | To define that whether the component should fetch app information or not|
+|component | `no` | `function` | Render prop function |
+
+## Example
+```js
+import Analytics from 'batteries/components/Analytics'
+...
+<BaseContainer appName="movies-xyz">
+  <Analytics/>
+</BaseContainer>
+```
