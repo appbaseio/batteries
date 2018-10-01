@@ -382,10 +382,12 @@ SearchSandbox.defaultProps = {
 	attribution: null,
 	isDashboard: false,
 	url: SCALR_API,
-	customProps: {}
+	customProps: {},
 };
 
 const mapStateToProps = state => ({
+	appId: get(state, '$getCurrentApp.id'),
+	appName: get(state, '$getCurrentApp.name'),
 	mappings: getRawMappingsByAppName(state) || null,
 	isFetchingMapping: get(state, '$getAppMappings.isFetching'),
 });
