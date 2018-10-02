@@ -8,8 +8,8 @@ const propsMap = {
 	ReactiveList: reactiveListTypes,
 };
 
-const getSubFields = (mappings, field, types) =>
-	(mappings[field] && mappings[field].fields && mappings[field].fields.length
+const getSubFields = (mappings, field, types) => (
+		mappings[field] && mappings[field].fields && mappings[field].fields.length
 			? [
 				...mappings[field].fields
 				.filter(item => types.includes(mappings[field].originalFields[item].type))
@@ -54,8 +54,8 @@ const generateDataField = (component, selectedFields, mappings) => {
 	return validFields ? validFields[0] : null;
 };
 
-const getSubFieldWeights = (mappings, field, defaultWeight = 1) =>
-	(mappings[field] && mappings[field].fields && mappings[field].fields.length
+const getSubFieldWeights = (mappings, field, defaultWeight = 1) => (
+		mappings[field] && mappings[field].fields && mappings[field].fields.length
 		? [
 			...mappings[field].fields.map((item) => {
 				let weight = 1;
