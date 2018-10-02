@@ -7,30 +7,27 @@ import { ReactiveList } from '@appbaseio/reactivesearch';
 import getNestedValue from '../utils';
 
 class PreviewList extends React.Component {
-	constructor() {
-		super();
-		this.state = {
-			title: '',
-			description: '',
-			image: '',
-			url: '',
-		};
-
-		this.options = ['title', 'description', 'image', 'url'];
-	}
-
-	componentWillReceiveProps(props) {
+	constructor(props) {
+		super(props);
 		if (props.componentProps.metaFields) {
 			const {
-				url, title, description, image,
-			} = props.componentProps.metaFields;
-			this.setState({
-				url,
-				image,
-				description,
-				title,
-			});
-		}
+       url, title, description, image,
+      } = props.componentProps.metaFields;
+      this.state = {
+        url,
+        title,
+        description,
+        image,
+      };
+		} else {
+      this.state = {
+        title: '',
+        description: '',
+        image: '',
+        url: '',
+      };
+    }
+		this.options = ['title', 'description', 'image', 'url'];
 	}
 
 	handleMenuClick = (e, name) => {
@@ -41,20 +38,20 @@ class PreviewList extends React.Component {
 
 	handleSave = () => {
 		const values = {};
-		this.options.forEach(option => values[option] = this.state[option]);
+		this.options.forEach(option => (values[option] = this.state[option]));
 
 		if (!this.state.description || !this.state.title) {
 			message.error('Please select title and description fields');
 		}
 		this.props.handleSavePreview(values);
-	}
+	};
 
 	resetSelectedOption = (optionName) => {
 		const name = optionName;
 		this.setState({
 			[name]: '',
 		});
-	}
+	};
 
 	renderDropdown = (name) => {
 		const options = this.options.filter(option => option !== name);
@@ -83,29 +80,49 @@ class PreviewList extends React.Component {
 						{this.state[name] || 'Choose Option'} <Icon type="down" />
 					</Button>
 				</Dropdown>
-				{this.state[name] ? <Button icon="undo" style={{ marginLeft: '10px' }} shape="circle" onClick={() => this.resetSelectedOption(name)} /> : null}
+				{this.state[name] ? (
+					<Button
+						icon="undo"
+						style={{ marginLeft: '10px' }}
+						shape="circle"
+						onClick={() => this.resetSelectedOption(name)}
+					/>
+				) : null}
 			</div>
 		);
 	};
 
 	render() {
 		const {
-			title, image, url, description,
+			title: titleKey,
+			image: imageKey,
+			url: urlKey,
+			description: descriptionKey,
 		} = this.state;
 		let resultComponentProps = this.props.componentProps.result || {};
 		resultComponentProps = {
 			...resultComponentProps,
-			onData: res => (
-			<Row type="flex" gutter={16} key={res._id}>
-				<Col span={getNestedValue(res, image) ? 6 : 0}>
-					<img src={getNestedValue(res, image)} alt={getNestedValue(res, title) || 'Choose a valid Title Field for alt'} />
-				</Col>
-				<Col span={getNestedValue(res, image) ? 18 : 24}>
-					<h3 style={{ fontWeight: '600' }}>{getNestedValue(res, title) || 'Choose a valid Title Field'}</h3>
-					<p style={{ fontSize: '1em' }}>{getNestedValue(res, description) || 'Choose a valid description field'}</p>
-				</Col>
-			</Row>
-			),
+			onData: (res) => {
+				const url = getNestedValue(res, urlKey);
+				const title = getNestedValue(res, titleKey);
+				const description = getNestedValue(res, descriptionKey);
+				const image = getNestedValue(res, imageKey);
+				return (
+					<Row type="flex" gutter={16} key={res._id}>
+						<Col span={image ? 6 : 0}>
+							<img src={image} alt={title || 'Choose a valid Title Field for alt'} />
+						</Col>
+						<Col span={image ? 18 : 24}>
+							<h3 style={{ fontWeight: '600' }}>
+								{title || 'Choose a valid Title Field'}
+							</h3>
+							<p style={{ fontSize: '1em' }}>
+								{description || 'Choose a valid description field'}
+							</p>
+						</Col>
+					</Row>
+				);
+			},
 		};
 		return (
 			<Modal

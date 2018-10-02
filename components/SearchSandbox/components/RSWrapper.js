@@ -620,31 +620,38 @@ export default class RSWrapper extends Component {
 				highlightField: this.props.componentProps.dataField,
 			};
 		}
-		const { componentProps: { metaFields } } = this.props;
+		const { componentProps: { metaFields, ...restProps } } = this.props;
 		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
 
 		if (this.props.id === 'result' && isMetaDataPresent) {
 			const {
-				url, title, image, description,
+				url: urlKey, title: titleKey, image: imageKey, description: descriptionKey,
 			} = metaFields;
 			otherProps = {
-				onData: res => (
+				onData: (res) => {
+					const url = getNestedValue(res, urlKey);
+					const title = getNestedValue(res, titleKey);
+					const description = getNestedValue(res, descriptionKey);
+					const image = getNestedValue(res, imageKey);
+
+					return (
 					<Row type="flex" key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
-						<Col span={getNestedValue(res, image) ? 6 : 0}>
-							<img style={{ width: '100%' }} src={getNestedValue(res, image)} alt={getNestedValue(res, title)} />
+						<Col span={image ? 6 : 0}>
+							<img style={{ width: '100%' }} src={image} alt={title} />
 						</Col>
-						<Col span={getNestedValue(res, image) ? 18 : 24}>
-							<h3 style={{ fontWeight: '600' }}>{getNestedValue(res, title)}</h3>
-							<p style={{ fontSize: '1em' }}>{getNestedValue(res, description)}</p>
+						<Col span={image ? 18 : 24}>
+							<h3 style={{ fontWeight: '600' }}>{title}</h3>
+							<p style={{ fontSize: '1em' }}>{description}</p>
 						</Col>
 						<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
-							{getNestedValue(res, url) ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(getNestedValue(res, url), '_blank')} />
+							{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
 	 : null}
 							{this.props.renderJSONEditor(res)}
 							{this.props.renderDeleteJSON(res)}
 						</div>
 					</Row>
-				),
+				);
+},
 			};
 		}
 
@@ -687,7 +694,7 @@ export default class RSWrapper extends Component {
 					<Col span={this.props.full ? 24 : 20}>
 						<RSComponent
 							componentId={this.props.id}
-							{...this.props.componentProps}
+							{...restProps}
 							dataField={generateDataField(
 								this.props.component,
 								this.props.componentProps.dataField,
