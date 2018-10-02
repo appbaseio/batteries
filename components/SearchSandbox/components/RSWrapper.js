@@ -252,11 +252,14 @@ export default class RSWrapper extends Component {
 	};
 
 	renderComponentCode = () => {
+		const customComponentProps = this.props.customProps[this.props.component];
+
 		const config = {
 			componentId: this.props.id,
 			component: this.props.component,
 			mappings: this.props.mappings,
 			componentProps: this.props.componentProps,
+			customProps: customComponentProps,
 		};
 		const code = getComponentCode(config);
 		return (

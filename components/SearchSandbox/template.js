@@ -92,6 +92,7 @@ export function getComponentCode(config) {
 				react: {
 					and: Object.values(config.componentProps.react.and),
 				},
+				...config.customProps,
 				onData: '{onData}',
 			};
 			componentStyle = { marginTop: 20 };
@@ -112,6 +113,7 @@ export function getComponentCode(config) {
 					config.mappings,
 				),
 				highlightField: config.componentProps.dataField,
+				...config.customProps,
 			};
 			componentStyle = { marginBottom: 20 };
 			break;
@@ -125,6 +127,7 @@ export function getComponentCode(config) {
 					config.componentProps.dataField,
 					config.mappings,
 				),
+				...config.customProps,
 			};
 			componentStyle = { marginBottom: 20 };
 			break;
@@ -137,7 +140,7 @@ export function getComponentCode(config) {
 		useBooleanShorthandSyntax: false,
 	});
 
-	code = code.replace('onData="{onData}"', 'onData = {onData}');
+	code = code.replace('onData="{onData}"', 'onData={onData}');
 	code = code.replace('div', config.component);
 
 	return code;
@@ -167,6 +170,7 @@ function getApp(config) {
 					component: 'DataSearch',
 					mappings: config.mappings,
 					componentProps: searchComponentProps,
+					customProps: config.customProps,
 					componentId: item,
 				};
 				searchCode = getComponentCode(componentConfig);
@@ -184,6 +188,7 @@ function getApp(config) {
 				componentConfig = {
 					component: 'ReactiveList',
 					mappings: config.mappings,
+					customProps: config.customProps,
 					componentProps: resultComponentProps,
 				};
 				resultCode = getComponentCode(componentConfig);
@@ -196,6 +201,7 @@ function getApp(config) {
 				componentConfig = {
 					component: 'MultiList',
 					mappings: config.mappings,
+					customProps: config.customProps,
 					componentId: item,
 					componentProps: listComponentProps,
 				};
