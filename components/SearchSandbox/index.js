@@ -384,7 +384,7 @@ SearchSandbox.defaultProps = {
 	attribution: null,
 	isDashboard: false,
 	url: SCALR_API,
-	useCategorySearch: false,
+	useCategorySearch: true,
 	customProps: {},
 };
 

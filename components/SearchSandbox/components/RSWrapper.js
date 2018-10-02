@@ -15,8 +15,11 @@ import {
 	Select,
 } from 'antd';
 
-import { DataSearch, MultiList, ReactiveList, CategorySearch } from '@appbaseio/reactivesearch';
+import {
+ DataSearch, MultiList, ReactiveList, CategorySearch,
+} from '@appbaseio/reactivesearch';
 
+import getNestedValue from '../utils';
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
@@ -24,6 +27,7 @@ import categorySearchTypes from '../utils/categorysearch-types';
 import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
+import PreviewList from './PreviewList';
 
 import {
 	deleteStyles,
@@ -56,6 +60,7 @@ export default class RSWrapper extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
+			previewModal: false,
 		};
 
 		if (!props.componentProps.dataField) {
@@ -103,7 +108,7 @@ export default class RSWrapper extends Component {
 	};
 
 	getCategoryField = () => {
-		let types = propsMap[this.props.component].categoryField.types;
+		const types = propsMap[this.props.component].categoryField.types;
 
 		const fields = Object.keys(this.props.mappings).filter((field) => {
 			let fieldsToCheck = [this.props.mappings[field]];
@@ -270,6 +275,22 @@ export default class RSWrapper extends Component {
 				},
 			});
 		}
+	};
+
+	handlePreviewModal = () => {
+		this.setState({
+			previewModal: !this.state.previewModal,
+		});
+	};
+
+	handleSavePreview = (values) => {
+		this.props.onPropChange(this.props.id, {
+			meta: true,
+			metaFields: values,
+		});
+		this.setState({
+			previewModal: false,
+		});
 	};
 
 	renderComponentCode = () => {
@@ -502,8 +523,7 @@ export default class RSWrapper extends Component {
 				if (name === 'categoryField') {
 					noOptionsMessage = <p style={{ lineHeight: '1.5' }}>There are no compatible fields present in your data mappings. <a href={this.props.mappingsURL}>You can edit your mappings</a> (agggregation components)</p>;
 
-					this.getCategoryField().forEach(field =>
-						dropdownOptions.push({ label: field, key: field }));
+					this.getCategoryField().forEach(field => dropdownOptions.push({ label: field, key: field }));
 
 					if (dropdownOptions.length) {
 						if (!this.state.componentProps.categoryField) {
@@ -658,7 +678,42 @@ export default class RSWrapper extends Component {
 				highlightField: this.props.componentProps.dataField,
 			};
 		}
+		const { componentProps: { metaFields, ...restProps } } = this.props;
+		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
 
+		if (this.props.id === 'result' && isMetaDataPresent) {
+			const {
+				url: urlKey, title: titleKey, image: imageKey, description: descriptionKey,
+			} = metaFields;
+			otherProps = {
+				onData: (res) => {
+					const url = getNestedValue(res, urlKey);
+					const title = getNestedValue(res, titleKey);
+					const description = getNestedValue(res, descriptionKey);
+					const image = getNestedValue(res, imageKey);
+
+					return (
+					<Row type="flex" key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
+						<Col span={image ? 6 : 0}>
+							<img style={{ width: '100%' }} src={image} alt={title} />
+						</Col>
+						<Col span={image ? 18 : 24}>
+							<h3 style={{ fontWeight: '600' }}>{title}</h3>
+							<p style={{ fontSize: '1em' }}>{description}</p>
+						</Col>
+						<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
+							{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+	 : null}
+							{this.props.renderJSONEditor(res)}
+							{this.props.renderDeleteJSON(res)}
+						</div>
+					</Row>
+				);
+},
+			};
+		}
+
+		const showPreview =			this.props.component === 'ReactiveList';
 		const customComponentProps = this.props.customProps[this.props.component];
 
 		return (
@@ -673,6 +728,15 @@ export default class RSWrapper extends Component {
 								onClick={this.showModal}
 							/>
 							{this.renderComponentCode()}
+							{showPreview ? (
+								<Button
+									icon="eye-o"
+									shape="circle"
+									size="large"
+									style={{ marginLeft: 8 }}
+									onClick={this.handlePreviewModal}
+								/>
+							) : null}
 							{this.props.showDelete ? (
 								<Button
 									icon="delete"
@@ -688,16 +752,16 @@ export default class RSWrapper extends Component {
 					<Col span={this.props.full ? 24 : 20}>
 						<RSComponent
 							componentId={this.props.id}
-							{...this.props.componentProps}
+							{...restProps}
 							dataField={generateDataField(
 								this.props.component,
 								this.props.componentProps.dataField,
 								this.props.mappings,
 							)}
-							{...otherProps}
 							className={componentStyles}
 							fuzziness={this.props.componentProps.fuzziness || 0}
 							size={parseInt(this.props.componentProps.size || 10, 10)}
+							{...otherProps}
 							{...customComponentProps}
 						/>
 					</Col>
@@ -720,10 +784,27 @@ export default class RSWrapper extends Component {
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 					destroyOnClose
+					key="EditModal"
 					okText="Save"
 				>
 					{this.renderPropsForm()}
 				</Modal>
+				{showPreview ? (
+					<PreviewList
+						options={Object.keys(this.props.mappings)}
+						componentProps={this.state.componentProps}
+						componentId={this.props.id}
+						getNestedValue={getNestedValue}
+						handlePreviewModal={this.handlePreviewModal}
+						handleSavePreview={this.handleSavePreview}
+						visible={this.state.previewModal}
+						dataField={generateDataField(
+							this.props.component,
+							this.props.componentProps.dataField,
+							this.props.mappings,
+						)}
+					/>
+				) : null}
 			</div>
 		);
 	}
