@@ -19,7 +19,7 @@ const getQueryParams = (paramObj) => {
 		if (i === 0) {
 			queryString = `?${o}=${paramObj[o]}`;
 		} else {
-			queryString = `&${o}=${paramObj[o]}`;
+			queryString += `&${o}=${paramObj[o]}`;
 		}
 	});
 	return queryString;
@@ -67,7 +67,7 @@ export const popularFiltersCol = (plan) => {
 	const defaults = [
 		{
 			title: 'Filters',
-			dataIndex: 'key',
+			render: item => `${item.key}=${item.value}`,
 		},
 		{
 			title: 'Impressions',
@@ -219,14 +219,16 @@ export const popularResultsFull = (plan) => {
 			key: 'clicks',
 		},
 		{
-			title: 'Source',
-			dataIndex: 'source',
-			key: 'source',
-		},
-		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversionrate',
 			key: 'conversionrate',
+		},
+		{
+			title: 'Source',
+			dataIndex: 'source',
+			key: 'source',
+			width: '30%',
+			render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
 		},
 	];
 };
@@ -375,7 +377,8 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularsearches${getQueryParams({
 				clickanalytics,
-			})}?size=${size}`,
+				size,
+			})}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -425,7 +428,8 @@ export function getPopularResults(appName, clickanalytics = true, size = 100) {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularResults${getQueryParams({
 				clickanalytics,
-			})}?size=${size}`,
+				size,
+			})}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -450,7 +454,8 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularFilters${getQueryParams({
 				clickanalytics,
-			})}?size=${size}`,
+				size,
+			})}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -473,13 +478,18 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 // To fetch request logs
 export function getRequestLogs(appName, size = 100) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appName}/logs?size=${size}`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
+		fetch(
+			`${ACC_API}/app/${appName}/logs?${getQueryParams({
+				size,
+			})}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 			// Comment out this line
 			.then(res => res.json())
 			.then((res) => {

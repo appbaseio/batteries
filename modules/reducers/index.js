@@ -1,5 +1,4 @@
 import AppConstants from '../constants';
-import getUserStatus from './getUserStatus';
 import getAppInfo from './getAppInfo';
 import getAppMappings from './getAppMappings';
 import getCurrentApp from './getCurrentApp';
@@ -12,7 +11,6 @@ import {
 } from './utils';
 
 export default {
-	$getUserStatus: getUserStatus,
 	$getAppInfo: getAppInfo,
 	$getAppMappings: getAppMappings,
 	$getAppPermissions: createRequestReducer(
@@ -31,7 +29,6 @@ export default {
 		AppConstants.ACCOUNT.UPDATE_USER,
 		AppConstants.ACCOUNT.UPDATE_USER_SUCCESS,
 		AppConstants.ACCOUNT.UPDATE_USER_ERROR,
-		computeAppPlanState,
 	),
 	$getAppAnalytics: createRequestReducer(
 		AppConstants.APP.ANALYTICS.GET,

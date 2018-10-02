@@ -790,7 +790,8 @@ Mappings.defaultProps = {
 const mapStateToProps = (state) => {
 	const { username, password } = get(getAppPermissionsByName(state), 'credentials', {});
 	return ({
-		isPaidUser: get(state, '$getUserStatus.isPaidUser'),
+		appName: get(state, '$getCurrentApp.name'),
+		appId: get(state, '$getCurrentApp.id'),
 		mapping: getRawMappingsByAppName(state) || null,
 		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
 		loadingError: get(state, '$getAppMappings.error', null),

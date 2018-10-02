@@ -1,5 +1,7 @@
 import { ACC_API } from './index';
-import { doDelete, doPatch, doGet } from './requestService';
+import {
+ doDelete, doPatch, doGet, doPost,
+} from './requestService';
 
 export const getPermission = appId => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
@@ -47,32 +49,9 @@ export const deletePermission = (appId, username) => new Promise((resolve, rejec
 
 export const deleteApp = appId => doDelete(`${ACC_API}/app/${appId}`);
 
-export const getShare = appId => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appId}/share`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-			.then(res => res.json())
-			.then(data => resolve(data.body))
-			.catch(error => reject(error));
-	});
+export const getShare = appId => doGet(`${ACC_API}/app/${appId}/share`);
 
-export const createShare = (appId, payload) => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appId}/share`, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(payload),
-		})
-			.then(res => res.json())
-			.then(data => resolve(data.body))
-			.catch(error => reject(error));
-	});
+export const createShare = (appId, payload) => doPost(`${ACC_API}/app/${appId}/share`, payload);
 
 export const getAppPlan = appName => doGet(`${ACC_API}/app/${appName}/plan`);
 

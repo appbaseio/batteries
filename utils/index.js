@@ -69,41 +69,6 @@ export function getCredentials(appId) {
 	});
 }
 
-export function checkUserStatus() {
-	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/user`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'content-type': 'application/json',
-			},
-		})
-			.then(res => res.json())
-			.then((res) => {
-				if (res.body.c_id) return res.body.c_id;
-				reject();
-				return null;
-			})
-			.then(getBillingStatus)
-			.then(res => res.json())
-			.then((res) => {
-				if (!res.plan || res.plan === 'free') {
-					resolve({
-						isPaidUser: !!res.plan,
-						plan: res.plan,
-					});
-				}
-				resolve({
-					isPaidUser: true,
-					plan: res.plan,
-				});
-			})
-			.catch(() => {
-				reject();
-			});
-	});
-}
-
 export function isEqual(x, y) {
 	/* eslint-disable */
 	if (x === y) return true;

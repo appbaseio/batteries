@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import {
  Card, Table, Button, Tooltip, Icon,
 } from 'antd';
@@ -16,6 +17,7 @@ const Searches = ({
 	plan,
 	pagination,
 	onClickDownload,
+	href,
 	...props
 }) => (
 	<Card
@@ -36,36 +38,38 @@ const Searches = ({
 		}}
 		{...props}
 	>
-	{
-		dataSource.length
-		? (
-		<Flex flexDirection="column" justifyContent="space-between" css="height: calc(100% - 48px)">
-		<Table
-			rowKey={record => record.key}
-			dataSource={dataSource}
-			columns={columns || defaultColumns(plan)}
-			pagination={pagination}
-			css={`
-				td {
-					vertical-align: top;
-				}
-			`}
-		/>
-		{showViewOption && (
-			<Button onClick={() => onClick()} css="width: 100%;height: 50px;margin-top: 10px;">
-				VIEW ALL
-			</Button>
+		{dataSource.length ? (
+			<Flex
+				flexDirection="column"
+				justifyContent="space-between"
+				css="height: calc(100% - 48px)"
+			>
+				<Table
+					rowKey={record => record.key}
+					dataSource={dataSource}
+					columns={columns || defaultColumns(plan)}
+					pagination={pagination}
+					css={`
+						td {
+							vertical-align: top;
+						}
+					`}
+				/>
+				{href && (
+					<Link to={href}>
+						<Button css="width: 100%;height: 50px;margin-top: 10px;">VIEW ALL</Button>
+					</Link>
+				)}
+			</Flex>
+		) : (
+			<EmptyData />
 		)}
-		</Flex>
-	) : <EmptyData />
-	}
 	</Card>
 );
 
 Searches.defaultProps = {
-	showViewOption: true,
 	pagination: false,
-	onClick: () => null,
+	href: '',
 	title: '',
 	dataSource: [],
 	plan: '',
@@ -77,8 +81,7 @@ Searches.propTypes = {
 	dataSource: PropTypes.array,
 	onClickDownload: PropTypes.func,
 	columns: PropTypes.array,
-	showViewOption: PropTypes.bool,
-	onClick: PropTypes.func,
+	href: PropTypes.string,
 	plan: PropTypes.string,
 	pagination: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
 };

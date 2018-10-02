@@ -389,6 +389,8 @@ SearchSandbox.defaultProps = {
 };
 
 const mapStateToProps = state => ({
+	appId: get(state, '$getCurrentApp.id'),
+	appName: get(state, '$getCurrentApp.name'),
 	mappings: getRawMappingsByAppName(state) || null,
 	isFetchingMapping: get(state, '$getAppMappings.isFetching'),
 });
