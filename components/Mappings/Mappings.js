@@ -45,6 +45,7 @@ import {
 	Footer,
 	Button,
 	deleteBtn,
+	promotionContainer,
 } from './styles';
 import Modal from '../shared/Modal';
 import NewFieldModal from './NewFieldModal';
@@ -521,10 +522,9 @@ class Mappings extends Component {
 		return null;
 	};
 
-	renderPromotionalButtons = (type, message) =>
-		(this.props.url ? (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
+	renderPromotionalButtons = (type, message) => (this.props.url ? (
+			<div className={promotionContainer}>
+				<p>
 					Get an appbase.io account to edit {type}
 					<Tooltip title={message}>
 						<span>
@@ -537,8 +537,8 @@ class Mappings extends Component {
 				</Button>
 			</div>
 		) : (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
+			<div className={promotionContainer}>
+				<p className="promotional-info">
 					Upgrade your plan to edit {type}
 					<Tooltip title={message}>
 						<span>
@@ -546,7 +546,7 @@ class Mappings extends Component {
 						</span>
 					</Tooltip>
 				</p>
-				<Button href="/billing" target="_blank">
+				<Button href="/billing" target="_blank" className="promotional-button">
 					Upgrade Now
 				</Button>
 			</div>
@@ -556,8 +556,7 @@ class Mappings extends Component {
 		const credentials = this.props.credentials || this.state.credentials;
 		const { url } = this.props;
 
-		const synonyms = this.state.synonyms.split('\n').map(pair =>
-			pair
+		const synonyms = this.state.synonyms.split('\n').map(pair => pair
 				.split(',')
 				.map(synonym => synonym.trim())
 				.join(','));
@@ -567,8 +566,7 @@ class Mappings extends Component {
 			.then(data => data.acknowledged)
 			.then((isUpdated) => {
 				if (isUpdated) {
-					this.fetchSynonyms(credentials).then(newSynonyms =>
-						this.setState({
+					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
 							synonyms: newSynonyms,
 							showSynonymModal: false,
 						}));
@@ -612,21 +610,13 @@ class Mappings extends Component {
 		return (
 			<React.Fragment>
 				<div className={card}>
-					<div
-						style={{
-							borderBottom: '1px solid #eee',
-							padding: 20,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-						}}
-					>
+					<div className="card-info">
 						<HeaderWrapper>
 							<h2 className={heading}>Manage Synonyms</h2>
 							<p>Add new synonyms or edit the existing ones.</p>
 						</HeaderWrapper>
 						{this.state.editable ? (
-							<Button ghost onClick={this.handleSynonymModal}>
+							<Button ghost onClick={this.handleSynonymModal} className="card-button">
 								{this.state.synonyms ? 'Edit' : 'Add'} Synonym
 							</Button>
 						) : (
@@ -635,21 +625,13 @@ class Mappings extends Component {
 					</div>
 				</div>
 				<div className={card}>
-					<div
-						style={{
-							borderBottom: '1px solid #eee',
-							padding: 20,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-						}}
-					>
+					<div className="card-info">
 						<HeaderWrapper>
 							<h2 className={heading}>Manage Mappings</h2>
 							<p>Add new fields or change the types of existing ones.</p>
 						</HeaderWrapper>
 						{this.state.editable ? (
-							<Button ghost onClick={this.toggleModal}>
+							<Button ghost onClick={this.toggleModal} className="card-button">
 								Add New Field
 							</Button>
 						) : (
@@ -666,7 +648,7 @@ class Mappings extends Component {
 									</span>
 								</Tooltip>
 							</span>
-							<div>
+							<div className="col-container">
 								<span className="col">
 									Use case
 									<Tooltip title={usecaseMessage}>

@@ -17,6 +17,25 @@ export const card = css`
 	i {
 		margin: 3px 3px 0px 8px;
 	}
+
+	.card-info{
+		border-bottom: 1px solid #eee;
+		padding: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		@media (max-width: 620px){
+			align-items: flex-start;
+			flex-direction: column;
+		}
+	}
+
+	.card-button{
+		@media (max-width: 620px){
+			margin-left: 0;
+			margin-top: 10px;
+		}
+	}
 `;
 
 export const HeaderWrapper = styled('div')`
@@ -39,6 +58,16 @@ export const Header = styled('header')`
 	font-weight: 600;
 	padding-top: 20px;
 
+	@media (max-width:700px){
+		flex-direction:column;
+		padding: 0 10px;
+	}
+
+	.col-container{
+		display: flex;
+		justify-content: space-between;
+	}
+
 	.col {
 		min-width: 150px;
 		display: inline-flex;
@@ -51,6 +80,10 @@ export const Header = styled('header')`
 
 		&.col--grow {
 			flex-grow: 1;
+		}
+
+		@media (max-width:460px){
+			min-width: 80px;
 		}
 	}
 `;
@@ -91,6 +124,16 @@ export const dropdown = css`
 	margin-left: 12px;
 	padding: 6px 15px 6px 6px;
 	text-transform: capitalize;
+
+	@media (max-width:700px){
+		margin-left:0px;
+		margin-top: 10px;
+		padding: 0;
+	}
+
+	@media (max-width:460px){
+		min-width: 80px;
+	}
 `;
 
 export const item = css`
@@ -101,12 +144,22 @@ export const item = css`
 	margin-bottom: 2px;
 	align-items: center;
 	background-color: rgba(255, 255, 255, 0.8);
+
+	@media (max-width:700px){
+		flex-direction: column;
+		align-items: flex-start;
+	}
 `;
 
 export const subItem = css`
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+
+	@media (max-width:700px){
+		width: 100%;
+		justify-content: space-between;
+	}
 `;
 
 export const Footer = styled('footer')`
@@ -154,6 +207,11 @@ export const deleteBtn = css`
 	flex-direction: row;
 	cursor: pointer;
 
+	@media (max-width:700px){
+		width: 100%;
+		font-weight: 600;
+	}
+
 	span {
 		max-width: calc(100% - 40px);
 		white-space: nowrap;
@@ -167,6 +225,10 @@ export const deleteBtn = css`
 		color: #444;
 		margin-left: 15px;
 		transition: all 0.3s ease;
+
+		@media (max-width:700px){
+			display: inline;
+		}
 	}
 
 	&:hover a,
@@ -202,4 +264,32 @@ export const ErrorLogger = styled('pre')`
 	padding: 10px;
 	font-family: monospace;
 	font-size: 14px;
+`;
+
+export const promotionContainer = css`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	@media (max-width:940px){
+		margin: 10px 0;
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.promotional-button{
+		@media (max-width:940px){
+			margin-left: 0;
+			margin-top: 10px;
+		}
+	}
+
+	.promotional-info{
+		margin: 0 8px 0 0;
+		color: #888;
+		@media (max-width:940px){
+			font-size:14px;
+			font-weight: 400;
+		}
+	}
 `;
