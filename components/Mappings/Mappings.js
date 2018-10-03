@@ -429,7 +429,7 @@ class Mappings extends Component {
 									this.deletePath(address);
 								}}
 							>
-								<i className="fas fa-trash-alt" />
+								<Icon type="delete" />
 							</a>
 						) : null}
 					</h4>
@@ -452,7 +452,7 @@ class Mappings extends Component {
 												this.deletePath(`${address}.${field}`);
 											}}
 										>
-											<i className="fas fa-trash-alt" />
+											<Icon type="delete" />
 										</a>
 									) : null}
 								</div>
