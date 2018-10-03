@@ -428,7 +428,7 @@ class Mappings extends Component {
 									this.deletePath(address);
 								}}
 							>
-								<i className="fas fa-trash-alt" />
+								<Icon type="delete" />
 							</a>
 						) : null}
 					</h4>
@@ -451,7 +451,7 @@ class Mappings extends Component {
 												this.deletePath(`${address}.${field}`);
 											}}
 										>
-											<i className="fas fa-trash-alt" />
+											<Icon type="delete" />
 										</a>
 									) : null}
 								</div>
@@ -521,8 +521,7 @@ class Mappings extends Component {
 		return null;
 	};
 
-	renderPromotionalButtons = (type, message) =>
-		(this.props.url ? (
+	renderPromotionalButtons = (type, message) => (this.props.url ? (
 			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
 					Get an appbase.io account to edit {type}
@@ -556,8 +555,7 @@ class Mappings extends Component {
 		const credentials = this.props.credentials || this.state.credentials;
 		const { url } = this.props;
 
-		const synonyms = this.state.synonyms.split('\n').map(pair =>
-			pair
+		const synonyms = this.state.synonyms.split('\n').map(pair => pair
 				.split(',')
 				.map(synonym => synonym.trim())
 				.join(','));
@@ -567,8 +565,7 @@ class Mappings extends Component {
 			.then(data => data.acknowledged)
 			.then((isUpdated) => {
 				if (isUpdated) {
-					this.fetchSynonyms(credentials).then(newSynonyms =>
-						this.setState({
+					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
 							synonyms: newSynonyms,
 							showSynonymModal: false,
 						}));

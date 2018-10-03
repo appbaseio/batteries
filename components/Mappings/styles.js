@@ -167,6 +167,7 @@ export const deleteBtn = css`
 		color: #444;
 		margin-left: 15px;
 		transition: all 0.3s ease;
+		color:tomato;
 	}
 
 	&:hover a,
@@ -175,7 +176,7 @@ export const deleteBtn = css`
 
 		&:hover,
 		&:focus {
-			color: #222;
+			color: red;
 		}
 	}
 `;
