@@ -27,6 +27,11 @@ const createRequest = (
 		fetch(url, requestOptions)
 			.then((res) => {
 				({ status } = res);
+				if (status >= 500) {
+					return {
+						message: 'Something went wrong!',
+					};
+				}
 				return res.json();
 			})
 			.then((data) => {
