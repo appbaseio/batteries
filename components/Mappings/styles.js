@@ -155,7 +155,7 @@ export const subItem = css`
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	
+
 	@media (max-width:700px){
 		width: 100%;
 		justify-content: space-between;
@@ -264,4 +264,32 @@ export const ErrorLogger = styled('pre')`
 	padding: 10px;
 	font-family: monospace;
 	font-size: 14px;
+`;
+
+export const promotionContainer = css`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	@media (max-width:940px){
+		margin: 10px 0;
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.promotional-button{
+		@media (max-width:940px){
+			margin-left: 0;
+			margin-top: 10px;
+		}
+	}
+
+	.promotional-info{
+		margin: 0 8px 0 0;
+		color: #888;
+		@media (max-width:940px){
+			font-size:14px;
+			font-weight: 400;
+		}
+	}
 `;

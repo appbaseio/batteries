@@ -45,6 +45,7 @@ import {
 	Footer,
 	Button,
 	deleteBtn,
+	promotionContainer,
 } from './styles';
 import Modal from '../shared/Modal';
 import NewFieldModal from './NewFieldModal';
@@ -522,8 +523,8 @@ class Mappings extends Component {
 	};
 
 	renderPromotionalButtons = (type, message) => (this.props.url ? (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
+			<div className={promotionContainer}>
+				<p>
 					Get an appbase.io account to edit {type}
 					<Tooltip title={message}>
 						<span>
@@ -536,8 +537,8 @@ class Mappings extends Component {
 				</Button>
 			</div>
 		) : (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
+			<div className={promotionContainer}>
+				<p className="promotional-info">
 					Upgrade your plan to edit {type}
 					<Tooltip title={message}>
 						<span>
@@ -545,7 +546,7 @@ class Mappings extends Component {
 						</span>
 					</Tooltip>
 				</p>
-				<Button href="/billing" target="_blank">
+				<Button href="/billing" target="_blank" className="promotional-button">
 					Upgrade Now
 				</Button>
 			</div>
