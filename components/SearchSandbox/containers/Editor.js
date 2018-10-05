@@ -563,7 +563,9 @@ export default class Editor extends Component {
 						<Card>
 							<RSWrapper
 								id="search"
-								component="DataSearch"
+								component={
+									this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'
+								}
 								mappings={this.props.mappings}
 								customProps={this.props.customProps}
 								componentProps={this.props.componentProps.search || {}}
@@ -581,6 +583,8 @@ export default class Editor extends Component {
 								customProps={this.props.customProps}
 								mappingsType={this.props.mappingsType}
 								componentProps={resultComponentProps}
+								renderJSONEditor={this.renderJSONEditor}
+								renderDeleteJSON={this.renderDeleteJSON}
 								onPropChange={this.props.onPropChange}
 								full
 								showDelete={false}

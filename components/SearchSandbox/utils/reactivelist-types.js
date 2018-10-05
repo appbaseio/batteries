@@ -36,7 +36,7 @@ export default {
 		label: 'Show Pages',
 		description: 'Enable pagination within the results. If set to false, it creates an infinite scroll view.',
 		input: 'bool',
-		default: true,
+		default: false,
 	},
 	stream: {
 		label: 'Stream',
