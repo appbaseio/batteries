@@ -551,6 +551,7 @@ export default class Editor extends Component {
 										component="MultiList"
 										mappings={this.props.mappings}
 										customProps={this.props.customProps}
+										showCodePreview={this.props.showCodePreview}
 										componentProps={this.props.componentProps[config] || {}}
 										onPropChange={this.props.onPropChange}
 										onDelete={this.props.deleteComponent}
@@ -566,6 +567,7 @@ export default class Editor extends Component {
 								component="DataSearch"
 								mappings={this.props.mappings}
 								customProps={this.props.customProps}
+								showCodePreview={this.props.showCodePreview}
 								componentProps={this.props.componentProps.search || {}}
 								onPropChange={this.props.onPropChange}
 							/>
@@ -579,6 +581,7 @@ export default class Editor extends Component {
 								key={this.state.renderKey}
 								mappings={this.props.mappings}
 								customProps={this.props.customProps}
+								showCodePreview={this.props.showCodePreview}
 								mappingsType={this.props.mappingsType}
 								componentProps={resultComponentProps}
 								renderJSONEditor={this.renderJSONEditor}

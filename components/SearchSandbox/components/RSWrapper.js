@@ -669,8 +669,8 @@ export default class RSWrapper extends Component {
 								size="large"
 								onClick={this.showModal}
 							/>
-							{this.renderComponentCode()}
-							{showPreview ? (
+							{this.props.showCodePreview ? this.renderComponentCode() : null}
+							{showPreview && this.props.showCodePreview ? (
 								<Button
 									icon="eye-o"
 									shape="circle"
@@ -715,7 +715,7 @@ export default class RSWrapper extends Component {
 								size="large"
 								onClick={this.showModal}
 							/>
-							{this.renderComponentCode()}
+							{this.props.showCodePreview ? this.renderComponentCode() : null}
 						</Col>
 					)}
 				</Row>
@@ -731,7 +731,7 @@ export default class RSWrapper extends Component {
 				>
 					{this.renderPropsForm()}
 				</Modal>
-				{showPreview ? (
+				{showPreview && this.props.showCodePreview ? (
 					<PreviewList
 						options={Object.keys(this.props.mappings)}
 						componentProps={this.state.componentProps}

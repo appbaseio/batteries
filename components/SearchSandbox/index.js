@@ -302,6 +302,7 @@ class SearchSandbox extends Component {
 
 		const contextValue = {
 			appId: this.props.appId || null,
+			showCodePreview: this.props.showCodePreview,
 			appName: this.props.appName || null,
 			url: this.props.url,
 			credentials: this.props.credentials || null,
@@ -375,6 +376,7 @@ SearchSandbox.propTypes = {
 	getAppMappings: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
 	customProps: PropTypes.object,
+  showCodePreview: PropTypes.bool,
 };
 
 SearchSandbox.defaultProps = {
@@ -383,6 +385,7 @@ SearchSandbox.defaultProps = {
 	isDashboard: false,
 	url: SCALR_API,
 	customProps: {},
+  showCodePreview: true,
 };
 
 const mapStateToProps = state => ({
