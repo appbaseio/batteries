@@ -496,10 +496,10 @@ export default class Editor extends Component {
 			sortBy: 'asc',
 			paginationAt: 'bottom',
 			...resultComponentProps,
-			onData: (res) => {
+			onData: (res, triggerClickAnalytics) => {
 				const { _id, _index, ...renderedJSON } = res;
 				return (
-					<div className={listItem} key={res._id}>
+					<div className={listItem} key={res._id} onClick={triggerClickAnalytics}>
 						<ExpandCollapse previewHeight="390px" expandText="Show more">
 							{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
 						</ExpandCollapse>
