@@ -20,6 +20,11 @@ export const computeAppPlanState = ({ payload, meta }, state) => {
 				isPaid:
 					isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual,
 				plan: getPlanFromTier(payload.tier),
+				daysLeft: payload.tier_validity
+					? Math.ceil(
+							(payload.tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60),
+					  )
+					: 0,
 			},
 		}),
 	};

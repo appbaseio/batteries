@@ -15,6 +15,13 @@ const modal = css`
 const tab = css`
 	background-color: rgb(190, 245, 255, 0.1);
 `;
+const getData = (data) => {
+	try {
+		return JSON.stringify(data, null, 2);
+	} catch (e) {
+		return data;
+	}
+};
 const RequestDetails = ({
 	show,
 	handleCancel,
@@ -57,13 +64,15 @@ const RequestDetails = ({
 			)}
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
 				<TabPane tab="Response" key="response">
-					<pre css={tab}>{JSON.stringify(response, null, 2)}</pre>
+					<pre css={tab}>{getData(response)}</pre>
 				</TabPane>
 				<TabPane tab="Request" key="request">
-					<pre css={tab}>{JSON.stringify(request, null, 2)}</pre>
+					{/* <p css={tab}>{request}</p> */}
+					{/* <pre css={tab}>{JSON.stringify(request, null, 2)}</pre> */}
+					<pre css={tab}>{getData(request)}</pre>
 				</TabPane>
 				<TabPane tab="Headers" key="headers">
-					<pre css={tab}>{JSON.stringify(headers, 0, 2)}</pre>
+					<pre css={tab}>{getData(headers)}</pre>
 				</TabPane>
 			</Tabs>
 		</Modal>
