@@ -315,7 +315,7 @@ class Mappings extends Component {
 	fetchSynonyms = (credentials) => {
 		const { url, appName } = this.props;
 		return getSettings(appName, credentials, url).then((data) => {
-			if (data[appName].settings && data[appName].settings.index) {
+			if (get(data[appName], 'settings.index')) {
 				const { index } = data[appName].settings;
 				return (
 					index.analysis && index.analysis.filter.synonyms_filter
