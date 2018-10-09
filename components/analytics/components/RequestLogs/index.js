@@ -65,7 +65,7 @@ const parseData = (data = '') => {
 				);
 			}
 			throw Error;
-		} catch (e) {
+		} catch (error) {
 			return data;
 		}
 	}
@@ -190,6 +190,7 @@ class RequestLogs extends React.Component {
 									pagination={{
 										pageSize,
 									}}
+									scroll={{ x: 700 }}
 									onRow={record => ({
 										onClick: () => this.handleLogClick(record),
 									})}
@@ -207,6 +208,7 @@ class RequestLogs extends React.Component {
 									onRow={record => ({
 										onClick: () => this.handleLogClick(record),
 									})}
+									scroll={{ x: 700 }}
 								/>
 							</TabPane>
 							<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
@@ -221,6 +223,7 @@ class RequestLogs extends React.Component {
 									onRow={record => ({
 										onClick: () => this.handleLogClick(record),
 									})}
+									scroll={{ x: 700 }}
 								/>
 							</TabPane>
 							<TabPane tab="ERROR" key={this.tabKeys[3]}>
@@ -235,6 +238,7 @@ class RequestLogs extends React.Component {
 									onRow={record => ({
 										onClick: () => this.handleLogClick(record),
 									})}
+									scroll={{ x: 700 }}
 								/>
 							</TabPane>
 						</Tabs>

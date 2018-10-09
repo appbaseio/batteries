@@ -11,38 +11,57 @@ const normalizeData = (data = []) => data.map((o) => {
 		newData.formatDate = `${date.getMonth() + 1}/${date.getDate()}`;
 		return newData;
 	});
+class SearchVolumeChart extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			width: props.width,
+		};
+	}
 
-const SearchVolumeChart = ({ data, height, width }) => {
-	if (data && data.length) {
+	componentDidMount() {
+		this.setState({
+			width: this.child.parentNode.clientWidth - 40,
+		});
+	}
+
+	render() {
+		const { data, height } = this.props;
+		const { width } = this.state;
 		return (
-			<LineChart
-				width={width}
-				height={height}
-				data={normalizeData(data)}
-				margin={{
-					top: 5,
-					right: 20,
-					left: 10,
-					bottom: 5,
+			<div
+				ref={(c) => {
+					this.child = c;
 				}}
 			>
-				<XAxis dataKey="formatDate" />
-				<YAxis dataKey="count" />
-				<Tooltip />
-				<CartesianGrid stroke="#f5f5f5" />
-				<Line type="monotone" dataKey="count" stroke="#ff7300" />
-			</LineChart>
+				{data && data.length ? (
+					<LineChart
+						width={width}
+						height={height}
+						data={normalizeData(data)}
+						margin={{
+							top: 5,
+							bottom: 5,
+						}}
+					>
+						<XAxis dataKey="formatDate" />
+						<YAxis dataKey="count" />
+						<Tooltip />
+						<CartesianGrid stroke="#f5f5f5" />
+						<Line type="monotone" dataKey="count" stroke="#ff7300" />
+					</LineChart>
+				) : (
+					<EmptyData
+						css={`
+							height: ${height}px;
+							width: ${width}px;
+						`}
+					/>
+				)}
+			</div>
 		);
 	}
-	return (
-		<EmptyData
-			css={`
-				height: ${height}px;
-				width: ${width}px;
-			`}
-		/>
-	);
-};
+}
 SearchVolumeChart.defaultProps = {
 	data: PropTypes.array,
 	width: PropTypes.number,

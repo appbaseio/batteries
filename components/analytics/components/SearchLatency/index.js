@@ -20,38 +20,55 @@ const cls = css`
 `;
 
 class SearchLatency extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			width: undefined,
+		};
+	}
+
 	componentDidMount() {
 		const { fetchAppSearchLatency } = this.props;
 		fetchAppSearchLatency();
+		this.setState({
+			width: this.child.parentNode.clientWidth - 60,
+		});
 	}
 
 	render() {
 		const { searchLatency, isLoading, success } = this.props;
+		const { width } = this.state;
 		return (
-			<Card title="Search Latency" css={cls}>
-				{isLoading ? (
-					<Loader />
-				) : (
-					(success && !searchLatency.length && <EmptyData css="height: 400px" />) || (
-						<BarChart
-							margin={{
-								top: 20,
-								right: 20,
-								bottom: 20,
-								left: 70,
-							}}
-							barCategoryGap={0}
-							width={window.innerWidth - 400}
-							height={400}
-							data={searchLatency}
-						>
-							<XAxis label="Latency (in ms)" dataKey="key" />
-							<YAxis allowDecimals={false} label="Search Count" />
-							<Bar dataKey="count" fill="#A4C7FF" />
-						</BarChart>
-					)
-				)}
-			</Card>
+			<div
+				ref={(c) => {
+					this.child = c;
+				}}
+			>
+				<Card title="Search Latency" css={cls}>
+					{isLoading ? (
+						<Loader />
+					) : (
+						(success && !searchLatency.length && <EmptyData css="height: 400px" />) || (
+							<BarChart
+								margin={{
+									top: 20,
+									right: 20,
+									bottom: 20,
+									left: 70,
+								}}
+								barCategoryGap={0}
+								width={width}
+								height={400}
+								data={searchLatency}
+							>
+								<XAxis label="Latency (in ms)" dataKey="key" />
+								<YAxis allowDecimals={false} label="Search Count" />
+								<Bar dataKey="count" fill="#A4C7FF" />
+							</BarChart>
+						)
+					)}
+				</Card>
+			</div>
 		);
 	}
 }

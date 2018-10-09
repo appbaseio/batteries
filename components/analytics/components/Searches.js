@@ -54,6 +54,7 @@ const Searches = ({
 							vertical-align: top;
 						}
 					`}
+					scroll={{ x: 700 }}
 				/>
 				{href && (
 					<Link to={href}>
