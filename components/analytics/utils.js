@@ -183,14 +183,18 @@ export const popularSearchesFull = (plan) => {
 		return defaultColumns(plan);
 	}
 	return [
-		...defaultColumns(plan),
+		...defaultColumns('free'),
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
 		},
 		{
-			title: 'Click Position',
+			title: 'Avg Click Position',
 			dataIndex: 'clickposition',
+		},
+		{
+			title: 'Click Rate',
+			dataIndex: 'clickrate',
 		},
 		{
 			title: 'Conversion Rate',
@@ -212,11 +216,15 @@ export const popularResultsFull = (plan) => {
 		];
 	}
 	return [
-		...popularResultsCol(plan),
+		...popularResultsCol('free'),
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
 			key: 'clicks',
+		},
+		{
+			title: 'Click Rate',
+			dataIndex: 'clickrate',
 		},
 		{
 			title: 'Conversion Rate',
@@ -237,11 +245,15 @@ export const popularFiltersFull = (plan) => {
 		return popularFiltersCol(plan);
 	}
 	return [
-		...popularFiltersCol(plan),
+		...popularFiltersCol('free'),
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
 			key: 'clicks',
+		},
+		{
+			title: 'Click Rate',
+			dataIndex: 'clickrate',
 		},
 		{
 			title: 'Source',
@@ -476,10 +488,10 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 	});
 }
 // To fetch request logs
-export function getRequestLogs(appName, size = 100) {
+export function getRequestLogs(appName, size = 1000) {
 	return new Promise((resolve, reject) => {
 		fetch(
-			`${ACC_API}/app/${appName}/logs?${getQueryParams({
+			`${ACC_API}/app/${appName}/logs${getQueryParams({
 				size,
 			})}`,
 			{
@@ -514,14 +526,14 @@ export const bannerMessagesAnalytics = {
 	bootstrap: {
 		title: 'Get richer analytics on clicks and conversions',
 		description:
-			'By upgrading to the Growth plan, you can get more actionable analytics on popular filters, popular results, and track clicks and conversions along with a 30-day retention.',
+			'By upgrading to the Growth plan, you can track clicks and conversions, get a 30-day retention on analytics along with being able to view actionable analytics on popular filters, popular results, search latency and geo distribution.',
 		buttonText: 'Upgrade To Growth',
 		href: 'billing',
 	},
 	growth: {
 		title: 'Learn how to track click analytics',
 		description:
-			'See our docs on how to track search, filters, click events, conversions and your own custom events.',
+			'See our docs on how to track search, filters, click events, conversions and add your own custom events.',
 		buttonText: 'Read Docs',
 		href: 'https://docs.appbase.io',
 	},
