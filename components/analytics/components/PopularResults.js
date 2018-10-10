@@ -46,6 +46,9 @@ class PopularResults extends React.Component {
 		}
 		return (
 			<Searches
+				tableProps={{
+					scroll: { x: 700 },
+				}}
 				showViewOption={false}
 				columns={popularResultsFull(plan)}
 				dataSource={popularResults}

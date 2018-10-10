@@ -4,6 +4,7 @@ import { css } from 'react-emotion';
 import {
  BarChart, XAxis, YAxis, Bar,
 } from 'recharts';
+import find from 'lodash/find';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -11,6 +12,23 @@ import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { getAppSearchLatency } from '../../../../modules/actions';
 import { getAppSearchLatencyByName } from '../../../../modules/selectors';
+
+const getSearchLatencyDummy = (latency = []) => {
+	const dummyLatency = latency.map(l => l);
+	let count = 0;
+	while (dummyLatency.length < 11) {
+		const key = count * 10;
+		const isPresent = find(latency, o => o.key === key);
+		if (!isPresent) {
+			dummyLatency.push({
+				key,
+				count: 0,
+			});
+		}
+		count += 1;
+	}
+	return dummyLatency;
+};
 
 const cls = css`
 	width: 100%;
@@ -59,7 +77,7 @@ class SearchLatency extends React.Component {
 								barCategoryGap={0}
 								width={width}
 								height={400}
-								data={searchLatency}
+								data={getSearchLatencyDummy(searchLatency)}
 							>
 								<XAxis label="Latency (in ms)" dataKey="key" />
 								<YAxis allowDecimals={false} label="Search Count" />

@@ -40,6 +40,9 @@ class NoResultsSearch extends React.Component {
 		}
 		return (
 			<Searches
+				tableProps={{
+					scroll: { x: 700 },
+				}}
 				showViewOption={false}
 				dataSource={noResults}
 				title="No Results Searches"
