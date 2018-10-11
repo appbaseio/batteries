@@ -596,7 +596,11 @@ export default class RSWrapper extends Component {
 	};
 
 	renderPropsForm = () => {
-		const propNames = propsMap[this.props.component];
+		let propNames = propsMap[this.props.component];
+		if(this.props.noSort){
+			const { sortBy, ...restProps } = propNames;
+			propNames = restProps;
+		}
 		const { dataField } = this.state.componentProps;
 		const fields = this.getAvailableDataField();
 		const menu = (

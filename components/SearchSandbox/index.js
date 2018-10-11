@@ -309,6 +309,7 @@ class SearchSandbox extends Component {
 			config: this.getActiveConfig(),
 			mappings: this.state.mappings,
 			customProps: this.props.customProps,
+			noSort: this.props.noSort,
 			mappingsType: this.state.mappingsType,
 			useCategorySearch: this.props.useCategorySearch,
 			componentProps: this.state.componentProps,
@@ -377,6 +378,7 @@ SearchSandbox.propTypes = {
 	getAppMappings: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
 	customProps: PropTypes.object,
+	noSort: PropTypes.bool,
 };
 
 SearchSandbox.defaultProps = {
@@ -384,6 +386,7 @@ SearchSandbox.defaultProps = {
 	attribution: null,
 	isDashboard: false,
 	url: SCALR_API,
+	noSort: false,
 	useCategorySearch: false,
 	customProps: {},
 };

@@ -23,7 +23,11 @@ export default {
 		label: 'Sort Order',
 		description: 'Sort the results by one of Best Match, Ascending or Descending order.',
 		input: 'dropdown',
-		options: [{ label: 'Best Match', key: '_score' }, { label: 'Ascending', key: 'asc' }, { label: 'Descending', key: 'desc' }],
+		options: [
+			{ label: 'Best Match', key: '_score' },
+			{ label: 'Ascending', key: 'asc' },
+			{ label: 'Descending', key: 'desc' },
+		],
 		default: '_score',
 	},
 	size: {
@@ -34,7 +38,8 @@ export default {
 	},
 	pagination: {
 		label: 'Show Pages',
-		description: 'Enable pagination within the results. If set to false, it creates an infinite scroll view.',
+		description:
+			'Enable pagination within the results. If set to false, it creates an infinite scroll view.',
 		input: 'bool',
 		default: false,
 	},

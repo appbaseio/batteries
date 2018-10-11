@@ -514,6 +514,10 @@ export default class Editor extends Component {
 				and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
 			},
 		};
+		if(this.props.noSort){
+			const { sortBy, ...restProps } = resultComponentProps;
+			resultComponentProps = restProps;
+		}
 
 		const title = (
 			<span>
@@ -586,6 +590,7 @@ export default class Editor extends Component {
 								renderJSONEditor={this.renderJSONEditor}
 								renderDeleteJSON={this.renderDeleteJSON}
 								onPropChange={this.props.onPropChange}
+								noSort={this.props.noSort}
 								full
 								showDelete={false}
 							/>
