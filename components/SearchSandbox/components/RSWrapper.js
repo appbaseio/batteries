@@ -487,7 +487,7 @@ export default class RSWrapper extends Component {
 				}
 
 				return (
-					<div className="ant-row ant-form-item ant-form-item-no-colon">
+					<div className="ant-row ant-form-item ant-form-item-no-colon" key={name}>
 						<div className="ant-form-item-label">
 							<label className={label} title={currentLabel}>
 								{currentLabel}

@@ -63,9 +63,9 @@ class SearchVolumeChart extends React.Component {
 	}
 }
 SearchVolumeChart.defaultProps = {
-	data: PropTypes.array,
-	width: PropTypes.number,
-	height: PropTypes.number,
+	data: [],
+	width: undefined,
+	height: undefined,
 };
 SearchVolumeChart.propTypes = {
 	data: PropTypes.array,

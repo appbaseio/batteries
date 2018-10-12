@@ -45,6 +45,9 @@ class PopularFilters extends React.Component {
 		}
 		return (
 			<Searches
+				tableProps={{
+					scroll: { x: 700 },
+				}}
 				showViewOption={false}
 				columns={popularFiltersFull(plan)}
 				dataSource={popularFilters}

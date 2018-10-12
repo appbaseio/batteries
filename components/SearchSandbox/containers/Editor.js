@@ -493,7 +493,6 @@ export default class Editor extends Component {
 		resultComponentProps = {
 			size: 5,
 			pagination: true,
-			sortBy: 'asc',
 			paginationAt: 'bottom',
 			...resultComponentProps,
 			onData: (res, triggerClickAnalytics) => {
