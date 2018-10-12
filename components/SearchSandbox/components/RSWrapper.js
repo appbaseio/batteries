@@ -749,7 +749,7 @@ export default class RSWrapper extends Component {
 							) : null}
 						</Col>
 					) : null}
-					<Col span={this.props.full ? 24 : 20}>
+					<Col span={this.props.full ? 24 : 20} id={this.props.id}>
 						<RSComponent
 							componentId={this.props.id}
 							{...restProps}

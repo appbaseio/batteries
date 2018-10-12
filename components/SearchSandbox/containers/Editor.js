@@ -494,6 +494,7 @@ export default class Editor extends Component {
 			size: 5,
 			pagination: true,
 			paginationAt: 'bottom',
+			scrollTarget: 'result',
 			...resultComponentProps,
 			onData: (res, triggerClickAnalytics) => {
 				const { _id, _index, ...renderedJSON } = res;
