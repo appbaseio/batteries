@@ -4,9 +4,9 @@ import reactElementToJSXString from 'react-element-to-jsx-string';
 import { generateDataField, generateFieldWeights } from './utils/dataField';
 
 const getHeader = (config) => {
-	const isMetaDataPresent = config.componentProps.result.metaFields
-														&& config.componentProps.result.metaFields.title
-														&& config.componentProps.result.metaFields.description;
+	const isMetaDataPresent =		config.componentProps.result.metaFields
+		&& config.componentProps.result.metaFields.title
+		&& config.componentProps.result.metaFields.description;
 	const showTree = !isMetaDataPresent;
 	return `
 import React from 'react';
@@ -30,96 +30,100 @@ import {
 	Affix
 } from 'antd';
 import 'antd/dist/antd.css';
-${showTree ? `import ExpandCollapse from 'react-expand-collapse';
+${
+		showTree
+			? `import ExpandCollapse from 'react-expand-collapse';
 
-import './styles.css';
+				import './styles.css';
 
-const { TreeNode } = Tree;
+				const { TreeNode } = Tree;
 
-const renderAsTree = (res, key = '0') => {
-	if (!res) return null;
-	const iterable = Array.isArray(res) ? res : Object.keys(res);
-	return iterable.map((item, index) => {
-		const type = typeof res[item];
-		if (type === 'string' || type === 'number') {
-			return (
-				<TreeNode
-					title={
-						<div>
-							<span>{item}:</span>&nbsp;
-							<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+				const renderAsTree = (res, key = '0') => {
+					if (!res) return null;
+					const iterable = Array.isArray(res) ? res : Object.keys(res);
+					return iterable.map((item, index) => {
+						const type = typeof res[item];
+						if (type === 'string' || type === 'number') {
+							return (
+								<TreeNode
+									title={
+										<div>
+											<span>{item}:</span>&nbsp;
+											<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+										</div>
+									}
+									key={key + "-" + (index + 1)}
+								/>
+							);
+						}
+						const hasObject = (res[item] === undefined && typeof item !== 'string');
+						const node = hasObject ? item : res[item];
+						return (
+							<TreeNode
+								title={typeof item !== 'string' ? 'Object' : '' + (node || Array.isArray(res) ? item : item + ': null')}
+								key={key + "-" + (index + 1)}
+							>
+								{renderAsTree(node, key + "-" + (index + 1))}
+							</TreeNode>
+						);
+					});
+				};
+
+				function onData(res) {
+					return (
+						<div className="list-item" key={res._id}>
+							<ExpandCollapse
+								previewHeight="390px"
+								expandText="Show more"
+							>
+								{
+									<Tree showLine>
+										{renderAsTree(res)}
+									</Tree>
+								}
+							</ExpandCollapse>
 						</div>
-					}
-					key={key + "-" + (index + 1)}
-				/>
-			);
-		}
-		const hasObject = (res[item] === undefined && typeof item !== 'string');
-		const node = hasObject ? item : res[item];
-		return (
-			<TreeNode
-				title={typeof item !== 'string' ? 'Object' : '' + (node || Array.isArray(res) ? item : item + ': null')}
-				key={key + "-" + (index + 1)}
-			>
-				{renderAsTree(node, key + "-" + (index + 1))}
-			</TreeNode>
-		);
-	});
-};
+					);
+				};
 
-function onData(res) {
-	return (
-		<div className="list-item" key={res._id}>
-			<ExpandCollapse
-				previewHeight="390px"
-				expandText="Show more"
-			>
-				{
-					<Tree showLine>
-						{renderAsTree(res)}
-					</Tree>
+				`
+			: `
+				function getNestedValue(obj, path) {
+				const keys = path.split('.');
+				let currentObject = obj;
+
+				keys.forEach(key => (currentObject = currentObject[key]));
+				if (typeof currentObject === 'object') {
+					return JSON.stringify(currentObject);
 				}
-			</ExpandCollapse>
-		</div>
-	);
-};
+				return currentObject;
+				}
 
-` : `
-function getNestedValue(obj, path) {
-  const keys = path.split('.');
-  let currentObject = obj;
-
-  keys.forEach(key => (currentObject = currentObject[key]));
-  if (typeof currentObject === 'object') {
-    return JSON.stringify(currentObject);
-  }
-  return currentObject;
-}
-
-function onData(res) {
-	let {image,url,description,title} = ${JSON.stringify(config.componentProps.result.metaFields)};
-	image = getNestedValue(res,image);
-	title = getNestedValue(res,title);
-	url = getNestedValue(res,url);
-	description = getNestedValue(res,description)
-	return (
-		<Row type="flex" gutter={16} key={res._id} style={{margin:'20px auto',borderBottom:'1px solid #ededed'}}>
-			<Col span={image ? 6 : 0}>
-				{image &&  <img src={image} alt={title} /> }
-			</Col>
-			<Col span={image ? 18 : 24}>
-				<h3 style={{ fontWeight: '600' }}>{title || 'Choose a valid Title Field'}</h3>
-				<p style={{ fontSize: '1em' }}>{description || 'Choose a valid description field'}</p>
-			</Col>
-			<div style={{padding:'20px'}}>
-				{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
-: null}
-			</div>
-		</Row>
-	);
-};
-`}
-`;
+				function onData(res) {
+					let {image,url,description,title} = ${JSON.stringify(config.componentProps.result.metaFields)};
+					image = getNestedValue(res,image);
+					title = getNestedValue(res,title);
+					url = getNestedValue(res,url);
+					description = getNestedValue(res,description)
+					return (
+						<Row type="flex" gutter={16} key={res._id} style={{margin:'20px auto',borderBottom:'1px solid #ededed'}}>
+							<Col span={image ? 6 : 0}>
+								{image &&  <img src={image} alt={title} /> }
+							</Col>
+							<Col span={image ? 18 : 24}>
+								<h3 style={{ fontWeight: '600' }}>{title || 'Choose a valid Title Field'}</h3>
+								<p style={{ fontSize: '1em' }}>{description || 'Choose a valid description field'}</p>
+							</Col>
+							<div style={{padding:'20px'}}>
+								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+				: null}
+							</div>
+						</Row>
+					);
+				};
+			`
+	}
+	`;
 };
 
 export function getComponentCode(config) {
@@ -141,6 +145,7 @@ export function getComponentCode(config) {
 					config.componentProps.dataField,
 					config.mappings,
 				),
+				...config.customProps,
 				onData: '{onData}',
 			};
 			componentStyle = { marginTop: 20 };
@@ -186,6 +191,7 @@ export function getComponentCode(config) {
 					config.mappings,
 				),
 				highlightField: config.componentProps.dataField,
+				...config.customProps,
 			};
 			componentStyle = { marginBottom: 20 };
 			break;
@@ -199,6 +205,7 @@ export function getComponentCode(config) {
 					config.componentProps.dataField,
 					config.mappings,
 				),
+				...config.customProps,
 			};
 			componentStyle = { marginBottom: 20 };
 			break;
@@ -241,6 +248,7 @@ function getApp(config) {
 					component: config.component,
 					mappings: config.mappings,
 					componentProps: searchComponentProps,
+					customProps: config.customProps,
 					componentId: item,
 				};
 				searchCode = getComponentCode(componentConfig);
@@ -252,12 +260,15 @@ function getApp(config) {
 					pagination: true,
 					...resultComponentProps,
 					react: {
-						and: Object.keys(config.componentProps).filter(component => component !== 'result'),
+						and: Object.keys(config.componentProps).filter(
+							component => component !== 'result',
+						),
 					},
 				};
 				componentConfig = {
 					component: 'ReactiveList',
 					mappings: config.mappings,
+					customProps: config.customProps,
 					componentProps: resultComponentProps,
 				};
 				resultCode = getComponentCode(componentConfig);
@@ -270,6 +281,7 @@ function getApp(config) {
 				componentConfig = {
 					component: 'MultiList',
 					mappings: config.mappings,
+					customProps: config.customProps,
 					componentId: item,
 					componentProps: listComponentProps,
 				};

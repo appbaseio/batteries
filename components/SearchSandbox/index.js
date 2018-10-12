@@ -228,6 +228,7 @@ class SearchSandbox extends Component {
 			componentProps: this.state.componentProps,
 			mappings: this.state.mappings,
 			attribution: this.props.attribution || null,
+      		customProps: this.props.customProps,
 		};
 		const code = getSearchTemplate(config);
 		const html = '<div id="root"></div>';
