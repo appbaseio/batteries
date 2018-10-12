@@ -1,5 +1,4 @@
 import { css } from 'emotion';
-import hexRgb from 'hex-rgb';
 
 // returns all applicable styles for a styled component via props
 export const getStylesFromProps = (allProps, filterProps = []) => {
@@ -8,12 +7,6 @@ export const getStylesFromProps = (allProps, filterProps = []) => {
 		{},
 	);
 	return styles;
-};
-
-// gets a rgba string for hex value
-export const hexToRgb = (hex, alpha = 1) => {
-	const { red, green, blue } = hexRgb(hex);
-	return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 };
 
 // generate media query for emotion styles
