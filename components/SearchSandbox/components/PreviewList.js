@@ -76,7 +76,7 @@ class PreviewList extends React.Component {
 		};
 
 		return (
-			<div style={{ margin: '16px 0px' }}>
+			<div style={{ margin: '16px 0px' }} key={name}>
 				<label title={name} style={{ display: 'flex' }}>
 					Select {name} field
 				</label>
@@ -141,8 +141,10 @@ class PreviewList extends React.Component {
 				<ReactiveList
 					componentId={this.props.componentId}
 					pagination
+          			showResultStats={false}
 					paginationAt="bottom"
-					{...resultComponentProps}
+         			size={this.props.componentProps.size || 2}
+         			{...resultComponentProps}
 					dataField={this.props.dataField}
 				/>
 			</Modal>
