@@ -46,7 +46,7 @@ const Searches = ({
 				css="height: calc(100% - 48px)"
 			>
 				<Table
-					rowKey={record => record.key}
+					rowKey={record => record.key + record.count}
 					dataSource={dataSource}
 					columns={columns || defaultColumns(plan)}
 					pagination={pagination}

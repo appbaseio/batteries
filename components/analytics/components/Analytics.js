@@ -53,11 +53,7 @@ const Analytics = ({
 			<Card css="margin-bottom: 20px" title="Summary">
 				<Summary />
 			</Card>
-
-			<Card css="width: 100%;" title="Daily Search Volume">
-				<SearchVolumeChart height={300} data={searchVolume} />
-			</Card>
-
+			<SearchVolumeChart height={300} data={searchVolume} />
 			<Flex css={results}>
 				<div css={searchCls}>
 					<Searches

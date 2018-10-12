@@ -306,7 +306,13 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 		const url =			userPlan === 'growth'
 				? `${ACC_API}/analytics/${appName}/advanced`
 				: `${ACC_API}/analytics/${appName}/overview`;
-		const queryParams = getQueryParams({ clickanalytics });
+		const queryParams =			userPlan === 'growth'
+				? getQueryParams({
+						clickanalytics,
+						from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
+						to: moment().format('YYYY/MM/DD'),
+				  })
+				: getQueryParams({ clickanalytics });
 		fetch(url + queryParams, {
 			method: 'GET',
 			credentials: 'include',
