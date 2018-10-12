@@ -14,7 +14,6 @@ const main = css`
 const titleCls = css`
 	height: 19px;
 	color: #232e44;
-	font-family: 'Open Sans';
 	font-size: 14px;
 	line-height: 19px;
 	text-align: center;
