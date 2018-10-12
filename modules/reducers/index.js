@@ -8,6 +8,7 @@ import {
 	computeAppPermissionState,
 	computeAppMappingState,
 	computeStateByAppName,
+	computePlan,
 } from './utils';
 
 export default {
@@ -24,6 +25,12 @@ export default {
 		AppConstants.APP.GET_PLAN_SUCCESS,
 		AppConstants.APP.GET_PLAN_ERROR,
 		computeAppPlanState,
+	),
+	$getUserPlan: createRequestReducer(
+		AppConstants.ACCOUNT.CHECK_USER_PLAN.GET,
+		AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_SUCCESS,
+		AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_ERROR,
+		computePlan,
 	),
 	$updateUser: createRequestReducer(
 		AppConstants.ACCOUNT.UPDATE_USER,

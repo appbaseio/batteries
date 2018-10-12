@@ -39,6 +39,7 @@ class SearchSandbox extends Component {
 			componentProps: {},
 			showNewProfileModal: false,
 			profileModalError: '',
+			loading: true,
 		};
 	}
 
@@ -67,6 +68,7 @@ class SearchSandbox extends Component {
 					this.setState({
 						componentProps,
 						profileList,
+						loading: false,
 						filterCount: Object.keys(componentProps).filter(
 							item => item !== 'search' && item !== 'result',
 						),
@@ -101,6 +103,7 @@ class SearchSandbox extends Component {
 		this.setState({
 			componentProps,
 			profileList,
+			loading: false,
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
 			),
@@ -277,6 +280,9 @@ class SearchSandbox extends Component {
 		if (!this.state.mappings) {
 			return <div style={vcenter}>Loading...</div>;
 		}
+		if (this.state.loading) {
+			return <div style={vcenter}>Fetching search preferences...</div>;
+		}
 		if (!Object.keys(this.state.mappings).length) {
 			return <div style={vcenter}>No data found. Please insert data to use this feature</div>;
 		}
@@ -311,6 +317,7 @@ class SearchSandbox extends Component {
 			mappings: this.state.mappings,
 			customProps: this.props.customProps,
 			mappingsType: this.state.mappingsType,
+			useCategorySearch: this.props.useCategorySearch,
 			componentProps: this.state.componentProps,
 			onPropChange: this.handleComponentPropChange,
 			filterCount: this.state.filterCount,
@@ -373,6 +380,7 @@ SearchSandbox.propTypes = {
 	credentials: PropTypes.string.isRequired,
 	isDashboard: PropTypes.bool,
 	url: PropTypes.string,
+	useCategorySearch: PropTypes.bool,
 	getAppMappings: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
 	customProps: PropTypes.object,
@@ -383,6 +391,7 @@ SearchSandbox.defaultProps = {
 	attribution: null,
 	isDashboard: false,
 	url: SCALR_API,
+	useCategorySearch: false,
 	customProps: {},
 };
 

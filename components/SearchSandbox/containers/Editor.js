@@ -493,13 +493,13 @@ export default class Editor extends Component {
 		resultComponentProps = {
 			size: 5,
 			pagination: true,
-			sortBy: 'asc',
 			paginationAt: 'bottom',
+			scrollTarget: 'result',
 			...resultComponentProps,
-			onData: (res) => {
+			onData: (res, triggerClickAnalytics) => {
 				const { _id, _index, ...renderedJSON } = res;
 				return (
-					<div className={listItem} key={res._id}>
+					<div className={listItem} key={res._id} onClick={triggerClickAnalytics}>
 						<ExpandCollapse previewHeight="390px" expandText="Show more">
 							{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
 						</ExpandCollapse>
@@ -563,7 +563,9 @@ export default class Editor extends Component {
 						<Card>
 							<RSWrapper
 								id="search"
-								component="DataSearch"
+								component={
+									this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'
+								}
 								mappings={this.props.mappings}
 								customProps={this.props.customProps}
 								componentProps={this.props.componentProps.search || {}}
@@ -581,6 +583,8 @@ export default class Editor extends Component {
 								customProps={this.props.customProps}
 								mappingsType={this.props.mappingsType}
 								componentProps={resultComponentProps}
+								renderJSONEditor={this.renderJSONEditor}
+								renderDeleteJSON={this.renderDeleteJSON}
 								onPropChange={this.props.onPropChange}
 								full
 								showDelete={false}

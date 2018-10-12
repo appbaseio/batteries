@@ -1,14 +1,39 @@
 import React from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
+import { css } from 'react-emotion';
 import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol } from '../utils';
 import { getFilteredResults } from '../../../utils/heplers';
+import { mediaKey } from '../../../utils/media';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
 import SearchLatency from './SearchLatency';
 import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
+
+const results = css`
+	width: 100%;
+	margin-top: 20px;
+	${mediaKey.small} {
+		flex-direction: column;
+	}
+`;
+const searchCls = css`
+	flex: 50%;
+	margin-right: 10px;
+	${mediaKey.small} {
+		margin-right: 0;
+	}
+`;
+const noResultsCls = css`
+	flex: 50%;
+	margin-left: 10px;
+	${mediaKey.small} {
+		margin-left: 0;
+		margin-top: 20px;
+	}
+`;
 
 const Analytics = ({
 	noResults,
@@ -16,7 +41,6 @@ const Analytics = ({
 	searchVolume,
 	popularFilters,
 	popularResults,
-	chartWidth,
 	plan,
 	loading,
 }) => {
@@ -31,11 +55,11 @@ const Analytics = ({
 			</Card>
 
 			<Card css="width: 100%;" title="Daily Search Volume">
-				<SearchVolumeChart width={chartWidth} height={300} data={searchVolume} />
+				<SearchVolumeChart height={300} data={searchVolume} />
 			</Card>
 
-			<Flex css="width: 100%;margin-top: 20px">
-				<div css="flex: 50%;margin-right: 10px">
+			<Flex css={results}>
+				<div css={searchCls}>
 					<Searches
 						href="popular-searches"
 						dataSource={getFilteredResults(popularSearches)}
@@ -44,7 +68,7 @@ const Analytics = ({
 						css="height: 100%"
 					/>
 				</div>
-				<div css="flex: 50%;margin-left: 10px">
+				<div css={noResultsCls}>
 					<Searches
 						href="no-results-searches"
 						dataSource={getFilteredResults(noResults)}
@@ -56,8 +80,8 @@ const Analytics = ({
 			</Flex>
 			{plan === 'growth' && (
 				<React.Fragment>
-					<Flex css="width: 100%;margin-top: 20px">
-						<div css="flex: 50%;margin-right: 10px">
+					<Flex css={results}>
+						<div css={searchCls}>
 							<Searches
 								dataSource={getFilteredResults(popularResults)}
 								columns={popularResultsCol(plan)}
@@ -66,7 +90,7 @@ const Analytics = ({
 								css="height: 100%"
 							/>
 						</div>
-						<div css="flex: 50%;margin-left: 10px">
+						<div css={noResultsCls}>
 							<Searches
 								dataSource={getFilteredResults(popularFilters)}
 								columns={popularFiltersCol(plan)}
@@ -94,13 +118,11 @@ Analytics.defaultProps = {
 	searchVolume: [],
 	popularResults: [],
 	popularFilters: [],
-	chartWidth: window.innerWidth - 300,
 };
 Analytics.propTypes = {
 	loading: PropTypes.bool,
 	noResults: PropTypes.array,
 	popularSearches: PropTypes.array,
-	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	plan: PropTypes.string.isRequired,
 	searchVolume: PropTypes.array,
 	popularResults: PropTypes.array,

@@ -1,29 +1,31 @@
 import { getCredentialsFromPermissions } from '../../utils';
 import { computeMetrics, getPlanFromTier, getApiCalls } from '../helpers';
 
-export const computeAppPlanState = ({ payload, meta }, state) => {
+export const computePlan = ({ payload }) => {
 	const isBootstrapMonthly = payload.tier === 'bootstrap-monthly';
 	const isBootstrapAnnual = payload.tier === 'bootstrap-annual';
 	const isGrowthMonthly = payload.tier === 'growth-monthly';
 	const isGrowthAnnual = payload.tier === 'growth-annual';
-
 	return {
-		results: Object.assign({}, state.results, {
-			[meta.appName]: {
-				...payload,
-				isBootstrapMonthly,
-				isBootstrapAnnual,
-				isGrowthMonthly,
-				isGrowthAnnual,
-				isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
-				isGrowth: isGrowthMonthly || isGrowthAnnual,
-				isPaid:
-					isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual,
-				plan: getPlanFromTier(payload.tier),
-			},
-		}),
+		...payload,
+		isBootstrapMonthly,
+		isBootstrapAnnual,
+		isGrowthMonthly,
+		isGrowthAnnual,
+		isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
+		isGrowth: isGrowthMonthly || isGrowthAnnual,
+		isPaid: isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual,
+		plan: getPlanFromTier(payload.tier),
+		daysLeft: payload.tier_validity
+			? Math.ceil((payload.tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60))
+			: 0,
 	};
 };
+export const computeAppPlanState = ({ payload, meta }, state) => ({
+	results: Object.assign({}, state.results, {
+		[meta.appName]: computePlan({ payload }),
+	}),
+});
 
 export const computeAppMappingState = (action, state) => ({
 	results: Object.assign({}, state.results, {

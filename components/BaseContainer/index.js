@@ -17,7 +17,7 @@ class BaseContainer extends Component {
 			isLoading: true,
 		};
 		const { appName, appId, updateCurrentApp } = props;
-		if (appName && appId) {
+		if (appName || appId) {
 			updateCurrentApp(appName, appId);
 		}
 	}

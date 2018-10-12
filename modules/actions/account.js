@@ -1,6 +1,7 @@
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { setUserInfo, getUserAppsPermissions } from '../../utils/index';
+import { doGet } from '../../utils/requestService';
+import { setUserInfo, getUserAppsPermissions, ACC_API } from '../../utils/index';
 
 export function updateUser(info) {
 	return (dispatch) => {
@@ -27,5 +28,18 @@ export function getUserPermissions(appName, username) {
 					}),
 				))
 			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)));
+	};
+}
+
+export function getUserPlan() {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET));
+		return doGet(`${ACC_API}/user/plan`)
+			.then(res => dispatch(
+					createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_SUCCESS, res, null, {
+						source: 'user_apps',
+					}),
+				))
+			.catch(error => dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_ERROR, null, error)));
 	};
 }
