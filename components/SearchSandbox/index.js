@@ -39,6 +39,7 @@ class SearchSandbox extends Component {
 			componentProps: {},
 			showNewProfileModal: false,
 			profileModalError: '',
+			loading: true,
 		};
 	}
 
@@ -67,6 +68,7 @@ class SearchSandbox extends Component {
 					this.setState({
 						componentProps,
 						profileList,
+						loading: false,
 						filterCount: Object.keys(componentProps).filter(
 							item => item !== 'search' && item !== 'result',
 						),
@@ -101,6 +103,7 @@ class SearchSandbox extends Component {
 		this.setState({
 			componentProps,
 			profileList,
+			loading: false,
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
 			),
@@ -275,6 +278,9 @@ class SearchSandbox extends Component {
 
 		if (!this.state.mappings) {
 			return <div style={vcenter}>Loading...</div>;
+		}
+		if (this.state.loading) {
+			return <div style={vcenter}>Fetching search preferences...</div>;
 		}
 		if (!Object.keys(this.state.mappings).length) {
 			return <div style={vcenter}>No data found. Please insert data to use this feature</div>;

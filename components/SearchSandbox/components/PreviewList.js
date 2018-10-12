@@ -11,22 +11,25 @@ class PreviewList extends React.Component {
 		super(props);
 		if (props.componentProps.metaFields) {
 			const {
-       url, title, description, image,
-      } = props.componentProps.metaFields;
-      this.state = {
-        url,
-        title,
-        description,
-        image,
-      };
+				url,
+				title,
+				description,
+				image, // prettier-ignore
+			} = props.componentProps.metaFields;
+			this.state = {
+				url,
+				title,
+				description,
+				image,
+			};
 		} else {
-      this.state = {
-        title: '',
-        description: '',
-        image: '',
-        url: '',
-      };
-    }
+			this.state = {
+				title: '',
+				description: '',
+				image: '',
+				url: '',
+			};
+		}
 		this.options = ['title', 'description', 'image', 'url'];
 	}
 
@@ -61,8 +64,13 @@ class PreviewList extends React.Component {
 		const menuOption = this.props.options.filter(option => !usedValue.includes(option));
 
 		const menu = (
-			<Menu onClick={e => this.handleMenuClick(e, name)} style={{ height: '250px', overflowY: 'scroll' }}>
-				{menuOption.map(option => <Menu.Item key={option}>{option}</Menu.Item>)}
+			<Menu
+				onClick={e => this.handleMenuClick(e, name)}
+				style={{ height: '250px', overflowY: 'scroll' }}
+			>
+				{menuOption.map(option => (
+					<Menu.Item key={option}>{option}</Menu.Item>
+				))}
 			</Menu>
 		);
 
@@ -71,7 +79,7 @@ class PreviewList extends React.Component {
 		};
 
 		return (
-			<div style={{ margin: '16px 0px' }}>
+			<div style={{ margin: '16px 0px' }} key={name}>
 				<label title={name} style={{ display: 'flex' }}>
 					Select {name} field
 				</label>
@@ -136,7 +144,9 @@ class PreviewList extends React.Component {
 				<ReactiveList
 					componentId={this.props.componentId}
 					pagination
+					showResultStats={false}
 					paginationAt="bottom"
+					size={this.props.componentProps.size || 2}
 					{...resultComponentProps}
 					dataField={this.props.dataField}
 				/>
