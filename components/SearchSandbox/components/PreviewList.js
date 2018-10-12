@@ -11,22 +11,25 @@ class PreviewList extends React.Component {
 		super(props);
 		if (props.componentProps.metaFields) {
 			const {
-       url, title, description, image,
-      } = props.componentProps.metaFields;
-      this.state = {
-        url,
-        title,
-        description,
-        image,
-      };
+				url,
+				title,
+				description,
+				image, // prettier-ignore
+			} = props.componentProps.metaFields;
+			this.state = {
+				url,
+				title,
+				description,
+				image,
+			};
 		} else {
-      this.state = {
-        title: '',
-        description: '',
-        image: '',
-        url: '',
-      };
-    }
+			this.state = {
+				title: '',
+				description: '',
+				image: '',
+				url: '',
+			};
+		}
 		this.options = ['title', 'description', 'image', 'url'];
 	}
 
@@ -62,7 +65,9 @@ class PreviewList extends React.Component {
 
 		const menu = (
 			<Menu onClick={e => this.handleMenuClick(e, name)}>
-				{menuOption.map(option => <Menu.Item key={option}>{option}</Menu.Item>)}
+				{menuOption.map(option => (
+					<Menu.Item key={option}>{option}</Menu.Item>
+				))}
 			</Menu>
 		);
 
