@@ -136,10 +136,10 @@ class PreviewList extends React.Component {
 				<ReactiveList
 					componentId={this.props.componentId}
 					pagination
-          showResultStats={false}
+          			showResultStats={false}
 					paginationAt="bottom"
-          size={this.props.componentProps.size || 2}
-          {...resultComponentProps}
+         			size={this.props.componentProps.size || 2}
+         			{...resultComponentProps}
 					dataField={this.props.dataField}
 				/>
 			</Modal>
