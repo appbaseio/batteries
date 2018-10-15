@@ -6,6 +6,12 @@ export default {
 		input: 'dropdown',
 		multiple: true,
 	},
+  categoryField: {
+    label: 'Category Field',
+		description: 'Select data field which has the category values mapped.',
+		types: ['keyword', 'integer', 'float', 'double', 'date'],
+		input: 'dropdown',
+  },
 	title: {
 		label: 'Title',
 		description: '',

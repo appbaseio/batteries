@@ -1,24 +1,13 @@
 import { getCredentialsFromPermissions } from '../../utils';
+import { computeMetrics, getPlanFromTier, getApiCalls } from '../helpers';
 
-const getPlanFromTier = (tier) => {
-	switch (tier) {
-		case 'bootstrap-monthly':
-		case 'bootstrap-annual':
-			return 'bootstrap';
-		case 'growth-monthly':
-		case 'growth-annual':
-			return 'growth';
-		default:
-			return 'free';
-	}
-};
-export const computeAppPlanState = (data = {}) => {
-	const isBootstrapMonthly = data.tier === 'bootstrap-monthly';
-	const isBootstrapAnnual = data.tier === 'bootstrap-annual';
-	const isGrowthMonthly = data.tier === 'growth-monthly';
-	const isGrowthAnnual = data.tier === 'growth-annual';
-
+export const computePlan = ({ payload }) => {
+	const isBootstrapMonthly = payload.tier === 'bootstrap-monthly';
+	const isBootstrapAnnual = payload.tier === 'bootstrap-annual';
+	const isGrowthMonthly = payload.tier === 'growth-monthly';
+	const isGrowthAnnual = payload.tier === 'growth-annual';
 	return {
+		...payload,
 		isBootstrapMonthly,
 		isBootstrapAnnual,
 		isGrowthMonthly,
@@ -26,10 +15,53 @@ export const computeAppPlanState = (data = {}) => {
 		isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
 		isGrowth: isGrowthMonthly || isGrowthAnnual,
 		isPaid: isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual,
-		plan: getPlanFromTier(data.tier),
+		plan: getPlanFromTier(payload.tier),
+		daysLeft: payload.tier_validity
+			? Math.ceil((payload.tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60))
+			: 0,
 	};
 };
+export const computeAppPlanState = ({ payload, meta }, state) => ({
+	results: Object.assign({}, state.results, {
+		[meta.appName]: computePlan({ payload }),
+	}),
+});
 
-export const computeAppPermissionState = (permissions = []) => ({
-		credentials: getCredentialsFromPermissions(permissions),
-	});
+export const computeAppMappingState = (action, state) => ({
+	results: Object.assign({}, state.results, {
+		[action.meta.appName]: {
+			...action.payload,
+			computedMetrics: computeMetrics(action.payload),
+			totalApiCalls: getApiCalls(action.payload),
+		},
+	}),
+});
+
+export const computeStateByAppName = (action, state) => ({
+	results: Object.assign({}, state.results, {
+		[action.meta.appName]: action.payload,
+	}),
+});
+
+export const computeAppPermissionState = (action, state) => {
+	if (action.meta.source === 'user_apps') {
+		const collectResults = {};
+		Object.keys(action.payload || {}).forEach((key) => {
+			collectResults[key] = {
+				credentials: getCredentialsFromPermissions(action.payload[key]),
+				results: action.payload[key],
+			};
+		});
+		return {
+			results: Object.assign({}, state.results, collectResults),
+		};
+	}
+	return {
+		results: Object.assign({}, state.results, {
+			[action.meta.appName]: {
+				credentials: getCredentialsFromPermissions(action.payload),
+				results: action.payload,
+			},
+		}),
+	};
+};

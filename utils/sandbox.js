@@ -1,8 +1,8 @@
 import { ACC_API } from './index';
 
-export function getPreferences(id) {
+export function getPreferences(name) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${id}/preferences`, {
+		fetch(`${ACC_API}/app/${name}/preferences`, {
 			method: 'GET',
 			credentials: 'include',
 		})
@@ -15,9 +15,9 @@ export function getPreferences(id) {
 	});
 }
 
-export function setPreferences(id, preferences) {
+export function setPreferences(name, preferences) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${id}/preferences`, {
+		fetch(`${ACC_API}/app/${name}/preferences`, {
 			method: 'POST',
 			credentials: 'include',
 			headers: {

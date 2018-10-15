@@ -1,51 +1,54 @@
 import React from 'react';
-import { Card } from 'antd';
-import { css } from 'emotion';
+import {
+ Button, Icon, Row, Col,
+} from 'antd';
 import PropTypes from 'prop-types';
-import { Button as UpgradeButton } from '../../Mappings/styles';
-import Flex from '../Flex';
+import Header from './Header';
 
-const headingMain = css`
-	font-size: 30px;
-	color: #212121;
-	font-weight: 500;
-`;
-const desc = css`
-	font-size: 16px;
-	margin-top: 5px;
-`;
-const UpgradePlan = ({
- title, description, buttonText, href, isHorizontal,
+const Banner = ({
+ title, description, buttonText, href,
 }) => (
-	<Card css="margin-bottom: 20px">
-		<Flex justifyContent="space-between" flexDirection={isHorizontal ? 'row' : 'column'}>
-			<Flex flexDirection="column">
-				<div css={headingMain}>{title}</div>
-				<div css={desc}>{description}</div>
-			</Flex>
-			<Flex
-				css="flex: 30%;min-width: 300px"
-				justifyContent={isHorizontal ? 'flex-end' : undefined}
+	<Header compact>
+		<Row type="flex" justify="space-between" gutter={16}>
+			<Col md={18}>
+				{title && <h2>{title}</h2>}
+				<Row>
+					<Col span={18}>{description && <p>{description}</p>}</Col>
+				</Row>
+			</Col>
+			<Col
+				md={6}
+				css={{
+					display: 'flex',
+					flexDirection: 'column-reverse',
+					paddingBottom: 20,
+				}}
 			>
-				<UpgradeButton css="margin-top: 20px;margin: 20px 0px;" href={href} target="_blank">
+				<Button
+					size="large"
+					type="primary"
+					href={href}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					<Icon type="info-circle" />
 					{buttonText}
-				</UpgradeButton>
-			</Flex>
-		</Flex>
-	</Card>
+				</Button>
+			</Col>
+		</Row>
+	</Header>
 );
-UpgradePlan.defaultProps = {
+Banner.defaultProps = {
 	description: '',
 	href: '/billing',
 	buttonText: 'Upgrade Now',
-	isHorizontal: false,
 };
-UpgradePlan.propTypes = {
+
+Banner.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string,
 	buttonText: PropTypes.string,
 	href: PropTypes.string,
-	isHorizontal: PropTypes.bool,
 };
 
-export default UpgradePlan;
+export default Banner;

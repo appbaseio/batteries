@@ -1,10 +1,39 @@
 import React from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
+import { css } from 'react-emotion';
 import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol } from '../utils';
+import { getFilteredResults } from '../../../utils/heplers';
+import { mediaKey } from '../../../utils/media';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
+import SearchLatency from './SearchLatency';
+import Summary from './Summary';
+import GeoDistribution from './GeoDistribution';
+
+const results = css`
+	width: 100%;
+	margin-top: 20px;
+	${mediaKey.small} {
+		flex-direction: column;
+	}
+`;
+const searchCls = css`
+	flex: 50%;
+	margin-right: 10px;
+	${mediaKey.small} {
+		margin-right: 0;
+	}
+`;
+const noResultsCls = css`
+	flex: 50%;
+	margin-left: 10px;
+	${mediaKey.small} {
+		margin-left: 0;
+		margin-top: 20px;
+	}
+`;
 
 const Analytics = ({
 	noResults,
@@ -13,7 +42,6 @@ const Analytics = ({
 	popularFilters,
 	popularResults,
 	plan,
-	redirectTo,
 	loading,
 }) => {
 	if (loading) {
@@ -22,50 +50,63 @@ const Analytics = ({
 	}
 	return (
 		<React.Fragment>
-			<Card title="Daily Search Volume">
-				<SearchVolumeChart
-					width={window.innerWidth - 300}
-					height={300}
-					data={searchVolume}
-				/>
+			<Card css="margin-bottom: 20px" title="Summary">
+				<Summary />
 			</Card>
-			<Flex css="width: 100%;margin-top: 20px">
-				<div css="flex: 50%;margin-right: 10px">
+
+			<Card css="width: 100%;" title="Daily Search Volume">
+				<SearchVolumeChart height={300} data={searchVolume} />
+			</Card>
+
+			<Flex css={results}>
+				<div css={searchCls}>
 					<Searches
-						onClick={() => redirectTo('popularSearches')}
-						dataSource={popularSearches}
+						href="popular-searches"
+						dataSource={getFilteredResults(popularSearches)}
 						title="Popular Searches"
 						plan={plan}
+						css="height: 100%"
 					/>
 				</div>
-				<div css="flex: 50%;margin-left: 10px">
+				<div css={noResultsCls}>
 					<Searches
-						onClick={() => redirectTo('noResultSearches')}
-						dataSource={noResults}
+						href="no-results-searches"
+						dataSource={getFilteredResults(noResults)}
 						title="No Result Searches"
 						plan={plan}
+						css="height: 100%"
 					/>
 				</div>
 			</Flex>
 			{plan === 'growth' && (
-				<Flex css="width: 100%;margin-top: 50px">
-					<div css="flex: 50%;margin-right: 10px">
-						<Searches
-							dataSource={popularResults}
-							columns={popularResultsCol(plan)}
-							title="Popular Results"
-							onClick={() => redirectTo('popularResults')}
-						/>
-					</div>
-					<div css="flex: 50%;margin-left: 10px">
-						<Searches
-							dataSource={popularFilters}
-							columns={popularFiltersCol(plan)}
-							title="Popular Filters"
-							onClick={() => redirectTo('popularFilters')}
-						/>
-					</div>
-				</Flex>
+				<React.Fragment>
+					<Flex css={results}>
+						<div css={searchCls}>
+							<Searches
+								dataSource={getFilteredResults(popularResults)}
+								columns={popularResultsCol(plan)}
+								title="Popular Results"
+								href="popular-results"
+								css="height: 100%"
+							/>
+						</div>
+						<div css={noResultsCls}>
+							<Searches
+								dataSource={getFilteredResults(popularFilters)}
+								columns={popularFiltersCol(plan)}
+								title="Popular Filters"
+								href="popular-filters"
+								css="height: 100%"
+							/>
+						</div>
+					</Flex>
+					<Flex css="width: 100%;margin-top: 20px">
+						<GeoDistribution />
+					</Flex>
+					<Flex css="width: 100%;margin-top: 20px">
+						<SearchLatency />
+					</Flex>
+				</React.Fragment>
 			)}
 		</React.Fragment>
 	);
@@ -76,7 +117,6 @@ Analytics.defaultProps = {
 	popularSearches: [],
 	searchVolume: [],
 	popularResults: [],
-	redirectTo: () => null,
 	popularFilters: [],
 };
 Analytics.propTypes = {
@@ -86,7 +126,6 @@ Analytics.propTypes = {
 	plan: PropTypes.string.isRequired,
 	searchVolume: PropTypes.array,
 	popularResults: PropTypes.array,
-	redirectTo: PropTypes.func,
 	popularFilters: PropTypes.array,
 };
 

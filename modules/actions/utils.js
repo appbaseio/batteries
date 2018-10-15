@@ -1,14 +1,14 @@
 const formatError = (error = {}) => {
 	try {
-		const errorObj = error && JSON.parse(error.message);
 		const errorToBeReturned = {};
-		if (errorObj && errorObj.length) {
-			errorToBeReturned.message = errorObj[0] && errorObj[0].message;
-		}
-		errorToBeReturned.actual = errorObj;
+		errorToBeReturned.message = error.message;
+		errorToBeReturned.actual = error;
 		return errorToBeReturned;
 	} catch (e) {
-		return error;
+		return {
+			message: 'Something went wrong',
+			actual: error,
+		};
 	}
 };
 /**
@@ -26,7 +26,7 @@ export function createAction(actionId, payload, error, meta) {
 	if (payload !== undefined) {
 		action.payload = payload;
 	}
-	if (arguments.length > 2 || error !== undefined) {
+	if (error !== undefined) {
 		action.error = formatError(error);
 	}
 	if (meta !== undefined) {

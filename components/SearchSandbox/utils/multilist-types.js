@@ -21,8 +21,12 @@ export default {
 		label: 'Sort By',
 		description: 'Sort the results by either Count, Ascending or Descending order.',
 		input: 'dropdown',
-		options: [{ label: 'Count', key: 'count' }, { label: 'Ascending', key: 'asc' }, { label: 'Descending', key: 'desc' }],
-		default: 'count',
+		options: [
+			{ label: 'Count', key: 'count' },
+			{ label: 'Ascending', key: 'asc' },
+			{ label: 'Descending', key: 'desc' },
+		],
+		default: 'Count',
 	},
 	showSearch: {
 		label: 'Show Search',
@@ -44,9 +48,10 @@ export default {
 	},
 	queryFormat: {
 		label: 'Match All or Any',
-		description: 'When multiple values are selected, enable either match All values or match Any values.',
+		description:
+			'When multiple values are selected, enable either match All values or match Any values.',
 		input: 'dropdown',
 		options: [{ label: 'Any', key: 'or' }, { label: 'All', key: 'and' }],
 		default: 'or',
-	}
+	},
 };

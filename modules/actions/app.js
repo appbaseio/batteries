@@ -7,10 +7,11 @@ import {
 	getShare,
 	getAppPlan as fetchAppPlan,
 	createShare,
-	createSubscription as CreateSubscription,
+	createSubscription,
+	deleteSubscription,
+	getAppMetrics as GetAppMetrics,
 } from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
-import { getCredentials } from '../../utils';
 
 /**
  * To fetch app details
@@ -41,10 +42,10 @@ export function getAppMappings(appName, credentials, url) {
 	};
 }
 
-export function deleteApp(appId) {
+export function deleteApp(appName) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.DELETE_APP));
-		return DeleteApp(appId)
+		return DeleteApp(appName)
 			.then(res => dispatch(createAction(AppConstants.APP.DELETE_APP_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.DELETE_APP_ERROR, null, error)));
 	};
@@ -68,23 +69,59 @@ export function createAppShare(appId, payload) {
 	};
 }
 
-export function getAppPlan(appName) {
-	return (dispatch) => {
+export function getAppPlan(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.GET_PLAN));
 		return fetchAppPlan(appName)
-			.then(res => dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res)))
+			.then(res => dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res, null, { appName })))
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
 	};
 }
-
-export function createAppSubscription(stripeToken, plan) {
-	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION));
-		return CreateSubscription(stripeToken, plan)
-			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_ERROR, null, error)));
+/**
+ * To get the metrics of an app
+ * @param {*} id // App id ( optional )
+ * @param {*} name // App name ( optional )
+ */
+export function getAppMetrics(id, name) {
+	return (dispatch, getState) => {
+		const appId = id || get(getState(), '$getCurrentApp.id', 'default');
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		dispatch(createAction(AppConstants.APP.GET_METRICS));
+		return GetAppMetrics(appId)
+			.then(res => dispatch(
+					createAction(AppConstants.APP.GET_METRICS_SUCCESS, res, null, { appName }),
+				))
+			.catch((error) => {
+				dispatch(createAction(AppConstants.APP.GET_METRICS_ERROR, null, error));
+			});
 	};
 }
+
+export function createAppSubscription(stripeToken, plan, name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name');
+		dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION));
+		return createSubscription(stripeToken, plan, appName)
+			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS, res)))
+			.catch((error) => {
+				dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_ERROR, null, error));
+			});
+	};
+}
+
+export function deleteAppSubscription(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name');
+		dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION));
+		return deleteSubscription(appName)
+			.then(res => dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION_SUCCESS, res)))
+			.catch((error) => {
+				dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION_ERROR, null, error));
+			});
+	};
+}
+
 export function setCurrentApp(appName, appId) {
 	return createAction(AppConstants.APP.SET_CURRENT_APP, {
 		id: appId,
