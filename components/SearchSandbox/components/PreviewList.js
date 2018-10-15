@@ -66,7 +66,7 @@ class PreviewList extends React.Component {
 		const menu = (
 			<Menu
 				onClick={e => this.handleMenuClick(e, name)}
-				style={{ height: '250px', overflowY: 'scroll' }}
+				style={{ maxHeight: '250px', overflowY: 'scroll' }}
 			>
 				{menuOption.map(option => (
 					<Menu.Item key={option}>{option}</Menu.Item>
