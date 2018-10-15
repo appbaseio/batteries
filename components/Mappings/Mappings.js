@@ -5,7 +5,7 @@ import {
 	func,
 	bool,
 } from 'prop-types';
-import { Tooltip, Icon, Input,Popover } from 'antd';
+import { Tooltip, Icon, Input, Popover } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
@@ -418,6 +418,7 @@ class Mappings extends Component {
 	};
 
 	getIcon = (type) => {
+		const iconStyle = { margin: '3px 3px 0px 8px' } ;
 		switch (type) {
 			case 'text':
 			case 'string':
@@ -425,7 +426,7 @@ class Mappings extends Component {
 				return <Icon type="file-text" theme="outlined" />;
 			case 'long':
 			case 'integer':
-				return <span style={{ margin: '3px 3px 0px 8px' }}>#</span>;
+				return <span style={iconStyle}>#</span>;
 			case 'geo_point':
 			case 'geo_shape':
 				return <Icon type="environment" theme="outlined" />;
@@ -433,11 +434,11 @@ class Mappings extends Component {
 				return <Icon type="calendar" theme="outlined" />;
 			case 'double':
 			case 'float':
-				return <span style={{ margin: '3px 3px 0px 8px' }}>π</span>;
+				return <span style={iconStyle}>π</span>;
 			case 'boolean':
 				return <Icon type="check" theme="outlined" />;
 			case 'object':
-				return <span style={{ margin: '3px 3px 0px 8px' }}>{'{...}'}</span>;
+				return <span style={iconStyle}>{'{...}'}</span>;
 			case 'image':
 				return <Icon type="file-jpg" theme="outlined" />;
 			default:
@@ -471,13 +472,10 @@ class Mappings extends Component {
 							);
 						}
 						const properties = fields[field];
-						let type = 'default';
-						if (properties.type) {
-							type = properties.type;
-						}
+						const propertyType = properties.type ? properties.type : 'default';
 						const mappingInfo = (
 							<Popover content={<pre>{JSON.stringify(properties, null, ' ')}</pre>}>
-								{this.getIcon(type)}
+								{this.getIcon(propertyType)}
 							</Popover>
 						);
 						return (
