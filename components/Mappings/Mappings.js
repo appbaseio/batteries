@@ -417,6 +417,36 @@ class Mappings extends Component {
 		return null;
 	};
 
+	getConversionMap = field => conversionMap[field] || [];
+
+	renderTransformationFields = (originalFields, fields, field) => {
+		if (originalFields[field]) {
+			return this.getConversionMap(this.getType(originalFields[field].type))
+				.map(itemType => (
+					<option
+						key={itemType}
+						value={this.getType(itemType)}
+					>
+						{this.getType(itemType)
+							.split('_')
+							.join(' ')}
+					</option>
+				));
+		}
+
+		return this.getConversionMap(this.getType(fields[field].type))
+			.map(itemType => (
+				<option
+					key={itemType}
+					value={this.getType(itemType)}
+				>
+					{this.getType(itemType)
+						.split('_')
+						.join(' ')}
+				</option>
+			));
+	}
+
 	renderMapping = (type, fields, originalFields, address = '') => {
 		if (fields) {
 			return (
@@ -478,31 +508,7 @@ class Mappings extends Component {
 													{this.getType(fields[field].type)}
 												</option>
 											)}
-											{originalFields[field]
-												? conversionMap[
-														this.getType(originalFields[field].type)
-												  ].map(itemType => (
-														<option
-															key={itemType}
-															value={this.getType(itemType)}
-														>
-															{this.getType(itemType)
-																.split('_')
-																.join(' ')}
-														</option>
-												  ))
-												: conversionMap[
-														this.getType(fields[field].type)
-												  ].map(itemType => (
-														<option
-															key={itemType}
-															value={this.getType(itemType)}
-														>
-															{this.getType(itemType)
-																.split('_')
-																.join(' ')}
-														</option>
-												  ))}
+											{this.renderTransformationFields(originalFields, fields, field)}
 										</select>
 									) : (
 										<span
