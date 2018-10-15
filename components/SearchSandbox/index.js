@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
-import { Menu, Button, Dropdown, Icon, Modal, Input } from 'antd';
+import {
+ Menu, Button, Dropdown, Icon, Modal, Input,
+} from 'antd';
 import { css } from 'emotion';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
+import { connect } from 'react-redux';
 
-import { getMappings, getMappingsTree } from '../../utils/mappings';
+import { getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
+import { getAppMappings as getMappings } from '../../modules/actions';
+import { getRawMappingsByAppName } from '../../modules/selectors';
 
 const wrapper = css`
 	padding: 15px;
@@ -18,7 +24,7 @@ const SAVE_AS_NEW_PROFILE = 'SEARCH_SANDBOX_SAVE_NEW_PROFILE_APPBASE';
 
 export const SandboxContext = React.createContext();
 
-export default class SearchSandbox extends Component {
+class SearchSandbox extends Component {
 	constructor(props) {
 		super(props);
 		const profile = 'default';
@@ -33,20 +39,39 @@ export default class SearchSandbox extends Component {
 			componentProps: {},
 			showNewProfileModal: false,
 			profileModalError: '',
+			loading: true,
 		};
+	}
+
+	static getDerivedStateFromProps(props, state) {
+		const { mappings } = props;
+		if (!state.mappings && mappings) {
+			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
+			return {
+				mappings: getMappingsTree(mappings),
+				mappingsType,
+			};
+		}
+
+		return null;
 	}
 
 	componentDidMount() {
 		if (this.props.isDashboard) {
-			getPreferences(this.props.appId)
+			getPreferences(this.props.appName)
 				.then((pref) => {
 					this.pref = pref || {};
-					const profileList = Array.from(new Set([...this.state.profileList, ...Object.keys(this.pref)]));
+					const profileList = Array.from(
+						new Set([...this.state.profileList, ...Object.keys(this.pref)]),
+					);
 					const componentProps = this.pref[this.state.profile] || {};
 					this.setState({
 						componentProps,
 						profileList,
-						filterCount: Object.keys(componentProps).filter(item => item !== 'search' && item !== 'result'),
+						loading: false,
+						filterCount: Object.keys(componentProps).filter(
+							item => item !== 'search' && item !== 'result',
+						),
 					});
 				})
 				.catch(() => this.getLocalPref());
@@ -54,25 +79,34 @@ export default class SearchSandbox extends Component {
 			this.getLocalPref();
 		}
 
-		getMappings(this.props.appName, this.props.credentials, this.props.url).then((res) => {
-			const mappingsType = Object.keys(res).length > 0 ? Object.keys(res)[0] : '';
+		const { mappings, isFetchingMapping } = this.props;
+		if (mappings) {
+			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
 			this.setState({
-				mappings: getMappingsTree(res),
+				mappings: getMappingsTree(mappings),
 				mappingsType,
 			});
-		});
+		} else if (!isFetchingMapping) {
+			const { appName, credentials, getAppMappings } = this.props;
+			getAppMappings(appName, credentials);
+		}
 	}
 
 	getLocalPref = () => {
 		let pref = localStorage.getItem(this.props.appName);
 		if (pref) pref = JSON.parse(pref);
-		this.pref = pref;
-		const profileList = Array.from(new Set([...this.state.profileList, ...Object.keys(this.pref)]));
+		this.pref = pref || {};
+		const profileList = Array.from(
+			new Set([...this.state.profileList, ...Object.keys(this.pref)]),
+		);
 		const componentProps = this.pref[this.state.profile] || {};
 		this.setState({
 			componentProps,
 			profileList,
-			filterCount: Object.keys(componentProps).filter(item => item !== 'search' && item !== 'result'),
+			loading: false,
+			filterCount: Object.keys(componentProps).filter(
+				item => item !== 'search' && item !== 'result',
+			),
 		});
 	};
 
@@ -81,8 +115,7 @@ export default class SearchSandbox extends Component {
 		localStorage.setItem(this.props.appName, value);
 	};
 
-	getActiveConfig = () =>
-		this.state.configs.find(config => config.profile === this.state.profile);
+	getActiveConfig = () => this.state.configs.find(config => config.profile === this.state.profile);
 
 	setFilterCount = (filterCount) => {
 		this.setState({
@@ -97,7 +130,7 @@ export default class SearchSandbox extends Component {
 		};
 
 		if (this.props.isDashboard) {
-			setPreferences(this.props.appId, this.pref).catch(() => this.setLocalPref(this.pref));
+			setPreferences(this.props.appName, this.pref).catch(() => this.setLocalPref(this.pref));
 		} else {
 			this.setLocalPref(this.pref);
 		}
@@ -125,14 +158,18 @@ export default class SearchSandbox extends Component {
 			this.newComponentProps = this.pref[this.state.profile];
 			this.setState({
 				showNewProfileModal: true,
-				filterCount: Object.keys(this.newComponentProps).filter(item => item !== 'search' && item !== 'result'),
+				filterCount: Object.keys(this.newComponentProps).filter(
+					item => item !== 'search' && item !== 'result',
+				),
 			});
 		} else {
 			const componentProps = this.pref[key] || {};
 			this.setState({
 				profile: key,
 				componentProps,
-				filterCount: Object.keys(componentProps).filter(item => item !== 'search' && item !== 'result'),
+				filterCount: Object.keys(componentProps).filter(
+					item => item !== 'search' && item !== 'result',
+				),
 			});
 		}
 	};
@@ -191,6 +228,7 @@ export default class SearchSandbox extends Component {
 			componentProps: this.state.componentProps,
 			mappings: this.state.mappings,
 			attribution: this.props.attribution || null,
+      		customProps: this.props.customProps,
 		};
 		const code = getSearchTemplate(config);
 		const html = '<div id="root"></div>';
@@ -242,6 +280,9 @@ export default class SearchSandbox extends Component {
 		if (!this.state.mappings) {
 			return <div style={vcenter}>Loading...</div>;
 		}
+		if (this.state.loading) {
+			return <div style={vcenter}>Fetching search preferences...</div>;
+		}
 		if (!Object.keys(this.state.mappings).length) {
 			return <div style={vcenter}>No data found. Please insert data to use this feature</div>;
 		}
@@ -251,13 +292,17 @@ export default class SearchSandbox extends Component {
 				onClick={this.handleProfileChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{this.state.profileList.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
+				{this.state.profileList.map(item => (
+					<Menu.Item key={item}>{item}</Menu.Item>
+				))}
 				<Menu.Divider />
 				<Menu.Item key={NEW_PROFILE}>
-					<Icon type="plus" />&nbsp; Create a New Profile
+					<Icon type="plus" />
+					&nbsp; Create a New Profile
 				</Menu.Item>
 				<Menu.Item key={SAVE_AS_NEW_PROFILE}>
-					<Icon type="save" />&nbsp; Save as New Profile
+					<Icon type="save" />
+					&nbsp; Save as New Profile
 				</Menu.Item>
 			</Menu>
 		);
@@ -270,7 +315,9 @@ export default class SearchSandbox extends Component {
 			profile: this.state.profile,
 			config: this.getActiveConfig(),
 			mappings: this.state.mappings,
+			customProps: this.props.customProps,
 			mappingsType: this.state.mappingsType,
+			useCategorySearch: this.props.useCategorySearch,
 			componentProps: this.state.componentProps,
 			onPropChange: this.handleComponentPropChange,
 			filterCount: this.state.filterCount,
@@ -333,9 +380,35 @@ SearchSandbox.propTypes = {
 	credentials: PropTypes.string.isRequired,
 	isDashboard: PropTypes.bool,
 	url: PropTypes.string,
+	useCategorySearch: PropTypes.bool,
+	getAppMappings: PropTypes.func.isRequired,
+	isFetchingMapping: PropTypes.bool.isRequired,
+	customProps: PropTypes.object,
 };
 
 SearchSandbox.defaultProps = {
+	appId: null,
+	attribution: null,
 	isDashboard: false,
 	url: SCALR_API,
+	useCategorySearch: false,
+	customProps: {},
 };
+
+const mapStateToProps = state => ({
+	appId: get(state, '$getCurrentApp.id'),
+	appName: get(state, '$getCurrentApp.name'),
+	mappings: getRawMappingsByAppName(state) || null,
+	isFetchingMapping: get(state, '$getAppMappings.isFetching'),
+});
+
+const mapDispatchToProps = dispatch => ({
+	getAppMappings: (appName, credentials, url) => {
+		dispatch(getMappings(appName, credentials, url));
+	},
+});
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(SearchSandbox);

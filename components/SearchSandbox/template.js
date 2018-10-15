@@ -3,7 +3,12 @@ import reactElementToJSXString from 'react-element-to-jsx-string';
 
 import { generateDataField, generateFieldWeights } from './utils/dataField';
 
-const HEADER = `
+const getHeader = (config) => {
+	const isMetaDataPresent =		config.componentProps.result.metaFields
+		&& config.componentProps.result.metaFields.title
+		&& config.componentProps.result.metaFields.description;
+	const showTree = !isMetaDataPresent;
+	return `
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -16,6 +21,7 @@ import {
 } from '@appbaseio/reactivesearch';
 import {
 	Row,
+	Button,
 	Col,
 	Card,
 	Switch,
@@ -23,84 +29,133 @@ import {
 	Popover,
 	Affix
 } from 'antd';
-import ExpandCollapse from 'react-expand-collapse';
-
 import 'antd/dist/antd.css';
-import './styles.css';
+${
+		showTree
+			? `import ExpandCollapse from 'react-expand-collapse';
 
-const { TreeNode } = Tree;
+				import './styles.css';
 
-function onData(res) {
-	return (
-		<div className="list-item" key={res._id}>
-			<ExpandCollapse
-				previewHeight="390px"
-				expandText="Show more"
-			>
-				{
-					<Tree showLine>
-						{renderAsTree(res)}
-					</Tree>
-				}
-			</ExpandCollapse>
-		</div>
-	);
-};
+				const { TreeNode } = Tree;
 
-const renderAsTree = (res, key = '0') => {
-	if (!res) return null;
-	const iterable = Array.isArray(res) ? res : Object.keys(res);
-	return iterable.map((item, index) => {
-		const type = typeof res[item];
-		if (type === 'string' || type === 'number') {
-			return (
-				<TreeNode
-					title={
-						<div>
-							<span>{item}:</span>&nbsp;
-							<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+				const renderAsTree = (res, key = '0') => {
+					if (!res) return null;
+					const iterable = Array.isArray(res) ? res : Object.keys(res);
+					return iterable.map((item, index) => {
+						const type = typeof res[item];
+						if (type === 'string' || type === 'number') {
+							return (
+								<TreeNode
+									title={
+										<div>
+											<span>{item}:</span>&nbsp;
+											<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+										</div>
+									}
+									key={key + "-" + (index + 1)}
+								/>
+							);
+						}
+						const hasObject = (res[item] === undefined && typeof item !== 'string');
+						const node = hasObject ? item : res[item];
+						return (
+							<TreeNode
+								title={typeof item !== 'string' ? 'Object' : '' + (node || Array.isArray(res) ? item : item + ': null')}
+								key={key + "-" + (index + 1)}
+							>
+								{renderAsTree(node, key + "-" + (index + 1))}
+							</TreeNode>
+						);
+					});
+				};
+
+				function onData(res) {
+					return (
+						<div className="list-item" key={res._id}>
+							<ExpandCollapse
+								previewHeight="390px"
+								expandText="Show more"
+							>
+								{
+									<Tree showLine>
+										{renderAsTree(res)}
+									</Tree>
+								}
+							</ExpandCollapse>
 						</div>
-					}
-					key={key + "-" + (index + 1)}
-				/>
-			);
-		}
-		const hasObject = (res[item] === undefined && typeof item !== 'string');
-		const node = hasObject ? item : res[item];
-		return (
-			<TreeNode
-				title={typeof item !== 'string' ? 'Object' : '' + (node || Array.isArray(res) ? item : item + ': null')}
-				key={key + "-" + (index + 1)}
-			>
-				{renderAsTree(node, key + "-" + (index + 1))}
-			</TreeNode>
-		);
-	});
+					);
+				};
+
+				`
+			: `
+				function getNestedValue(obj, path) {
+				const keys = path.split('.');
+				let currentObject = obj;
+
+				keys.forEach(key => (currentObject = currentObject[key]));
+				if (typeof currentObject === 'object') {
+					return JSON.stringify(currentObject);
+				}
+				return currentObject;
+				}
+
+				function onData(res) {
+					let {image,url,description,title} = ${JSON.stringify(config.componentProps.result.metaFields)};
+					image = getNestedValue(res,image);
+					title = getNestedValue(res,title);
+					url = getNestedValue(res,url);
+					description = getNestedValue(res,description)
+					return (
+						<Row type="flex" gutter={16} key={res._id} style={{margin:'20px auto',borderBottom:'1px solid #ededed'}}>
+							<Col span={image ? 6 : 0}>
+								{image &&  <img src={image} alt={title} /> }
+							</Col>
+							<Col span={image ? 18 : 24}>
+								<h3 style={{ fontWeight: '600' }}>{title || 'Choose a valid Title Field'}</h3>
+								<p style={{ fontSize: '1em' }}>{description || 'Choose a valid description field'}</p>
+							</Col>
+							<div style={{padding:'20px'}}>
+								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+				: null}
+							</div>
+						</Row>
+					);
+				};
+			`
+	}
+	`;
 };
-`;
 
 export function getComponentCode(config) {
 	let allProps = config.componentProps || {};
+	const { metaFields, ...otherProps } = allProps;
 	let componentStyle = {};
 	switch (config.component) {
 		case 'ReactiveList': {
 			allProps = {
-				componentId: 'SearchResult',
+				componentId: config.componentId,
 				size: 5,
 				pagination: true,
-				...config.componentProps,
+				...otherProps,
 				react: {
 					and: Object.values(config.componentProps.react.and),
 				},
+				dataField: generateDataField(
+					'ReactiveList',
+					config.componentProps.dataField,
+					config.mappings,
+				),
+				...config.customProps,
 				onData: '{onData}',
 			};
 			componentStyle = { marginTop: 20 };
 			break;
 		}
 		case 'DataSearch': {
+			const { categoryField, ...restProps } = config.componentProps;
 			allProps = {
 				componentId: config.componentId,
-				...config.componentProps,
+				...restProps,
 				fieldWeights: generateFieldWeights(
 					config.componentProps.dataField,
 					config.componentProps.fieldWeights,
@@ -116,6 +171,31 @@ export function getComponentCode(config) {
 			componentStyle = { marginBottom: 20 };
 			break;
 		}
+		case 'CategorySearch': {
+			allProps = {
+				componentId: config.componentId,
+				...config.componentProps,
+				fieldWeights: generateFieldWeights(
+					config.componentProps.dataField,
+					config.componentProps.fieldWeights,
+					config.mappings,
+				),
+				dataField: generateDataField(
+					'DataSearch',
+					config.componentProps.dataField,
+					config.mappings,
+				),
+				categoryField: generateDataField(
+					'MultiList',
+					config.componentProps.categoryField,
+					config.mappings,
+				),
+				highlightField: config.componentProps.dataField,
+				...config.customProps,
+			};
+			componentStyle = { marginBottom: 20 };
+			break;
+		}
 		case 'MultiList': {
 			allProps = {
 				componentId: config.componentId,
@@ -125,6 +205,7 @@ export function getComponentCode(config) {
 					config.componentProps.dataField,
 					config.mappings,
 				),
+				...config.customProps,
 			};
 			componentStyle = { marginBottom: 20 };
 			break;
@@ -137,7 +218,7 @@ export function getComponentCode(config) {
 		useBooleanShorthandSyntax: false,
 	});
 
-	code = code.replace('onData="{onData}"', 'onData = {onData}');
+	code = code.replace('onData="{onData}"', 'onData={onData}');
 	code = code.replace('div', config.component);
 
 	return code;
@@ -164,9 +245,10 @@ function getApp(config) {
 					highlightField: config.componentProps.search.dataField,
 				};
 				componentConfig = {
-					component: 'DataSearch',
+					component: config.component,
 					mappings: config.mappings,
 					componentProps: searchComponentProps,
+					customProps: config.customProps,
 					componentId: item,
 				};
 				searchCode = getComponentCode(componentConfig);
@@ -178,12 +260,15 @@ function getApp(config) {
 					pagination: true,
 					...resultComponentProps,
 					react: {
-						and: Object.keys(config.componentProps).filter(component => component !== 'result'),
+						and: Object.keys(config.componentProps).filter(
+							component => component !== 'result',
+						),
 					},
 				};
 				componentConfig = {
 					component: 'ReactiveList',
 					mappings: config.mappings,
+					customProps: config.customProps,
 					componentProps: resultComponentProps,
 				};
 				resultCode = getComponentCode(componentConfig);
@@ -196,6 +281,7 @@ function getApp(config) {
 				componentConfig = {
 					component: 'MultiList',
 					mappings: config.mappings,
+					customProps: config.customProps,
 					componentId: item,
 					componentProps: listComponentProps,
 				};
@@ -236,6 +322,7 @@ const App = () => (
 		app="${config.appName}"
 		credentials="${config.credentials}"
 		url="${config.url}"
+		analytics
 	>
 		<Row gutter={16} style={{ padding: 20 }}>
 			<Col span={12}>
@@ -263,7 +350,7 @@ ReactDOM.render(
 }
 
 export default function getSearchTemplate(config) {
-	return `${HEADER}${getApp(config)}`;
+	return `${getHeader(config)}${getApp(config)}`;
 }
 
 function getTemplateStyles() {

@@ -1,8 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Searches from './Searches';
-import { getPopularFilters, popularFiltersFull } from '../utils';
+import { getPopularFilters, popularFiltersFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
+
+const headers = {
+	key: 'Filters',
+	count: 'Impressions',
+	clicks: 'Clicks',
+	source: 'Source',
+	conversionrate: 'Conversion Rate',
+};
 
 class PopularFilters extends React.Component {
 	constructor(props) {
@@ -37,6 +45,9 @@ class PopularFilters extends React.Component {
 		}
 		return (
 			<Searches
+				tableProps={{
+					scroll: { x: 700 },
+				}}
 				showViewOption={false}
 				columns={popularFiltersFull(plan)}
 				dataSource={popularFilters}
@@ -44,6 +55,18 @@ class PopularFilters extends React.Component {
 				pagination={{
 					pageSize: 10,
 				}}
+				onClickDownload={() => exportCSVFile(
+						headers,
+						popularFilters.map(item => ({
+							key: item.key.replace(/,/g, ''),
+							count: item.count,
+							clicks: item.clicks || '-',
+							source: item.source.replace(/,/g, '') || '-',
+							conversionrate: item.conversionrate || '-',
+						})),
+						'popular_results',
+					)
+				}
 			/>
 		);
 	}
