@@ -11,7 +11,6 @@ import { getAppPlanByName } from '../../../modules/selectors';
 import EmptyData from '../EmptyData';
 import { mediaKey } from '../../../utils/media';
 
-
 const chart = css`
 	width: 100%;
 	${mediaKey.small} {
@@ -33,14 +32,14 @@ class SearchVolumeChart extends React.Component {
 		super(props);
 		this.state = {
 			width: props.width,
-			searchVolume: props.data,
-			data: props.data,
+			searchVolume: props.data || [],
+			data: props.data || [],
 		};
 	}
 
 	static getDerivedStateFromProps(props, state) {
-		if (state.searchVolume !== props.data) {
-			return { data: props.data };
+		if (props.data !== state.searchVolume) {
+			return { data: props.data, searchVolume: props.data };
 		}
 		return null;
 	}
@@ -58,7 +57,9 @@ class SearchVolumeChart extends React.Component {
 		if (value === 'weekly') {
 			const data = [];
 			for (let i = 1; i <= 7; i += 1) {
-				data.unshift(searchVolume[length - i]);
+				if (searchVolume[length - i]) {
+					data.unshift(searchVolume[length - i]);
+				}
 			}
 			this.setState({
 				data,
