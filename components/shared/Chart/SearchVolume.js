@@ -11,7 +11,6 @@ import { getAppPlanByName } from '../../../modules/selectors';
 import EmptyData from '../EmptyData';
 import { mediaKey } from '../../../utils/media';
 
-const Option = { Select };
 
 const chart = css`
 	width: 100%;
@@ -78,16 +77,14 @@ class SearchVolumeChart extends React.Component {
 			<Card
 				extra={
 					plan === 'growth' ? (
-						<div>
-							<Select onChange={this.handleChange} defaultValue="monthly">
-								<Option value="monthly" key="monthly">
-									Monthly
-								</Option>
-								<Option value="weekly" key="weekly">
-									weekly
-								</Option>
-							</Select>
-						</div>
+						<Select onChange={this.handleChange} defaultValue="monthly">
+							<Select.Option value="monthly" key="monthly">
+								Monthly
+							</Select.Option>
+							<Select.Option value="weekly" key="weekly">
+								weekly
+							</Select.Option>
+						</Select>
 					) : (
 						undefined
 					)
