@@ -418,7 +418,7 @@ class Mappings extends Component {
 	};
 
 	getIcon = (type) => {
-		const iconStyle = { margin: '3px 3px 0px 8px' } ;
+		const iconStyle = { margin: '3px 3px 0px 8px' };
 		switch (type) {
 			case 'text':
 			case 'string':
