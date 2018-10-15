@@ -61,7 +61,7 @@ export default class RSWrapper extends Component {
 			componentProps: props.componentProps,
 			error: '',
 			isInputActive: false,
-			searchterm: '',
+			searchTerm: '',
 			previewModal: false,
 		};
 
@@ -566,7 +566,7 @@ export default class RSWrapper extends Component {
 				}
 
 				if (this.state.isInputActive) {
-					dropdownOptions = dropdownOptions.filter(option => option.label.startsWith(this.state.searchterm));
+					dropdownOptions = dropdownOptions.filter(option => option.label.toLowerCase().startsWith(this.state.searchTerm.toLowerCase()));
 				}
 
 				if (!dropdownOptions.length) {
@@ -592,9 +592,9 @@ export default class RSWrapper extends Component {
 								justifyContent: 'space-between',
 								alignItems: 'center',
 							}}
-							name="searchterm"
+							name="searchTerm"
 							onBlur={this.handleDropdownBlur}
-							value={this.state.isInputActive ? this.state.searchterm : selectedValue}
+							value={this.state.isInputActive ? this.state.searchTerm : selectedValue}
 							defaultValue={selectedValue}
 							onChange={this.handleDropdownSearch}
 						/>
