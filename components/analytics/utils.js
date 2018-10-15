@@ -274,11 +274,11 @@ export const requestLogs = [
 		render: operation => (
 			<div>
 				<Flex>
-					<div css="width: 70px">
+					<div css="width: 100px;margin-top: 5px;word-break: keep-all;">
 						<span css={requestOpt}>{operation.method}</span>
 					</div>
-					<div>
-						<span css="color: #74A2FF;margin-left: 10px">{operation.uri}</span>
+					<div css="margin-left: 5px;">
+						<span css="color: #74A2FF;">{operation.uri}</span>
 					</div>
 				</Flex>
 			</div>
@@ -287,14 +287,17 @@ export const requestLogs = [
 	{
 		title: 'Type',
 		dataIndex: 'classifier',
+		width: '100px',
 	},
 	{
 		title: 'Time',
 		dataIndex: 'timeTaken',
+		width: '140px',
 	},
 	{
 		title: 'Status',
 		dataIndex: 'status',
+		width: '100px',
 	},
 ];
 /**
@@ -309,7 +312,9 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 		const queryParams =			userPlan === 'growth'
 				? getQueryParams({
 						clickanalytics,
-						from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
+						from: moment()
+							.subtract(30, 'days')
+							.format('YYYY/MM/DD'),
 						to: moment().format('YYYY/MM/DD'),
 				  })
 				: getQueryParams({ clickanalytics });
