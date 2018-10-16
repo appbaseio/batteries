@@ -20,6 +20,11 @@ export default {
 		AppConstants.APP.PERMISSION.GET_ERROR,
 		computeAppPermissionState,
 	),
+	$transferAppOwnership: createRequestReducer(
+		AppConstants.APP.TRANSFER_OWNERSHIP,
+		AppConstants.APP.TRANSFER_OWNERSHIP_SUCCESS,
+		AppConstants.APP.TRANSFER_OWNERSHIP_ERROR,
+	),
 	$getAppPlan: createRequestReducer(
 		AppConstants.APP.GET_PLAN,
 		AppConstants.APP.GET_PLAN_SUCCESS,
