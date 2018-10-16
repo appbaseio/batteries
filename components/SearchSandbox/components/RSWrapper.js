@@ -566,7 +566,7 @@ export default class RSWrapper extends Component {
 				}
 
 				if (this.state.isInputActive) {
-					dropdownOptions = dropdownOptions.filter(option => option.label.toLowerCase().startsWith(this.state.searchTerm.toLowerCase()));
+					dropdownOptions = dropdownOptions.filter(option => option.label.toLowerCase().includes(this.state.searchTerm.toLowerCase()));
 				}
 
 				if (!dropdownOptions.length) {
