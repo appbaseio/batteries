@@ -60,6 +60,8 @@ export default class RSWrapper extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
+			isInputActive: false,
+			searchTerm: '',
 			previewModal: false,
 		};
 
@@ -197,15 +199,30 @@ export default class RSWrapper extends Component {
 		});
 	};
 
+	handleDropdownBlur = () => {
+		this.setState({
+			isInputActive: false,
+		});
+	}
+
 	handleDropdownChange = (e, name) => {
 		const value = e.key;
 		this.setState({
+			isInputActive: false,
 			componentProps: {
 				...this.state.componentProps,
 				[name]: value,
 			},
 		});
 	};
+
+	handleDropdownSearch = (e) => {
+		const { target: { name, value } } = e;
+		this.setState({
+			isInputActive: true,
+			[name]: value,
+		});
+	}
 
 	handleSearchDataFieldChange = (item) => {
 		const field = item.key;
@@ -547,6 +564,14 @@ export default class RSWrapper extends Component {
 						? selectedDropdown.label
 						: propsMap[this.props.component][name].default;
 				}
+
+				if (this.state.isInputActive) {
+					dropdownOptions = dropdownOptions.filter(option => option.label.toLowerCase().includes(this.state.searchTerm.toLowerCase()));
+				}
+
+				if (!dropdownOptions.length) {
+					dropdownOptions.push({ label: 'No options', key: '' });
+				}
 				const menu = (
 					<Menu
 						onClick={e => this.handleDropdownChange(e, name)}
@@ -560,16 +585,19 @@ export default class RSWrapper extends Component {
 
 				FormInput = dropdownOptions.length ? (
 					<Dropdown overlay={menu} trigger={['click']}>
-						<Button
+						<Input
 							style={{
 								width: '100%',
 								display: 'flex',
 								justifyContent: 'space-between',
 								alignItems: 'center',
 							}}
-						>
-							{selectedValue} <Icon type="down" />
-						</Button>
+							name="searchTerm"
+							onBlur={this.handleDropdownBlur}
+							value={this.state.isInputActive ? this.state.searchTerm : selectedValue}
+							defaultValue={selectedValue}
+							onChange={this.handleDropdownSearch}
+						/>
 					</Dropdown>
 				) : noOptionsMessage;
 				break;
@@ -689,30 +717,30 @@ export default class RSWrapper extends Component {
 				url: urlKey, title: titleKey, image: imageKey, description: descriptionKey,
 			} = metaFields;
 			otherProps = {
-				onData: (res) => {
-					const url = getNestedValue(res, urlKey);
-					const title = getNestedValue(res, titleKey);
-					const description = getNestedValue(res, descriptionKey);
-					const image = getNestedValue(res, imageKey);
+					onData: (res) => {
+						const url = getNestedValue(res, urlKey);
+						const title = getNestedValue(res, titleKey);
+						const description = getNestedValue(res, descriptionKey);
+						const image = getNestedValue(res, imageKey);
 
-					return (
-					<Row type="flex" key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
-						<Col span={image ? 6 : 0}>
-							<img style={{ width: '100%' }} src={image} alt={title} />
-						</Col>
-						<Col span={image ? 18 : 24}>
-							<h3 style={{ fontWeight: '600' }}>{title}</h3>
-							<p style={{ fontSize: '1em' }}>{description}</p>
-						</Col>
-						<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
-							{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
-	 : null}
-							{this.props.renderJSONEditor(res)}
-							{this.props.renderDeleteJSON(res)}
-						</div>
-					</Row>
-				);
-},
+						return (
+						<Row type="flex" key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
+							<Col span={image ? 6 : 0}>
+								<img style={{ width: '100%' }} src={image} alt={title} />
+							</Col>
+							<Col span={image ? 18 : 24}>
+								<h3 style={{ fontWeight: '600' }}>{title}</h3>
+								<p style={{ fontSize: '1em' }}>{description}</p>
+							</Col>
+							<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
+								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+								: null}
+								{this.props.renderJSONEditor(res)}
+								{this.props.renderDeleteJSON(res)}
+							</div>
+						</Row>
+					);
+				},
 			};
 		}
 
