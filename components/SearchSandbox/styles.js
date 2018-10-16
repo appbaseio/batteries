@@ -94,6 +94,13 @@ const componentStyles = css`
 	label {
 		font-weight: normal;
 	}
+	/* To fix the checkbox overlap in MulitList Cards */
+	ul li > label > span {
+		width: 80%;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
 `;
 
 const fieldBadge = css`
