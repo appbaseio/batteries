@@ -226,15 +226,18 @@ export const deleteBtn = css`
 		margin-left: 15px;
 		transition: all 0.3s ease;
 		color:tomato;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
 
 		@media (max-width:700px){
-			display: inline;
+			display: inline-flex;
 		}
 	}
 
 	&:hover a,
 	&:focus a {
-		display: inline;
+		display: inline-flex;
 
 		&:hover,
 		&:focus {

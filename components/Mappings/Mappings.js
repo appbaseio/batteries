@@ -418,31 +418,31 @@ class Mappings extends Component {
 	};
 
 	getIcon = (type) => {
-		const iconStyle = { margin: '3px 3px 0px 8px' };
+		const iconStyle = { margin: 0, fontSize: 13 };
 		switch (type) {
 			case 'text':
 			case 'string':
 			case 'keyword':
-				return <Icon type="file-text" theme="outlined" />;
+				return <Icon style={iconStyle} type="file-text" theme="outlined" />;
 			case 'long':
 			case 'integer':
-				return <span style={iconStyle}>#</span>;
+				return <div style={iconStyle}>#</div>;
 			case 'geo_point':
 			case 'geo_shape':
-				return <Icon type="environment" theme="outlined" />;
+				return <Icon style={iconStyle} type="environment" theme="outlined" />;
 			case 'date':
-				return <Icon type="calendar" theme="outlined" />;
+				return <Icon style={iconStyle} type="calendar" theme="outlined" />;
 			case 'double':
 			case 'float':
-				return <span style={iconStyle}>π</span>;
+				return <div style={iconStyle}>π</div>;
 			case 'boolean':
-				return <Icon type="check" theme="outlined" />;
+				return <Icon style={iconStyle} type="check" theme="outlined" />;
 			case 'object':
-				return <span style={iconStyle}>{'{...}'}</span>;
+				return <div style={iconStyle}>{'{...}'}</div>;
 			case 'image':
-				return <Icon type="file-jpg" theme="outlined" />;
+				return <Icon style={iconStyle} type="file-jpg" theme="outlined" />;
 			default:
-				return <Icon type="file-unknown" theme="outlined" />;
+				return <Icon style={iconStyle} type="file-unknown" theme="outlined" />;
 		}
 	};
 
@@ -503,15 +503,35 @@ class Mappings extends Component {
 						}
 						const properties = fields[field];
 						const propertyType = properties.type ? properties.type : 'default';
+						const flex = {
+							display: 'flex',
+							flexDirection: 'row',
+							alignItems: 'center',
+						};
+
 						const mappingInfo = (
-							<Popover content={<pre>{JSON.stringify(properties, null, ' ')}</pre>}>
-								{this.getIcon(propertyType)}
+							<Popover content={<pre>{JSON.stringify(properties, null, 2)}</pre>}>
+								<span
+									css={{
+										...flex,
+										justifyContent: 'center',
+										width: 30,
+										height: 30,
+										border: '1px solid #ddd',
+										borderRadius: '50%',
+										display: 'inline-flex',
+										marginRight: 12,
+									}}
+								>
+									{this.getIcon(propertyType)}
+								</span>
 							</Popover>
 						);
+
 						return (
 							<div key={field} className={item}>
 								<div className={deleteBtn}>
-									<span title={field}>
+									<span title={field} css={flex}>
 										{mappingInfo}
 										{field}
 									</span>
