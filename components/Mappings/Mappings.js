@@ -5,7 +5,7 @@ import {
 	func,
 	bool,
 } from 'prop-types';
-import { Tooltip, Icon, Input } from 'antd';
+import { Tooltip, Icon, Input, Popover } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
@@ -417,7 +417,36 @@ class Mappings extends Component {
 		return null;
 	};
 
-	getConversionMap = field => conversionMap[field] || [];
+	getIcon = (type) => {
+		const iconStyle = { margin: '3px 3px 0px 8px' };
+		switch (type) {
+			case 'text':
+			case 'string':
+			case 'keyword':
+				return <Icon type="file-text" theme="outlined" />;
+			case 'long':
+			case 'integer':
+				return <span style={iconStyle}>#</span>;
+			case 'geo_point':
+			case 'geo_shape':
+				return <Icon type="environment" theme="outlined" />;
+			case 'date':
+				return <Icon type="calendar" theme="outlined" />;
+			case 'double':
+			case 'float':
+				return <span style={iconStyle}>π</span>;
+			case 'boolean':
+				return <Icon type="check" theme="outlined" />;
+			case 'object':
+				return <span style={iconStyle}>{'{...}'}</span>;
+			case 'image':
+				return <Icon type="file-jpg" theme="outlined" />;
+			default:
+				return <Icon type="file-unknown" theme="outlined" />;
+		}
+	};
+
+  getConversionMap = field => conversionMap[field] || [];
 
 	renderTransformationFields = (originalFields, fields, field) => {
 		if (originalFields[field]) {
@@ -472,10 +501,20 @@ class Mappings extends Component {
 								`${address ? `${address}.` : ''}${field}.properties`,
 							);
 						}
+						const properties = fields[field];
+						const propertyType = properties.type ? properties.type : 'default';
+						const mappingInfo = (
+							<Popover content={<pre>{JSON.stringify(properties, null, ' ')}</pre>}>
+								{this.getIcon(propertyType)}
+							</Popover>
+						);
 						return (
 							<div key={field} className={item}>
 								<div className={deleteBtn}>
-									<span title={field}>{field}</span>
+									<span title={field}>
+										{mappingInfo}
+										{field}
+									</span>
 									{this.state.editable ? (
 										<a
 											onClick={() => {
