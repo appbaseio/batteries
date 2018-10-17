@@ -18,6 +18,7 @@ const Searches = ({
 	pagination,
 	onClickDownload,
 	href,
+	tableProps,
 	...props
 }) => (
 	<Card
@@ -54,6 +55,7 @@ const Searches = ({
 							vertical-align: top;
 						}
 					`}
+					{...tableProps}
 				/>
 				{href && (
 					<Link to={href}>

@@ -1,6 +1,7 @@
 import React from 'react';
 import find from 'lodash/find';
 import get from 'lodash/get';
+import filter from 'lodash/filter';
 import {
  Card, Tabs, Table, notification,
 } from 'antd';
@@ -46,11 +47,27 @@ const filterHits = (hits = []) => {
 	};
 };
 
-const parseData = (data) => {
+const parseData = (data = '') => {
 	try {
 		return JSON.parse(data);
 	} catch (e) {
-		return data;
+		try {
+			const removeBackslash = data.split('\n');
+			const formatted = filter(removeBackslash, o => o !== '');
+			if (formatted.length) {
+				return (
+					<div>
+						{formatted.map((i, index) => (
+							// eslint-disable-next-line
+							<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
+						))}
+					</div>
+				);
+			}
+			throw Error;
+		} catch (error) {
+			return data;
+		}
 	}
 };
 class RequestLogs extends React.Component {
@@ -155,101 +172,113 @@ class RequestLogs extends React.Component {
 		const { pageSize } = this.props;
 		return (
 			<Card title="Latest Operations">
-			{
-				isFetching ? <Loader /> : (
-				<React.Fragment>
-					<Tabs
-						animated={false}
-						onTabClick={this.changeActiveTabKey}
-						activeKey={activeTabKey}
-					>
-						<TabPane tab="ALL" key={this.tabKeys[0]}>
-							<Table
-								css=".ant-table-row { cursor: pointer }"
-								rowKey={record => record.id}
-								dataSource={hits}
-								columns={requestLogs}
-								pagination={{
-									pageSize,
-								}}
-								onRow={record => ({
-									onClick: () => this.handleLogClick(record),
-								})}
-							/>
-						</TabPane>
-						<TabPane tab="SEARCH" key={this.tabKeys[1]}>
-							<Table
-								css=".ant-table-row { cursor: pointer }"
-								rowKey={record => record.id}
-								dataSource={searchHits}
-								columns={requestLogs}
-								pagination={{
-									pageSize,
-								}}
-								onRow={record => ({
-									onClick: () => this.handleLogClick(record),
-								})}
-							/>
-						</TabPane>
-						<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
-							<Table
-								css=".ant-table-row { cursor: pointer }"
-								rowKey={record => record.id}
-								dataSource={successHits}
-								columns={requestLogs}
-								pagination={{
-									pageSize,
-								}}
-								onRow={record => ({
-									onClick: () => this.handleLogClick(record),
-								})}
-							/>
-						</TabPane>
-						<TabPane tab="ERROR" key={this.tabKeys[3]}>
-							<Table
-								css=".ant-table-row { cursor: pointer }"
-								rowKey={record => record.id}
-								dataSource={errorHits}
-								columns={requestLogs}
-								pagination={{
-									pageSize,
-								}}
-								onRow={record => ({
-									onClick: () => this.handleLogClick(record),
-								})}
-							/>
-						</TabPane>
-					</Tabs>
-					{showDetails
-						&& this.currentRequest && (
-							<RequestDetails
-								show={showDetails}
-								handleCancel={this.handleCancel}
-								headers={get(this.currentRequest, '_source.request.headers', {})}
-								request={
-									parseData(get(this.currentRequest, '_source.request.body')) || {}
-								}
-								response={
-									parseData(get(this.currentRequest, '_source.response.body')) || {}
-								}
-								time={get(this.currentRequest, '_source.timestamp', '')}
-								method={get(this.currentRequest, '_source.request.method', '')}
-								url={get(this.currentRequest, '_source.request.uri', '')}
-								ip={get(
-									this.currentRequest,
-									'_source.request.headers.X-Forwarded-For[0]',
-								)}
-								status={get(this.currentRequest, '_source.response.status', '')}
-								processingTime={get(
-									this.currentRequest,
-									'_source.response.timetaken',
-									'',
-								)}
-							/>
-						)}
-				</React.Fragment>
-				)
-			}
+				{isFetching ? (
+					<Loader />
+				) : (
+					<React.Fragment>
+						<Tabs
+							animated={false}
+							onTabClick={this.changeActiveTabKey}
+							activeKey={activeTabKey}
+						>
+							<TabPane tab="ALL" key={this.tabKeys[0]}>
+								<Table
+									css=".ant-table-row { cursor: pointer }"
+									rowKey={record => record.id}
+									dataSource={hits}
+									columns={requestLogs}
+									pagination={{
+										pageSize,
+									}}
+									scroll={{ x: 700 }}
+									onRow={record => ({
+										onClick: () => this.handleLogClick(record),
+									})}
+								/>
+							</TabPane>
+							<TabPane tab="SEARCH" key={this.tabKeys[1]}>
+								<Table
+									css=".ant-table-row { cursor: pointer }"
+									rowKey={record => record.id}
+									dataSource={searchHits}
+									columns={requestLogs}
+									pagination={{
+										pageSize,
+									}}
+									onRow={record => ({
+										onClick: () => this.handleLogClick(record),
+									})}
+									scroll={{ x: 700 }}
+								/>
+							</TabPane>
+							<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
+								<Table
+									css=".ant-table-row { cursor: pointer }"
+									rowKey={record => record.id}
+									dataSource={successHits}
+									columns={requestLogs}
+									pagination={{
+										pageSize,
+									}}
+									onRow={record => ({
+										onClick: () => this.handleLogClick(record),
+									})}
+									scroll={{ x: 700 }}
+								/>
+							</TabPane>
+							<TabPane tab="ERROR" key={this.tabKeys[3]}>
+								<Table
+									css=".ant-table-row { cursor: pointer }"
+									rowKey={record => record.id}
+									dataSource={errorHits}
+									columns={requestLogs}
+									pagination={{
+										pageSize,
+									}}
+									onRow={record => ({
+										onClick: () => this.handleLogClick(record),
+									})}
+									scroll={{ x: 700 }}
+								/>
+							</TabPane>
+						</Tabs>
+						{showDetails
+							&& this.currentRequest && (
+								<RequestDetails
+									show={showDetails}
+									handleCancel={this.handleCancel}
+									headers={get(
+										this.currentRequest,
+										'_source.request.headers',
+										{},
+									)}
+									request={
+										parseData(
+											get(this.currentRequest, '_source.request.body'),
+										) || {}
+									}
+									response={
+										parseData(
+											get(this.currentRequest, '_source.response.body'),
+										) || {}
+									}
+									time={get(this.currentRequest, '_source.timestamp', '')}
+									method={get(this.currentRequest, '_source.request.method', '')}
+									url={get(this.currentRequest, '_source.request.uri', '')}
+									ip={get(
+										this.currentRequest,
+										'_source.request.headers.X-Forwarded-For[0]',
+									)}
+									status={get(this.currentRequest, '_source.response.status', '')}
+									processingTime={get(
+										this.currentRequest,
+										'_source.response.timetaken',
+										'',
+									)}
+								/>
+							)}
+					</React.Fragment>
+				)}
 			</Card>
 		);
 	}

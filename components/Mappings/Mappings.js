@@ -5,7 +5,7 @@ import {
 	func,
 	bool,
 } from 'prop-types';
-import { Tooltip, Icon, Input } from 'antd';
+import { Tooltip, Icon, Input, Popover } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
@@ -45,6 +45,7 @@ import {
 	Footer,
 	Button,
 	deleteBtn,
+	promotionContainer,
 } from './styles';
 import Modal from '../shared/Modal';
 import NewFieldModal from './NewFieldModal';
@@ -314,7 +315,7 @@ class Mappings extends Component {
 	fetchSynonyms = (credentials) => {
 		const { url, appName } = this.props;
 		return getSettings(appName, credentials, url).then((data) => {
-			if (data[appName].settings && data[appName].settings.index) {
+			if (get(data[appName], 'settings.index')) {
 				const { index } = data[appName].settings;
 				return (
 					index.analysis && index.analysis.filter.synonyms_filter
@@ -416,6 +417,65 @@ class Mappings extends Component {
 		return null;
 	};
 
+	getIcon = (type) => {
+		const iconStyle = { margin: 0, fontSize: 13 };
+		switch (type) {
+			case 'text':
+			case 'string':
+			case 'keyword':
+				return <Icon style={iconStyle} type="file-text" theme="outlined" />;
+			case 'long':
+			case 'integer':
+				return <div style={iconStyle}>#</div>;
+			case 'geo_point':
+			case 'geo_shape':
+				return <Icon style={iconStyle} type="environment" theme="outlined" />;
+			case 'date':
+				return <Icon style={iconStyle} type="calendar" theme="outlined" />;
+			case 'double':
+			case 'float':
+				return <div style={iconStyle}>π</div>;
+			case 'boolean':
+				return <Icon style={iconStyle} type="check" theme="outlined" />;
+			case 'object':
+				return <div style={iconStyle}>{'{...}'}</div>;
+			case 'image':
+				return <Icon style={iconStyle} type="file-jpg" theme="outlined" />;
+			default:
+				return <Icon style={iconStyle} type="file-unknown" theme="outlined" />;
+		}
+	};
+
+  getConversionMap = field => conversionMap[field] || [];
+
+	renderTransformationFields = (originalFields, fields, field) => {
+		if (originalFields[field]) {
+			return this.getConversionMap(this.getType(originalFields[field].type))
+				.map(itemType => (
+					<option
+						key={itemType}
+						value={this.getType(itemType)}
+					>
+						{this.getType(itemType)
+							.split('_')
+							.join(' ')}
+					</option>
+				));
+		}
+
+		return this.getConversionMap(this.getType(fields[field].type))
+			.map(itemType => (
+				<option
+					key={itemType}
+					value={this.getType(itemType)}
+				>
+					{this.getType(itemType)
+						.split('_')
+						.join(' ')}
+				</option>
+			));
+	}
+
 	renderMapping = (type, fields, originalFields, address = '') => {
 		if (fields) {
 			return (
@@ -428,7 +488,7 @@ class Mappings extends Component {
 									this.deletePath(address);
 								}}
 							>
-								<i className="fas fa-trash-alt" />
+								<Icon type="delete" />
 							</a>
 						) : null}
 					</h4>
@@ -441,17 +501,47 @@ class Mappings extends Component {
 								`${address ? `${address}.` : ''}${field}.properties`,
 							);
 						}
+						const properties = fields[field];
+						const propertyType = properties.type ? properties.type : 'default';
+						const flex = {
+							display: 'flex',
+							flexDirection: 'row',
+							alignItems: 'center',
+						};
+
+						const mappingInfo = (
+							<Popover content={<pre>{JSON.stringify(properties, null, 2)}</pre>}>
+								<span
+									css={{
+										...flex,
+										justifyContent: 'center',
+										width: 30,
+										height: 30,
+										border: '1px solid #ddd',
+										borderRadius: '50%',
+										display: 'inline-flex',
+										marginRight: 12,
+									}}
+								>
+									{this.getIcon(propertyType)}
+								</span>
+							</Popover>
+						);
+
 						return (
 							<div key={field} className={item}>
 								<div className={deleteBtn}>
-									<span title={field}>{field}</span>
+									<span title={field} css={flex}>
+										{mappingInfo}
+										{field}
+									</span>
 									{this.state.editable ? (
 										<a
 											onClick={() => {
 												this.deletePath(`${address}.${field}`);
 											}}
 										>
-											<i className="fas fa-trash-alt" />
+											<Icon type="delete" />
 										</a>
 									) : null}
 								</div>
@@ -477,31 +567,7 @@ class Mappings extends Component {
 													{this.getType(fields[field].type)}
 												</option>
 											)}
-											{originalFields[field]
-												? conversionMap[
-														this.getType(originalFields[field].type)
-												  ].map(itemType => (
-														<option
-															key={itemType}
-															value={this.getType(itemType)}
-														>
-															{this.getType(itemType)
-																.split('_')
-																.join(' ')}
-														</option>
-												  ))
-												: conversionMap[
-														this.getType(fields[field].type)
-												  ].map(itemType => (
-														<option
-															key={itemType}
-															value={this.getType(itemType)}
-														>
-															{this.getType(itemType)
-																.split('_')
-																.join(' ')}
-														</option>
-												  ))}
+											{this.renderTransformationFields(originalFields, fields, field)}
 										</select>
 									) : (
 										<span
@@ -521,10 +587,9 @@ class Mappings extends Component {
 		return null;
 	};
 
-	renderPromotionalButtons = (type, message) =>
-		(this.props.url ? (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
+	renderPromotionalButtons = (type, message) => (this.props.url ? (
+			<div className={promotionContainer}>
+				<p>
 					Get an appbase.io account to edit {type}
 					<Tooltip title={message}>
 						<span>
@@ -537,8 +602,8 @@ class Mappings extends Component {
 				</Button>
 			</div>
 		) : (
-			<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-				<p style={{ margin: '0 8px 0 0', color: '#888' }}>
+			<div className={promotionContainer}>
+				<p className="promotional-info">
 					Upgrade your plan to edit {type}
 					<Tooltip title={message}>
 						<span>
@@ -546,7 +611,7 @@ class Mappings extends Component {
 						</span>
 					</Tooltip>
 				</p>
-				<Button href="/billing" target="_blank">
+				<Button href="/billing" target="_blank" className="promotional-button">
 					Upgrade Now
 				</Button>
 			</div>
@@ -556,8 +621,7 @@ class Mappings extends Component {
 		const credentials = this.props.credentials || this.state.credentials;
 		const { url } = this.props;
 
-		const synonyms = this.state.synonyms.split('\n').map(pair =>
-			pair
+		const synonyms = this.state.synonyms.split('\n').map(pair => pair
 				.split(',')
 				.map(synonym => synonym.trim())
 				.join(','));
@@ -567,8 +631,7 @@ class Mappings extends Component {
 			.then(data => data.acknowledged)
 			.then((isUpdated) => {
 				if (isUpdated) {
-					this.fetchSynonyms(credentials).then(newSynonyms =>
-						this.setState({
+					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
 							synonyms: newSynonyms,
 							showSynonymModal: false,
 						}));
@@ -612,21 +675,13 @@ class Mappings extends Component {
 		return (
 			<React.Fragment>
 				<div className={card}>
-					<div
-						style={{
-							borderBottom: '1px solid #eee',
-							padding: 20,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-						}}
-					>
+					<div className="card-info">
 						<HeaderWrapper>
 							<h2 className={heading}>Manage Synonyms</h2>
 							<p>Add new synonyms or edit the existing ones.</p>
 						</HeaderWrapper>
 						{this.state.editable ? (
-							<Button ghost onClick={this.handleSynonymModal}>
+							<Button ghost onClick={this.handleSynonymModal} className="card-button">
 								{this.state.synonyms ? 'Edit' : 'Add'} Synonym
 							</Button>
 						) : (
@@ -635,21 +690,13 @@ class Mappings extends Component {
 					</div>
 				</div>
 				<div className={card}>
-					<div
-						style={{
-							borderBottom: '1px solid #eee',
-							padding: 20,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-						}}
-					>
+					<div className="card-info">
 						<HeaderWrapper>
 							<h2 className={heading}>Manage Mappings</h2>
 							<p>Add new fields or change the types of existing ones.</p>
 						</HeaderWrapper>
 						{this.state.editable ? (
-							<Button ghost onClick={this.toggleModal}>
+							<Button ghost onClick={this.toggleModal} className="card-button">
 								Add New Field
 							</Button>
 						) : (
@@ -666,7 +713,7 @@ class Mappings extends Component {
 									</span>
 								</Tooltip>
 							</span>
-							<div>
+							<div className="col-container">
 								<span className="col">
 									Use case
 									<Tooltip title={usecaseMessage}>

@@ -1,11 +1,13 @@
 import dataSearchTypes from './datasearch-types';
 import multiListTypes from './multilist-types';
 import reactiveListTypes from './reactivelist-types';
+import categorySearchTypes from '../utils/categorysearch-types';
 
 const propsMap = {
 	DataSearch: dataSearchTypes,
 	MultiList: multiListTypes,
 	ReactiveList: reactiveListTypes,
+	CategorySearch: categorySearchTypes,
 };
 
 const getSubFields = (mappings, field, types) => (

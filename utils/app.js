@@ -55,32 +55,9 @@ export const createShare = (appId, payload) => doPost(`${ACC_API}/app/${appId}/s
 
 export const getAppPlan = appName => doGet(`${ACC_API}/app/${appName}/plan`);
 
-export const createSubscription = (token, plan, appName) => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appName}/subscription`, {
-			headers: {
-				'content-type': 'application/json',
-			},
-			method: 'POST',
-			credentials: 'include',
-			body: JSON.stringify({ token, plan }),
-		})
-			.then(res => res.json())
-			.then(data => resolve(data.body))
-			.catch(error => reject(error));
-	});
+export const createSubscription = (token, plan, appName) => doPost(`${ACC_API}/app/${appName}/subscription`, { token, plan });
 
-export const deleteSubscription = appName => new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appName}/subscription`, {
-			headers: {
-				'content-type': 'application/json',
-			},
-			method: 'DELETE',
-			credentials: 'include',
-		})
-			.then(res => res.json())
-			.then(data => resolve(data.body))
-			.catch(error => reject(error));
-	});
+export const deleteSubscription = appName => doDelete(`${ACC_API}/app/${appName}/subscription`);
 
 export const getAppMetrics = appId => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/metrics`, {

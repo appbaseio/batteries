@@ -14,7 +14,6 @@ const main = css`
 const titleCls = css`
 	height: 19px;
 	color: #232e44;
-	font-family: 'Open Sans';
 	font-size: 14px;
 	line-height: 19px;
 	text-align: center;
@@ -22,7 +21,6 @@ const titleCls = css`
 const countCls = css`
 	height: 49px;
 	color: #232e44;
-	font-family: 'Open Sans';
 	font-size: 36px;
 	line-height: 49px;
 	text-align: center;

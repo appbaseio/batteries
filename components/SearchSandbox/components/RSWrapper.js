@@ -15,14 +15,19 @@ import {
 	Select,
 } from 'antd';
 
-import { DataSearch, MultiList, ReactiveList } from '@appbaseio/reactivesearch';
+import {
+ DataSearch, MultiList, ReactiveList, CategorySearch,
+} from '@appbaseio/reactivesearch';
 
+import getNestedValue from '../utils';
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
+import categorySearchTypes from '../utils/categorysearch-types';
 import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
+import PreviewList from './PreviewList';
 
 import {
 	deleteStyles,
@@ -34,6 +39,7 @@ import {
 } from '../styles';
 
 const componentMap = {
+	CategorySearch,
 	DataSearch,
 	MultiList,
 	ReactiveList,
@@ -43,6 +49,7 @@ const propsMap = {
 	DataSearch: dataSearchTypes,
 	MultiList: multiListTypes,
 	ReactiveList: reactiveListTypes,
+	CategorySearch: categorySearchTypes,
 };
 
 export default class RSWrapper extends Component {
@@ -53,6 +60,9 @@ export default class RSWrapper extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
+			isInputActive: false,
+			searchTerm: '',
+			previewModal: false,
 		};
 
 		if (!props.componentProps.dataField) {
@@ -101,6 +111,26 @@ export default class RSWrapper extends Component {
 
 		return fields;
 	};
+
+	getCategoryField = () => {
+		const { component, mappings } = this.props;
+		const { categoryField: { types } } = propsMap[component];
+
+		const fields = Object.keys(mappings).filter((field) => {
+			let fieldsToCheck = [mappings[field]];
+
+			if (mappings[field].originalFields) {
+				fieldsToCheck = [
+					...fieldsToCheck,
+					...Object.values(mappings[field].originalFields),
+				];
+			}
+
+			return fieldsToCheck.some(item => types.includes(item.type));
+		});
+
+		return fields;
+	}
 
 	setError = (error) => {
 		this.setState(
@@ -178,16 +208,31 @@ export default class RSWrapper extends Component {
 		});
 	};
 
+	handleDropdownBlur = () => {
+		this.setState({
+			isInputActive: false,
+		});
+	}
+
 	handleDropdownChange = (e, name) => {
 		const { componentProps } = this.state;
 		const value = e.key;
 		this.setState({
+			isInputActive: false,
 			componentProps: {
 				...componentProps,
 				[name]: value,
 			},
 		});
 	};
+
+	handleDropdownSearch = (e) => {
+		const { target: { name, value } } = e;
+		this.setState({
+			isInputActive: true,
+			[name]: value,
+		});
+	}
 
 	handleSearchDataFieldChange = (item) => {
 		const field = item.key;
@@ -264,15 +309,35 @@ export default class RSWrapper extends Component {
 		}
 	};
 
+	handlePreviewModal = () => {
+		this.setState(({ previewModal: oldValue }) => ({
+			previewModal: !oldValue,
+		}));
+	};
+
+	handleSavePreview = (values) => {
+		const { onPropChange, id } = this.props;
+		onPropChange(id, {
+			meta: true,
+			metaFields: values,
+		});
+		this.setState({
+			previewModal: false,
+		});
+	};
+
 	renderComponentCode = () => {
 		const {
-			id, component, mappings, componentProps,
+			component, id, mappings, componentProps, customProps,
 		} = this.props;
+		const customComponentProps = customProps[component];
+
 		const config = {
 			componentId: id,
 			component,
 			mappings,
 			componentProps,
+			customProps: customComponentProps,
 		};
 		const code = getComponentCode(config);
 		return (
@@ -465,7 +530,7 @@ export default class RSWrapper extends Component {
 				}
 				const { mappingsType } = this.props;
 				return (
-					<div className="ant-row ant-form-item ant-form-item-no-colon">
+					<div className="ant-row ant-form-item ant-form-item-no-colon" key={name}>
 						<div className="ant-form-item-label">
 							<label className={label} title={currentLabel}>
 								{currentLabel}
@@ -493,15 +558,54 @@ export default class RSWrapper extends Component {
 				);
 			}
 			case 'dropdown': {
-				const { component } = this.props;
-				const { componentProps: stateComponentProps } = this.state;
-				const dropdownOptions = propsMap[component][name].options;
-				const selectedDropdown = dropdownOptions.find(
-					option => option.key === stateComponentProps[name],
-				);
-				const selectedValue = selectedDropdown
-					? selectedDropdown.label
-					: propsMap[component][name].default;
+				let dropdownOptions = [];
+				let selectedValue = '';
+				let selectedDropdown = {};
+				let noOptionsMessage = '';
+
+				const {
+					onPropChange, id, component, mappingsURL,
+				} = this.props;
+				const { componentProps: stateComponentProps, isInputActive, searchTerm } = this.state;
+
+				if (name === 'categoryField') {
+					noOptionsMessage = <p style={{ lineHeight: '1.5' }}>There are no compatible fields present in your data mappings. <a href={mappingsURL}>You can edit your mappings</a> (agggregation components)</p>;
+
+					this.getCategoryField().forEach(field => dropdownOptions.push({
+						label: field,
+						key: field,
+					}));
+
+					if (dropdownOptions.length) {
+						if (!stateComponentProps.categoryField) {
+							onPropChange(id, {
+								categoryField: dropdownOptions[0].label,
+							});
+						}
+
+						selectedDropdown = dropdownOptions
+							.find(option => option.key === stateComponentProps[name]);
+						selectedValue = selectedDropdown
+						? selectedDropdown.label
+						: dropdownOptions[0].label;
+					}
+				} else {
+					dropdownOptions = propsMap[component][name].options;
+					selectedDropdown = dropdownOptions
+						.find(option => option.key === stateComponentProps[name]);
+					selectedValue = selectedDropdown
+						? selectedDropdown.label
+						: propsMap[component][name].default;
+				}
+
+				if (isInputActive) {
+					dropdownOptions = dropdownOptions
+						.filter(option => option.label.toLowerCase().includes(searchTerm.toLowerCase()));
+				}
+
+				if (!dropdownOptions.length) {
+					dropdownOptions.push({ label: 'No options', key: '' });
+				}
 				const menu = (
 					<Menu
 						onClick={e => this.handleDropdownChange(e, name)}
@@ -513,20 +617,23 @@ export default class RSWrapper extends Component {
 					</Menu>
 				);
 
-				FormInput = (
+				FormInput = dropdownOptions.length ? (
 					<Dropdown overlay={menu} trigger={['click']}>
-						<Button
+						<Input
 							style={{
 								width: '100%',
 								display: 'flex',
 								justifyContent: 'space-between',
 								alignItems: 'center',
 							}}
-						>
-							{selectedValue} <Icon type="down" />
-						</Button>
+							name="searchTerm"
+							onBlur={this.handleDropdownBlur}
+							value={isInputActive ? searchTerm : selectedValue}
+							defaultValue={selectedValue}
+							onChange={this.handleDropdownSearch}
+						/>
 					</Dropdown>
-				);
+				) : noOptionsMessage;
 				break;
 			}
 
@@ -612,7 +719,7 @@ export default class RSWrapper extends Component {
 		const {
 			componentProps, component, id, mappings, customProps, full, showDelete, onDelete,
 		} = this.props;
-		const { showModal } = this.state;
+		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
 		const RSComponent = componentMap[component];
 
@@ -627,7 +734,58 @@ export default class RSWrapper extends Component {
 				highlightField: componentProps.dataField,
 			};
 		}
+		if (component === 'CategorySearch') {
+			otherProps = {
+				categoryField: generateDataField(
+					'MultiList',
+					componentProps.categoryField,
+					mappings,
+				),
+				fieldWeights: generateFieldWeights(
+					componentProps.dataField,
+					componentProps.fieldWeights,
+					mappings,
+				),
+				highlightField: componentProps.dataField,
+			};
+		}
+		const { componentProps: { metaFields, ...restProps } } = this.props;
+		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
 
+		if (id === 'result' && isMetaDataPresent) {
+			const {
+				url: urlKey, title: titleKey, image: imageKey, description: descriptionKey,
+			} = metaFields;
+			otherProps = {
+					onData: (res) => {
+						const url = getNestedValue(res, urlKey);
+						const title = getNestedValue(res, titleKey);
+						const description = getNestedValue(res, descriptionKey);
+						const image = getNestedValue(res, imageKey);
+						const { renderJSONEditor, renderDeleteJSON } = this.props;
+
+						return (
+						<Row type="flex" key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
+							<Col span={image ? 6 : 0}>
+								<img style={{ width: '100%' }} src={image} alt={title} />
+							</Col>
+							<Col span={image ? 18 : 24}>
+								<h3 style={{ fontWeight: '600' }}>{title}</h3>
+								<p style={{ fontSize: '1em' }}>{description}</p>
+							</Col>
+							<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
+								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+								: null}
+								{renderJSONEditor(res)}
+								{renderDeleteJSON(res)}
+							</div>
+						</Row>
+					);
+				},
+			};
+		}
+
+		const showPreview =	component === 'ReactiveList';
 		const customComponentProps = customProps[component];
 
 		return (
@@ -642,6 +800,15 @@ export default class RSWrapper extends Component {
 								onClick={this.showModal}
 							/>
 							{this.renderComponentCode()}
+							{showPreview ? (
+								<Button
+									icon="eye-o"
+									shape="circle"
+									size="large"
+									style={{ marginLeft: 8 }}
+									onClick={this.handlePreviewModal}
+								/>
+							) : null}
 							{showDelete ? (
 								<Button
 									icon="delete"
@@ -654,19 +821,19 @@ export default class RSWrapper extends Component {
 							) : null}
 						</Col>
 					) : null}
-					<Col span={full ? 24 : 20}>
+					<Col span={full ? 24 : 20} id={id}>
 						<RSComponent
 							componentId={id}
-							{...componentProps}
+							{...restProps}
 							dataField={generateDataField(
 								component,
 								componentProps.dataField,
 								mappings,
 							)}
-							{...otherProps}
 							className={componentStyles}
 							fuzziness={componentProps.fuzziness || 0}
 							size={parseInt(componentProps.size || 10, 10)}
+							{...otherProps}
 							{...customComponentProps}
 						/>
 					</Col>
@@ -689,10 +856,27 @@ export default class RSWrapper extends Component {
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 					destroyOnClose
+					key="EditModal"
 					okText="Save"
 				>
 					{this.renderPropsForm()}
 				</Modal>
+				{showPreview ? (
+					<PreviewList
+						options={Object.keys(mappings)}
+						componentProps={stateComponentProps}
+						componentId={id}
+						getNestedValue={getNestedValue}
+						handlePreviewModal={this.handlePreviewModal}
+						handleSavePreview={this.handleSavePreview}
+						visible={previewModal}
+						dataField={generateDataField(
+							component,
+							componentProps.dataField,
+							mappings,
+						)}
+					/>
+				) : null}
 			</div>
 		);
 	}
