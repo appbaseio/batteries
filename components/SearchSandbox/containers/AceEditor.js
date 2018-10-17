@@ -22,7 +22,8 @@ class Ace extends Component {
 	}
 
 	render() {
-		return this.state.mounted ? (
+		const { mounted } = this.state;
+		return mounted ? (
 			<Editor {...this.props} editorProps={{ $blockScrolling: true }} />
 		) : null;
 	}
