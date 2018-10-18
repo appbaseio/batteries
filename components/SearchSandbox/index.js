@@ -73,7 +73,7 @@ class SearchSandbox extends Component {
 						loading: false,
 						filterCount: Object.keys(componentProps).filter(
 							item => item !== 'search' && item !== 'result',
-						),
+						).length,
 					});
 				})
 				.catch(() => this.getLocalPref());
@@ -108,7 +108,7 @@ class SearchSandbox extends Component {
 			loading: false,
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
-			),
+			).length,
 		});
 	};
 
@@ -169,7 +169,7 @@ class SearchSandbox extends Component {
 				showNewProfileModal: true,
 				filterCount: Object.keys(this.newComponentProps).filter(
 					item => item !== 'search' && item !== 'result',
-				),
+				).length,
 			});
 		} else {
 			const componentProps = this.pref[key] || {};
@@ -178,7 +178,7 @@ class SearchSandbox extends Component {
 				componentProps,
 				filterCount: Object.keys(componentProps).filter(
 					item => item !== 'search' && item !== 'result',
-				),
+				).length,
 			});
 		}
 	};
