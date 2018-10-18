@@ -10,9 +10,22 @@ import {
 	createSubscription,
 	deleteSubscription,
 	getAppMetrics as GetAppMetrics,
+	transferOwnership,
 } from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
 
+/**
+ * @param {string} appId
+ */
+export function transferAppOwnership(id, info) {
+	return (dispatch, getState) => {
+		const appId = id || get(getState(), '$getCurrentApp.id');
+		dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP));
+		return transferOwnership(appId, info)
+			.then(res => dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP_ERROR, null, error)));
+	};
+}
 /**
  * To fetch app details
  * @param {string} appId

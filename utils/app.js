@@ -3,6 +3,8 @@ import {
  doDelete, doPatch, doGet, doPost,
 } from './requestService';
 
+export const transferOwnership = (appId, info) => doPost(`${ACC_API}/app/${appId}/changeowner`, info);
+
 export const getPermission = appId => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
 			method: 'GET',
