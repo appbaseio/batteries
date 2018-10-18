@@ -57,14 +57,16 @@ class SearchSandbox extends Component {
 	}
 
 	componentDidMount() {
-		if (this.props.isDashboard) {
-			getPreferences(this.props.appName)
+		const { appName, isDashboard } = this.props;
+		const { profileList: profileListState, profile } = this.state;
+		if (isDashboard) {
+			getPreferences(appName)
 				.then((pref) => {
 					this.pref = pref || {};
 					const profileList = Array.from(
-						new Set([...this.state.profileList, ...Object.keys(this.pref)]),
+						new Set([...profileListState, ...Object.keys(this.pref)]),
 					);
-					const componentProps = this.pref[this.state.profile] || {};
+					const componentProps = this.pref[profile] || {};
 					this.setState({
 						componentProps,
 						profileList,
@@ -87,19 +89,19 @@ class SearchSandbox extends Component {
 				mappingsType,
 			});
 		} else if (!isFetchingMapping) {
-			const { appName, credentials, getAppMappings } = this.props;
+			const { credentials, getAppMappings } = this.props;
 			getAppMappings(appName, credentials);
 		}
 	}
 
 	getLocalPref = () => {
-		let pref = localStorage.getItem(this.props.appName);
+		const { appName } = this.props;
+		const { profileList: profileListState, profile } = this.state;
+		let pref = localStorage.getItem(appName);
 		if (pref) pref = JSON.parse(pref);
 		this.pref = pref || {};
-		const profileList = Array.from(
-			new Set([...this.state.profileList, ...Object.keys(this.pref)]),
-		);
-		const componentProps = this.pref[this.state.profile] || {};
+		const profileList = Array.from(new Set([...profileListState, ...Object.keys(this.pref)]));
+		const componentProps = this.pref[profile] || {};
 		this.setState({
 			componentProps,
 			profileList,
@@ -111,11 +113,15 @@ class SearchSandbox extends Component {
 	};
 
 	setLocalPref = (pref = {}) => {
+		const { appName } = this.props;
 		const value = JSON.stringify(pref);
-		localStorage.setItem(this.props.appName, value);
+		localStorage.setItem(appName, value);
 	};
 
-	getActiveConfig = () => this.state.configs.find(config => config.profile === this.state.profile);
+	getActiveConfig = () => {
+		const { configs, profile } = this.state;
+		return configs.find(config => config.profile === profile);
+	};
 
 	setFilterCount = (filterCount) => {
 		this.setState({
@@ -124,13 +130,15 @@ class SearchSandbox extends Component {
 	};
 
 	savePreferences = () => {
+		const { isDashboard, appName } = this.props;
+		const { profile, componentProps } = this.state;
 		this.pref = {
 			...this.pref,
-			[this.state.profile]: this.state.componentProps,
+			[profile]: componentProps,
 		};
 
-		if (this.props.isDashboard) {
-			setPreferences(this.props.appName, this.pref).catch(() => this.setLocalPref(this.pref));
+		if (isDashboard) {
+			setPreferences(appName, this.pref).catch(() => this.setLocalPref(this.pref));
 		} else {
 			this.setLocalPref(this.pref);
 		}
@@ -155,7 +163,8 @@ class SearchSandbox extends Component {
 				filterCount: 0,
 			});
 		} else if (key === SAVE_AS_NEW_PROFILE) {
-			this.newComponentProps = this.pref[this.state.profile];
+			const { profile } = this.state;
+			this.newComponentProps = this.pref[profile];
 			this.setState({
 				showNewProfileModal: true,
 				filterCount: Object.keys(this.newComponentProps).filter(
@@ -195,13 +204,14 @@ class SearchSandbox extends Component {
 	handleSaveProfile = () => {
 		const { value } = this.profileInput.current.input;
 		const componentProps = this.newComponentProps || {};
-		if (this.state.profileList.includes(value)) {
+		const { profileList } = this.state;
+		if (profileList.includes(value)) {
 			this.setState({
 				profileModalError: 'A search profile with the same name already exists',
 			});
 		} else {
 			this.setState({
-				profileList: [...this.state.profileList, value],
+				profileList: [...profileList, value],
 				profile: value,
 				componentProps,
 				showNewProfileModal: false,
@@ -220,15 +230,19 @@ class SearchSandbox extends Component {
 	};
 
 	openSandbox = () => {
+		const {
+			appId, appName, url, credentials, attribution, customProps,
+		} = this.props; // prettier-ignore
+		const { componentProps, mappings } = this.state;
 		const config = {
-			appId: this.props.appId || null,
-			appName: this.props.appName || null,
-			url: this.props.url,
-			credentials: this.props.credentials || null,
-			componentProps: this.state.componentProps,
-			mappings: this.state.mappings,
-			attribution: this.props.attribution || null,
-      		customProps: this.props.customProps,
+			appId: appId || null,
+			appName: appName || null,
+			url,
+			credentials: credentials || null,
+			componentProps,
+			mappings,
+			attribution: attribution || null,
+			customProps,
 		};
 		const code = getSearchTemplate(config);
 		const html = '<div id="root"></div>';
@@ -277,13 +291,14 @@ class SearchSandbox extends Component {
 			lineHeight: 26,
 		};
 
-		if (!this.state.mappings) {
+		const { mappings, profileList, loading } = this.state;
+		if (!mappings) {
 			return <div style={vcenter}>Loading...</div>;
 		}
-		if (this.state.loading) {
+		if (loading) {
 			return <div style={vcenter}>Fetching search preferences...</div>;
 		}
-		if (!Object.keys(this.state.mappings).length) {
+		if (!Object.keys(mappings).length) {
 			return <div style={vcenter}>No data found. Please insert data to use this feature</div>;
 		}
 
@@ -292,7 +307,7 @@ class SearchSandbox extends Component {
 				onClick={this.handleProfileChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{this.state.profileList.map(item => (
+				{profileList.map(item => (
 					<Menu.Item key={item}>{item}</Menu.Item>
 				))}
 				<Menu.Divider />
@@ -307,27 +322,44 @@ class SearchSandbox extends Component {
 			</Menu>
 		);
 
+		const {
+			appId,
+			appName,
+			credentials,
+			url,
+			customProps,
+			isDashboard,
+			useCategorySearch,
+		} = this.props;
+		const {
+			mappingsType,
+			componentProps,
+			filterCount,
+			profile,
+			showNewProfileModal,
+			profileModalError,
+		} = this.state;
 		const contextValue = {
-			appId: this.props.appId || null,
-			appName: this.props.appName || null,
-			url: this.props.url,
-			credentials: this.props.credentials || null,
-			profile: this.state.profile,
+			appId: appId || null,
+			appName: appName || null,
+			url,
+			credentials: credentials || null,
+			profile,
 			config: this.getActiveConfig(),
-			mappings: this.state.mappings,
-			customProps: this.props.customProps,
-			mappingsType: this.state.mappingsType,
-			useCategorySearch: this.props.useCategorySearch,
-			componentProps: this.state.componentProps,
+			mappings,
+			customProps,
+			mappingsType,
+			useCategorySearch,
+			componentProps,
 			onPropChange: this.handleComponentPropChange,
-			filterCount: this.state.filterCount,
+			filterCount,
 			setFilterCount: this.setFilterCount,
 			deleteComponent: this.deleteComponent,
 		};
 
 		return (
 			<SandboxContext.Provider value={contextValue}>
-				<div className={wrapper} key={this.state.profile}>
+				<div className={wrapper} key={profile}>
 					<div
 						style={{
 							display: 'flex',
@@ -335,10 +367,10 @@ class SearchSandbox extends Component {
 							padding: '10px 20px 0',
 						}}
 					>
-						{this.props.isDashboard ? (
+						{isDashboard ? (
 							<Dropdown overlay={menu} trigger={['click']}>
 								<Button size="large" style={{ marginLeft: 8 }}>
-									Search Profile - {this.state.profile} <Icon type="down" />
+									Search Profile - {profile} <Icon type="down" />
 								</Button>
 							</Dropdown>
 						) : null}
@@ -355,7 +387,7 @@ class SearchSandbox extends Component {
 
 				<Modal
 					title="Create a new Search Profile"
-					visible={this.state.showNewProfileModal}
+					visible={showNewProfileModal}
 					onOk={this.handleSaveProfile}
 					onCancel={this.handleCancel}
 					destroyOnClose
@@ -364,8 +396,8 @@ class SearchSandbox extends Component {
 						Set search profile name
 					</div>
 					<Input type="text" ref={this.profileInput} placeholder="Search Profile Name" />
-					{this.state.profileModalError ? (
-						<p style={{ color: 'tomato' }}>{this.state.profileModalError}</p>
+					{profileModalError ? (
+						<p style={{ color: 'tomato' }}>{profileModalError}</p>
 					) : null}
 				</Modal>
 			</SandboxContext.Provider>

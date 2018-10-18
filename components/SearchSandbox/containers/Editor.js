@@ -47,23 +47,25 @@ export default class Editor extends Component {
 			showVideo: false,
 			isEditable: false,
 		};
-
+		const { appName, url, credentials } = props;
 		this.appbaseRef = Appbase({
-			app: this.props.appName,
-			url: this.props.url,
-			credentials: this.props.credentials,
+			app: appName,
+			url,
+			credentials,
 		});
 	}
 
 	getAvailableDataField = () => {
 		const { types } = multiListTypes.dataField;
-		const fields = Object.keys(this.props.mappings).filter((field) => {
-			let fieldsToCheck = [this.props.mappings[field]];
+		const { mappings } = this.props;
 
-			if (this.props.mappings[field].originalFields) {
+		const fields = Object.keys(mappings).filter((field) => {
+			let fieldsToCheck = [mappings[field]];
+
+			if (mappings[field].originalFields) {
 				fieldsToCheck = [
 					...fieldsToCheck,
-					...Object.values(this.props.mappings[field].originalFields),
+					...Object.values(mappings[field].originalFields),
 				];
 			}
 
@@ -112,11 +114,13 @@ export default class Editor extends Component {
 		// only set to store if dataField is valid
 		const fields = this.getAvailableDataField();
 		if (fields.length) {
-			this.props.onPropChange(
-				`list-${this.props.filterCount + 1}`,
-				this.state.listComponentProps,
+			const { filterCount, setFilterCount, onPropChange } = this.props;
+			const { listComponentProps } = this.state;
+			onPropChange(
+				`list-${filterCount + 1}`,
+				listComponentProps,
 			);
-			this.props.setFilterCount(this.props.filterCount + 1);
+			setFilterCount(filterCount + 1);
 			this.setState(
 				{
 					showModal: false,
@@ -140,26 +144,27 @@ export default class Editor extends Component {
 	};
 
 	handleVideoModal = () => {
-		this.setState({
-			showVideo: !this.state.showVideo,
-		});
+		this.setState(({ showVideo }) => ({
+			showVideo: !showVideo,
+		}));
 	};
 
 	handleDataFieldChange = (item) => {
 		const dataField = item.key;
-
+		const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
-				...this.state.listComponentProps,
+				...listComponentProps,
 				dataField,
 			},
 		});
 	};
 
 	handleSwitchPropChange = (name, value) => {
+	const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
-				...this.state.listComponentProps,
+				...listComponentProps,
 				[name]: value,
 			},
 		});
@@ -167,9 +172,10 @@ export default class Editor extends Component {
 
 	handlePropChange = (e) => {
 		const { name, value, type } = e.target;
+		const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
-				...this.state.listComponentProps,
+				...listComponentProps,
 				[name]: type === 'number' ? parseInt(value, 10) : value,
 			},
 		});
@@ -177,6 +183,8 @@ export default class Editor extends Component {
 
 	handleUpdateJSON = (updatedJSONString) => {
 		const updatedJSON = JSON.parse(updatedJSONString);
+		const { mappingsType } = this.props;
+		const { editorObjectId } = this.state;
 		let responseMessage = {
 			message: 'Edit successfully saved',
 			description: 'The desired result data was successfully updated.',
@@ -184,8 +192,8 @@ export default class Editor extends Component {
 		};
 		this.appbaseRef
 			.update({
-				type: this.props.mappingsType,
-				id: this.state.editorObjectId,
+				type: mappingsType,
+				id: editorObjectId,
 				body: {
 					doc: updatedJSON,
 				},
@@ -213,9 +221,10 @@ export default class Editor extends Component {
 			description: 'You have successfully deleted JSON.',
 			duration: 4,
 		};
+		const { mappingsType } = this.props;
 		this.appbaseRef
 			.delete({
-				type: this.props.mappingsType,
+				type: mappingsType,
 				id,
 			})
 			.then((res) => {
@@ -235,9 +244,9 @@ export default class Editor extends Component {
 	};
 
 	handleEditing = () => {
-		this.setState({
-			isEditable: !this.state.isEditable,
-		});
+		this.setState(({ isEditable }) => ({
+			isEditable: !isEditable,
+		}));
 	};
 
 	handleEditingJSON = (value) => {
@@ -324,17 +333,18 @@ export default class Editor extends Component {
 
 	renderPropsForm = () => {
 		const fields = this.getAvailableDataField();
+		const { mappingsURL } = this.props;
 		if (!fields.length) {
 			return (
 				<p>
 					There are no compatible fields present in your data mappings.{' '}
-					<a href={this.props.mappingsURL}>You can edit your mappings</a> to add filters
+					<a href={mappingsURL}>You can edit your mappings</a> to add filters
 					(agggregation components).
 				</p>
 			);
 		}
 
-		const { dataField } = this.state.listComponentProps;
+		const { listComponentProps: { dataField } } = this.state;
 		const menu = (
 			<Menu
 				onClick={this.handleDataFieldChange}
@@ -414,17 +424,22 @@ export default class Editor extends Component {
 		</Popconfirm>
 	);
 
-	renderJSONEditor = res => (
+	renderJSONEditor = (res) => {
+		const {
+			isEditable, copied, isValidJSON, editorValue,
+		} = this.state;
+		return (
 		<Popover
 			placement="leftTop"
 			trigger="click"
-			onVisibleChange={visible => (visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
+			onVisibleChange={visible => (
+				visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
 			}
 			content={
-				this.state.isEditable ? (
+				isEditable ? (
 					<Ace
 						mode="json"
-						value={this.state.editorValue}
+						value={editorValue}
 						onChange={value => this.handleEditingJSON(value)}
 						theme="monokai"
 						name="editor-JSON"
@@ -444,14 +459,14 @@ export default class Editor extends Component {
 				)
 			}
 			title={(
-<Row>
-					<Col span={this.state.isEditable ? 19 : 18}>
+				<Row>
+					<Col span={isEditable ? 19 : 18}>
 						<h5 style={{ display: 'inline-block' }}>
-							{this.state.isEditable ? 'Edit JSON' : 'JSON Result'}
+							{isEditable ? 'Edit JSON' : 'JSON Result'}
 						</h5>
 					</Col>
-					<Col span={this.state.isEditable ? 5 : 6}>
-						<Tooltip visible={this.state.copied} title="Copied">
+					<Col span={isEditable ? 5 : 6}>
+						<Tooltip visible={copied} title="Copied">
 							<Button
 								shape="circle"
 								icon="copy"
@@ -459,13 +474,13 @@ export default class Editor extends Component {
 								onClick={() => this.copyJSON(res)}
 							/>
 						</Tooltip>
-						{this.state.isEditable ? (
+						{isEditable ? (
 							<Button
 								size="small"
 								type="primary"
 								style={{ marginLeft: '5px' }}
-								disabled={!this.state.isValidJSON}
-								onClick={() => this.handleUpdateJSON(this.state.editorValue)}
+								disabled={!isValidJSON}
+								onClick={() => this.handleUpdateJSON(editorValue)}
 							>
 								Update
 							</Button>
@@ -474,22 +489,29 @@ export default class Editor extends Component {
 								size="small"
 								type="primary"
 								style={{ marginLeft: '5px' }}
-								disabled={!this.state.isValidJSON}
+								disabled={!isValidJSON}
 								onClick={() => this.handleEditing()}
 							>
 								Edit
 							</Button>
 						)}
 					</Col>
-</Row>
-)}
+    </Row>
+		)}
 		>
 			<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
 		</Popover>
 	);
+};
 
 	render() {
-		let resultComponentProps = this.props.componentProps.result || {};
+		const {
+			componentProps, appName, credentials, url, mappings, customProps, onPropChange, mappingsType,
+		} = this.props;
+		const {
+			renderKey, showModal, showVideo,
+		} = this.state;
+		let resultComponentProps = componentProps.result || {};
 		resultComponentProps = {
 			size: 5,
 			pagination: true,
@@ -511,7 +533,7 @@ export default class Editor extends Component {
 				);
 			},
 			react: {
-				and: Object.keys(this.props.componentProps).filter(item => item !== 'result'),
+				and: Object.keys(componentProps).filter(item => item !== 'result'),
 			},
 		};
 
@@ -525,9 +547,9 @@ export default class Editor extends Component {
 		);
 		return (
 			<ReactiveBase
-				app={this.props.appName}
-				credentials={this.props.credentials}
-				url={this.props.url}
+				app={appName}
+				credentials={credentials}
+				url={url}
 				analytics
 			>
 				<Row gutter={16} style={{ padding: 20 }}>
@@ -542,17 +564,17 @@ export default class Editor extends Component {
 								Add New Filter
 							</Button>
 						</Card>
-						{Object.keys(this.props.componentProps)
+						{Object.keys(componentProps)
 							.filter(item => item !== 'search' && item !== 'result')
 							.map(config => (
 								<Card key={config} style={{ marginTop: 20 }}>
 									<RSWrapper
 										id={config}
 										component="MultiList"
-										mappings={this.props.mappings}
-										customProps={this.props.customProps}
-										componentProps={this.props.componentProps[config] || {}}
-										onPropChange={this.props.onPropChange}
+										mappings={mappings}
+										customProps={customProps}
+										componentProps={componentProps[config] || {}}
+										onPropChange={onPropChange}
 										onDelete={this.props.deleteComponent}
 										full
 									/>
@@ -566,10 +588,10 @@ export default class Editor extends Component {
 								component={
 									this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'
 								}
-								mappings={this.props.mappings}
-								customProps={this.props.customProps}
-								componentProps={this.props.componentProps.search || {}}
-								onPropChange={this.props.onPropChange}
+								mappings={mappings}
+								customProps={customProps}
+								componentProps={componentProps.search || {}}
+								onPropChange={onPropChange}
 							/>
 						</Card>
 
@@ -578,14 +600,14 @@ export default class Editor extends Component {
 							<RSWrapper
 								id="result"
 								component="ReactiveList"
-								key={this.state.renderKey}
-								mappings={this.props.mappings}
-								customProps={this.props.customProps}
-								mappingsType={this.props.mappingsType}
+								key={renderKey}
+								mappings={mappings}
+								customProps={customProps}
+								mappingsType={mappingsType}
 								componentProps={resultComponentProps}
 								renderJSONEditor={this.renderJSONEditor}
 								renderDeleteJSON={this.renderDeleteJSON}
-								onPropChange={this.props.onPropChange}
+								onPropChange={onPropChange}
 								full
 								showDelete={false}
 							/>
@@ -594,7 +616,7 @@ export default class Editor extends Component {
 
 					<Modal
 						title="Add New Filter"
-						visible={this.state.showModal}
+						visible={showModal}
 						onOk={this.handleOk}
 						onCancel={this.handleCancel}
 						okText="Add"
@@ -604,7 +626,7 @@ export default class Editor extends Component {
 					</Modal>
 					<Modal
 						title="Search Preview: 1 min walkthrough"
-						visible={this.state.showVideo}
+						visible={showVideo}
 						onOk={this.handleVideoModal}
 						onCancel={this.handleVideoModal}
 						destroyOnClose
@@ -626,7 +648,7 @@ export default class Editor extends Component {
 }
 
 Editor.propTypes = {
-	mappingsURL: PropTypes.string.isRequired,
+	mappingsURL: PropTypes.string,
 };
 
 Editor.defaultProps = {
