@@ -136,11 +136,12 @@ export function openIndex(appName, credentials, url = SCALR_API) {
 	});
 }
 
-export function reIndex(mappings, appId, excludeFields) {
+export function reIndex(mappings, appId, excludeFields, type) {
 	const body = {
 		mappings,
 		settings: analyzerSettings,
 		exclude_fields: excludeFields,
+		type,
 		es_version: '5',
 	};
 	return new Promise((resolve, reject) => {
@@ -190,6 +191,10 @@ export function hasAggs(field) {
 		}
 	});
 	return hasAggsFlag;
+}
+
+export function getTypesFromMapping(mapping) {
+	return Object.keys(mapping);
 }
 
 export function transformToES5(mapping) {

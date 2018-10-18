@@ -22,10 +22,15 @@ import {
 	getSettings,
 	updateSynonyms,
 	REMOVED_KEYS,
+	getTypesFromMapping,
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
-import { getRawMappingsByAppName, getAppPermissionsByName, getAppPlanByName } from '../../modules/selectors';
+import {
+	getRawMappingsByAppName,
+	getAppPermissionsByName,
+	getAppPlanByName,
+} from '../../modules/selectors';
 import {
 	getPermission as getPermissionFromAppbase,
 	setCurrentApp,
@@ -253,6 +258,7 @@ class Mappings extends Component {
 		this.setState({
 			isLoading: false,
 			mapping: res ? transformToES5(res) : res,
+			activeType: getTypesFromMapping(res),
 		});
 	};
 
@@ -262,12 +268,29 @@ class Mappings extends Component {
 		});
 	};
 
-	deletePath = (path) => {
-		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
+	deletePath = (path, removeType = false) => {
+		let { activeType } = this.state;
+		const { deletedPaths: _deletedPaths, mapping: _mapping } = this.state;
+		const mapping = JSON.parse(JSON.stringify(_mapping));
+		let deletedPaths = [..._deletedPaths];
+
 		let fields = path.split('.');
 		if (fields[fields.length - 1] === 'properties') {
 			// when deleting an object
 			fields = fields.slice(0, -1);
+		}
+
+		if (removeType) {
+			const type = fields[0];
+			// remove from active types
+			activeType = activeType.filter(field => field !== type);
+
+			// add all the fields to excludeFields
+			const deletedTypesPath = Object.keys(_mapping[type].properties)
+				.map(property => `${type}.properties.${property}`);
+			deletedPaths = [...deletedPaths, ...deletedTypesPath];
+		} else {
+			deletedPaths = [..._deletedPaths, path];
 		}
 
 		fields.reduce((acc, val, index) => {
@@ -281,7 +304,8 @@ class Mappings extends Component {
 		this.setState({
 			dirty: true,
 			mapping,
-			deletedPaths: [...this.state.deletedPaths, path],
+			deletedPaths,
+			activeType,
 		});
 	};
 
@@ -289,6 +313,8 @@ class Mappings extends Component {
 		this.setState({
 			mapping: this.originalMapping,
 			dirty: false,
+			deletedPaths: [],
+			activeType: getTypesFromMapping(this.originalMapping),
 		});
 	};
 
@@ -361,14 +387,22 @@ class Mappings extends Component {
 			isLoading: true,
 		});
 
-		const excludedFields = this.state.deletedPaths
+		const {
+			deletedPaths,
+			activeType,
+			mapping,
+		} = this.state;
+
+		const { appId } = this.props;
+
+		const excludedFields = deletedPaths
 			.map(path => path.split('.properties.').join('.'))
 			.map((path) => {
 				const i = path.indexOf('.') + 1;
 				return path.substring(i);
 			});
 
-		reIndex(this.state.mapping, this.props.appId, excludedFields)
+		reIndex(mapping, appId, excludedFields, activeType)
 			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
@@ -514,7 +548,7 @@ class Mappings extends Component {
 						{this.state.editable ? (
 							<a
 								onClick={() => {
-									this.deletePath(address);
+									this.deletePath(address, true);
 								}}
 							>
 								<Icon type="delete" />
