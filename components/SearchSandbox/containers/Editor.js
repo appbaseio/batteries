@@ -536,13 +536,16 @@ export default class Editor extends Component {
 				and: Object.keys(componentProps).filter(item => item !== 'result'),
 			},
 		};
-
+		const {isPlugin} = this.props;
 		const title = (
 			<span>
 				Search Preview{' '}
-				<Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
-					Watch Video
-				</Button>
+				{
+					!isPlugin 
+					? <Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
+						Watch Video
+					</Button> : null
+				}
 			</span>
 		);
 		return (
