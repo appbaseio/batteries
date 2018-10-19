@@ -541,7 +541,7 @@ export default class Editor extends Component {
 			<span>
 				Search Preview{' '}
 				{
-					!isPlugin 
+					window.innerWidth > 1280
 					? <Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
 						Watch Video
 					</Button> : null
