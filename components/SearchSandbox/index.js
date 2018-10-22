@@ -329,7 +329,7 @@ class SearchSandbox extends Component {
 			url,
 			customProps,
 			isDashboard,
-			isPlugin,
+			showCodeSandbox,
 			useCategorySearch,
 		} = this.props;
 		const {
@@ -354,7 +354,7 @@ class SearchSandbox extends Component {
 			componentProps,
 			onPropChange: this.handleComponentPropChange,
 			filterCount,
-			isPlugin,
+			showCodeSandbox,
 			setFilterCount: this.setFilterCount,
 			deleteComponent: this.deleteComponent,
 		};
@@ -377,7 +377,7 @@ class SearchSandbox extends Component {
 							</Dropdown>
 						) : null}
 						{
-							!isPlugin ? (
+							showCodeSandbox ? (
 								<Button onClick={this.openSandbox} size="large" type="primary">
 									Open in Codesandbox
 								</Button>	
@@ -417,7 +417,7 @@ SearchSandbox.propTypes = {
 	attribution: PropTypes.object,
 	credentials: PropTypes.string.isRequired,
 	isDashboard: PropTypes.bool,
-	isPlugin: PropTypes.bool,
+	showCodeSandbox: PropTypes.bool,
 	url: PropTypes.string,
 	useCategorySearch: PropTypes.bool,
 	getAppMappings: PropTypes.func.isRequired,
@@ -428,7 +428,7 @@ SearchSandbox.propTypes = {
 SearchSandbox.defaultProps = {
 	appId: null,
 	attribution: null,
-	isPlugin:false,
+	showCodeSandbox:true,
 	isDashboard: false,
 	url: SCALR_API,
 	useCategorySearch: false,
