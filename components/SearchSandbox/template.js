@@ -270,6 +270,7 @@ function getApp(config) {
 					mappings: config.mappings,
 					customProps: config.customProps,
 					componentProps: resultComponentProps,
+					componentId: 'result',
 				};
 				resultCode = getComponentCode(componentConfig);
 				break;
