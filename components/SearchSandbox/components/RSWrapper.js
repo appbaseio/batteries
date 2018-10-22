@@ -303,7 +303,7 @@ export default class RSWrapper extends Component {
 				componentProps: {
 					...componentProps,
 					dataField: [...componentProps.dataField, field],
-					fieldWeights: [...componentProps.fieldWeights, 2],
+					fieldWeights: [...componentProps.fieldWeights, 1],
 				},
 			});
 		}
