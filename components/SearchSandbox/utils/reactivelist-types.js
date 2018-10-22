@@ -38,30 +38,4 @@ export default {
 		input: 'bool',
 		default: false,
 	},
-	includeFields: {
-		label: 'Include Fields',
-		description: 'Select which fields should be included in the results (aka whitelisting).',
-		input: 'multiDropdown',
-		options: [],
-		default: ['*'],
-	},
-	excludeFields: {
-		label: 'Exclude Fields',
-		description: 'Select which fields should be excluded from the results.',
-		input: 'multiDropdown',
-		options: [],
-		default: [],
-	},
-	showResultStats: {
-		label: 'Show Result Stats',
-		description: 'Enable displaying result stats (time taken and total results).',
-		input: 'bool',
-		default: true,
-	},
-	loader: {
-		label: 'Loading Message',
-		description: 'Add an optional message to show while results are loading.',
-		input: 'string',
-		default: '',
-	},
 };
