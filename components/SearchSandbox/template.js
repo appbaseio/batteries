@@ -245,7 +245,7 @@ function getApp(config) {
 					highlightField: config.componentProps.search.dataField,
 				};
 				componentConfig = {
-					component: config.component,
+					component: 'DataSearch',
 					mappings: config.mappings,
 					componentProps: searchComponentProps,
 					customProps: config.customProps,
