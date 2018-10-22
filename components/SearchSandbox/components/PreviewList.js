@@ -184,7 +184,7 @@ class PreviewList extends React.Component {
 				title="Customize List Preview"
 			>
 				<label title="layout" style={{ display: 'flex' }}>
-					<h3 style={headingStyle}>Choose Layout</h3>
+					<h3 style={headingStyle}>{this.state.listLayout ? 'List' : 'Card'} Layout</h3>
 				</label>
 				<Switch
 					checked={this.state.listLayout}
