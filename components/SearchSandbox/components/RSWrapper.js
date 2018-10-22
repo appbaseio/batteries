@@ -13,6 +13,7 @@ import {
 	Dropdown,
 	Popover,
 	Select,
+	Card,
 } from 'antd';
 
 import {
@@ -37,6 +38,8 @@ import {
 	fieldBadge,
 	label,
 } from '../styles';
+
+const { Meta } = Card;
 
 const componentMap = {
 	CategorySearch,
@@ -315,11 +318,11 @@ export default class RSWrapper extends Component {
 		}));
 	};
 
-	handleSavePreview = (values) => {
+	handleSavePreview = (values, listLayout) => {
 		const { onPropChange, id } = this.props;
 		onPropChange(id, {
 			meta: true,
-			metaFields: values,
+			metaFields: { ...values, listLayout },
 		});
 		this.setState({
 			previewModal: false,
@@ -719,7 +722,9 @@ export default class RSWrapper extends Component {
 		const {
 			componentProps, component, id, mappings, customProps, full, showDelete, onDelete,
 		} = this.props;
-		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
+		const {
+			showModal, componentProps: stateComponentProps, previewModal,
+		} = this.state;
 		if (!componentProps.dataField) return null;
 		const RSComponent = componentMap[component];
 
@@ -751,6 +756,7 @@ export default class RSWrapper extends Component {
 		}
 		const { componentProps: { metaFields, ...restProps } } = this.props;
 		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
+		const listLayout = isMetaDataPresent ? metaFields.listLayout : true;
 
 		if (id === 'result' && isMetaDataPresent) {
 			const {
@@ -764,7 +770,7 @@ export default class RSWrapper extends Component {
 						const image = getNestedValue(res, imageKey);
 						const { renderJSONEditor, renderDeleteJSON } = this.props;
 
-						return (
+						return listLayout ? (
 						<Row type="flex" key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
 							<Col span={image ? 6 : 0}>
 								<img style={{ width: '100%' }} src={image} alt={title} />
@@ -780,6 +786,26 @@ export default class RSWrapper extends Component {
 								{renderDeleteJSON(res)}
 							</div>
 						</Row>
+					) : (
+						<Row key={res._id} style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}>
+							<Card
+								hoverable
+								style={{ width: 240 }}
+								cover={image && <img style={{ width: '100%' }} alt={title} src={image} />}
+							>
+								<Meta
+									title={title}
+									description={description}
+									style={{ height: '100px', overflow: 'hidden' }}
+								/>
+								<div style={{ marginTop: '10px', textAlign: 'right' }}>
+									{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+									: null}
+									{renderJSONEditor(res)}
+									{renderDeleteJSON(res)}
+								</div>
+							</Card>
+						</Row>
 					);
 				},
 			};
@@ -787,6 +813,11 @@ export default class RSWrapper extends Component {
 
 		const showPreview =	component === 'ReactiveList';
 		const customComponentProps = customProps[component];
+
+		const cardStyles = showPreview && isMetaDataPresent && !listLayout ? {
+			justifyContent: 'space-around',
+			display: 'flex',
+		} : {};
 
 		return (
 			<div>
@@ -821,7 +852,7 @@ export default class RSWrapper extends Component {
 							) : null}
 						</Col>
 					) : null}
-					<Col span={full ? 24 : 20} id={id}>
+					<Col span={full ? 24 : 20} id={id} style={cardStyles}>
 						<RSComponent
 							componentId={id}
 							{...restProps}
