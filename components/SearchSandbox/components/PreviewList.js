@@ -5,6 +5,7 @@ import {
 import { ReactiveList } from '@appbaseio/reactivesearch';
 
 import getNestedValue from '../utils';
+import './previewStyle.css';
 
 class PreviewList extends React.Component {
 	constructor(props) {
@@ -224,6 +225,9 @@ class PreviewList extends React.Component {
 				<ReactiveList
 					showResultStats={false}
 					{...resultComponentProps}
+					innerClass={{
+						poweredBy: 'container-poweredBy',
+					}}
 					size={1}
 					componentId="preview-list"
 					dataField={this.props.dataField}
