@@ -149,7 +149,7 @@ class Mappings extends Component {
 		const esVersion = await getESVersion(appName);
 
 		this.setState({
-			esVersion,
+			esVersion: esVersion.split('.')[0],
 		});
 	}
 
