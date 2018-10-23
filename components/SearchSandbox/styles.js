@@ -119,6 +119,12 @@ const label = css`
 	margin: 20px 0;
 `;
 
+const markStyles = css`
+	mark {
+		background: yellow;
+	}
+`;
+
 export {
 	listItem,
 	title,
@@ -128,4 +134,5 @@ export {
 	componentStyles,
 	fieldBadge,
 	label,
+	markStyles,
 };

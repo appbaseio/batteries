@@ -12,7 +12,6 @@ import {
 	Icon,
 	Dropdown,
 	Popover,
-	Select,
 	Card,
 } from 'antd';
 
@@ -35,11 +34,8 @@ import {
 	rowStyles,
 	formWrapper,
 	componentStyles,
-	fieldBadge,
-	label,
+	markStyles,
 } from '../styles';
-
-const { Meta } = Card;
 
 const componentMap = {
 	CategorySearch,
@@ -688,7 +684,7 @@ export default class RSWrapper extends Component {
 						const { renderJSONEditor, renderDeleteJSON } = this.props;
 
 						return listLayout ? (
-						<Row type="flex" key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
+						<Row type="flex" className={markStyles} key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
 							<Col span={image ? 6 : 0}>
 								<img style={{ width: '100%' }} src={image} alt={title} />
 							</Col>
@@ -704,7 +700,7 @@ export default class RSWrapper extends Component {
 							</div>
 						</Row>
 					) : (
-						<Row key={res._id} style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}>
+						<Row key={res._id} className={markStyles} style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}>
 							<Card
 								style={{ width: 240 }}
 								cover={image && <img style={{ width: '100%' }} alt={title} src={image} />}
