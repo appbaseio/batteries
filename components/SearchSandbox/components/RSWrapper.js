@@ -303,7 +303,7 @@ export default class RSWrapper extends Component {
 				componentProps: {
 					...componentProps,
 					dataField: [...componentProps.dataField, field],
-					fieldWeights: [...componentProps.fieldWeights, 2],
+					fieldWeights: [...componentProps.fieldWeights, 1],
 				},
 			});
 		}
@@ -467,95 +467,6 @@ export default class RSWrapper extends Component {
 					/>
 				);
 				break;
-			}
-			case 'multiDropdown': {
-				const { Option } = Select;
-				const { component } = this.props;
-				let dropdownOptions = propsMap[component][name].options || [];
-				const placeholder = propsMap[component][name].description || '';
-				const { label: currentLabel } = propsMap[component][name];
-
-				let dropdownValue = [];
-				let disable = false;
-				let allFields = '';
-
-				switch (name) {
-					case 'includeFields': {
-						const { componentProps: stateComponentProps } = this.state;
-						allFields = '* ( Include all Fields )';
-						dropdownValue =	stateComponentProps.includeFields
-							|| propsMap[component][name].default;
-
-						if (dropdownValue.includes('*')) {
-							dropdownValue = ['*'];
-							dropdownOptions = [];
-						}
-
-						const excludeFields =	stateComponentProps.excludeFields
-							|| propsMap[component].excludeFields.default;
-						if (excludeFields.includes('*')) {
-							disable = true;
-							dropdownValue = [];
-						}
-						dropdownOptions = Object.keys(mappings).filter(
-							v => !excludeFields.includes(v),
-						);
-						break;
-					}
-					case 'excludeFields': {
-						const { componentProps: stateComponentProps } = this.state;
-						allFields = '* ( Exclude all Fields )';
-						dropdownValue =	stateComponentProps.excludeFields
-							|| propsMap[component][name].default;
-
-						if (dropdownValue.includes('*')) {
-							dropdownValue = ['*'];
-							dropdownOptions = [];
-						}
-
-						const includeFields =	stateComponentProps.includeFields
-							|| propsMap[component].includeFields.default;
-
-						if (includeFields.includes('*')) {
-							disable = true;
-							dropdownValue = [];
-						}
-
-						dropdownOptions = Object.keys(mappings).filter(
-							v => !includeFields.includes(v),
-						);
-						break;
-					}
-					default:
-				}
-				const { mappingsType } = this.props;
-				return (
-					<div className="ant-row ant-form-item ant-form-item-no-colon" key={name}>
-						<div className="ant-form-item-label">
-							<label className={label} title={currentLabel}>
-								{currentLabel}
-							</label>
-						</div>
-						<Select
-							key={name}
-							mode="multiple"
-							style={{ width: '100%' }}
-							disabled={disable}
-							placeholder={placeholder}
-							value={dropdownValue}
-							onChange={selectedValue => this.handleMultipleDropdown(selectedValue, name)
-							}
-						>
-							{allFields ? <Option key="*">{allFields}</Option> : null}
-							{dropdownOptions.map(option => (
-								<Option key={option}>
-									{option}
-									<span className={fieldBadge}>{mappingsType}</span>
-								</Option>
-							))}
-						</Select>
-					</div>
-				);
 			}
 			case 'dropdown': {
 				let dropdownOptions = [];

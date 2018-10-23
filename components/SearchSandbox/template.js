@@ -245,7 +245,7 @@ function getApp(config) {
 					highlightField: config.componentProps.search.dataField,
 				};
 				componentConfig = {
-					component: config.component,
+					component: 'DataSearch',
 					mappings: config.mappings,
 					componentProps: searchComponentProps,
 					customProps: config.customProps,
@@ -270,6 +270,7 @@ function getApp(config) {
 					mappings: config.mappings,
 					customProps: config.customProps,
 					componentProps: resultComponentProps,
+					componentId: 'result',
 				};
 				resultCode = getComponentCode(componentConfig);
 				break;
