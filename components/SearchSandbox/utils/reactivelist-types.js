@@ -19,6 +19,17 @@ export default {
 		input: 'dropdown',
 		multiple: false,
 	},
+	sortBy: {
+		label: 'Sort Order',
+		description: 'Sort the results by one of Best Match, Ascending or Descending order.',
+		input: 'dropdown',
+		options: [
+			{ label: 'Best Match', key: 'best' },
+			{ label: 'Ascending', key: 'asc' },
+			{ label: 'Descending', key: 'desc' },
+		],
+		default: 'Best Match',
+	},
 	size: {
 		label: 'Size',
 		description: 'Total number of results to fetch (maximum value is 1000).',
