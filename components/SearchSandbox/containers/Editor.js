@@ -515,7 +515,6 @@ export default class Editor extends Component {
 		resultComponentProps = {
 			size: 5,
 			pagination: true,
-			sortBy: '_score',
 			paginationAt: 'bottom',
 			scrollTarget: 'result',
 			...resultComponentProps,

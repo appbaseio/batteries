@@ -749,7 +749,7 @@ export default class RSWrapper extends Component {
 				highlightField: componentProps.dataField,
 			};
 		}
-		const { componentProps: { metaFields, ...restProps } } = this.props;
+		let { componentProps: { metaFields, ...restProps } } = this.props; // eslint-disable-line
 		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
 
 		if (id === 'result' && isMetaDataPresent) {
@@ -783,6 +783,10 @@ export default class RSWrapper extends Component {
 					);
 				},
 			};
+		}
+
+		if (id === 'result' && componentProps.sortBy === 'best') {
+			delete restProps.sortBy;
 		}
 
 		const showPreview =	component === 'ReactiveList';

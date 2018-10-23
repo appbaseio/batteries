@@ -128,10 +128,13 @@ ${
 
 export function getComponentCode(config) {
 	let allProps = config.componentProps || {};
-	const { metaFields, ...otherProps } = allProps;
+	const { meta, metaFields, ...otherProps } = allProps;
 	let componentStyle = {};
 	switch (config.component) {
 		case 'ReactiveList': {
+			if (allProps.sortBy === 'best') {
+				delete otherProps.sortBy;
+			}
 			allProps = {
 				componentId: config.componentId,
 				size: 5,
