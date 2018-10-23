@@ -195,12 +195,10 @@ class PreviewList extends React.Component {
 				<h3 style={headingStyle}>Choose fields</h3>
 				{this.options.map(option => this.renderDropdown(option))}
 				<ReactiveList
-					componentId={this.props.componentId}
-					pagination
 					showResultStats={false}
-					paginationAt="bottom"
-					size={this.props.componentProps.size || 2}
 					{...resultComponentProps}
+					size={2}
+					componentId="preview-list"
 					dataField={this.props.dataField}
 				/>
 			</Modal>

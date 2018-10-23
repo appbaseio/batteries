@@ -23,6 +23,7 @@ import {
 	updateSynonyms,
 	REMOVED_KEYS,
 	getTypesFromMapping,
+	getESVersion,
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
@@ -123,6 +124,7 @@ class Mappings extends Component {
 			synonyms: [],
 			credentials: '',
 			showSynonymModal: false,
+			esVersion: '5',
 		};
 
 		this.usecases = textUsecases;
@@ -140,8 +142,15 @@ class Mappings extends Component {
 		return null;
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		this.init();
+
+		const { appName } = this.props;
+		const esVersion = await getESVersion(appName);
+
+		this.setState({
+			esVersion,
+		});
 	}
 
 	componentDidUpdate(prevProps) {
@@ -391,6 +400,7 @@ class Mappings extends Component {
 			deletedPaths,
 			activeType,
 			mapping,
+			esVersion,
 		} = this.state;
 
 		const { appId } = this.props;
@@ -402,7 +412,7 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType)
+		reIndex(mapping, appId, excludedFields, activeType, esVersion)
 			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
@@ -674,7 +684,7 @@ class Mappings extends Component {
 						</span>
 					</Tooltip>
 				</p>
-				<Button href="/billing" target="_blank" className="promotional-button">
+				<Button href="/app?view=billing" className="promotional-button">
 					Upgrade Now
 				</Button>
 			</div>
