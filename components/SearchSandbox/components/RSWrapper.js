@@ -314,11 +314,11 @@ export default class RSWrapper extends Component {
 		}));
 	};
 
-	handleSavePreview = (values, listLayout) => {
+	handleSavePreview = (values, layout) => {
 		const { onPropChange, id } = this.props;
 		onPropChange(id, {
 			meta: true,
-			metaFields: { ...values, listLayout },
+			metaFields: { ...values, layout },
 		});
 		this.setState({
 			previewModal: false,
@@ -663,7 +663,7 @@ export default class RSWrapper extends Component {
 		}
 		const { componentProps: { metaFields, ...restProps } } = this.props;
 		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
-		const listLayout = isMetaDataPresent ? metaFields.listLayout : true;
+		const layout = isMetaDataPresent ? metaFields.layout : 'list';
 
 		if (id === 'result' && isMetaDataPresent) {
 			const {
@@ -683,49 +683,54 @@ export default class RSWrapper extends Component {
 						const image = getNestedValue(res, imageKey);
 						const { renderJSONEditor, renderDeleteJSON } = this.props;
 
-						return listLayout ? (
-						<Row type="flex" className={markStyles} key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
-							<Col span={image ? 6 : 0}>
-								<img style={{ width: '100%' }} src={image} alt={title} />
-							</Col>
-							<Col span={image ? 18 : 24}>
-								<h3 style={{ fontWeight: '600' }} dangerouslySetInnerHTML={{ __html: title }} />
-								<p style={{ fontSize: '1em' }} dangerouslySetInnerHTML={{ __html: description }} />
-							</Col>
-							<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
-								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
-								: null}
-								{renderJSONEditor(res)}
-								{renderDeleteJSON(res)}
-							</div>
-						</Row>
-					) : (
-						<Row key={res._id} className={markStyles} style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}>
-							<Card
-								style={{ width: 240 }}
-								cover={image && <img style={{ width: '100%' }} alt={title} src={image} />}
-							>
-								<div style={{ height: '100px', overflow: 'hidden' }}>
-									<h3 style={cardHeadingStyle} dangerouslySetInnerHTML={{ __html: title }}/>
-									<span dangerouslySetInnerHTML={{ __html: description }}/>
-								</div>
-								<div style={{ marginTop: '10px' }}>
-									{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
-									: null}
-									{renderJSONEditor(res)}
-									{renderDeleteJSON(res)}
-								</div>
-							</Card>
-						</Row>
-					);
-				},
-			};
-		}
+						switch (layout) {
+							case 'card':
+								return (
+									<Row key={res._id} className={markStyles} style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}>
+										<Card
+											style={{ width: 240 }}
+											cover={image && <img style={{ width: '100%' }} alt={title} src={image} />}
+										>
+											<div style={{ height: '100px', overflow: 'hidden' }}>
+												<h3 style={cardHeadingStyle} dangerouslySetInnerHTML={{ __html: title }}/>
+												<span dangerouslySetInnerHTML={{ __html: description }}/>
+											</div>
+											<div style={{ marginTop: '10px' }}>
+												{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+												: null}
+												{renderJSONEditor(res)}
+												{renderDeleteJSON(res)}
+											</div>
+										</Card>
+									</Row>
+								);
+							default:
+								return (
+									<Row type="flex" className={markStyles} key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
+										<Col span={image ? 6 : 0}>
+											<img style={{ width: '100%' }} src={image} alt={title} />
+										</Col>
+										<Col span={image ? 18 : 24}>
+											<h3 style={{ fontWeight: '600' }} dangerouslySetInnerHTML={{ __html: title }} />
+											<p style={{ fontSize: '1em' }} dangerouslySetInnerHTML={{ __html: description }} />
+										</Col>
+										<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
+											{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
+											: null}
+											{renderJSONEditor(res)}
+											{renderDeleteJSON(res)}
+										</div>
+									</Row>
+								);
+						}
+					},
+				};
+			}
 
 		const showPreview =	component === 'ReactiveList';
 		const customComponentProps = customProps[component];
 
-		const cardStyles = showPreview && isMetaDataPresent && !listLayout ? {
+		const cardStyles = showPreview && isMetaDataPresent && layout === 'card' ? {
 			justifyContent: 'space-around',
 			display: 'flex',
 		} : {};

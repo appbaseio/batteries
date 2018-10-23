@@ -1,12 +1,10 @@
 import React from 'react';
 import {
- Modal, Dropdown, Menu, Button, Icon, message, Row, Col, Switch, Card,
+ Modal, Dropdown, Menu, Button, Icon, message, Row, Col, Card,
 } from 'antd';
 import { ReactiveList } from '@appbaseio/reactivesearch';
 
 import getNestedValue from '../utils';
-
-const { Meta } = Card;
 
 class PreviewList extends React.Component {
 	constructor(props) {
@@ -16,7 +14,7 @@ class PreviewList extends React.Component {
 				url,
 				title,
 				description,
-				listLayout,
+				layout,
 				image, // prettier-ignore
 			} = props.componentProps.metaFields;
 			this.state = {
@@ -24,7 +22,7 @@ class PreviewList extends React.Component {
 				title,
 				description,
 				image,
-				listLayout,
+				layout,
 			};
 		} else {
 			this.state = {
@@ -32,10 +30,11 @@ class PreviewList extends React.Component {
 				description: '',
 				image: '',
 				url: '',
-				listLayout: true,
+				layout: 'list',
 			};
 		}
 		this.options = ['title', 'description', 'image', 'url'];
+		this.layoutOptions = ['card', 'list'];
 	}
 
 	handleMenuClick = (e, name) => {
@@ -51,12 +50,12 @@ class PreviewList extends React.Component {
 		if (!this.state.description || !this.state.title) {
 			message.error('Please select title and description fields');
 		}
-		this.props.handleSavePreview(values, this.state.listLayout);
+		this.props.handleSavePreview(values, this.state.layout);
 	};
 
 	handleLayout = (val) => {
 		this.setState({
-			listLayout: val,
+			layout: val,
 		});
 	};
 
@@ -126,58 +125,83 @@ class PreviewList extends React.Component {
 				const title = getNestedValue(res, titleKey) || 'Choose a valid title field';
 				const description = getNestedValue(res, descriptionKey) || 'Choose a valid description field'; // prettier-ignore
 				const image = getNestedValue(res, imageKey);
-				const { listLayout } = this.state;
+				const { layout } = this.state;
 
 				const cardHeadingStyle = {
 					textOverflow: 'ellipsis',
 					overflow: 'hidden',
 					whiteSpace: 'nowrap',
 				};
-				return listLayout ? (
-					<Row
-						type="flex"
-						gutter={16}
-						key={res._id}
-						style={{
-							margin: '20px auto',
-							padding: '5px',
-							borderBottom: '1px solid #ededed',
-						}}
-					>
-						<Col span={image ? 6 : 0}>
-							<img
-								style={{ width: '100%' }}
-								src={image}
-								alt={title || 'Choose a valid Title Field for alt'}
-							/>
-						</Col>
-						<Col span={image ? 18 : 24}>
-							<h3 style={{ fontWeight: '600' }}>{title}</h3>
-							<p style={{ fontSize: '1em' }}>{description}</p>
-							{url ? (
-								<Button href={url} target="_blank" icon="link" shape="circle" />
-							) : null}
-						</Col>
-					</Row>
-				) : (
-					<Row key={res._id} style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}>
-						<Card
-							style={{ width: 240 }}
-							cover={image && <img alt={title} src={image} />}
-						>
-							<div style={{ height: '100px', overflow: 'hidden' }}>
-								<h3 style={cardHeadingStyle}>{title}</h3>
-								<span>{description}</span>
-							</div>
-						</Card>
-					</Row>
-				);
+
+				switch (layout) {
+					case 'card':
+						return (
+							<Row
+								key={res._id}
+								style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}
+							>
+								<Card
+									style={{ width: 240 }}
+									cover={image && <img alt={title} src={image} />}
+								>
+									<div style={{ height: '100px', overflow: 'hidden' }}>
+										<h3 style={cardHeadingStyle}>{title}</h3>
+										<span>{description}</span>
+									</div>
+								</Card>
+							</Row>
+						);
+					default:
+						return (
+							<Row
+								type="flex"
+								gutter={16}
+								key={res._id}
+								style={{
+									margin: '20px auto',
+									padding: '5px',
+									borderBottom: '1px solid #ededed',
+								}}
+							>
+								<Col span={image ? 6 : 0}>
+									<img
+										style={{ width: '100%' }}
+										src={image}
+										alt={title || 'Choose a valid Title Field for alt'}
+									/>
+								</Col>
+								<Col span={image ? 18 : 24}>
+									<h3 style={{ fontWeight: '600' }}>{title}</h3>
+									<p style={{ fontSize: '1em' }}>{description}</p>
+									{url ? (
+										<Button
+											href={url}
+											target="_blank"
+											icon="link"
+											shape="circle"
+										/>
+									) : null}
+								</Col>
+							</Row>
+						);
+				}
 			},
 		};
 		const headingStyle = {
 			margin: '25px 0 10px 0',
 			fontWeight: '600',
 		};
+
+		const layoutOptions = (
+			<Menu
+				onClick={e => this.handleMenuClick(e, 'layout')}
+				style={{ maxHeight: '250px', overflowY: 'scroll' }}
+			>
+				{this.layoutOptions.map(option => (
+					<Menu.Item key={option}>{option}</Menu.Item>
+				))}
+			</Menu>
+		);
 
 		return (
 			<Modal
@@ -188,14 +212,13 @@ class PreviewList extends React.Component {
 				title="Customize List Preview"
 			>
 				<label title="layout" style={{ display: 'flex' }}>
-					<h3 style={headingStyle}>{this.state.listLayout ? 'List' : 'Card'} Layout</h3>
+					<h3 style={headingStyle}>Choose Layout</h3>
 				</label>
-				<Switch
-					checked={this.state.listLayout}
-					onChange={val => this.handleLayout(val)}
-					checkedChildren={<Icon type="bars" />}
-					unCheckedChildren={<Icon type="appstore" />}
-				/>
+				<Dropdown overlay={layoutOptions} trigger={['click']}>
+					<Button>
+						{this.state.layout || 'list'} <Icon type="down" />
+					</Button>
+				</Dropdown>
 				<h3 style={headingStyle}>Choose fields</h3>
 				{this.options.map(option => this.renderDropdown(option))}
 				<ReactiveList
