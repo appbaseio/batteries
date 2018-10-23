@@ -749,7 +749,7 @@ export default class RSWrapper extends Component {
 				highlightField: componentProps.dataField,
 			};
 		}
-		let { componentProps: { metaFields, ...restProps } } = this.props; // eslint-disable-line
+		const { componentProps: { metaFields, ...restProps } } = this.props;
 		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
 
 		if (id === 'result' && isMetaDataPresent) {
