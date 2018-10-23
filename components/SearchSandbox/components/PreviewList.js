@@ -124,9 +124,15 @@ class PreviewList extends React.Component {
 			onData: (res) => {
 				const url = getNestedValue(res, urlKey);
 				const title = getNestedValue(res, titleKey) || 'Choose a valid title field';
-				const description =					getNestedValue(res, descriptionKey) || 'Choose a valid description field';
+				const description = getNestedValue(res, descriptionKey) || 'Choose a valid description field'; // prettier-ignore
 				const image = getNestedValue(res, imageKey);
 				const { listLayout } = this.state;
+
+				const cardHeadingStyle = {
+					textOverflow: 'ellipsis',
+					overflow: 'hidden',
+					whiteSpace: 'nowrap',
+				};
 				return listLayout ? (
 					<Row
 						type="flex"
@@ -156,15 +162,13 @@ class PreviewList extends React.Component {
 				) : (
 					<Row key={res._id} style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}>
 						<Card
-							hoverable
 							style={{ width: 240 }}
 							cover={image && <img alt={title} src={image} />}
 						>
-							<Meta
-								title={title}
-								description={description}
-								style={{ height: '100px', overflow: 'hidden' }}
-							/>
+							<div style={{ height: '100px', overflow: 'hidden' }}>
+								<h3 style={cardHeadingStyle}>{title}</h3>
+								<span>{description}</span>
+							</div>
 						</Card>
 					</Row>
 				);
@@ -197,7 +201,7 @@ class PreviewList extends React.Component {
 				<ReactiveList
 					showResultStats={false}
 					{...resultComponentProps}
-					size={2}
+					size={1}
 					componentId="preview-list"
 					dataField={this.props.dataField}
 				/>

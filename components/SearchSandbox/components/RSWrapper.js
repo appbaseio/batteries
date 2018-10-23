@@ -673,6 +673,12 @@ export default class RSWrapper extends Component {
 			const {
 				url: urlKey, title: titleKey, image: imageKey, description: descriptionKey,
 			} = metaFields;
+
+			const cardHeadingStyle = {
+				textOverflow: 'ellipsis',
+				overflow: 'hidden',
+				whiteSpace: 'nowrap',
+			};
 			otherProps = {
 					onData: (res) => {
 						const url = getNestedValue(res, urlKey);
@@ -687,8 +693,8 @@ export default class RSWrapper extends Component {
 								<img style={{ width: '100%' }} src={image} alt={title} />
 							</Col>
 							<Col span={image ? 18 : 24}>
-								<h3 style={{ fontWeight: '600' }}>{title}</h3>
-								<p style={{ fontSize: '1em' }}>{description}</p>
+								<h3 style={{ fontWeight: '600' }} dangerouslySetInnerHTML={{ __html: title }} />
+								<p style={{ fontSize: '1em' }} dangerouslySetInnerHTML={{ __html: description }} />
 							</Col>
 							<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
 								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
@@ -700,16 +706,14 @@ export default class RSWrapper extends Component {
 					) : (
 						<Row key={res._id} style={{ margin: '10px 10px 0 0', display: 'inline-flex' }}>
 							<Card
-								hoverable
 								style={{ width: 240 }}
 								cover={image && <img style={{ width: '100%' }} alt={title} src={image} />}
 							>
-								<Meta
-									title={title}
-									description={description}
-									style={{ height: '100px', overflow: 'hidden' }}
-								/>
-								<div style={{ marginTop: '10px', textAlign: 'right' }}>
+								<div style={{ height: '100px', overflow: 'hidden' }}>
+									<h3 style={cardHeadingStyle} dangerouslySetInnerHTML={{ __html: title }}/>
+									<span dangerouslySetInnerHTML={{ __html: description }}/>
+								</div>
+								<div style={{ marginTop: '10px' }}>
 									{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
 									: null}
 									{renderJSONEditor(res)}
