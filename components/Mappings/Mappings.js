@@ -684,7 +684,7 @@ class Mappings extends Component {
 						</span>
 					</Tooltip>
 				</p>
-				<Button href="/billing" target="_blank" className="promotional-button">
+				<Button href="/app?view=billing" className="promotional-button">
 					Upgrade Now
 				</Button>
 			</div>
