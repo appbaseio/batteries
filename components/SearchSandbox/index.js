@@ -35,7 +35,7 @@ class SearchSandbox extends Component {
 			profileList: ['default'],
 			configs: [],
 			mappings: null,
-			filterCount: 0,
+			filterCount: 0, // Tracks the id of MultiList
 			componentProps: {},
 			showNewProfileModal: false,
 			profileModalError: '',
@@ -380,8 +380,8 @@ class SearchSandbox extends Component {
 							showCodeSandbox ? (
 								<Button onClick={this.openSandbox} size="large" type="primary">
 									Open in Codesandbox
-								</Button>	
-							):null
+								</Button>
+							) : null
 						}
 					</div>
 					{React.Children.map(this.props.children, child => (

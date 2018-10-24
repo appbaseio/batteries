@@ -12,7 +12,6 @@ import {
 	Icon,
 	Dropdown,
 	Popover,
-	Select,
 } from 'antd';
 
 import {
@@ -28,14 +27,15 @@ import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 import PreviewList from './PreviewList';
+import {
+	NumberInput, TextInput, DropdownInput, ToggleInput,
+} from './InputRenderer';
 
 import {
 	deleteStyles,
 	rowStyles,
 	formWrapper,
 	componentStyles,
-	fieldBadge,
-	label,
 } from '../styles';
 
 const componentMap = {
@@ -60,8 +60,6 @@ export default class RSWrapper extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
-			isInputActive: false,
-			searchTerm: '',
 			previewModal: false,
 		};
 
@@ -208,12 +206,6 @@ export default class RSWrapper extends Component {
 		});
 	};
 
-	handleDropdownBlur = () => {
-		this.setState({
-			isInputActive: false,
-		});
-	}
-
 	handleDropdownChange = (e, name) => {
 		const { componentProps } = this.state;
 		const value = e.key;
@@ -225,14 +217,6 @@ export default class RSWrapper extends Component {
 			},
 		});
 	};
-
-	handleDropdownSearch = (e) => {
-		const { target: { name, value } } = e;
-		this.setState({
-			isInputActive: true,
-			[name]: value,
-		});
-	}
 
 	handleSearchDataFieldChange = (item) => {
 		const field = item.key;
@@ -261,20 +245,6 @@ export default class RSWrapper extends Component {
 				fieldWeights: componentProps.fieldWeights.filter(
 					(i, index) => index !== deleteIndex,
 				),
-			},
-		});
-	};
-
-	handleMultipleDropdown = (value, name) => {
-		let selectedValue = value;
-		const { componentProps } = this.state;
-		if (selectedValue.includes('*')) {
-			selectedValue = ['*'];
-		}
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: selectedValue,
 			},
 		});
 	};
@@ -397,11 +367,10 @@ export default class RSWrapper extends Component {
 				dataIndex: 'weight',
 				key: 'weight',
 				render: (value, x, index) => (
-					<Input
+					<NumberInput
 						min={1}
-						type="number"
-						defaultValue={value}
-						onChange={e => this.handleSearchWeightChange(index, e.target.value)}
+						value={value}
+						handleChange={e => this.handleSearchWeightChange(index, e.target.value)}
 					/>
 				),
 			},
@@ -449,21 +418,19 @@ export default class RSWrapper extends Component {
 		switch (item.input) {
 			case 'bool': {
 				FormInput = (
-					<Switch
-						defaultChecked={value}
-						onChange={val => this.handleSwitchPropChange(name, val)}
+					<ToggleInput
+						value={value}
+						handleChange={this.handleSwitchPropChange}
 					/>
 				);
 				break;
 			}
 			case 'number': {
 				FormInput = (
-					<Input
+					<NumberInput
 						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						type="number"
-						placeholder={`Enter ${name} here`}
+						value={value}
+						handleChange={this.handlePropChange}
 					/>
 				);
 				break;
@@ -477,7 +444,7 @@ export default class RSWrapper extends Component {
 				const {
 					onPropChange, id, component, mappingsURL,
 				} = this.props;
-				const { componentProps: stateComponentProps, isInputActive, searchTerm } = this.state;
+				const { componentProps: stateComponentProps } = this.state;
 
 				if (name === 'categoryField') {
 					noOptionsMessage = <p style={{ lineHeight: '1.5' }}>There are no compatible fields present in your data mappings. <a href={mappingsURL}>You can edit your mappings</a> (agggregation components)</p>;
@@ -488,6 +455,7 @@ export default class RSWrapper extends Component {
 					}));
 
 					if (dropdownOptions.length) {
+						// If no categoryfield is selected
 						if (!stateComponentProps.categoryField) {
 							onPropChange(id, {
 								categoryField: dropdownOptions[0].label,
@@ -509,52 +477,24 @@ export default class RSWrapper extends Component {
 						: propsMap[component][name].default;
 				}
 
-				if (isInputActive) {
-					dropdownOptions = dropdownOptions
-						.filter(option => option.label.toLowerCase().includes(searchTerm.toLowerCase()));
-				}
-
-				if (!dropdownOptions.length) {
-					dropdownOptions.push({ label: 'No options', key: '' });
-				}
-				const menu = (
-					<Menu
-						onClick={e => this.handleDropdownChange(e, name)}
-						style={{ maxHeight: 300, overflowY: 'scroll' }}
-					>
-						{dropdownOptions.map(({ label: dropLabel, key }) => (
-							<Menu.Item key={key}>{dropLabel}</Menu.Item>
-						))}
-					</Menu>
+				FormInput = (
+					<DropdownInput
+						options={dropdownOptions}
+						handleChange={this.handleDropdownChange}
+						value={selectedValue}
+						name={name}
+						noOptionsMessage={noOptionsMessage}
+					/>
 				);
-
-				FormInput = dropdownOptions.length ? (
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Input
-							style={{
-								width: '100%',
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-							}}
-							name="searchTerm"
-							onBlur={this.handleDropdownBlur}
-							value={isInputActive ? searchTerm : selectedValue}
-							defaultValue={selectedValue}
-							onChange={this.handleDropdownSearch}
-						/>
-					</Dropdown>
-				) : noOptionsMessage;
 				break;
 			}
 
 			default: {
 				FormInput = (
-					<Input
+					<TextInput
 						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						placeholder={`Enter ${name} here`}
+						value={value}
+						handleChange={this.handlePropChange}
 					/>
 				);
 				break;
@@ -577,17 +517,11 @@ export default class RSWrapper extends Component {
 		const propNames = propsMap[component];
 		const { dataField } = stateComponentProps;
 		const fields = this.getAvailableDataField();
-		const menu = (
-			<Menu
-				onClick={this.handleDataFieldChange}
-				style={{ maxHeight: 300, overflowY: 'scroll' }}
-			>
-				{fields.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-			</Menu>
-		);
-
+		const fieldsOptions = [];
+		fields.map(field => fieldsOptions.push({
+			key: field,
+			label: field,
+		}));
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
 				<Form.Item label={propNames.dataField.label} colon={false}>
@@ -605,18 +539,12 @@ export default class RSWrapper extends Component {
 					{id === 'search' ? (
 						this.renderDataFieldTable()
 					) : (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button
-								style={{
-									width: '100%',
-									display: 'flex',
-									justifyContent: 'space-between',
-									alignItems: 'center',
-								}}
-							>
-								{dataField} <Icon type="down" />
-							</Button>
-						</Dropdown>
+						<DropdownInput
+							value={dataField}
+							handleChange={this.handleDataFieldChange}
+							options={fieldsOptions}
+							noOptionsMessage="No Fields Present"
+						/>
 					)}
 				</Form.Item>
 				{Object.keys(propNames)
@@ -646,6 +574,7 @@ export default class RSWrapper extends Component {
 			};
 		}
 		if (component === 'CategorySearch') {
+			// CategoryField is same as the data field of MultiList
 			otherProps = {
 				categoryField: generateDataField(
 					'MultiList',
@@ -696,6 +625,7 @@ export default class RSWrapper extends Component {
 			};
 		}
 
+		// For Best Match results we remove the sortBy field & rely on ES to display result
 		if (id === 'result' && componentProps.sortBy === 'best') {
 			delete restProps.sortBy;
 		}
