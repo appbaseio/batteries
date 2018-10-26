@@ -696,6 +696,10 @@ export default class RSWrapper extends Component {
 			};
 		}
 
+		if (id === 'result' && componentProps.sortBy === 'best') {
+			delete restProps.sortBy;
+		}
+
 		const showPreview =	component === 'ReactiveList';
 		const customComponentProps = customProps[component];
 
