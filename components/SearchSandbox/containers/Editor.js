@@ -8,9 +8,6 @@ import {
 	Form,
 	Input,
 	Switch,
-	Dropdown,
-	Icon,
-	Menu,
 	Tree,
 	Popover,
 	Tooltip,
@@ -27,14 +24,16 @@ import Ace from './AceEditor';
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import { listItem, formWrapper } from '../styles';
+import RenderDataField from '../components/RenderDataField';
+import { getAvailableDataField } from '../utils/dataField';
 
 const { TreeNode } = Tree;
 
 export default class Editor extends Component {
 	constructor(props) {
 		super(props);
-
-		const dataFields = this.getAvailableDataField();
+		const { mappings } = props;
+		const dataFields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
 		this.state = {
 			showModal: false,
 			listComponentProps: {
@@ -54,26 +53,6 @@ export default class Editor extends Component {
 			credentials,
 		});
 	}
-
-	getAvailableDataField = () => {
-		const { types } = multiListTypes.dataField;
-		const { mappings } = this.props;
-
-		const fields = Object.keys(mappings).filter((field) => {
-			let fieldsToCheck = [mappings[field]];
-
-			if (mappings[field].originalFields) {
-				fieldsToCheck = [
-					...fieldsToCheck,
-					...Object.values(mappings[field].originalFields),
-				];
-			}
-
-			return fieldsToCheck.some(item => types.includes(item.type));
-		});
-
-		return fields;
-	};
 
 	copyJSON = (code) => {
 		const el = document.createElement('textarea');
@@ -102,7 +81,8 @@ export default class Editor extends Component {
 	};
 
 	resetNewComponentData = () => {
-		const dataFields = this.getAvailableDataField();
+		const {mappings} = this.props;
+		const dataFields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
 		this.setState({
 			listComponentProps: {
 				dataField: dataFields.length ? dataFields[0] : '',
@@ -112,7 +92,8 @@ export default class Editor extends Component {
 
 	handleOk = () => {
 		// only set to store if dataField is valid
-		const fields = this.getAvailableDataField();
+		const { mappings } = this.props;
+		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
 		if (fields.length) {
 			const { filterCount, setFilterCount, onPropChange } = this.props;
 			const { listComponentProps } = this.state;
@@ -149,16 +130,11 @@ export default class Editor extends Component {
 		}));
 	};
 
-	handleDataFieldChange = (item) => {
-		const dataField = item.key;
-		const { listComponentProps } = this.state;
+	setListComponentProps = (newComponentProps) => {
 		this.setState({
-			listComponentProps: {
-				...listComponentProps,
-				dataField,
-			},
+			listComponentProps: newComponentProps,
 		});
-	};
+	}
 
 	handleSwitchPropChange = (name, value) => {
 	const { listComponentProps } = this.state;
@@ -332,8 +308,8 @@ export default class Editor extends Component {
 	};
 
 	renderPropsForm = () => {
-		const fields = this.getAvailableDataField();
-		const { mappingsURL } = this.props;
+		const { mappingsURL, mappings } = this.props;
+		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
 		if (!fields.length) {
 			return (
 				<p>
@@ -344,36 +320,16 @@ export default class Editor extends Component {
 			);
 		}
 
-		const { listComponentProps: { dataField } } = this.state;
-		const menu = (
-			<Menu
-				onClick={this.handleDataFieldChange}
-				style={{ maxHeight: 300, overflowY: 'scroll' }}
-			>
-				{fields.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-			</Menu>
-		);
+		const { listComponentProps } = this.state;
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
-				<Form.Item label={multiListTypes.dataField.label} colon={false}>
-					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
-						{multiListTypes.dataField.description}
-					</div>
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Button
-							style={{
-								width: '100%',
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-							}}
-						>
-							{dataField} <Icon type="down" />
-						</Button>
-					</Dropdown>
-				</Form.Item>
+				<RenderDataField
+					label={multiListTypes.dataField.label}
+					description={multiListTypes.dataField.description}
+					setComponentProps={this.setListComponentProps}
+					componentProps={listComponentProps}
+					getAvailableDataField={() => getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings })}
+				/>
 				{Object.keys(multiListTypes)
 					.filter(item => item !== 'dataField')
 					.map(item => this.renderFormItem(multiListTypes[item], item))}

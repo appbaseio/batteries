@@ -24,18 +24,15 @@ import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
 import categorySearchTypes from '../utils/categorysearch-types';
-import { generateDataField, generateFieldWeights } from '../utils/dataField';
+import { generateDataField, generateFieldWeights, getAvailableDataField } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 import PreviewList from './PreviewList';
+import RenderDataField from './RenderDataField';
 
 import {
-	deleteStyles,
-	rowStyles,
 	formWrapper,
 	componentStyles,
-	fieldBadge,
-	label,
 } from '../styles';
 
 const componentMap = {
@@ -59,7 +56,6 @@ export default class RSWrapper extends Component {
 		this.state = {
 			showModal: false,
 			componentProps: props.componentProps,
-			error: '',
 			isInputActive: false,
 			searchTerm: '',
 			previewModal: false,
@@ -67,8 +63,8 @@ export default class RSWrapper extends Component {
 
 		if (!props.componentProps.dataField) {
 			// set default dataField for the component if not defined
-			const { component } = props;
-			const dataFields = this.getAvailableDataField();
+			const { component, id, mappings } = props;
+			const dataFields = getAvailableDataField({ component, id, mappings });
 			const { multiple } = propsMap[component].dataField;
 			let otherProps = {};
 			if (props.id === 'search') {
@@ -88,29 +84,11 @@ export default class RSWrapper extends Component {
 		});
 	}
 
-	getAvailableDataField = () => {
-		const { component, mappings, id } = this.props;
-		const { types } = propsMap[component].dataField;
-
-		if (id === 'search') {
-			return Object.keys(mappings).filter(field => types.includes(mappings[field].type));
-		}
-
-		const fields = Object.keys(mappings).filter((field) => {
-			let fieldsToCheck = [mappings[field]];
-
-			if (mappings[field].originalFields) {
-				fieldsToCheck = [
-					...fieldsToCheck,
-					...Object.values(mappings[field].originalFields),
-				];
-			}
-
-			return fieldsToCheck.some(item => types.includes(item.type));
+	setComponentProps = (newComponentProps) => {
+		this.setState({
+			componentProps: newComponentProps,
 		});
-
-		return fields;
-	};
+	}
 
 	getCategoryField = () => {
 		const { component, mappings } = this.props;
@@ -131,21 +109,6 @@ export default class RSWrapper extends Component {
 
 		return fields;
 	}
-
-	setError = (error) => {
-		this.setState(
-			{
-				error,
-			},
-			() => {
-				setTimeout(() => {
-					this.setState({
-						error: '',
-					});
-				}, 3000);
-			},
-		);
-	};
 
 	resetComponentProps = () => {
 		const { componentProps } = this.props;
@@ -173,17 +136,6 @@ export default class RSWrapper extends Component {
 		this.resetComponentProps();
 		this.setState({
 			showModal: false,
-		});
-	};
-
-	handleDataFieldChange = (item) => {
-		const dataField = item.key;
-		const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				dataField,
-			},
 		});
 	};
 
@@ -234,81 +186,6 @@ export default class RSWrapper extends Component {
 		});
 	}
 
-	handleSearchDataFieldChange = (item) => {
-		const field = item.key;
-		const index = item.item.props.value;
-		const { componentProps } = this.state;
-
-		const dataField = Object.assign([], componentProps.dataField, {
-			[index]: field,
-		});
-		this.setState({
-			componentProps: {
-				...componentProps,
-				dataField,
-			},
-		});
-	};
-
-	handleSearchDataFieldDelete = (deleteIndex) => {
-	const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				dataField: componentProps.dataField.filter(
-					(i, index) => index !== deleteIndex,
-				),
-				fieldWeights: componentProps.fieldWeights.filter(
-					(i, index) => index !== deleteIndex,
-				),
-			},
-		});
-	};
-
-	handleMultipleDropdown = (value, name) => {
-		let selectedValue = value;
-		const { componentProps } = this.state;
-		if (selectedValue.includes('*')) {
-			selectedValue = ['*'];
-		}
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: selectedValue,
-			},
-		});
-	};
-
-	handleSearchWeightChange = (index, value) => {
-	const { componentProps } = this.state;
-		const fieldWeights = Object.assign([], componentProps.fieldWeights, {
-			[index]: value,
-		});
-		this.setState({
-			componentProps: {
-				...componentProps,
-				fieldWeights,
-			},
-		});
-	};
-
-	handleAddFieldRow = () => {
-	const { componentProps } = this.state;
-		const field = this.getAvailableDataField().find(
-			item => !componentProps.dataField.includes(item),
-		);
-
-		if (field) {
-			this.setState({
-				componentProps: {
-					...componentProps,
-					dataField: [...componentProps.dataField, field],
-					fieldWeights: [...componentProps.fieldWeights, 1],
-				},
-			});
-		}
-	};
-
 	handlePreviewModal = () => {
 		this.setState(({ previewModal: oldValue }) => ({
 			previewModal: !oldValue,
@@ -344,98 +221,6 @@ export default class RSWrapper extends Component {
 			<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
 				<Button icon="code-o" shape="circle" size="large" style={{ marginLeft: 8 }} />
 			</Popover>
-		);
-	};
-
-	renderDeleteButton = (x, y, index) => (
-		<Button
-			className={deleteStyles}
-			icon="delete"
-			shape="circle"
-			type="danger"
-			onClick={() => this.handleSearchDataFieldDelete(index)}
-		/>
-	);
-
-	renderDataFieldTable = () => {
-		const fields = this.getAvailableDataField();
-		const { componentProps } = this.state;
-		const columns = [
-			{
-				title: 'Field',
-				dataIndex: 'field',
-				key: 'field',
-				render: (selected, x, index) => {
-					const menu = (
-						<Menu
-							onClick={this.handleSearchDataFieldChange}
-							style={{ maxHeight: 300, overflowY: 'scroll' }}
-						>
-							{fields
-								.filter(
-									item => item === selected
-										|| !componentProps.dataField.includes(item),
-								)
-								.map(item => (
-									<Menu.Item key={item} value={index}>
-										{item}
-									</Menu.Item>
-								))}
-						</Menu>
-					);
-					return (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button style={{ marginLeft: 8 }}>
-								{selected} <Icon type="down" />
-							</Button>
-						</Dropdown>
-					);
-				},
-			},
-			{
-				title: 'Weight',
-				dataIndex: 'weight',
-				key: 'weight',
-				render: (value, x, index) => (
-					<Input
-						min={1}
-						type="number"
-						defaultValue={value}
-						onChange={e => this.handleSearchWeightChange(index, e.target.value)}
-					/>
-				),
-			},
-			{
-				render: this.renderDeleteButton,
-			},
-		];
-
-		const dataSource = componentProps.dataField.map((field, index) => ({
-			key: field,
-			field,
-			weight: componentProps.fieldWeights[index],
-		}));
-
-		return (
-			<React.Fragment>
-				<Table
-					dataSource={dataSource}
-					columns={columns}
-					pagination={false}
-					rowClassName={rowStyles}
-				/>
-				{fields.length === componentProps.dataField.length ? null : (
-					<div style={{ paddingTop: 12, textAlign: 'right' }}>
-						<Button
-							onClick={this.handleAddFieldRow}
-							type="primary"
-							style={{ marginBottom: 16 }}
-						>
-							Add a new field
-						</Button>
-					</div>
-				)}
-			</React.Fragment>
 		);
 	};
 
@@ -572,53 +357,20 @@ export default class RSWrapper extends Component {
 	};
 
 	renderPropsForm = () => {
-		const { componentProps: stateComponentProps, error } = this.state;
-		const { component, id } = this.props;
+		const { componentProps: stateComponentProps } = this.state;
+		const { component, id,mappings } = this.props;
 		const propNames = propsMap[component];
-		const { dataField } = stateComponentProps;
-		const fields = this.getAvailableDataField();
-		const menu = (
-			<Menu
-				onClick={this.handleDataFieldChange}
-				style={{ maxHeight: 300, overflowY: 'scroll' }}
-			>
-				{fields.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-			</Menu>
-		);
 
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
-				<Form.Item label={propNames.dataField.label} colon={false}>
-					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
-						{propNames.dataField.description}
-					</div>
-					{error ? (
-						<div
-							style={{ color: 'tomato', margin: '0 0 6px' }}
-							className="ant-form-extra"
-						>
-							{error}
-						</div>
-					) : null}
-					{id === 'search' ? (
-						this.renderDataFieldTable()
-					) : (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button
-								style={{
-									width: '100%',
-									display: 'flex',
-									justifyContent: 'space-between',
-									alignItems: 'center',
-								}}
-							>
-								{dataField} <Icon type="down" />
-							</Button>
-						</Dropdown>
-					)}
-				</Form.Item>
+				<RenderDataField
+					label={propNames.dataField.label}
+					id={id}
+					description={propNames.dataField.description}
+					componentProps={stateComponentProps}
+					getAvailableDataField={() => getAvailableDataField({ component, id, mappings })}
+					setComponentProps={this.setComponentProps}
+				/>
 				{Object.keys(propNames)
 					.filter(item => item !== 'dataField')
 					.map(item => this.renderFormItem(propNames[item], item))}
