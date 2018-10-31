@@ -18,6 +18,7 @@ const Searches = ({
 	pagination,
 	onClickDownload,
 	href,
+	onClickViewAll,
 	tableProps,
 	...props
 }) => (
@@ -57,11 +58,21 @@ const Searches = ({
 					`}
 					{...tableProps}
 				/>
-				{href && (
-					<Link to={href}>
-						<Button css="width: 100%;height: 50px;margin-top: 10px;">VIEW ALL</Button>
-					</Link>
-				)}
+				{
+					onClickViewAll ? (
+						<Button 
+							onClick={onClickViewAll} 
+							css="width: 100%;height: 50px;margin-top: 10px;"
+						>
+							VIEW ALL
+						</Button>
+					)
+					: href && (
+						<Link to={href}>
+							<Button css="width: 100%;height: 50px;margin-top: 10px;">VIEW ALL</Button>
+						</Link>
+					) 
+				}
 			</Flex>
 		) : (
 			<EmptyData />
@@ -77,11 +88,13 @@ Searches.defaultProps = {
 	plan: '',
 	columns: undefined,
 	onClickDownload: undefined,
+	onClickViewAll: undefined,
 };
 Searches.propTypes = {
 	title: PropTypes.string,
 	dataSource: PropTypes.array,
 	onClickDownload: PropTypes.func,
+	onClickViewAll: PropTypes.func,
 	columns: PropTypes.array,
 	href: PropTypes.string,
 	plan: PropTypes.string,

@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import get from 'lodash/get';
 import Searches from './Searches';
 import { getPopularFilters, popularFiltersFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
+import { getAppPlanByName } from '../../../modules/selectors';
 
 const headers = {
 	key: 'Filters',
@@ -76,4 +79,12 @@ PopularFilters.propTypes = {
 	appName: PropTypes.string.isRequired,
 };
 
-export default PopularFilters;
+const mapStateToProps = (state) => {
+	const appPlan = getAppPlanByName(state);
+	return {
+		plan: get(appPlan, 'plan'),
+		appName: get(state, '$getCurrentApp.name'),
+	};
+};
+export default connect(mapStateToProps)(PopularFilters);
+
