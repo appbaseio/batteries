@@ -13,6 +13,8 @@ import {
 	transferOwnership,
 } from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
+import { doDelete } from '../../utils/requestService';
+import { ACC_API } from '../../utils/index';
 
 /**
  * @param {string} appId
@@ -79,6 +81,16 @@ export function createAppShare(appId, payload) {
 		return createShare(appId, payload)
 			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SHARE_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.CREATE_SHARE_ERROR, null, error)));
+	};
+}
+
+export function deleteAppShare(username, payload, appId) {
+	return (dispatch, getState) => {
+		const appIdCalc = appId || get(getState(), '$getCurrentApp.id');
+		dispatch(createAction(AppConstants.APP.DELETE_SHARE));
+		return doDelete(`${ACC_API}/app/${appIdCalc}/share/${username}`, payload)
+			.then(res => dispatch(createAction(AppConstants.APP.DELETE_SHARE_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.DELETE_SHARE_ERROR, null, error)));
 	};
 }
 

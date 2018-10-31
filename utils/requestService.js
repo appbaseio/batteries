@@ -51,7 +51,7 @@ const createRequest = (
  * @param {Object} headers
  * @param {string} credentials
  */
-export const doDelete = (url, headers, credentials) => createRequest(url, undefined, headers, credentials, 'DELETE');
+export const doDelete = (url, body, headers, credentials) => createRequest(url, body, headers, credentials, 'DELETE');
 /**
  * To create a post request
  * @param {string} url
