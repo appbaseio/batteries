@@ -1,17 +1,7 @@
 import get from 'lodash/get';
 
-export const getPlanFromTier = (tier) => {
-	switch (tier) {
-		case 'bootstrap-monthly':
-		case 'bootstrap-annual':
-			return 'bootstrap';
-		case 'growth-monthly':
-		case 'growth-annual':
-			return 'growth';
-		default:
-			return 'free';
-	}
-};
+export const getPlanFromTier = () => 'growth';
+
 export const computeMetrics = (metrics) => {
 	let totalRecords = 0;
 	let totalStorage = 0;

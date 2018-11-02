@@ -300,16 +300,34 @@ export const requestLogs = [
 		width: '100px',
 	},
 ];
+
+const getAuthToken = () => {
+	let token = null;
+	try {
+		// eslint-disable-next-line
+		token = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user).data.authToken;
+	} catch (e) {
+		console.error(e);
+	}
+	return token;
+};
+
+const getApp = (app) => {
+	if (window.location.pathname.startsWith('/cluster/')) return '';
+	return `${app}/`;
+};
+
 /**
  * Get the analytics
  * @param {string} appName
  */
 export function getAnalytics(appName, userPlan, clickanalytics = true) {
 	return new Promise((resolve, reject) => {
-		const url =			userPlan === 'growth'
-				? `${ACC_API}/analytics/${appName}/advanced`
-				: `${ACC_API}/analytics/${appName}/overview`;
-		const queryParams =			userPlan === 'growth'
+		const plan = 'growth';
+		const url = plan === 'growth'
+				? `${ACC_API}/_analytics/${getApp(appName)}advanced`
+				: `${ACC_API}/_analytics/${getApp(appName)}overview`;
+		const queryParams = plan === 'growth'
 				? getQueryParams({
 						clickanalytics,
 						from: moment()
@@ -318,11 +336,13 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 						to: moment().format('YYYY/MM/DD'),
 				  })
 				: getQueryParams({ clickanalytics });
+
+		const authToken = getAuthToken();
 		fetch(url + queryParams, {
 			method: 'GET',
-			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
 			},
 		})
 			// Comment out this line
@@ -342,11 +362,12 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
  */
 export function getSearchLatency(appName) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/analytics/${appName}/latency`, {
+		const authToken = getAuthToken();
+		fetch(`${ACC_API}/_analytics/${getApp(appName)}latency`, {
 			method: 'GET',
-			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
 			},
 		})
 			// Comment out this line
@@ -366,11 +387,12 @@ export function getSearchLatency(appName) {
  */
 export function getGeoDistribution(appName) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/analytics/${appName}/geoip`, {
+		const authToken = getAuthToken();
+		fetch(`${ACC_API}/_analytics/${getApp(appName)}geo-distribution`, {
 			method: 'GET',
-			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
 			},
 		})
 			// Comment out this line
@@ -389,7 +411,7 @@ export function getGeoDistribution(appName) {
  * @param {string} appName
  */
 export function getAnalyticsSummary(appName) {
-	return doGet(`${ACC_API}/analytics/${appName}/summary`);
+	return doGet(`${ACC_API}/_analytics/${getApp(appName)}summary`);
 }
 /**
  * Get the popular seraches
@@ -397,16 +419,17 @@ export function getAnalyticsSummary(appName) {
  */
 export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
 		fetch(
-			`${ACC_API}/analytics/${appName}/popularsearches${getQueryParams({
+			`${ACC_API}/_analytics/${getApp(appName)}popular-searches${getQueryParams({
 				clickanalytics,
 				size,
 			})}`,
 			{
 				method: 'GET',
-				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
 				},
 			},
 		)
@@ -428,11 +451,12 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100) {
  */
 export function getNoResultSearches(appName, size = 100) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/analytics/${appName}/noresultsearches?size=${size}`, {
+		const authToken = getAuthToken();
+		fetch(`${ACC_API}/_analytics/${getApp(appName)}no-result-searches?size=${size}`, {
 			method: 'GET',
-			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
 			},
 		})
 			// Comment out this line
@@ -448,16 +472,17 @@ export function getNoResultSearches(appName, size = 100) {
 }
 export function getPopularResults(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
 		fetch(
-			`${ACC_API}/analytics/${appName}/popularResults${getQueryParams({
+			`${ACC_API}/_analytics/${getApp(appName)}popular-results${getQueryParams({
 				clickanalytics,
 				size,
 			})}`,
 			{
 				method: 'GET',
-				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
 				},
 			},
 		)
@@ -474,16 +499,17 @@ export function getPopularResults(appName, clickanalytics = true, size = 100) {
 }
 export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
 		fetch(
-			`${ACC_API}/analytics/${appName}/popularFilters${getQueryParams({
+			`${ACC_API}/_analytics/${getApp(appName)}popular-filters${getQueryParams({
 				clickanalytics,
 				size,
 			})}`,
 			{
 				method: 'GET',
-				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
 				},
 			},
 		)
@@ -501,15 +527,16 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 // To fetch request logs
 export function getRequestLogs(appName, size = 1000) {
 	return new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
 		fetch(
-			`${ACC_API}/app/${appName}/logs${getQueryParams({
+			`${ACC_API}/app/${getApp(appName)}logs${getQueryParams({
 				size,
 			})}`,
 			{
 				method: 'GET',
-				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
 				},
 			},
 		)

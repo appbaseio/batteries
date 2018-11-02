@@ -3,7 +3,6 @@
  * @param {string} url
  * @param {Object} body
  * @param {Object} headers
- * @param {string} credentials
  * @param {string} method
  */
 const createRequest = (
@@ -12,15 +11,24 @@ const createRequest = (
 	headers = {
 		'Content-Type': 'application/json',
 	},
-	credentials = 'include',
 	method,
 ) => new Promise((resolve, reject) => {
 		let status;
+		let authToken = null;
+		try {
+			// eslint-disable-next-line
+			authToken = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user).data
+				.authToken;
+		} catch (e) {
+			console.error(e);
+		}
 		const requestOptions = JSON.parse(
 			JSON.stringify({
 				method,
-				credentials,
-				headers,
+				headers: {
+					...headers,
+					Authorization: `Basic ${authToken}`,
+				},
 				body: body ? JSON.stringify(body) : undefined,
 			}),
 		);
@@ -49,29 +57,25 @@ const createRequest = (
  * To create a delete request
  * @param {string} url
  * @param {Object} headers
- * @param {string} credentials
  */
-export const doDelete = (url, headers, credentials) => createRequest(url, undefined, headers, credentials, 'DELETE');
+export const doDelete = (url, headers) => createRequest(url, undefined, headers, 'DELETE');
 /**
  * To create a post request
  * @param {string} url
  * @param {Object} body
  * @param {Object} headers
- * @param {string} credentials
  */
-export const doGet = (url, headers, credentials) => createRequest(url, undefined, headers, credentials, 'GET');
+export const doGet = (url, headers) => createRequest(url, undefined, headers, 'GET');
 /**
  * To create a get request
  * @param {string} url
  * @param {Object} headers
- * @param {string} credentials
  */
-export const doPost = (url, body, headers, credentials) => createRequest(url, body, headers, credentials, 'POST');
+export const doPost = (url, body, headers) => createRequest(url, body, headers, 'POST');
 /**
  * To create a patch request
  * @param {string} url
  * @param {Object} body
  * @param {Object} headers
- * @param {string} credentials
  */
-export const doPatch = (url, body, headers, credentials) => createRequest(url, body, headers, credentials, 'PATCH');
+export const doPatch = (url, body, headers) => createRequest(url, body, headers, 'PATCH');

@@ -5,7 +5,7 @@ const appName = (state, name) => name || get(state, '$getCurrentApp.name');
 const rawMappings = state => get(state, '$getAppMappings.rawMappings');
 const traversedMappings = state => get(state, '$getAppMappings.traversedMappings');
 const appInfo = state => get(state, '$getAppInfo.apps');
-const appPlan = state => get(state, '$getAppPlan.results');
+const appPlan = () => 'growth';
 const appMetrics = state => get(state, '$getAppMetrics.results');
 const appAnalytics = state => get(state, '$getAppAnalytics.results');
 const appPermission = state => get(state, '$getAppPermissions.results');

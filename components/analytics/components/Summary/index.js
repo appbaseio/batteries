@@ -22,8 +22,12 @@ class Summary extends React.Component {
 
 	render() {
 		const {
- isLoading, avgClickRate, avgConversionRate, totalSearches,
-} = this.props;
+			// prettier-ignore
+			isLoading,
+			avgClickRate,
+			avgConversionRate,
+			totalSearches,
+		} = this.props;
 		if (isLoading) {
 			return <Loader />;
 		}

@@ -4,10 +4,8 @@ import {
 } from 'recharts';
 import { Card, Select } from 'antd';
 import PropTypes from 'prop-types';
-import get from 'lodash/get';
 import { css } from 'react-emotion';
 import { connect } from 'react-redux';
-import { getAppPlanByName } from '../../../modules/selectors';
 import EmptyData from '../EmptyData';
 import { mediaKey } from '../../../utils/media';
 
@@ -142,10 +140,7 @@ SearchVolumeChart.propTypes = {
 	margin: PropTypes.number,
 };
 
-const mapStateToProps = (state) => {
-	const appPlan = getAppPlanByName(state);
-	return {
-		plan: get(appPlan, 'plan'),
-	};
-};
+const mapStateToProps = () => ({
+	plan: 'growth',
+});
 export default connect(mapStateToProps)(SearchVolumeChart);

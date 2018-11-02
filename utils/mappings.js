@@ -136,7 +136,7 @@ export function openIndex(appName, credentials, url = SCALR_API) {
 	});
 }
 
-export function reIndex(mappings, appId, excludeFields, type) {
+export function reIndex(mappings, appId, excludeFields, type, credentials) {
 	const body = {
 		mappings,
 		settings: analyzerSettings,
@@ -145,10 +145,10 @@ export function reIndex(mappings, appId, excludeFields, type) {
 		es_version: '5',
 	};
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appId}/reindex`, {
+		fetch(`${ACC_API}/_reindex/${appId}/`, {
 			method: 'POST',
-			credentials: 'include',
 			headers: {
+				...getAuthHeaders(credentials),
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(body),

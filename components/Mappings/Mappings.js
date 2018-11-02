@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
-import { isEqual } from '../../utils';
+import { isEqual, SCALR_API } from '../../utils';
 import {
 	updateMapping,
 	transformToES5,
@@ -28,11 +28,8 @@ import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
 import {
 	getRawMappingsByAppName,
-	getAppPermissionsByName,
-	getAppPlanByName,
 } from '../../modules/selectors';
 import {
-	getPermission as getPermissionFromAppbase,
 	setCurrentApp,
 	getAppMappings as getMappings,
 } from '../../modules/actions';
@@ -117,7 +114,6 @@ class Mappings extends Component {
 			showError: false,
 			errorLength: 0,
 			deletedPaths: [],
-			editable: false,
 			showFeedback: false,
 			timeTaken: '0',
 			synonyms: [],
@@ -127,17 +123,6 @@ class Mappings extends Component {
 
 		this.usecases = textUsecases;
 		this.originalMapping = null;
-	}
-
-	static getDerivedStateFromProps(props, state) {
-		// TODO: add logic for handling trial plans
-		if (props.isPaid && !state.editable) {
-			return ({
-				editable: true,
-			});
-		}
-
-		return null;
 	}
 
 	componentDidMount() {
@@ -177,10 +162,9 @@ class Mappings extends Component {
 			appId,
 			updateCurrentApp,
 			getAppMappings,
-			credentials,
+			appbaseCredentials,
 			url,
 			mapping,
-			appbaseCredentials,
 			isFetchingMapping,
 		} = this.props;
 
@@ -195,19 +179,7 @@ class Mappings extends Component {
 			// get synonyms
 			this.initializeSynonymsData();
 		} else if (url) {
-			// get mappings for non-appbase apps
-			getAppMappings(appName, credentials, url);
-		} else {
-			// this executes only for appbase.io hosted apps
-			const { getPermission } = this.props;
-
-			if (appbaseCredentials && !mapping) {
-				// 2. get mappings if we have credentials
-				getAppMappings(appName, appbaseCredentials);
-			} else if (!appbaseCredentials) {
-				// 2. get credentials (if not found) - before fetching mappings and synonyms
-				getPermission(appName);
-			}
+			getAppMappings(appName, appbaseCredentials, url);
 		}
 	}
 
@@ -393,7 +365,7 @@ class Mappings extends Component {
 			mapping,
 		} = this.state;
 
-		const { appId } = this.props;
+		const { appId, credentials } = this.props;
 
 		const excludedFields = deletedPaths
 			.map(path => path.split('.properties.').join('.'))
@@ -402,7 +374,7 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType)
+		reIndex(mapping, appId, excludedFields, activeType, credentials)
 			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
@@ -421,31 +393,25 @@ class Mappings extends Component {
 
 	renderUsecase = (field, fieldname) => {
 		if (field.type === 'text') {
-			const selected = field.fields ? this.getUsecase(field.fields, this.usecases) : 'none';
-
-			if (this.state.editable) {
-				return (
-					<select
-						name="field-usecase"
-						defaultValue={selected}
-						className={dropdown}
-						onChange={(e) => {
-							this.setMapping(fieldname, 'text', e.target.value);
-						}}
-					>
-						{Object.entries(this.usecases).map(value => (
-							<option key={value[0]} value={value[0]}>
-								{value[1]}
-							</option>
-						))}
-					</select>
-				);
-			}
+			const selected = field.fields
+				? this.getUsecase(field.fields, this.usecases)
+				: 'none';
 
 			return (
-				<span style={{ boxShadow: 'none', border: 0 }} className={dropdown}>
-					{this.usecases[selected]}
-				</span>
+				<select
+					name="field-usecase"
+					defaultValue={selected}
+					className={dropdown}
+					onChange={(e) => {
+						this.setMapping(fieldname, 'text', e.target.value);
+					}}
+				>
+					{Object.entries(this.usecases).map(value => (
+						<option key={value[0]} value={value[0]}>
+							{value[1]}
+						</option>
+					))}
+				</select>
 			);
 		}
 		return null;
@@ -545,15 +511,13 @@ class Mappings extends Component {
 				<section key={type} className={row}>
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>{type}</span>
-						{this.state.editable ? (
-							<a
-								onClick={() => {
-									this.deletePath(address, true);
-								}}
-							>
-								<Icon type="delete" />
-							</a>
-						) : null}
+						<a
+							onClick={() => {
+								this.deletePath(address, true);
+							}}
+						>
+							<Icon type="delete" />
+						</a>
 					</h4>
 					{Object.keys(fields).map((field) => {
 						if (fields[field].properties) {
@@ -598,48 +562,37 @@ class Mappings extends Component {
 										{mappingInfo}
 										{field}
 									</span>
-									{this.state.editable ? (
-										<a
-											onClick={() => {
-												this.deletePath(`${address}.${field}`);
-											}}
-										>
-											<Icon type="delete" />
-										</a>
-									) : null}
+									<a
+										onClick={() => {
+											this.deletePath(`${address}.${field}`);
+										}}
+									>
+										<Icon type="delete" />
+									</a>
 								</div>
 								<div className={subItem}>
 									{this.renderUsecase(fields[field], field)}
-									{this.state.editable ? (
-										<select
-											className={dropdown}
-											name={`${field}-mapping`}
-											defaultValue={fields[field].type}
-											onChange={(e) => {
-												this.setMapping(field, e.target.value);
-											}}
-										>
-											{originalFields[field] ? (
-												<option
-													value={this.getType(originalFields[field].type)}
-												>
-													{this.getType(originalFields[field].type)}
-												</option>
-											) : (
-												<option value={this.getType(fields[field].type)}>
-													{this.getType(fields[field].type)}
-												</option>
-											)}
-											{this.renderTransformationFields(originalFields, fields, field)}
-										</select>
-									) : (
-										<span
-											style={{ boxShadow: 'none', border: 0 }}
-											className={dropdown}
-										>
-											{fields[field].type}
-										</span>
-									)}
+									<select
+										className={dropdown}
+										name={`${field}-mapping`}
+										defaultValue={fields[field].type}
+										onChange={(e) => {
+											this.setMapping(field, e.target.value);
+										}}
+									>
+										{originalFields[field] ? (
+											<option
+												value={this.getType(originalFields[field].type)}
+											>
+												{this.getType(originalFields[field].type)}
+											</option>
+										) : (
+											<option value={this.getType(fields[field].type)}>
+												{this.getType(fields[field].type)}
+											</option>
+										)}
+										{this.renderTransformationFields(originalFields, fields, field)}
+									</select>
 								</div>
 							</div>
 						);
@@ -649,36 +602,6 @@ class Mappings extends Component {
 		}
 		return null;
 	};
-
-	renderPromotionalButtons = (type, message) => (this.props.url ? (
-			<div className={promotionContainer}>
-				<p>
-					Get an appbase.io account to edit {type}
-					<Tooltip title={message}>
-						<span>
-							<Icon type="info-circle" />
-						</span>
-					</Tooltip>
-				</p>
-				<Button href="https://appbase.io" target="_blank">
-					Signup Now
-				</Button>
-			</div>
-		) : (
-			<div className={promotionContainer}>
-				<p className="promotional-info">
-					Upgrade your plan to edit {type}
-					<Tooltip title={message}>
-						<span>
-							<Icon type="info-circle" />
-						</span>
-					</Tooltip>
-				</p>
-				<Button href="/billing" target="_blank" className="promotional-button">
-					Upgrade Now
-				</Button>
-			</div>
-		));
 
 	updateSynonyms = () => {
 		const credentials = this.props.credentials || this.state.credentials;
@@ -743,13 +666,9 @@ class Mappings extends Component {
 							<h2 className={heading}>Manage Synonyms</h2>
 							<p>Add new synonyms or edit the existing ones.</p>
 						</HeaderWrapper>
-						{this.state.editable ? (
-							<Button ghost onClick={this.handleSynonymModal} className="card-button">
-								{this.state.synonyms ? 'Edit' : 'Add'} Synonym
-							</Button>
-						) : (
-							this.renderPromotionalButtons('synonyms', synonymMessage)
-						)}
+						<Button ghost onClick={this.handleSynonymModal} className="card-button">
+							{this.state.synonyms ? 'Edit' : 'Add'} Synonym
+						</Button>
 					</div>
 				</div>
 				<div className={card}>
@@ -758,13 +677,9 @@ class Mappings extends Component {
 							<h2 className={heading}>Manage Mappings</h2>
 							<p>Add new fields or change the types of existing ones.</p>
 						</HeaderWrapper>
-						{this.state.editable ? (
-							<Button ghost onClick={this.toggleModal} className="card-button">
-								Add New Field
-							</Button>
-						) : (
-							this.renderPromotionalButtons('mappings', mappingMessage)
-						)}
+						<Button ghost onClick={this.toggleModal} className="card-button">
+							Add New Field
+						</Button>
 					</div>
 					<div style={{ padding: '5px 20px' }}>
 						<Header>
@@ -813,7 +728,7 @@ class Mappings extends Component {
 							return null;
 						})}
 					</div>
-					{this.state.dirty && this.state.editable ? (
+					{this.state.dirty ? (
 						<Footer>
 							<Button onClick={this.reIndex}>Confirm Mapping Changes</Button>
 							<Button ghost onClick={this.cancelChanges}>
@@ -845,7 +760,6 @@ class Mappings extends Component {
 					/>
 					<Modal show={this.state.showSynonymModal} onClose={this.handleSynonymModal}>
 						<TextArea
-							disabled={!this.state.editable}
 							name="synonyms"
 							value={this.state.synonyms}
 							onChange={this.handleChange}
@@ -885,34 +799,32 @@ Mappings.propTypes = {
 	mapping: object,
 	getAppMappings: func.isRequired,
 	updateCurrentApp: func.isRequired,
-	getPermission: func.isRequired,
 	isFetchingMapping: bool.isRequired,
 };
 
 Mappings.defaultProps = {
 	appId: null,
 	credentials: null,
-	url: undefined,
+	url: SCALR_API,
 	appbaseCredentials: null,
 	mapping: null,
 };
 
 const mapStateToProps = (state) => {
-	const { username, password } = get(getAppPermissionsByName(state), 'credentials', {});
+	const { username, password } = get(state, 'user.data', {});
 	return ({
 		appName: get(state, '$getCurrentApp.name'),
-		appId: get(state, '$getCurrentApp.id'),
+		appId: get(state, '$getCurrentApp.name'),
 		mapping: getRawMappingsByAppName(state) || null,
 		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
 		loadingError: get(state, '$getAppMappings.error', null),
-		isPaid: get(getAppPlanByName(state), 'isPaid'),
 		appbaseCredentials: username ? `${username}:${password}` : null,
+		credentials: username ? `${username}:${password}` : null,
 	});
 };
 
 const mapDispatchToProps = dispatch => ({
 	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
-	getPermission: appName => dispatch(getPermissionFromAppbase(appName)),
 	getAppMappings: (appName, credentials, url) => {
 		dispatch(getMappings(appName, credentials, url));
 	},

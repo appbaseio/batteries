@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import Flex from '../shared/Flex';
 import Analytics from './components/Analytics';
 import { getAppAnalytics } from '../../modules/actions';
-import { getAppPlanByName, getAppAnalyticsByName } from '../../modules/selectors';
+import { getAppAnalyticsByName } from '../../modules/selectors';
 import RequestLogs from './components/RequestLogs';
 
 let prevProps = {};
@@ -86,10 +86,9 @@ Main.propTypes = {
 	isFetching: PropTypes.bool.isRequired, //eslint-disable-line
 };
 const mapStateToProps = (state) => {
-	const appPlan = getAppPlanByName(state);
 	const appAnalytics = getAppAnalyticsByName(state);
 	return {
-		plan: get(appPlan, 'plan'),
+		plan: 'growth',
 		appName: get(state, '$getCurrentApp.name'),
 		popularSearches: get(appAnalytics, 'popularSearches', []),
 		popularResults: get(appAnalytics, 'popularResults', []),

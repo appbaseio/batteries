@@ -1,8 +1,10 @@
 import get from 'lodash/get';
 import { doGet } from './requestService';
 
-export const ACC_API = 'https://accapi.appbase.io';
-export const SCALR_API = 'https://scalr.api.appbase.io';
+export const ACC_API = 'http://localhost:8000';
+export const SCALR_API = 'http://localhost:8000';
+// export const ACC_API = 'https://accapi.appbase.io';
+// export const SCALR_API = 'https://scalr.api.appbase.io';
 // export const ACC_API = 'https://accapi-staging.bottleneck.io';
 // export const SCALR_API = 'https://api-staging.bottleneck.io';
 
@@ -50,13 +52,25 @@ export function getReadCredentialsFromPermissions(permissions = []) {
 	return result || false;
 }
 
+const getAuthToken = () => {
+	let token = null;
+	try {
+		// eslint-disable-next-line
+		token = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user).data.authToken;
+	} catch (e) {
+		console.error(e);
+	}
+	return token;
+};
+
 export function getCredentials(appId) {
 	return new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
 			method: 'GET',
-			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
 			},
 		})
 			.then(res => res.json())
@@ -88,14 +102,15 @@ export function isEqual(x, y) {
 	}
 	return true;
 }
-export const getUserAppsPermissions = () => doGet(`${ACC_API}/user/apps/permissions`);
+export const getUserAppsPermissions = () => doGet(`${ACC_API}/_permissions`);
 export const setUserInfo = userInfo =>
 	new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
 		fetch(`${ACC_API}/user/profile`, {
 			method: 'PUT',
-			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
 			},
 			body: JSON.stringify(userInfo),
 		})
