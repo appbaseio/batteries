@@ -16,26 +16,26 @@ const getAuthToken = () => {
 	return token;
 };
 
-export const getPermission = appId => new Promise((resolve, reject) => {
-	const authToken = getAuthToken();
+export const getPermission = () => new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
 
-	fetch(`${ACC_API}/_permission/${appId}`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Basic ${authToken}`,
-		},
-	})
-		.then(res => res.json())
-		.then(data => resolve(data.body))
-		.catch(error => reject(error));
-});
+		fetch(`${ACC_API}/_permissions`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
+			},
+		})
+			.then(res => res.json())
+			.then(data => resolve(data.body))
+			.catch(error => reject(error));
+	});
 
 export const updatePermission = (appId, username, info) => doPatch(`${ACC_API}/app/${appId}/permission/${username}`, info);
 
 export const newPermission = (appId, info) => new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
-		fetch(`${ACC_API}/app/${appId}/permissions`, {
+		fetch(`${ACC_API}/_permission`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
