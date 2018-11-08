@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import {
- Menu, Button, Dropdown, Icon, Modal, Input,
-} from 'antd';
 import { css } from 'emotion';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
+import Header from './components/Header';
 import { getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import { SCALR_API } from '../../utils';
@@ -19,17 +17,13 @@ const wrapper = css`
 	padding: 15px;
 `;
 
-const NEW_PROFILE = 'SEARCH_SANDBOX_NEW_PROFILE_APPBASE';
-const SAVE_AS_NEW_PROFILE = 'SEARCH_SANDBOX_SAVE_NEW_PROFILE_APPBASE';
-
 export const SandboxContext = React.createContext();
 
 class SearchSandbox extends Component {
 	constructor(props) {
 		super(props);
-		const profile = 'default';
-		this.profileInput = React.createRef();
 
+		const profile = 'default';
 		this.state = {
 			profile,
 			profileList: ['default'],
@@ -37,8 +31,6 @@ class SearchSandbox extends Component {
 			mappings: null,
 			filterCount: 0,
 			componentProps: {},
-			showNewProfileModal: false,
-			profileModalError: '',
 			loading: true,
 		};
 	}
@@ -155,31 +147,45 @@ class SearchSandbox extends Component {
 		);
 	};
 
-	handleProfileChange = (e) => {
-		const { key } = e;
-		if (key === NEW_PROFILE) {
-			this.setState({
-				showNewProfileModal: true,
-				filterCount: 0,
-			});
-		} else if (key === SAVE_AS_NEW_PROFILE) {
-			const { profile } = this.state;
-			this.newComponentProps = this.pref[profile];
-			this.setState({
-				showNewProfileModal: true,
-				filterCount: Object.keys(this.newComponentProps).filter(
-					item => item !== 'search' && item !== 'result',
-				).length,
-			});
+	setProfile = (profile) => {
+		const componentProps = this.pref[profile] || {};
+		this.setState({
+			profile,
+			componentProps,
+			filterCount: Object.keys(componentProps).filter(
+				item => item !== 'search' && item !== 'result',
+			).length,
+		});
+	};
+
+	onNewProfile = (profile, createEmpty) => {
+		const { profileList } = this.state;
+
+		if (createEmpty) {
+			this.setState(
+				{
+					profile,
+					profileList: [...profileList, profile],
+					filterCount: 0,
+					componentProps: {},
+				},
+				this.savePreferences,
+			);
 		} else {
-			const componentProps = this.pref[key] || {};
-			this.setState({
-				profile: key,
-				componentProps,
-				filterCount: Object.keys(componentProps).filter(
-					item => item !== 'search' && item !== 'result',
-				).length,
-			});
+			const { profile: currentProfile } = this.state;
+			const componentProps = this.pref[currentProfile];
+
+			this.setState(
+				{
+					profile,
+					profileList: [...profileList, profile],
+					filterCount: Object.keys(componentProps).filter(
+						item => item !== 'search' && item !== 'result',
+					).length,
+					componentProps,
+				},
+				this.savePreferences,
+			);
 		}
 	};
 
@@ -199,34 +205,6 @@ class SearchSandbox extends Component {
 			}),
 			this.savePreferences,
 		);
-	};
-
-	handleSaveProfile = () => {
-		const { value } = this.profileInput.current.input;
-		const componentProps = this.newComponentProps || {};
-		const { profileList } = this.state;
-		if (profileList.includes(value)) {
-			this.setState({
-				profileModalError: 'A search profile with the same name already exists',
-			});
-		} else {
-			this.setState({
-				profileList: [...profileList, value],
-				profile: value,
-				componentProps,
-				showNewProfileModal: false,
-				profileModalError: '',
-			});
-		}
-		this.newComponentProps = null;
-	};
-
-	handleCancel = () => {
-		this.newComponentProps = null;
-		this.setState({
-			showNewProfileModal: false,
-			profileModalError: '',
-		});
 	};
 
 	openSandbox = () => {
@@ -302,26 +280,6 @@ class SearchSandbox extends Component {
 			return <div style={vcenter}>No data found. Please insert data to use this feature</div>;
 		}
 
-		const menu = (
-			<Menu
-				onClick={this.handleProfileChange}
-				style={{ maxHeight: 300, overflowY: 'scroll' }}
-			>
-				{profileList.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-				<Menu.Divider />
-				<Menu.Item key={NEW_PROFILE}>
-					<Icon type="plus" />
-					&nbsp; Create a New Profile
-				</Menu.Item>
-				<Menu.Item key={SAVE_AS_NEW_PROFILE}>
-					<Icon type="save" />
-					&nbsp; Save as New Profile
-				</Menu.Item>
-			</Menu>
-		);
-
 		const {
 			appId,
 			appName,
@@ -337,8 +295,6 @@ class SearchSandbox extends Component {
 			componentProps,
 			filterCount,
 			profile,
-			showNewProfileModal,
-			profileModalError,
 		} = this.state;
 		const contextValue = {
 			appId: appId || null,
@@ -362,50 +318,21 @@ class SearchSandbox extends Component {
 		return (
 			<SandboxContext.Provider value={contextValue}>
 				<div className={wrapper} key={profile}>
-					<div
-						style={{
-							display: 'flex',
-							flexDirection: 'row-reverse',
-							padding: '10px 20px 0',
-						}}
-					>
-						{isDashboard ? (
-							<Dropdown overlay={menu} trigger={['click']}>
-								<Button size="large" style={{ marginLeft: 8 }}>
-									Search Profile - {profile} <Icon type="down" />
-								</Button>
-							</Dropdown>
-						) : null}
-						{
-							showCodeSandbox ? (
-								<Button onClick={this.openSandbox} size="large" type="primary">
-									Open in Codesandbox
-								</Button>	
-							):null
-						}
-					</div>
+					<Header
+						isDashboard={isDashboard}
+						showCodeSandbox={showCodeSandbox}
+						profileList={profileList}
+						defaultProfile={profile}
+						setProfile={this.setProfile}
+						onNewProfile={this.onNewProfile}
+						openSandbox={this.openSandbox}
+					/>
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
 							{props => React.cloneElement(child, { ...props })}
 						</SandboxContext.Consumer>
 					))}
 				</div>
-
-				<Modal
-					title="Create a new Search Profile"
-					visible={showNewProfileModal}
-					onOk={this.handleSaveProfile}
-					onCancel={this.handleCancel}
-					destroyOnClose
-				>
-					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
-						Set search profile name
-					</div>
-					<Input type="text" ref={this.profileInput} placeholder="Search Profile Name" />
-					{profileModalError ? (
-						<p style={{ color: 'tomato' }}>{profileModalError}</p>
-					) : null}
-				</Modal>
 			</SandboxContext.Provider>
 		);
 	}
@@ -428,7 +355,7 @@ SearchSandbox.propTypes = {
 SearchSandbox.defaultProps = {
 	appId: null,
 	attribution: null,
-	showCodeSandbox:true,
+	showCodeSandbox: true,
 	isDashboard: false,
 	url: SCALR_API,
 	useCategorySearch: false,
