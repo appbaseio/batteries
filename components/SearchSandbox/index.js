@@ -73,7 +73,7 @@ class SearchSandbox extends Component {
 			this.getLocalPref();
 		}
 
-		const { mappings, isFetchingMapping } = this.props;
+		const { mappings, isFetchingMapping, url } = this.props;
 		if (mappings) {
 			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
 			this.setState({
@@ -82,7 +82,7 @@ class SearchSandbox extends Component {
 			});
 		} else if (!isFetchingMapping) {
 			const { credentials, getAppMappings } = this.props;
-			getAppMappings(appName, credentials);
+			getAppMappings(appName, credentials, url);
 		}
 	}
 
