@@ -16,6 +16,7 @@ import {
 	Tooltip,
 	notification,
 	Popconfirm,
+	message
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
@@ -127,6 +128,7 @@ export default class Editor extends Component {
 				},
 				this.resetNewComponentData,
 			);
+			message.success('New filter added');
 		} else {
 			this.setState({
 				showModal: false,
