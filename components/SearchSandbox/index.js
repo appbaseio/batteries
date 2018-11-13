@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { css } from 'emotion';
+import { message } from 'antd';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -145,6 +146,7 @@ class SearchSandbox extends Component {
 			},
 			this.savePreferences,
 		);
+		message.error('Filter Deleted');
 	};
 
 	setProfile = (profile) => {

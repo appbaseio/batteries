@@ -12,7 +12,7 @@ import {
 	Icon,
 	Dropdown,
 	Popover,
-	Select,
+	message,
 } from 'antd';
 
 import {
@@ -34,8 +34,6 @@ import {
 	rowStyles,
 	formWrapper,
 	componentStyles,
-	fieldBadge,
-	label,
 } from '../styles';
 
 const componentMap = {
@@ -167,6 +165,7 @@ export default class RSWrapper extends Component {
 		this.setState({
 			showModal: false,
 		});
+		message.success('Search Preview configuration saved');
 	};
 
 	handleCancel = () => {
