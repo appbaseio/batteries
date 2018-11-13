@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { injectGlobal } from 'react-emotion';
 
 const Editor = (props) => {
 	if (typeof window !== 'undefined') {
@@ -11,21 +12,29 @@ const Editor = (props) => {
 	return null;
 };
 
+/* eslint-disable */
+injectGlobal`
+	.ace_editor,
+	.ace_editor div,
+	.ace_editor div span {
+		font-family: monospace !important;
+	}
+`;
+
+/* eslint-enable */
 class Ace extends Component {
 	state = {
 		mounted: false,
 	};
 
 	componentDidMount() {
-    // eslint-disable-next-line
+		// eslint-disable-next-line
 		this.setState({ mounted: true });
 	}
 
 	render() {
 		const { mounted } = this.state;
-		return mounted ? (
-			<Editor {...this.props} editorProps={{ $blockScrolling: true }} />
-		) : null;
+		return mounted ? <Editor {...this.props} editorProps={{ $blockScrolling: true }} /> : null;
 	}
 }
 
