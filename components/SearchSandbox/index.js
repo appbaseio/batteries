@@ -99,7 +99,7 @@ class SearchSandbox extends Component {
 	}
 
 	handleJoyrideSteps = ({ action, index }) => {
-		if ((action === 'next' && index === 2) || action === 'skip') {
+		if ((action === 'next' && index === 4) || action === 'skip') {
 			this.setState({
 				tutorialCompleted: true,
 			});
