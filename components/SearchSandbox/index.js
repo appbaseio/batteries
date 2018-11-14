@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { css } from 'emotion';
+import { message } from 'antd';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -73,7 +74,7 @@ class SearchSandbox extends Component {
 			this.getLocalPref();
 		}
 
-		const { mappings, isFetchingMapping } = this.props;
+		const { mappings, isFetchingMapping, url } = this.props;
 		if (mappings) {
 			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
 			this.setState({
@@ -82,7 +83,7 @@ class SearchSandbox extends Component {
 			});
 		} else if (!isFetchingMapping) {
 			const { credentials, getAppMappings } = this.props;
-			getAppMappings(appName, credentials);
+			getAppMappings(appName, credentials, url);
 		}
 	}
 
@@ -145,6 +146,7 @@ class SearchSandbox extends Component {
 			},
 			this.savePreferences,
 		);
+		message.error('Filter Deleted');
 	};
 
 	setProfile = (profile) => {

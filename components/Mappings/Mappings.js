@@ -584,7 +584,7 @@ class Mappings extends Component {
 
 						const mappingInfo = (
 							<Popover content={<pre>{JSON.stringify(properties, null, 2)}</pre>}>
-								<span
+								<div
 									css={{
 										...flex,
 										justifyContent: 'center',
@@ -597,7 +597,7 @@ class Mappings extends Component {
 									}}
 								>
 									{this.getIcon(propertyType)}
-								</span>
+								</div>
 							</Popover>
 						);
 

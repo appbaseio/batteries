@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
- Menu, Button, Dropdown, Icon, Modal, Input,
+ Menu, Button, Dropdown, Icon, Modal, Input, message,
 } from 'antd';
 import {
  bool, arrayOf, string, func,
@@ -56,6 +56,7 @@ export default class Header extends Component {
 					setProfile(key);
 				},
 			);
+			message.success(`Profile switched to ${key}`);
 		}
 	};
 
@@ -79,6 +80,7 @@ export default class Header extends Component {
 					onNewProfile(value, saveStatus === CREATE_NEW_PROFILE);
 				},
 			);
+			message.success(`New Profile ${value} created`);
 		}
 	};
 
