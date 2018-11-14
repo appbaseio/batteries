@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import Header from './components/Header';
 import { getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
+import joyrideSteps from './utils/joyrideSteps';
 import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
 import { getAppMappings as getMappings } from '../../modules/actions';
@@ -21,72 +22,12 @@ const wrapper = css`
 
 /* eslint-disable-next-line */
 injectGlobal`
-	.__floater__body>div>div{
-		text-align:left !important;
+	.__floater__body > div > div {
+		text-align: left !important;
 	}
 `;
 
 export const SandboxContext = React.createContext();
-
-const joyrideSteps = [
-	{
-		content: (
-			<span>
-				Here you can add the filter ( MultiList Component ) which is used to filter the list
-				( ReactiveList Component ).
-			</span>
-		),
-		target: '.search-tutorial-1',
-		placement: 'bottom',
-	},
-	{
-		content: (
-			<span>
-				This is the DataSearch component which lets us search across one or more fields
-				easily.
-			</span>
-		),
-		target: '.search-tutorial-2',
-		placement: 'bottom',
-	},
-	{
-		content: (
-			<span>
-				Here you can set the props of DataSearch component like dataField, title, etc.
-				<a
-					href="https://opensource.appbase.io/reactive-manual/search-components/datasearch.html"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Read More
-				</a>
-			</span>
-		),
-		target: '.search-tutorial-3',
-		placement: 'bottom',
-	},
-	{
-		content: <span>This is the ReactiveList component displaying all the data.</span>,
-		target: '.search-tutorial-4',
-		placement: 'bottom',
-	},
-	{
-		content: (
-			<span>
-				Here you can set the props of ReactiveList component like sortField, size, etc.
-				<a
-					href="https://opensource.appbase.io/reactive-manual/result-components/reactivelist.html"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Read More
-				</a>
-			</span>
-		),
-		target: '.search-tutorial-5',
-		placement: 'bottom',
-	},
-];
 
 class SearchSandbox extends Component {
 	constructor(props) {
