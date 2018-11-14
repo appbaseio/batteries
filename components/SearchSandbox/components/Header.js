@@ -125,9 +125,10 @@ export default class Header extends Component {
 		return (
 			<div
 				style={{
-					display: 'flex',
+					display: 'inline-flex',
 					flexDirection: 'row-reverse',
 					padding: '10px 20px 0',
+					float: 'right',
 				}}
 			>
 				{isDashboard ? (

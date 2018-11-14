@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { css } from 'emotion';
-import { message } from 'antd';
+import { css, injectGlobal } from 'emotion';
+import { message, Button, Icon } from 'antd';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
+import Joyride from 'react-joyride';
 import { connect } from 'react-redux';
 
 import Header from './components/Header';
@@ -18,7 +19,74 @@ const wrapper = css`
 	padding: 15px;
 `;
 
+/* eslint-disable-next-line */
+injectGlobal`
+	.__floater__body>div>div{
+		text-align:left !important;
+	}
+`;
+
 export const SandboxContext = React.createContext();
+
+const joyrideSteps = [
+	{
+		content: (
+			<span>
+				Here you can add the filter ( MultiList Component ) which is used to filter the list
+				( ReactiveList Component ).
+			</span>
+		),
+		target: '.search-tutorial-1',
+		placement: 'bottom',
+	},
+	{
+		content: (
+			<span>
+				This is the DataSearch component which lets us search across one or more fields
+				easily.
+			</span>
+		),
+		target: '.search-tutorial-2',
+		placement: 'bottom',
+	},
+	{
+		content: (
+			<span>
+				Here you can set the props of DataSearch component like dataField, title, etc.
+				<a
+					href="https://opensource.appbase.io/reactive-manual/search-components/datasearch.html"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Read More
+				</a>
+			</span>
+		),
+		target: '.search-tutorial-3',
+		placement: 'bottom',
+	},
+	{
+		content: <span>This is the ReactiveList component displaying all the data.</span>,
+		target: '.search-tutorial-4',
+		placement: 'bottom',
+	},
+	{
+		content: (
+			<span>
+				Here you can set the props of ReactiveList component like sortField, size, etc.
+				<a
+					href="https://opensource.appbase.io/reactive-manual/result-components/reactivelist.html"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Read More
+				</a>
+			</span>
+		),
+		target: '.search-tutorial-5',
+		placement: 'bottom',
+	},
+];
 
 class SearchSandbox extends Component {
 	constructor(props) {
@@ -33,6 +101,8 @@ class SearchSandbox extends Component {
 			filterCount: 0,
 			componentProps: {},
 			loading: true,
+			showTutorial: false,
+			tutorialCompleted: false,
 		};
 	}
 
@@ -86,6 +156,20 @@ class SearchSandbox extends Component {
 			getAppMappings(appName, credentials, url);
 		}
 	}
+
+	handleJoyrideSteps = ({ action, index }) => {
+		if ((action === 'next' && index === 2) || action === 'skip') {
+			this.setState({
+				tutorialCompleted: true,
+			});
+		}
+	};
+
+	toggleTutorial = () => {
+		this.setState(({ showTutorial }) => ({
+			showTutorial: !showTutorial,
+		}));
+	};
 
 	getLocalPref = () => {
 		const { appName } = this.props;
@@ -293,11 +377,8 @@ class SearchSandbox extends Component {
 			useCategorySearch,
 		} = this.props;
 		const {
-			mappingsType,
-			componentProps,
-			filterCount,
-			profile,
-		} = this.state;
+			mappingsType, componentProps, filterCount, profile, showTutorial, tutorialCompleted,
+		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
 			appName: appName || null,
@@ -328,6 +409,36 @@ class SearchSandbox extends Component {
 						setProfile={this.setProfile}
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
+					/>
+					<div
+						style={{
+							display: 'inline-flex',
+							padding: '10px 20px 0',
+						}}
+					>
+						<Button
+							onClick={this.toggleTutorial}
+							size="large"
+							disabled={tutorialCompleted}
+						>
+							{tutorialCompleted ? 'Tutorial completed' : 'Start tutorial'}
+							<Icon type="play-circle" />
+						</Button>
+					</div>
+					<Joyride
+						run={showTutorial}
+						steps={joyrideSteps}
+						styles={{
+							options: {
+								overlayColor: 'rgba(0, 0, 0, 0.65)',
+								primaryColor: '#1890ff',
+								textColor: 'rgba(0, 0, 0, 0.85)',
+							},
+						}}
+						showProgress
+						showSkipButton
+						continuous
+						callback={this.handleJoyrideSteps}
 					/>
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>

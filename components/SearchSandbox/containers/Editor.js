@@ -563,6 +563,7 @@ export default class Editor extends Component {
 								style={{ width: '100%' }}
 								size="large"
 								icon="plus-circle-o"
+								className="search-tutorial-1"
 								onClick={this.showModal}
 							>
 								Add New Filter
