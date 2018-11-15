@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Tooltip, Icon, Menu, Dropdown } from 'antd';
+import {
+ Tooltip, Icon, Menu, Dropdown, Modal, Input,
+} from 'antd';
 
-import Modal from '../shared/Modal';
-import { Header, Input, Button, dropdown } from './styles';
+import { Header, inputStyles, dropdown } from './styles';
 import conversionMap from '../../utils/conversionMap';
 import textUsecases from './usecases';
 
@@ -41,11 +42,11 @@ export default class NewFieldModal extends Component {
 		error: '',
 	});
 
-	handleEsTypeChange = label => {
+	handleEsTypeChange = (label) => {
 		this.setState({ esType: label, fieldType: label });
 	};
 
-	handleNewFieldChange = e => {
+	handleNewFieldChange = (e) => {
 		const { name, value } = e.target;
 		this.setState({
 			...this.state.new,
@@ -54,10 +55,10 @@ export default class NewFieldModal extends Component {
 	};
 
 	addField = () => {
-		const { esType, fieldType, name, usecase, type } = this.state;
-		const deletedPaths = this.props.deletedPaths.map(item =>
-			item.split('.properties.').join('.'),
-		);
+		const {
+			esType, fieldType, name, usecase, type,
+		} = this.state; // prettier-ignore
+		const deletedPaths = this.props.deletedPaths.map(item => item.split('.properties.').join('.'));
 		const fieldName = `${fieldType || esType}.${name}`;
 
 		if (name && deletedPaths.includes(fieldName)) {
@@ -85,16 +86,26 @@ export default class NewFieldModal extends Component {
 		const { fieldType, esType } = this.state;
 		const menu = (
 			<Menu onClick={e => this.handleEsTypeChange(e.key)}>
-				{this.props.types.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
+				{this.props.types.map(item => (
+					<Menu.Item key={item}>{item}</Menu.Item>
+				))}
 				{fieldType && !this.props.types.includes(fieldType) ? (
 					<Menu.Item key={fieldType}>{`Create type ${fieldType}`}</Menu.Item>
 				) : null}
 			</Menu>
 		);
 		return (
-			<Modal show={this.props.show} onClose={this.props.onClose}>
-				<h3>Add New Field</h3>
-
+			<Modal
+				visible={this.props.show}
+				onCancel={this.props.onClose}
+				onOk={this.addField}
+				title="Add new Field"
+				width="100%"
+				okText="Add Field"
+				style={{
+					maxWidth: '800px',
+				}}
+			>
 				<section>
 					<Header>
 						<span className="col">Type</span>
@@ -124,9 +135,9 @@ export default class NewFieldModal extends Component {
 								<Input
 									type="text"
 									name="fieldType"
+									className={inputStyles}
 									value={this.state.fieldType}
 									placeholder="Select or Create Type"
-									defaultValue={this.state.esType}
 									onChange={this.handleNewFieldChange}
 								/>
 							</Dropdown>
@@ -146,6 +157,7 @@ export default class NewFieldModal extends Component {
 						</select> */}
 						<Input
 							ref={this.input}
+							className={inputStyles}
 							type="text"
 							name="name"
 							placeholder="Enter field name"
@@ -184,11 +196,6 @@ export default class NewFieldModal extends Component {
 					{this.state.error ? (
 						<p style={{ color: 'tomato' }}>{this.state.error}</p>
 					) : null}
-					<div
-						style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}
-					>
-						<Button onClick={this.addField}>Add Field</Button>
-					</div>
 				</section>
 			</Modal>
 		);
