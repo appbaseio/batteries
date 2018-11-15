@@ -54,11 +54,18 @@ class Walkthrough extends React.Component {
 		const { component } = this.props;
 		if (tutorialData) {
 			tutorialData = JSON.parse(tutorialData);
+			/* Edge Case : Whenever in future we will add other Walkthrough than existing
+			user may get error */
+			if (!tutorialData[component]) {
+				tutorialData[component] = false;
+				localStorage.setItem('tutorialData', JSON.stringify(tutorialData));
+			}
 		} else {
 			tutorialData = {
 				SearchPreview: false,
 				Mappings: false,
 				Analytics: false,
+				Credentials: false,
 			};
 			localStorage.setItem('tutorialData', JSON.stringify(tutorialData));
 		}
