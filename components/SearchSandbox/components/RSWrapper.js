@@ -632,9 +632,12 @@ export default class RSWrapper extends Component {
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
 		const RSComponent = componentMap[component];
-
+		let tutorialClass = '';
+		let editTutorialClass = '';
 		let otherProps = {};
 		if (id === 'search') {
+			tutorialClass = 'search-tutorial-1';
+			editTutorialClass = 'search-tutorial-2';
 			otherProps = {
 				fieldWeights: generateFieldWeights(
 					componentProps.dataField,
@@ -643,6 +646,10 @@ export default class RSWrapper extends Component {
 				),
 				highlightField: componentProps.dataField,
 			};
+		}
+		if (id === 'result') {
+			tutorialClass = 'search-tutorial-4';
+			editTutorialClass = 'search-tutorial-5';
 		}
 		if (component === 'CategorySearch') {
 			otherProps = {
@@ -711,6 +718,7 @@ export default class RSWrapper extends Component {
 								icon="edit"
 								shape="circle"
 								size="large"
+								className={editTutorialClass}
 								onClick={this.showModal}
 							/>
 							{this.renderComponentCode()}
@@ -735,7 +743,7 @@ export default class RSWrapper extends Component {
 							) : null}
 						</Col>
 					) : null}
-					<Col span={full ? 24 : 20} id={id}>
+					<Col span={full ? 24 : 20} id={id} className={tutorialClass}>
 						<RSComponent
 							componentId={id}
 							{...restProps}
@@ -757,6 +765,7 @@ export default class RSWrapper extends Component {
 								icon="edit"
 								shape="circle"
 								size="large"
+								className={editTutorialClass}
 								onClick={this.showModal}
 							/>
 							{this.renderComponentCode()}

@@ -7,6 +7,7 @@ import get from 'lodash/get';
 import { connect } from 'react-redux';
 
 import Header from './components/Header';
+import Walkthrough from '../shared/Walkthrough';
 import { getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import { SCALR_API } from '../../utils';
@@ -293,11 +294,8 @@ class SearchSandbox extends Component {
 			useCategorySearch,
 		} = this.props;
 		const {
-			mappingsType,
-			componentProps,
-			filterCount,
-			profile,
-		} = this.state;
+			mappingsType, componentProps, filterCount, profile,
+		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
 			appName: appName || null,
@@ -329,6 +327,7 @@ class SearchSandbox extends Component {
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
 					/>
+					<Walkthrough component="SearchPreview" />
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
 							{props => React.cloneElement(child, { ...props })}
