@@ -97,8 +97,9 @@ class Walkthrough extends React.Component {
 						<Button
 							onClick={this.toggleTutorial}
 							shape="circle"
-							type="dashed"
+							type="primary"
 							size="large"
+							style={{ background: '#40a9ff', color: 'white' }}
 							icon={tutorialCompleted ? 'check-circle' : 'play-circle'}
 						/>
 					</Tooltip>
