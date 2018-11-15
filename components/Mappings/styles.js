@@ -116,17 +116,12 @@ export const title = css`
 `;
 
 export const dropdown = css`
-	width: auto;
 	min-width: 150px;
-	height: 34px;
-	border: 1px solid #f8f8f8;
-	box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.05);
-	background-color: #fff;
-	border-radius: 2px;
-	outline-color: #c7f4ff;
 	margin-left: 12px;
-	padding: 6px 15px 6px 6px;
 	text-transform: capitalize;
+	align-items: center;
+	justify-content: space-between;
+	display: flex;
 
 	@media (max-width: 700px) {
 		margin-left: 0px;

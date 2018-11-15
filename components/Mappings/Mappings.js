@@ -3,7 +3,7 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
- Tooltip, Icon, Input, Popover, Card, Button, Modal,
+ Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu,
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
@@ -85,19 +85,11 @@ const synonymMessage = () => (
 
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
-	<Modal show={show} onClose={onClose}>
-		<h3>Re-index successful</h3>
-
+	<Modal visible={show} title="Re-index successful" onOk={onClose} closable={false} onCancel={onClose} okText="Done">
 		<p>
 			The mappings have been updated and the data has been successfully re-indexed in{' '}
 			{timeTaken}ms.
 		</p>
-
-		<div style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}>
-			<Button ghost onClick={onClose}>
-				Done
-			</Button>
-		</div>
 	</Modal>
 );
 
@@ -425,22 +417,15 @@ class Mappings extends Component {
 			const selected = field.fields ? this.getUsecase(field.fields, this.usecases) : 'none';
 
 			if (this.state.editable) {
-				return (
-					<select
-						name="field-usecase"
-						defaultValue={selected}
-						className={dropdown}
-						onChange={(e) => {
-							this.setMapping(fieldname, 'text', e.target.value);
-						}}
-					>
-						{Object.entries(this.usecases).map(value => (
-							<option key={value[0]} value={value[0]}>
-								{value[1]}
-							</option>
-						))}
-					</select>
-				);
+				return this.renderDropDown({
+					name: 'field-usecase',
+					value: selected,
+					handleChange: e => this.setMapping(fieldname, 'text', e.key),
+					options: Object.entries(this.usecases).map(entry => ({
+						value: entry[0],
+						label: entry[1],
+					})),
+				});
 			}
 
 			return (
@@ -512,24 +497,54 @@ class Mappings extends Component {
 		}
 	};
 
-	renderTransformationFields = (originalFields, fields, field) => {
-		if (originalFields[field]) {
-			return this.getConversionMap(this.getType(originalFields[field].type)).map(itemType => (
-				<option key={itemType} value={this.getType(itemType)}>
-					{this.getType(itemType)
-						.split('_')
-						.join(' ')}
-				</option>
-			));
-		}
+	renderOptions = (originalFields, fields, field) => {
+		const options = [];
 
-		return this.getConversionMap(this.getType(fields[field].type)).map(itemType => (
-			<option key={itemType} value={this.getType(itemType)}>
-				{this.getType(itemType)
+		if (originalFields[field]) {
+			options.push({
+				label: this.getType(originalFields[field].type),
+				value: this.getType(originalFields[field].type),
+			});
+			this.getConversionMap(this.getType(originalFields[field].type)).map(itemType => options.push({
+					label: this.getType(itemType)
+						.split('_')
+						.join(' '),
+					value: this.getType(itemType),
+				}));
+			return options;
+		}
+		options.push({
+			label: this.getType(fields[field].type),
+			value: this.getType(fields[field].type),
+		});
+
+		this.getConversionMap(this.getType(fields[field].type)).map(itemType => options.push({
+				label: this.getType(itemType)
 					.split('_')
-					.join(' ')}
-			</option>
-		));
+					.join(' '),
+				value: this.getType(itemType),
+			}));
+		return options;
+	};
+
+	renderDropDown = ({
+		name, options, value, handleChange, // prettier-ignore
+	}) => {
+		const menu = (
+			<Menu onClick={e => handleChange(e)}>
+				{options.map(option => (
+					<Menu.Item key={option.value}>{option.label}</Menu.Item>
+				))}
+			</Menu>
+		);
+		return (
+			<Dropdown overlay={menu}>
+				<Button className={dropdown}>
+					{value}
+					<Icon type="down" />
+				</Button>
+			</Dropdown>
+		);
 	};
 
 	renderMapping = (type, fields, originalFields, address = '') => {
@@ -608,31 +623,16 @@ class Mappings extends Component {
 								<div className={subItem}>
 									{this.renderUsecase(fields[field], field)}
 									{this.state.editable ? (
-										<select
-											className={dropdown}
-											name={`${field}-mapping`}
-											defaultValue={fields[field].type}
-											onChange={(e) => {
-												this.setMapping(field, e.target.value);
-											}}
-										>
-											{originalFields[field] ? (
-												<option
-													value={this.getType(originalFields[field].type)}
-												>
-													{this.getType(originalFields[field].type)}
-												</option>
-											) : (
-												<option value={this.getType(fields[field].type)}>
-													{this.getType(fields[field].type)}
-												</option>
-											)}
-											{this.renderTransformationFields(
+										this.renderDropDown({
+											name: `${field}-mapping`,
+											value: fields[field].type,
+											handleChange: e => this.setMapping(field, e.key),
+											options: this.renderOptions(
 												originalFields,
 												fields,
 												field,
-											)}
-										</select>
+											),
+										})
 									) : (
 										<span
 											style={{ boxShadow: 'none', border: 0 }}
@@ -831,10 +831,10 @@ class Mappings extends Component {
 
 				{this.state.dirty && this.state.editable ? (
 					<Footer>
-						<Button type="primary" style={{margin: '0 10px'}} onClick={this.reIndex}>Confirm Mapping Changes</Button>
-						<Button onClick={this.cancelChanges}>
-							Cancel
+						<Button type="primary" style={{ margin: '0 10px' }} onClick={this.reIndex}>
+							Confirm Mapping Changes
 						</Button>
+						<Button onClick={this.cancelChanges}>Cancel</Button>
 					</Footer>
 				) : null}
 				<NewFieldModal

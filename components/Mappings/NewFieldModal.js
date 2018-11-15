@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
- Tooltip, Icon, Menu, Dropdown, Modal, Input,
+ Tooltip, Icon, Menu, Dropdown, Modal, Input, Button,
 } from 'antd';
 
 import { Header, inputStyles, dropdown } from './styles';
@@ -46,10 +46,16 @@ export default class NewFieldModal extends Component {
 		this.setState({ esType: label, fieldType: label });
 	};
 
+	handleDropdownMenu = (e, name) => {
+		const { key } = e;
+		this.setState({
+			[name]: key,
+		});
+	};
+
 	handleNewFieldChange = (e) => {
 		const { name, value } = e.target;
 		this.setState({
-			...this.state.new,
 			[name]: value,
 		});
 	};
@@ -82,6 +88,24 @@ export default class NewFieldModal extends Component {
 		}
 	};
 
+	renderDropDown = ({ name, options, value }) => {
+		const menu = (
+			<Menu onClick={e => this.handleDropdownMenu(e, name)}>
+				{options.map(option => (
+					<Menu.Item key={option.value}>{option.label}</Menu.Item>
+				))}
+			</Menu>
+		);
+		return (
+			<Dropdown overlay={menu}>
+				<Button className={dropdown}>
+					{value}
+					<Icon type="down" />
+				</Button>
+			</Dropdown>
+		);
+	};
+
 	render() {
 		const { fieldType, esType } = this.state;
 		const menu = (
@@ -112,7 +136,7 @@ export default class NewFieldModal extends Component {
 						<span className="col col--grow">
 							Field Name
 							<Tooltip title={fieldNameMessage}>
-								<span>
+								<span style={{ marginLeft: 5 }}>
 									<Icon type="info-circle" />
 								</span>
 							</Tooltip>
@@ -121,7 +145,7 @@ export default class NewFieldModal extends Component {
 							<span className="col">
 								Use case
 								<Tooltip title={usecaseMessage}>
-									<span>
+									<span style={{ marginLeft: 5 }}>
 										<Icon type="info-circle" />
 									</span>
 								</Tooltip>
@@ -164,34 +188,26 @@ export default class NewFieldModal extends Component {
 							value={this.state.name}
 							onChange={this.handleNewFieldChange}
 						/>
-						{this.state.type === 'text' ? (
-							<select
-								className={dropdown}
-								name="usecase"
-								defaultValue={this.state.usecase}
-								onChange={this.handleNewFieldChange}
-							>
-								{Object.entries(this.usecases).map(value => (
-									<option key={value[0]} value={value[0]}>
-										{value[1]}
-									</option>
-								))}
-							</select>
-						) : null}
-						<select
-							className={dropdown}
-							name="type"
-							defaultValue={this.state.type}
-							onChange={this.handleNewFieldChange}
-						>
-							{Object.keys(conversionMap)
+						{this.state.type === 'text'
+							? this.renderDropDown({
+									name: 'usecase',
+									options: Object.entries(this.usecases).map(entry => ({
+										label: entry[1],
+										value: entry[0],
+									})),
+									value: this.state.usecase,
+							  })
+							: null}
+						{this.renderDropDown({
+							name: 'type',
+							options: Object.keys(conversionMap)
 								.filter(value => value !== 'object')
-								.map(value => (
-									<option key={value} value={value}>
-										{value.split('_').join(' ')}
-									</option>
-								))}
-						</select>
+								.map(entry => ({
+									label: entry,
+									value: entry.split('_').join(' '),
+								})),
+							value: this.state.type,
+						})}
 					</div>
 					{this.state.error ? (
 						<p style={{ color: 'tomato' }}>{this.state.error}</p>
