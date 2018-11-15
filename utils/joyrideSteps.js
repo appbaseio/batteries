@@ -1,16 +1,6 @@
 import React from 'react';
 
-const joyrideSteps = [
-	{
-		content: (
-			<span>
-				Here you can add the filter ( MultiList Component ) which is used to filter the list
-				( ReactiveList Component ).
-			</span>
-		),
-		target: '.search-tutorial-1',
-		placement: 'bottom',
-	},
+const searchPreviewSteps = [
 	{
 		content: (
 			<span>
@@ -18,7 +8,7 @@ const joyrideSteps = [
 				easily.
 			</span>
 		),
-		target: '.search-tutorial-2',
+		target: '.search-tutorial-1',
 		placement: 'bottom',
 	},
 	{
@@ -32,6 +22,16 @@ const joyrideSteps = [
 				>
 					Read More
 				</a>
+			</span>
+		),
+		target: '.search-tutorial-2',
+		placement: 'bottom',
+	},
+	{
+		content: (
+			<span>
+				Here you can add the filter ( MultiList Component ) which is used to filter the list
+				( ReactiveList Component ).
 			</span>
 		),
 		target: '.search-tutorial-3',
@@ -59,5 +59,14 @@ const joyrideSteps = [
 		placement: 'bottom',
 	},
 ];
+
+const joyrideSteps = (component) => {
+	switch (component) {
+		case 'SearchPreview':
+			return searchPreviewSteps;
+		default:
+			return null;
+	}
+};
 
 export default joyrideSteps;

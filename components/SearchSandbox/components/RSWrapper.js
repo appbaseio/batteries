@@ -636,8 +636,8 @@ export default class RSWrapper extends Component {
 		let editTutorialClass = '';
 		let otherProps = {};
 		if (id === 'search') {
-			tutorialClass = 'search-tutorial-2';
-			editTutorialClass = 'search-tutorial-3';
+			tutorialClass = 'search-tutorial-1';
+			editTutorialClass = 'search-tutorial-2';
 			otherProps = {
 				fieldWeights: generateFieldWeights(
 					componentProps.dataField,

@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
-import { css, injectGlobal } from 'emotion';
-import { message, Button, Icon } from 'antd';
+import { css } from 'emotion';
+import { message } from 'antd';
 import { getParameters } from 'codesandbox/lib/api/define';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import Joyride from 'react-joyride';
 import { connect } from 'react-redux';
 
 import Header from './components/Header';
+import Walkthrough from '../shared/Walkthrough';
 import { getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
-import joyrideSteps from './utils/joyrideSteps';
 import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
 import { getAppMappings as getMappings } from '../../modules/actions';
@@ -18,13 +17,6 @@ import { getRawMappingsByAppName } from '../../modules/selectors';
 
 const wrapper = css`
 	padding: 15px;
-`;
-
-/* eslint-disable-next-line */
-injectGlobal`
-	.__floater__body > div > div {
-		text-align: left !important;
-	}
 `;
 
 export const SandboxContext = React.createContext();
@@ -42,8 +34,6 @@ class SearchSandbox extends Component {
 			filterCount: 0,
 			componentProps: {},
 			loading: true,
-			showTutorial: false,
-			tutorialCompleted: false,
 		};
 	}
 
@@ -97,20 +87,6 @@ class SearchSandbox extends Component {
 			getAppMappings(appName, credentials, url);
 		}
 	}
-
-	handleJoyrideSteps = ({ action, index }) => {
-		if ((action === 'next' && index === 4) || action === 'skip') {
-			this.setState({
-				tutorialCompleted: true,
-			});
-		}
-	};
-
-	toggleTutorial = () => {
-		this.setState(({ showTutorial }) => ({
-			showTutorial: !showTutorial,
-		}));
-	};
 
 	getLocalPref = () => {
 		const { appName } = this.props;
@@ -318,7 +294,7 @@ class SearchSandbox extends Component {
 			useCategorySearch,
 		} = this.props;
 		const {
-			mappingsType, componentProps, filterCount, profile, showTutorial, tutorialCompleted,
+			mappingsType, componentProps, filterCount, profile,
 		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
@@ -351,36 +327,7 @@ class SearchSandbox extends Component {
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
 					/>
-					<div
-						style={{
-							display: 'inline-flex',
-							padding: '10px 20px 0',
-						}}
-					>
-						<Button
-							onClick={this.toggleTutorial}
-							size="large"
-							disabled={tutorialCompleted}
-						>
-							{tutorialCompleted ? 'Tutorial completed' : 'Start tutorial'}
-							<Icon type="play-circle" />
-						</Button>
-					</div>
-					<Joyride
-						run={showTutorial}
-						steps={joyrideSteps}
-						styles={{
-							options: {
-								overlayColor: 'rgba(0, 0, 0, 0.65)',
-								primaryColor: '#1890ff',
-								textColor: 'rgba(0, 0, 0, 0.85)',
-							},
-						}}
-						showProgress
-						showSkipButton
-						continuous
-						callback={this.handleJoyrideSteps}
-					/>
+					<Walkthrough component="SearchPreview" />
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
 							{props => React.cloneElement(child, { ...props })}
