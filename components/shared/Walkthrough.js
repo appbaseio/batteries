@@ -5,8 +5,6 @@ import { message, Button, Tooltip } from 'antd';
 import { ACTIONS, EVENTS } from 'react-joyride/es/constants';
 import PropTypes from 'prop-types';
 
-import joyrideSteps from '../../utils/joyrideSteps';
-
 /* eslint-disable-next-line */
 injectGlobal`
 	.__floater__body > div > div {
@@ -61,12 +59,7 @@ class Walkthrough extends React.Component {
 				localStorage.setItem('tutorialData', JSON.stringify(tutorialData));
 			}
 		} else {
-			tutorialData = {
-				SearchPreview: false,
-				Mappings: false,
-				Analytics: false,
-				Credentials: false,
-			};
+			tutorialData = { [component]: false };
 			localStorage.setItem('tutorialData', JSON.stringify(tutorialData));
 		}
 		return tutorialData[component];
@@ -85,7 +78,7 @@ class Walkthrough extends React.Component {
 	render() {
 		const { showTutorial, tutorialCompleted, stepIndex } = this.state;
 
-		const { component, showWalkthrough } = this.props;
+		const { component, showWalkthrough, joyrideSteps } = this.props;
 		return showWalkthrough ? (
 			<React.Fragment>
 				<div
@@ -113,7 +106,7 @@ class Walkthrough extends React.Component {
 				</div>
 				<Joyride
 					run={showTutorial}
-					steps={joyrideSteps(component)}
+					steps={joyrideSteps}
 					styles={{
 						options: {
 							overlayColor: 'rgba(0, 0, 0, 0.65)',
