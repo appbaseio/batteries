@@ -19,6 +19,17 @@ export default {
 		input: 'dropdown',
 		multiple: false,
 	},
+	sortBy: {
+		label: 'Sort Order',
+		description: 'Sort the results by one of Best Match, Ascending or Descending order.',
+		input: 'dropdown',
+		options: [
+			{ label: 'Best Match', key: 'best' },
+			{ label: 'Ascending', key: 'asc' },
+			{ label: 'Descending', key: 'desc' },
+		],
+		default: 'Best Match',
+	},
 	size: {
 		label: 'Size',
 		description: 'Total number of results to fetch (maximum value is 1000).',
@@ -37,31 +48,5 @@ export default {
 		description: 'Enable streaming of live result updates.',
 		input: 'bool',
 		default: false,
-	},
-	includeFields: {
-		label: 'Include Fields',
-		description: 'Select which fields should be included in the results (aka whitelisting).',
-		input: 'multiDropdown',
-		options: [],
-		default: ['*'],
-	},
-	excludeFields: {
-		label: 'Exclude Fields',
-		description: 'Select which fields should be excluded from the results.',
-		input: 'multiDropdown',
-		options: [],
-		default: [],
-	},
-	showResultStats: {
-		label: 'Show Result Stats',
-		description: 'Enable displaying result stats (time taken and total results).',
-		input: 'bool',
-		default: true,
-	},
-	loader: {
-		label: 'Loading Message',
-		description: 'Add an optional message to show while results are loading.',
-		input: 'string',
-		default: '',
 	},
 };

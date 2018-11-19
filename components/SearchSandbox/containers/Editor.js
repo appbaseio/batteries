@@ -16,6 +16,7 @@ import {
 	Tooltip,
 	notification,
 	Popconfirm,
+	message,
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import ExpandCollapse from 'react-expand-collapse';
@@ -127,6 +128,7 @@ export default class Editor extends Component {
 				},
 				this.resetNewComponentData,
 			);
+			message.success('New filter added');
 		} else {
 			this.setState({
 				showModal: false,
@@ -429,80 +431,80 @@ export default class Editor extends Component {
 			isEditable, copied, isValidJSON, editorValue,
 		} = this.state;
 		return (
-		<Popover
-			placement="leftTop"
-			trigger="click"
-			onVisibleChange={visible => (
-				visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
-			}
-			content={
-				isEditable ? (
-					<Ace
-						mode="json"
-						value={editorValue}
-						onChange={value => this.handleEditingJSON(value)}
-						theme="monokai"
-						name="editor-JSON"
-						fontSize={14}
-						showPrintMargin
-						style={{ maxHeight: '250px' }}
-						showGutter
-						highlightActiveLine
-						setOptions={{
-							showLineNumbers: true,
-							tabSize: 2,
-						}}
-						editorProps={{ $blockScrolling: true }}
-					/>
-				) : (
-					<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>
-				)
-			}
-			title={(
-				<Row>
-					<Col span={isEditable ? 19 : 18}>
-						<h5 style={{ display: 'inline-block' }}>
-							{isEditable ? 'Edit JSON' : 'JSON Result'}
-						</h5>
-					</Col>
-					<Col span={isEditable ? 5 : 6}>
-						<Tooltip visible={copied} title="Copied">
-							<Button
-								shape="circle"
-								icon="copy"
-								size="small"
-								onClick={() => this.copyJSON(res)}
-							/>
-						</Tooltip>
-						{isEditable ? (
-							<Button
-								size="small"
-								type="primary"
-								style={{ marginLeft: '5px' }}
-								disabled={!isValidJSON}
-								onClick={() => this.handleUpdateJSON(editorValue)}
-							>
-								Update
-							</Button>
-						) : (
-							<Button
-								size="small"
-								type="primary"
-								style={{ marginLeft: '5px' }}
-								disabled={!isValidJSON}
-								onClick={() => this.handleEditing()}
-							>
-								Edit
-							</Button>
-						)}
-					</Col>
-    </Row>
-		)}
-		>
-			<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
-		</Popover>
-	);
-};
+			<Popover
+				placement="leftTop"
+				trigger="click"
+				onVisibleChange={visible => (
+					visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
+				}
+				content={
+					isEditable ? (
+						<Ace
+							mode="json"
+							value={editorValue}
+							onChange={value => this.handleEditingJSON(value)}
+							theme="monokai"
+							name="editor-JSON"
+							fontSize={14}
+							showPrintMargin
+							style={{ maxHeight: '250px' }}
+							showGutter
+							highlightActiveLine
+							setOptions={{
+								showLineNumbers: true,
+								tabSize: 2,
+							}}
+							editorProps={{ $blockScrolling: true }}
+						/>
+					) : (
+						<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>
+					)
+				}
+				title={(
+					<Row>
+						<Col span={isEditable ? 19 : 18}>
+							<h5 style={{ display: 'inline-block' }}>
+								{isEditable ? 'Edit JSON' : 'JSON Result'}
+							</h5>
+						</Col>
+						<Col span={isEditable ? 5 : 6}>
+							<Tooltip visible={copied} title="Copied">
+								<Button
+									shape="circle"
+									icon="copy"
+									size="small"
+									onClick={() => this.copyJSON(res)}
+								/>
+							</Tooltip>
+							{isEditable ? (
+								<Button
+									size="small"
+									type="primary"
+									style={{ marginLeft: '5px' }}
+									disabled={!isValidJSON}
+									onClick={() => this.handleUpdateJSON(editorValue)}
+								>
+									Update
+								</Button>
+							) : (
+								<Button
+									size="small"
+									type="primary"
+									style={{ marginLeft: '5px' }}
+									disabled={!isValidJSON}
+									onClick={() => this.handleEditing()}
+								>
+									Edit
+								</Button>
+							)}
+						</Col>
+					</Row>
+				)}
+			>
+				<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
+			</Popover>
+		);
+	};
 
 	render() {
 		const {
@@ -536,13 +538,15 @@ export default class Editor extends Component {
 				and: Object.keys(componentProps).filter(item => item !== 'result'),
 			},
 		};
-
 		const title = (
 			<span>
 				Search Preview{' '}
-				<Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
-					Watch Video
-				</Button>
+				{
+					window.innerWidth > 1280
+					? <Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
+						Watch Video
+					</Button> : null
+				}
 			</span>
 		);
 		return (
@@ -554,11 +558,12 @@ export default class Editor extends Component {
 			>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
-						<Card title={title}>
+						<Card title={title} id="video-title">
 							<Button
 								style={{ width: '100%' }}
 								size="large"
 								icon="plus-circle-o"
+								className="search-tutorial-3"
 								onClick={this.showModal}
 							>
 								Add New Filter

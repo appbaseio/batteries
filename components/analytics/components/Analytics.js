@@ -43,12 +43,13 @@ const Analytics = ({
 	popularResults,
 	plan,
 	loading,
+	onClickViewAll,
 }) => {
 	if (loading) {
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
 	}
-	return (
+	return ( 
 		<React.Fragment>
 			<Card css="margin-bottom: 20px" title="Summary">
 				<Summary />
@@ -62,6 +63,7 @@ const Analytics = ({
 						title="Popular Searches"
 						plan={plan}
 						css="height: 100%"
+						onClickViewAll={onClickViewAll && onClickViewAll.popularSearches || null}
 					/>
 				</div>
 				<div css={noResultsCls}>
@@ -71,6 +73,7 @@ const Analytics = ({
 						title="No Result Searches"
 						plan={plan}
 						css="height: 100%"
+						onClickViewAll={onClickViewAll && onClickViewAll.noResultsSearch || null}
 					/>
 				</div>
 			</Flex>
@@ -84,6 +87,7 @@ const Analytics = ({
 								title="Popular Results"
 								href="popular-results"
 								css="height: 100%"
+								onClickViewAll={onClickViewAll && onClickViewAll.popularResults || null}
 							/>
 						</div>
 						<div css={noResultsCls}>
@@ -93,6 +97,7 @@ const Analytics = ({
 								title="Popular Filters"
 								href="popular-filters"
 								css="height: 100%"
+								onClickViewAll={onClickViewAll && onClickViewAll.popularFilters || null}
 							/>
 						</div>
 					</Flex>
@@ -114,8 +119,15 @@ Analytics.defaultProps = {
 	searchVolume: [],
 	popularResults: [],
 	popularFilters: [],
+	onClickViewAll: null,
 };
 Analytics.propTypes = {
+	onClickViewAll: PropTypes.shape({
+		popularFilters: PropTypes.func,
+		popularResults: PropTypes.func,
+		popularSearches: PropTypes.func,
+		noResultsSearch: PropTypes.func,
+	}),
 	loading: PropTypes.bool,
 	noResults: PropTypes.array,
 	popularSearches: PropTypes.array,

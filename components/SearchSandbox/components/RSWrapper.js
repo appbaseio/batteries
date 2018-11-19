@@ -12,7 +12,7 @@ import {
 	Icon,
 	Dropdown,
 	Popover,
-	Select,
+	message,
 } from 'antd';
 
 import {
@@ -34,8 +34,6 @@ import {
 	rowStyles,
 	formWrapper,
 	componentStyles,
-	fieldBadge,
-	label,
 } from '../styles';
 
 const componentMap = {
@@ -167,6 +165,7 @@ export default class RSWrapper extends Component {
 		this.setState({
 			showModal: false,
 		});
+		message.success('Search Preview configuration saved');
 	};
 
 	handleCancel = () => {
@@ -303,7 +302,7 @@ export default class RSWrapper extends Component {
 				componentProps: {
 					...componentProps,
 					dataField: [...componentProps.dataField, field],
-					fieldWeights: [...componentProps.fieldWeights, 2],
+					fieldWeights: [...componentProps.fieldWeights, 1],
 				},
 			});
 		}
@@ -468,95 +467,6 @@ export default class RSWrapper extends Component {
 				);
 				break;
 			}
-			case 'multiDropdown': {
-				const { Option } = Select;
-				const { component } = this.props;
-				let dropdownOptions = propsMap[component][name].options || [];
-				const placeholder = propsMap[component][name].description || '';
-				const { label: currentLabel } = propsMap[component][name];
-
-				let dropdownValue = [];
-				let disable = false;
-				let allFields = '';
-
-				switch (name) {
-					case 'includeFields': {
-						const { componentProps: stateComponentProps } = this.state;
-						allFields = '* ( Include all Fields )';
-						dropdownValue =	stateComponentProps.includeFields
-							|| propsMap[component][name].default;
-
-						if (dropdownValue.includes('*')) {
-							dropdownValue = ['*'];
-							dropdownOptions = [];
-						}
-
-						const excludeFields =	stateComponentProps.excludeFields
-							|| propsMap[component].excludeFields.default;
-						if (excludeFields.includes('*')) {
-							disable = true;
-							dropdownValue = [];
-						}
-						dropdownOptions = Object.keys(mappings).filter(
-							v => !excludeFields.includes(v),
-						);
-						break;
-					}
-					case 'excludeFields': {
-						const { componentProps: stateComponentProps } = this.state;
-						allFields = '* ( Exclude all Fields )';
-						dropdownValue =	stateComponentProps.excludeFields
-							|| propsMap[component][name].default;
-
-						if (dropdownValue.includes('*')) {
-							dropdownValue = ['*'];
-							dropdownOptions = [];
-						}
-
-						const includeFields =	stateComponentProps.includeFields
-							|| propsMap[component].includeFields.default;
-
-						if (includeFields.includes('*')) {
-							disable = true;
-							dropdownValue = [];
-						}
-
-						dropdownOptions = Object.keys(mappings).filter(
-							v => !includeFields.includes(v),
-						);
-						break;
-					}
-					default:
-				}
-				const { mappingsType } = this.props;
-				return (
-					<div className="ant-row ant-form-item ant-form-item-no-colon" key={name}>
-						<div className="ant-form-item-label">
-							<label className={label} title={currentLabel}>
-								{currentLabel}
-							</label>
-						</div>
-						<Select
-							key={name}
-							mode="multiple"
-							style={{ width: '100%' }}
-							disabled={disable}
-							placeholder={placeholder}
-							value={dropdownValue}
-							onChange={selectedValue => this.handleMultipleDropdown(selectedValue, name)
-							}
-						>
-							{allFields ? <Option key="*">{allFields}</Option> : null}
-							{dropdownOptions.map(option => (
-								<Option key={option}>
-									{option}
-									<span className={fieldBadge}>{mappingsType}</span>
-								</Option>
-							))}
-						</Select>
-					</div>
-				);
-			}
 			case 'dropdown': {
 				let dropdownOptions = [];
 				let selectedValue = '';
@@ -717,14 +627,17 @@ export default class RSWrapper extends Component {
 
 	render() {
 		const {
-			componentProps, component, id, mappings, customProps, full, showDelete, onDelete,
+			componentProps, component, id, mappings, customProps, full, showDelete, onDelete, showCodePreview, showCustomList
 		} = this.props;
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
 		const RSComponent = componentMap[component];
-
+		let tutorialClass = '';
+		let editTutorialClass = '';
 		let otherProps = {};
 		if (id === 'search') {
+			tutorialClass = 'search-tutorial-1';
+			editTutorialClass = 'search-tutorial-2';
 			otherProps = {
 				fieldWeights: generateFieldWeights(
 					componentProps.dataField,
@@ -733,6 +646,10 @@ export default class RSWrapper extends Component {
 				),
 				highlightField: componentProps.dataField,
 			};
+		}
+		if (id === 'result') {
+			tutorialClass = 'search-tutorial-4';
+			editTutorialClass = 'search-tutorial-5';
 		}
 		if (component === 'CategorySearch') {
 			otherProps = {
@@ -785,6 +702,10 @@ export default class RSWrapper extends Component {
 			};
 		}
 
+		if (id === 'result' && componentProps.sortBy === 'best') {
+			delete restProps.sortBy;
+		}
+
 		const showPreview =	component === 'ReactiveList';
 		const customComponentProps = customProps[component];
 
@@ -797,10 +718,11 @@ export default class RSWrapper extends Component {
 								icon="edit"
 								shape="circle"
 								size="large"
+								className={editTutorialClass}
 								onClick={this.showModal}
 							/>
-							{this.renderComponentCode()}
-							{showPreview ? (
+							{showCodePreview && this.renderComponentCode()}
+							{showPreview && showCustomList ? (
 								<Button
 									icon="eye-o"
 									shape="circle"
@@ -821,7 +743,7 @@ export default class RSWrapper extends Component {
 							) : null}
 						</Col>
 					) : null}
-					<Col span={full ? 24 : 20} id={id}>
+					<Col span={full ? 24 : 20} id={id} className={tutorialClass}>
 						<RSComponent
 							componentId={id}
 							{...restProps}
@@ -843,9 +765,10 @@ export default class RSWrapper extends Component {
 								icon="edit"
 								shape="circle"
 								size="large"
+								className={editTutorialClass}
 								onClick={this.showModal}
 							/>
-							{this.renderComponentCode()}
+							{showCodePreview && this.renderComponentCode()}
 						</Col>
 					)}
 				</Row>

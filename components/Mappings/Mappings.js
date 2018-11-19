@@ -23,6 +23,7 @@ import {
 	updateSynonyms,
 	REMOVED_KEYS,
 	getTypesFromMapping,
+	getESVersion,
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
@@ -119,14 +120,22 @@ class Mappings extends Component {
 			synonyms: [],
 			credentials: '',
 			showSynonymModal: false,
+			esVersion: '5',
 		};
 
 		this.usecases = textUsecases;
 		this.originalMapping = null;
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		this.init();
+
+		const { appName } = this.props;
+		const esVersion = await getESVersion(appName, credentials);
+
+		this.setState({
+			esVersion: esVersion.split('.')[0],
+		});
 	}
 
 	componentDidUpdate(prevProps) {
@@ -363,6 +372,7 @@ class Mappings extends Component {
 			deletedPaths,
 			activeType,
 			mapping,
+			esVersion,
 		} = this.state;
 
 		const { appId, credentials } = this.props;
@@ -374,7 +384,7 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType, credentials)
+		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials)
 			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
@@ -538,7 +548,7 @@ class Mappings extends Component {
 
 						const mappingInfo = (
 							<Popover content={<pre>{JSON.stringify(properties, null, 2)}</pre>}>
-								<span
+								<div
 									css={{
 										...flex,
 										justifyContent: 'center',
@@ -551,7 +561,7 @@ class Mappings extends Component {
 									}}
 								>
 									{this.getIcon(propertyType)}
-								</span>
+								</div>
 							</Popover>
 						);
 

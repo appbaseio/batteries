@@ -136,13 +136,27 @@ export function openIndex(appName, credentials, url = SCALR_API) {
 	});
 }
 
-export function reIndex(mappings, appId, excludeFields, type, credentials) {
+export async function getESVersion(appName, credentials) {
+	const response = await fetch(`${ACC_API}/app/${appName}`, {
+		headers: {
+			...getAuthHeaders(credentials),
+		},
+	});
+	const data = await response.json();
+	if (response.status >= 400) {
+		throw new Error(data);
+	}
+
+	return data.body.es_version;
+}
+
+export function reIndex(mappings, appId, excludeFields, type, version = '5', credentials) {
 	const body = {
 		mappings,
 		settings: analyzerSettings,
 		exclude_fields: excludeFields,
 		type,
-		es_version: '5',
+		es_version: version,
 	};
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/_reindex/${appId}/`, {

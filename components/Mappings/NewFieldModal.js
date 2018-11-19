@@ -54,11 +54,11 @@ export default class NewFieldModal extends Component {
 	};
 
 	addField = () => {
-		const { esType, name, usecase, type } = this.state;
+		const { esType, fieldType, name, usecase, type } = this.state;
 		const deletedPaths = this.props.deletedPaths.map(item =>
 			item.split('.properties.').join('.'),
 		);
-		const fieldName = `${esType}.${name}`;
+		const fieldName = `${fieldType || esType}.${name}`;
 
 		if (name && deletedPaths.includes(fieldName)) {
 			this.setState({

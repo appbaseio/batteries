@@ -102,6 +102,11 @@ export default {
 		AppConstants.APP.CREATE_SHARE_SUCCESS,
 		AppConstants.APP.CREATE_SHARE_ERROR,
 	),
+	$deleteAppShare: createRequestReducer(
+		AppConstants.APP.DELETE_SHARE,
+		AppConstants.APP.DELETE_SHARE_SUCCESS,
+		AppConstants.APP.DELETE_SHARE_ERROR,
+	),
 	$createAppSubscription: createRequestReducer(
 		AppConstants.APP.CREATE_SUBSCRIPTION,
 		AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS,
