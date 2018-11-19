@@ -126,7 +126,7 @@ export default class Header extends Component {
 		let showHeader = true;
 
 		if(!showCodeSandbox && !showProfileOption){
-			showHeader =false
+			showHeader = false;
 		}
 
 		return showHeader ?
