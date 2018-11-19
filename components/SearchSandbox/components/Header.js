@@ -96,6 +96,7 @@ export default class Header extends Component {
 			// prettier-ignore
 			isDashboard,
 			showCodeSandbox,
+			showProfileOption,
 			profileList,
 			openSandbox,
 		} = this.props;
@@ -122,7 +123,13 @@ export default class Header extends Component {
 			</Menu>
 		);
 
-		return (
+		let showHeader = true;
+
+		if(!showCodeSandbox && !showProfileOption){
+			showHeader =false
+		}
+
+		return showHeader ?
 			<div
 				style={{
 					display: 'flex',
@@ -130,7 +137,7 @@ export default class Header extends Component {
 					padding: '10px 20px 0',
 				}}
 			>
-				{isDashboard ? (
+				{isDashboard && showProfileOption ? (
 					<Dropdown overlay={menu} trigger={['click']}>
 						<Button size="large" style={{ marginLeft: 8 }}>
 							Search Profile - {profile} <Icon type="down" />
@@ -156,14 +163,14 @@ export default class Header extends Component {
 					<Input type="text" ref={this.profileInput} placeholder="Search Profile Name" />
 					{modalError ? <p style={{ color: 'tomato' }}>{modalError}</p> : null}
 				</Modal>
-			</div>
-		);
+			</div> : null
 	}
 }
 
 Header.propTypes = {
 	isDashboard: bool.isRequired,
 	showCodeSandbox: bool.isRequired,
+	showProfileOption: bool.isRequired,
 	profileList: arrayOf(string).isRequired,
 	defaultProfile: string.isRequired, // eslint-disable-line
 	setProfile: func.isRequired,

@@ -291,6 +291,9 @@ class SearchSandbox extends Component {
 			customProps,
 			isDashboard,
 			showCodeSandbox,
+			showCodePreview,
+			showCustomList,
+			showProfileOption,
 			useCategorySearch,
 		} = this.props;
 		const {
@@ -313,6 +316,8 @@ class SearchSandbox extends Component {
 			showCodeSandbox,
 			setFilterCount: this.setFilterCount,
 			deleteComponent: this.deleteComponent,
+			showCodePreview,
+			showCustomList,
 		};
 
 		return (
@@ -321,6 +326,7 @@ class SearchSandbox extends Component {
 					<Header
 						isDashboard={isDashboard}
 						showCodeSandbox={showCodeSandbox}
+						showProfileOption={showProfileOption}
 						profileList={profileList}
 						defaultProfile={profile}
 						setProfile={this.setProfile}
@@ -351,12 +357,18 @@ SearchSandbox.propTypes = {
 	getAppMappings: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
 	customProps: PropTypes.object,
+	showCodePreview: PropTypes.bool,
+	showProfileOption: PropTypes.bool,
+	showCustomList: PropTypes.bool,
 };
 
 SearchSandbox.defaultProps = {
 	appId: null,
 	attribution: null,
 	showCodeSandbox: true,
+	showCodePreview: true,
+	showProfileOption: true,
+	showCustomList: true,
 	isDashboard: false,
 	url: SCALR_API,
 	useCategorySearch: false,
