@@ -627,7 +627,7 @@ export default class RSWrapper extends Component {
 
 	render() {
 		const {
-			componentProps, component, id, mappings, customProps, full, showDelete, onDelete,
+			componentProps, component, id, mappings, customProps, full, showDelete, onDelete, showCodePreview, showCustomList
 		} = this.props;
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
@@ -721,8 +721,8 @@ export default class RSWrapper extends Component {
 								className={editTutorialClass}
 								onClick={this.showModal}
 							/>
-							{this.renderComponentCode()}
-							{showPreview ? (
+							{showCodePreview && this.renderComponentCode()}
+							{showPreview && showCustomList ? (
 								<Button
 									icon="eye-o"
 									shape="circle"
@@ -768,7 +768,7 @@ export default class RSWrapper extends Component {
 								className={editTutorialClass}
 								onClick={this.showModal}
 							/>
-							{this.renderComponentCode()}
+							{showCodePreview && this.renderComponentCode()}
 						</Col>
 					)}
 				</Row>
