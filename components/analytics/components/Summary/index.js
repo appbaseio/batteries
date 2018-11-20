@@ -35,7 +35,7 @@ class Summary extends React.Component {
 			<Flex flexDirection="row" css="flex-wrap:wrap">
 				<SummaryCard title="Total Searches" count={totalSearches} border="#00f68e" />
 				<SummaryCard title="Average Click Rate" count={avgClickRate} border="#1A74FF" />
-				<SummaryCard title="Conversion" count={avgConversionRate} border="#C944FF" />
+				<SummaryCard title="Conversion" count={avgClickRate} border="#C944FF" />
 			</Flex>
 		);
 	}
@@ -51,9 +51,9 @@ Summary.propTypes = {
 const mapStateToProps = (state) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);
 	return {
-		avgClickRate: get(appSummary, 'avgClickRate', 0),
-		avgConversionRate: get(appSummary, 'avgConversionRate', 0),
-		totalSearches: get(appSummary, 'totalSearches', 0),
+		avgClickRate: get(appSummary, 'summary.avg_click_rate', 0),
+		avgConversionRate: get(appSummary, 'summary.avg_conversion_rate', 0),
+		totalSearches: get(appSummary, 'summary.total_searches', 0),
 		isLoading: get(state, '$getAppAnalyticsSummary.isFetching'),
 		errors: [get(state, '$getAppAnalyticsSummary.error')],
 	};

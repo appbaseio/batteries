@@ -73,17 +73,3 @@ export const getAppPlan = appName => doGet(`${ACC_API}/app/${appName}/plan`);
 export const createSubscription = (token, plan, appName) => doPost(`${ACC_API}/app/${appName}/subscription`, { token, plan });
 
 export const deleteSubscription = appName => doDelete(`${ACC_API}/app/${appName}/subscription`);
-
-export const getAppMetrics = appId => new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		fetch(`${ACC_API}/app/${appId}/metrics`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${authToken}`,
-			},
-		})
-			.then(res => res.json())
-			.then(data => resolve(data.body))
-			.catch(error => reject(error));
-	});

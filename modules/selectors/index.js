@@ -6,7 +6,6 @@ const rawMappings = state => get(state, '$getAppMappings.rawMappings');
 const traversedMappings = state => get(state, '$getAppMappings.traversedMappings');
 const appInfo = state => get(state, '$getAppInfo.apps');
 const appPlan = () => 'growth';
-const appMetrics = state => get(state, '$getAppMetrics.results');
 const appAnalytics = state => get(state, '$getAppAnalytics.results');
 const appPermission = state => get(state, '$getAppPermissions.results');
 const appSearchLatency = state => get(state, '$getAppSearchLatency.results');
@@ -15,19 +14,46 @@ const appAnalyticsSummary = state => get(state, '$getAppAnalyticsSummary.results
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
-const getRawMappingsByAppName = createSelector(rawMappings, appName, getCollectionByKey);
+const getRawMappingsByAppName = createSelector(
+	rawMappings,
+	appName,
+	getCollectionByKey,
+);
 const getTraversedMappingsByAppName = createSelector(
 	traversedMappings,
 	appName,
 	getCollectionByKey,
 );
-const getAppInfoByName = createSelector(appInfo, appName, getCollectionByKey);
-const getAppPlanByName = createSelector(appPlan, appName, getCollectionByKey);
-const getAppMetricsByName = createSelector(appMetrics, appName, getCollectionByKey);
-const getAppAnalyticsByName = createSelector(appAnalytics, appName, getCollectionByKey);
-const getAppPermissionsByName = createSelector(appPermission, appName, getCollectionByKey);
-const getAppSearchLatencyByName = createSelector(appSearchLatency, appName, getCollectionByKey);
-const getAppGeoDistributionByName = createSelector(appGeoDistribution, appName, getCollectionByKey);
+const getAppInfoByName = createSelector(
+	appInfo,
+	appName,
+	getCollectionByKey,
+);
+const getAppPlanByName = createSelector(
+	appPlan,
+	appName,
+	getCollectionByKey,
+);
+const getAppAnalyticsByName = createSelector(
+	appAnalytics,
+	appName,
+	getCollectionByKey,
+);
+const getAppPermissionsByName = createSelector(
+	appPermission,
+	appName,
+	getCollectionByKey,
+);
+const getAppSearchLatencyByName = createSelector(
+	appSearchLatency,
+	appName,
+	getCollectionByKey,
+);
+const getAppGeoDistributionByName = createSelector(
+	appGeoDistribution,
+	appName,
+	getCollectionByKey,
+);
 const getAppAnalyticsSummaryByName = createSelector(
 	appAnalyticsSummary,
 	appName,
@@ -40,7 +66,6 @@ export {
 	getAppGeoDistributionByName,
 	getAppAnalyticsSummaryByName,
 	getAppInfoByName,
-	getAppMetricsByName,
 	getAppAnalyticsByName,
 	getAppPermissionsByName,
 	getAppPlanByName,

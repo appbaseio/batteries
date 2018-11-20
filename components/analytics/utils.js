@@ -437,7 +437,7 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 			.then(res => res.json())
 			.then((res) => {
 				// resolve the promise with response
-				resolve(res.popularSearches);
+				resolve(res.popular_searches);
 				// resolve(data.body.popularSearches);
 			})
 			.catch((e) => {
@@ -463,7 +463,7 @@ export function getNoResultSearches(appName, size = 100) {
 			.then(res => res.json())
 			.then((res) => {
 				// resolve the promise with response
-				resolve(res.noResultSearches);
+				resolve(res.no_results_searches);
 			})
 			.catch((e) => {
 				reject(e);
@@ -490,7 +490,7 @@ export function getPopularResults(appName, clickanalytics = true, size = 100) {
 			.then(res => res.json())
 			.then((res) => {
 				// resolve the promise with response
-				resolve(res.popularResults);
+				resolve(res.popular_results);
 			})
 			.catch((e) => {
 				reject(e);
@@ -517,7 +517,7 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 			.then(res => res.json())
 			.then((res) => {
 				// resolve the promise with response
-				resolve(res.popularFilters);
+				resolve(res.popular_filters);
 			})
 			.catch((e) => {
 				reject(e);
@@ -529,7 +529,7 @@ export function getRequestLogs(appName, size = 1000) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		fetch(
-			`${ACC_API}/app/${getApp(appName)}logs${getQueryParams({
+			`${ACC_API}/${getApp(appName)}logs${getQueryParams({
 				size,
 			})}`,
 			{

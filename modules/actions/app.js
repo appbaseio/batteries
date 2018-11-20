@@ -9,7 +9,7 @@ import {
 	createShare,
 	createSubscription,
 	deleteSubscription,
-	getAppMetrics as GetAppMetrics,
+	// getAppMetrics as GetAppMetrics,
 	transferOwnership,
 } from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
@@ -108,20 +108,20 @@ export function getAppPlan(name) {
  * @param {*} id // App id ( optional )
  * @param {*} name // App name ( optional )
  */
-export function getAppMetrics(id, name) {
-	return (dispatch, getState) => {
-		const appId = id || get(getState(), '$getCurrentApp.id', 'default');
-		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		dispatch(createAction(AppConstants.APP.GET_METRICS));
-		return GetAppMetrics(appId)
-			.then(res => dispatch(
-					createAction(AppConstants.APP.GET_METRICS_SUCCESS, res, null, { appName }),
-				))
-			.catch((error) => {
-				dispatch(createAction(AppConstants.APP.GET_METRICS_ERROR, null, error));
-			});
-	};
-}
+// export function getAppMetrics(id, name) {
+// 	return (dispatch, getState) => {
+// 		const appId = id || get(getState(), '$getCurrentApp.id', 'default');
+// 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+// 		dispatch(createAction(AppConstants.APP.GET_METRICS));
+		// return GetAppMetrics(appId)
+// 			.then(res => dispatch(
+// 					createAction(AppConstants.APP.GET_METRICS_SUCCESS, res, null, { appName }),
+// 				))
+// 			.catch((error) => {
+// 				dispatch(createAction(AppConstants.APP.GET_METRICS_ERROR, null, error));
+// 			});
+// 	};
+// }
 
 export function createAppSubscription(stripeToken, plan, name) {
 	return (dispatch, getState) => {

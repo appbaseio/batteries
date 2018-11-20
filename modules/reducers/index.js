@@ -66,12 +66,12 @@ export default {
 		AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_ERROR,
 		computeStateByAppName,
 	),
-	$getAppMetrics: createRequestReducer(
-		AppConstants.APP.GET_METRICS,
-		AppConstants.APP.GET_METRICS_SUCCESS,
-		AppConstants.APP.GET_METRICS_ERROR,
-		computeAppMappingState,
-	),
+	// $getAppMetrics: createRequestReducer(
+	// 	AppConstants.APP.GET_METRICS,
+	// 	AppConstants.APP.GET_METRICS_SUCCESS,
+	// 	AppConstants.APP.GET_METRICS_ERROR,
+	// 	computeAppMappingState,
+	// ),
 	$createAppPermission: createRequestReducer(
 		AppConstants.APP.PERMISSION.CREATE,
 		AppConstants.APP.PERMISSION.CREATE_SUCCESS,

@@ -90,15 +90,22 @@ Main.propTypes = {
 	isFetching: PropTypes.bool.isRequired, //eslint-disable-line
 };
 const mapStateToProps = (state) => {
-	const appAnalytics = getAppAnalyticsByName(state);
+	const analyticsArr = getAppAnalyticsByName(state) || [];
+	let appAnalytics = {};
+	analyticsArr.forEach((item) => {
+		appAnalytics = {
+			...appAnalytics,
+			...item,
+		};
+	});
 	return {
 		plan: 'growth',
 		appName: get(state, '$getCurrentApp.name'),
-		popularSearches: get(appAnalytics, 'popularSearches', []),
-		popularResults: get(appAnalytics, 'popularResults', []),
-		popularFilters: get(appAnalytics, 'popularFilters', []),
-		searchVolume: get(appAnalytics, 'searchVolume', []),
-		noResults: get(appAnalytics, 'noResultSearches', []),
+		popularSearches: get(appAnalytics, 'popular_searches', []),
+		popularResults: get(appAnalytics, 'popular_results', []),
+		popularFilters: get(appAnalytics, 'popular_filters', []),
+		searchVolume: get(appAnalytics, 'search_volume', []),
+		noResults: get(appAnalytics, 'no_results_searches', []),
 		isFetching: get(state, '$getAppAnalytics.isFetching'),
 	};
 };

@@ -100,7 +100,7 @@ SearchLatency.propTypes = {
 const mapStateToProps = (state) => {
 	const searchLatency = getAppSearchLatencyByName(state);
 	return {
-		searchLatency: get(searchLatency, 'latency', []),
+		searchLatency: get(searchLatency, 'latencies', []),
 		isLoading: get(state, '$getAppSearchLatency.isFetching'),
 		success: get(state, '$getAppSearchLatency.success'),
 		isSearchLatencyPresent: !!searchLatency,
