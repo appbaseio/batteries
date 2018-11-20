@@ -81,13 +81,17 @@ function onData(res) {
 export const renderWithOnData = config => `
 function getNestedValue(obj, path) {
 	const keys = path.split('.');
-	let currentObject = obj;
-
-	keys.forEach(key => (currentObject = currentObject[key]));
-	if (typeof currentObject === 'object') {
-		return JSON.stringify(currentObject);
+	const currentObject = obj;
+	const nestedValue = keys.reduce((value, key) => {
+		if (value) {
+		return value[key];
+		}
+		return '';
+	}, currentObject);
+	if (typeof nestedValue === 'object') {
+		return JSON.stringify(nestedValue);
 	}
-	return currentObject;
+	return nestedValue;
 }
 
 function onData(res) {
@@ -102,8 +106,8 @@ function onData(res) {
 				{image &&  <img src={image} alt={title} /> }
 			</Col>
 			<Col span={image ? 18 : 24}>
-				<h3 style={{ fontWeight: '600' }}>{title || 'Choose a valid Title Field'}</h3>
-				<p style={{ fontSize: '1em' }}>{description || 'Choose a valid description field'}</p>
+				<h3 style={{ fontWeight: '600' }} dangerouslySetInnerHTML={{__html: title || 'Choose a valid Title Field'}}/>
+				<p style={{ fontSize: '1em' }} dangerouslySetInnerHTML={{__html: description || 'Choose a valid Description Field'}}/>
 			</Col>
 			<div style={{padding:'20px'}}>
 				{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />

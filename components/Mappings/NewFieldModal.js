@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Tooltip, Icon, Menu, Dropdown } from 'antd';
+import {
+ Tooltip, Icon, Menu, Dropdown, Modal, Input, Button,
+} from 'antd';
 
-import Modal from '../shared/Modal';
-import { Header, Input, Button, dropdown } from './styles';
+import { Header, inputStyles, dropdown } from './styles';
 import conversionMap from '../../utils/conversionMap';
 import textUsecases from './usecases';
 
@@ -41,23 +42,29 @@ export default class NewFieldModal extends Component {
 		error: '',
 	});
 
-	handleEsTypeChange = label => {
+	handleEsTypeChange = (label) => {
 		this.setState({ esType: label, fieldType: label });
 	};
 
-	handleNewFieldChange = e => {
+	handleDropdownMenu = (e, name) => {
+		const { key } = e;
+		this.setState({
+			[name]: key,
+		});
+	};
+
+	handleNewFieldChange = (e) => {
 		const { name, value } = e.target;
 		this.setState({
-			...this.state.new,
 			[name]: value,
 		});
 	};
 
 	addField = () => {
-		const { esType, fieldType, name, usecase, type } = this.state;
-		const deletedPaths = this.props.deletedPaths.map(item =>
-			item.split('.properties.').join('.'),
-		);
+		const {
+			esType, fieldType, name, usecase, type,
+		} = this.state; // prettier-ignore
+		const deletedPaths = this.props.deletedPaths.map(item => item.split('.properties.').join('.'));
 		const fieldName = `${fieldType || esType}.${name}`;
 
 		if (name && deletedPaths.includes(fieldName)) {
@@ -81,27 +88,55 @@ export default class NewFieldModal extends Component {
 		}
 	};
 
+	renderDropDown = ({ name, options, value }) => {
+		const menu = (
+			<Menu onClick={e => this.handleDropdownMenu(e, name)}>
+				{options.map(option => (
+					<Menu.Item key={option.value}>{option.label}</Menu.Item>
+				))}
+			</Menu>
+		);
+		return (
+			<Dropdown overlay={menu}>
+				<Button className={dropdown}>
+					{value}
+					<Icon type="down" />
+				</Button>
+			</Dropdown>
+		);
+	};
+
 	render() {
 		const { fieldType, esType } = this.state;
 		const menu = (
 			<Menu onClick={e => this.handleEsTypeChange(e.key)}>
-				{this.props.types.map(item => <Menu.Item key={item}>{item}</Menu.Item>)}
+				{this.props.types.map(item => (
+					<Menu.Item key={item}>{item}</Menu.Item>
+				))}
 				{fieldType && !this.props.types.includes(fieldType) ? (
 					<Menu.Item key={fieldType}>{`Create type ${fieldType}`}</Menu.Item>
 				) : null}
 			</Menu>
 		);
 		return (
-			<Modal show={this.props.show} onClose={this.props.onClose}>
-				<h3>Add New Field</h3>
-
+			<Modal
+				visible={this.props.show}
+				onCancel={this.props.onClose}
+				onOk={this.addField}
+				title="Add new Field"
+				width="100%"
+				okText="Add Field"
+				style={{
+					maxWidth: '800px',
+				}}
+			>
 				<section>
 					<Header>
 						<span className="col">Type</span>
 						<span className="col col--grow">
 							Field Name
 							<Tooltip title={fieldNameMessage}>
-								<span>
+								<span style={{ marginLeft: 5 }}>
 									<Icon type="info-circle" />
 								</span>
 							</Tooltip>
@@ -110,7 +145,7 @@ export default class NewFieldModal extends Component {
 							<span className="col">
 								Use case
 								<Tooltip title={usecaseMessage}>
-									<span>
+									<span style={{ marginLeft: 5 }}>
 										<Icon type="info-circle" />
 									</span>
 								</Tooltip>
@@ -124,9 +159,9 @@ export default class NewFieldModal extends Component {
 								<Input
 									type="text"
 									name="fieldType"
+									className={inputStyles}
 									value={this.state.fieldType}
 									placeholder="Select or Create Type"
-									defaultValue={this.state.esType}
 									onChange={this.handleNewFieldChange}
 								/>
 							</Dropdown>
@@ -146,49 +181,37 @@ export default class NewFieldModal extends Component {
 						</select> */}
 						<Input
 							ref={this.input}
+							className={inputStyles}
 							type="text"
 							name="name"
 							placeholder="Enter field name"
 							value={this.state.name}
 							onChange={this.handleNewFieldChange}
 						/>
-						{this.state.type === 'text' ? (
-							<select
-								className={dropdown}
-								name="usecase"
-								defaultValue={this.state.usecase}
-								onChange={this.handleNewFieldChange}
-							>
-								{Object.entries(this.usecases).map(value => (
-									<option key={value[0]} value={value[0]}>
-										{value[1]}
-									</option>
-								))}
-							</select>
-						) : null}
-						<select
-							className={dropdown}
-							name="type"
-							defaultValue={this.state.type}
-							onChange={this.handleNewFieldChange}
-						>
-							{Object.keys(conversionMap)
+						{this.state.type === 'text'
+							? this.renderDropDown({
+									name: 'usecase',
+									options: Object.entries(this.usecases).map(entry => ({
+										label: entry[1],
+										value: entry[0],
+									})),
+									value: this.state.usecase,
+							  })
+							: null}
+						{this.renderDropDown({
+							name: 'type',
+							options: Object.keys(conversionMap)
 								.filter(value => value !== 'object')
-								.map(value => (
-									<option key={value} value={value}>
-										{value.split('_').join(' ')}
-									</option>
-								))}
-						</select>
+								.map(entry => ({
+									label: entry,
+									value: entry.split('_').join(' '),
+								})),
+							value: this.state.type,
+						})}
 					</div>
 					{this.state.error ? (
 						<p style={{ color: 'tomato' }}>{this.state.error}</p>
 					) : null}
-					<div
-						style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}
-					>
-						<Button onClick={this.addField}>Add Field</Button>
-					</div>
 				</section>
 			</Modal>
 		);
