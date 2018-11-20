@@ -27,7 +27,7 @@ export const getPermission = () => new Promise((resolve, reject) => {
 			},
 		})
 			.then(res => res.json())
-			.then(data => resolve(data.body))
+			.then(data => resolve(data))
 			.catch(error => reject(error));
 	});
 
