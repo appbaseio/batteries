@@ -687,8 +687,8 @@ export default class RSWrapper extends Component {
 								<img style={{ width: '100%' }} src={image} alt={title} />
 							</Col>
 							<Col span={image ? 18 : 24}>
-								<h3 style={{ fontWeight: '600' }}>{title}</h3>
-								<p style={{ fontSize: '1em' }}>{description}</p>
+								<h3 style={{ fontWeight: '600' }} dangerouslySetInnerHTML={{__html: title}} />
+								<p style={{ fontSize: '1em' }} dangerouslySetInnerHTML={{ __html: description }} />
 							</Col>
 							<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
 								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
