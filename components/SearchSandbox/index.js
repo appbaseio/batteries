@@ -14,6 +14,7 @@ import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
 import { getAppMappings as getMappings } from '../../modules/actions';
 import { getRawMappingsByAppName } from '../../modules/selectors';
+import { TextInput } from '../shared/Input';
 
 const wrapper = css`
 	padding: 15px;

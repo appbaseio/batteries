@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, string } from 'prop-types';
+import { func, string, any } from 'prop-types';
 import { Input } from 'antd';
 
 const TextInput = ({
@@ -15,13 +15,14 @@ const TextInput = ({
 
 TextInput.propTypes = {
 	handleChange: func.isRequired,
-	name: string.isRequired,
-	value: string.isRequired,
+	name: any.isRequired,
+	value: string,
 	placeholder: string,
 };
 
 TextInput.defaultProps = {
 	placeholder: '',
+	value: '',
 };
 
 export default TextInput;

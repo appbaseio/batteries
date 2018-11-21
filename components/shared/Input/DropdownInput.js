@@ -1,5 +1,7 @@
 import React from 'react';
-import { func, string, array } from 'prop-types';
+import {
+ func, string, array, any,
+} from 'prop-types';
 import { Select } from 'antd';
 
 const { Option } = Select;
@@ -45,7 +47,7 @@ class DropdownInput extends React.Component {
 
 DropdownInput.propTypes = {
 	handleChange: func.isRequired,
-	name: string.isRequired,
+	name: any.isRequired,
 	value: string.isRequired,
 	noOptionsMessage: string,
 	options: array,

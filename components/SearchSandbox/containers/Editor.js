@@ -273,7 +273,7 @@ export default class Editor extends Component {
 				FormInput = (
 					<NumberInput
 						name={name}
-						value={value}
+						value={Number(value)}
 						min={1}
 						handleChange={this.setComponentProps}
 					/>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, string } from 'prop-types';
+import { func, any, bool } from 'prop-types';
 import { Switch } from 'antd';
 
 const ToggleInput = ({ name, value, handleChange }) => (
@@ -8,8 +8,8 @@ const ToggleInput = ({ name, value, handleChange }) => (
 
 ToggleInput.propTypes = {
 	handleChange: func.isRequired,
-	name: string.isRequired,
-	value: string.isRequired,
+	name: any.isRequired,
+	value: bool.isRequired,
 };
 
 export default ToggleInput;

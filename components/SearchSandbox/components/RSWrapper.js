@@ -278,7 +278,7 @@ export default class RSWrapper extends Component {
 				render: (value, x, index) => (
 					<NumberInput
 						min={1}
-						value={value}
+						value={Number(value)}
 						name={index}
 						placeholder="Enter Field Weight"
 						handleChange={this.handleSearchWeightChange}
@@ -333,7 +333,7 @@ export default class RSWrapper extends Component {
 			}
 			case 'number': {
 				FormInput = (
-					<NumberInput name={name} value={value} handleChange={this.setComponentProps} />
+					<NumberInput name={name} value={Number(value)} handleChange={this.setComponentProps} />
 				);
 				break;
 			}

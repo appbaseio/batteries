@@ -1,5 +1,7 @@
 import React from 'react';
-import { func, string, number } from 'prop-types';
+import {
+ func, string, number, any,
+} from 'prop-types';
 import { Input } from 'antd';
 
 const NumberInput = ({
@@ -17,8 +19,8 @@ const NumberInput = ({
 
 NumberInput.propTypes = {
 	handleChange: func.isRequired,
-	name: string.isRequired,
-	value: string.isRequired,
+	name: any.isRequired,
+	value: number.isRequired,
 	min: number,
 	placeholder: string,
 };
