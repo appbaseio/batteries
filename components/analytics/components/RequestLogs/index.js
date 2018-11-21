@@ -14,16 +14,16 @@ import Loader from '../../../shared/Loader/Spinner';
 const { TabPane } = Tabs;
 
 const normalizeData = data => data.map((i) => {
-		const timeDuration = getTimeDuration(get(i, '_source.timestamp'));
+		const timeDuration = getTimeDuration(get(i, 'timestamp'));
 		return {
 			id: get(i, '_id'),
 			operation: {
-				method: get(i, '_source.request.method'),
-				uri: get(i, '_source.request.uri'),
+				method: get(i, 'request.method'),
+				uri: get(i, 'request.uri'),
 			},
-			classifier: get(i, '_source.classifier', '').toUpperCase(),
+			classifier: get(i, 'classifier', '').toUpperCase(),
 			timeTaken: `${timeDuration.time} ${timeDuration.formattedUnit} ago`,
-			status: get(i, '_source.response.status'),
+			status: get(i, 'response.status'),
 		};
 	});
 const filterHits = (hits = []) => {
@@ -31,8 +31,8 @@ const filterHits = (hits = []) => {
 	const errorHits = [];
 	const searchHits = [];
 	hits.forEach((h) => {
-		const status = get(h, '_source.response.status');
-		if (get(h, '_source.classifier') === 'search') {
+		const status = get(h, 'response.status');
+		if (get(h, 'classifier') === 'search') {
 			searchHits.push(h);
 		}
 		if (status >= 200 && status <= 300) {
@@ -92,11 +92,11 @@ class RequestLogs extends React.Component {
 		const { appName } = this.props;
 		getRequestLogs(appName)
 			.then((res) => {
-				const filteredHits = filterHits(res.hits);
+				const filteredHits = filterHits(res.logs);
 				this.setState({
-					logs: res.hits,
+					logs: res.logs,
 					isFetching: false,
-					hits: normalizeData(res.hits),
+					hits: normalizeData(res.logs),
 					successHits: normalizeData(filteredHits.successHits),
 					errorHits: normalizeData(filteredHits.errorHits),
 					searchHits: normalizeData(filteredHits.searchHits),
@@ -104,7 +104,7 @@ class RequestLogs extends React.Component {
 				// Update the request time locally
 				setInterval(() => {
 					this.setState({
-						hits: normalizeData(res.hits),
+						hits: normalizeData(res.logs),
 						successHits: normalizeData(filteredHits.successHits),
 						errorHits: normalizeData(filteredHits.errorHits),
 						searchHits: normalizeData(filteredHits.searchHits),
@@ -250,30 +250,30 @@ class RequestLogs extends React.Component {
 									handleCancel={this.handleCancel}
 									headers={get(
 										this.currentRequest,
-										'_source.request.headers',
+										'request.headers',
 										{},
 									)}
 									request={
 										parseData(
-											get(this.currentRequest, '_source.request.body'),
+											get(this.currentRequest, 'request.body'),
 										) || {}
 									}
 									response={
 										parseData(
-											get(this.currentRequest, '_source.response.body'),
+											get(this.currentRequest, 'response.body'),
 										) || {}
 									}
-									time={get(this.currentRequest, '_source.timestamp', '')}
-									method={get(this.currentRequest, '_source.request.method', '')}
-									url={get(this.currentRequest, '_source.request.uri', '')}
+									time={get(this.currentRequest, 'timestamp', '')}
+									method={get(this.currentRequest, 'request.method', '')}
+									url={get(this.currentRequest, 'request.uri', '')}
 									ip={get(
 										this.currentRequest,
-										'_source.request.headers.X-Forwarded-For[0]',
+										'request.headers.X-Forwarded-For[0]',
 									)}
-									status={get(this.currentRequest, '_source.response.status', '')}
+									status={get(this.currentRequest, 'response.status', '')}
 									processingTime={get(
 										this.currentRequest,
-										'_source.response.timetaken',
+										'response.timetaken',
 										'',
 									)}
 								/>
