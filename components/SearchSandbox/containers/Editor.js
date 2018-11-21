@@ -6,11 +6,6 @@ import {
 	Button,
 	Modal,
 	Form,
-	Input,
-	Switch,
-	Dropdown,
-	Icon,
-	Menu,
 	Tree,
 	Popover,
 	Tooltip,
@@ -28,6 +23,9 @@ import Ace from './AceEditor';
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import { listItem, formWrapper } from '../styles';
+import {
+ NumberInput, TextInput, DropdownInput, ToggleInput,
+} from '../../shared/Input';
 
 const { TreeNode } = Tree;
 
@@ -117,10 +115,7 @@ export default class Editor extends Component {
 		if (fields.length) {
 			const { filterCount, setFilterCount, onPropChange } = this.props;
 			const { listComponentProps } = this.state;
-			onPropChange(
-				`list-${filterCount + 1}`,
-				listComponentProps,
-			);
+			onPropChange(`list-${filterCount + 1}`, listComponentProps);
 			setFilterCount(filterCount + 1);
 			this.setState(
 				{
@@ -151,34 +146,12 @@ export default class Editor extends Component {
 		}));
 	};
 
-	handleDataFieldChange = (item) => {
-		const dataField = item.key;
+	setComponentProps = (newProps) => {
 		const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
 				...listComponentProps,
-				dataField,
-			},
-		});
-	};
-
-	handleSwitchPropChange = (name, value) => {
-	const { listComponentProps } = this.state;
-		this.setState({
-			listComponentProps: {
-				...listComponentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handlePropChange = (e) => {
-		const { name, value, type } = e.target;
-		const { listComponentProps } = this.state;
-		this.setState({
-			listComponentProps: {
-				...listComponentProps,
-				[name]: type === 'number' ? parseInt(value, 10) : value,
+				...newProps,
 			},
 		});
 	};
@@ -286,38 +259,41 @@ export default class Editor extends Component {
 	renderFormItem = (item, name) => {
 		let FormInput = null;
 		// always set to default value
-		const value = item.default;
+		const { listComponentProps } = this.state;
+		const value =	listComponentProps[name] !== undefined ? listComponentProps[name] : item.default;
 
 		switch (item.input) {
 			case 'bool': {
 				FormInput = (
-					<Switch
-						defaultChecked={value}
-						onChange={val => this.handleSwitchPropChange(name, val)}
-					/>
+					<ToggleInput name={name} value={value} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
 			case 'number': {
 				FormInput = (
-					<Input
+					<NumberInput
 						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						type="number"
-						placeholder={`Enter ${name} here`}
+						value={value}
+						min={1}
+						handleChange={this.setComponentProps}
+					/>
+				);
+				break;
+			}
+			case 'dropdown': {
+				FormInput = (
+					<DropdownInput
+						options={multiListTypes[name].options}
+						value={value}
+						name={name}
+						handleChange={this.setComponentProps}
 					/>
 				);
 				break;
 			}
 			default: {
 				FormInput = (
-					<Input
-						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						placeholder={`Enter ${name} here`}
-					/>
+					<TextInput name={name} value={value} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
@@ -335,6 +311,11 @@ export default class Editor extends Component {
 
 	renderPropsForm = () => {
 		const fields = this.getAvailableDataField();
+		const fieldsOptions = [];
+		fields.map(field => fieldsOptions.push({
+				key: field,
+				label: field,
+			}));
 		const { mappingsURL } = this.props;
 		if (!fields.length) {
 			return (
@@ -346,35 +327,22 @@ export default class Editor extends Component {
 			);
 		}
 
-		const { listComponentProps: { dataField } } = this.state;
-		const menu = (
-			<Menu
-				onClick={this.handleDataFieldChange}
-				style={{ maxHeight: 300, overflowY: 'scroll' }}
-			>
-				{fields.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-			</Menu>
-		);
+		const {
+			listComponentProps: { dataField },
+		} = this.state;
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
 				<Form.Item label={multiListTypes.dataField.label} colon={false}>
 					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
 						{multiListTypes.dataField.description}
 					</div>
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Button
-							style={{
-								width: '100%',
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-							}}
-						>
-							{dataField} <Icon type="down" />
-						</Button>
-					</Dropdown>
+					<DropdownInput
+						value={dataField}
+						handleChange={this.setComponentProps}
+						options={fieldsOptions}
+						name="dataField"
+						noOptionsMessage="No Fields Present"
+					/>
 				</Form.Item>
 				{Object.keys(multiListTypes)
 					.filter(item => item !== 'dataField')
@@ -429,14 +397,14 @@ export default class Editor extends Component {
 	renderJSONEditor = (res) => {
 		const {
 			isEditable, copied, isValidJSON, editorValue,
-		} = this.state;
+		} = this.state; // prettier-ignore
 		return (
 			<Popover
 				placement="leftTop"
 				trigger="click"
 				onVisibleChange={visible => (
 					visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
-				}
+				} // prettier-ignore
 				content={
 					isEditable ? (
 						<Ace
@@ -519,9 +487,7 @@ export default class Editor extends Component {
 			showCodePreview,
 			showCustomList,
 		} = this.props;
-		const {
-			renderKey, showModal, showVideo,
-		} = this.state;
+		const { renderKey, showModal, showVideo } = this.state;
 		let resultComponentProps = componentProps.result || {};
 		resultComponentProps = {
 			size: 5,
@@ -550,21 +516,15 @@ export default class Editor extends Component {
 		const title = (
 			<span>
 				Search Preview{' '}
-				{
-					window.innerWidth > 1280
-					? <Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
+				{window.innerWidth > 1280 ? (
+					<Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
 						Watch Video
-					</Button> : null
-				}
+					</Button>
+				) : null}
 			</span>
 		);
 		return (
-			<ReactiveBase
-				app={appName}
-				credentials={credentials}
-				url={url}
-				analytics
-			>
+			<ReactiveBase app={appName} credentials={credentials} url={url} analytics>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
 						<Card title={title} id="video-title">
