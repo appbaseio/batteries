@@ -5,7 +5,6 @@ import get from 'lodash/get';
 import Searches from './Searches';
 import { getPopularResults, popularResultsFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
-import { getAppPlanByName } from '../../../modules/selectors';
 
 const headers = {
 	key: 'Results',
@@ -83,9 +82,8 @@ PopularResults.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-	const appPlan = getAppPlanByName(state);
 	return {
-		plan: get(appPlan, 'plan'),
+		plan: 'growth',
 		appName: get(state, '$getCurrentApp.name'),
 	};
 };

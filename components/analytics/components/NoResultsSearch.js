@@ -5,7 +5,6 @@ import get from 'lodash/get';
 import Searches from './Searches';
 import { getNoResultSearches, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
-import { getAppPlanByName } from '../../../modules/selectors';
 
 const headers = {
 	key: 'Search Terms',
@@ -68,12 +67,8 @@ class NoResultsSearch extends React.Component {
 NoResultsSearch.propTypes = {
 	appName: PropTypes.string.isRequired,
 };
-const mapStateToProps = (state) => {
-	const appPlan = getAppPlanByName(state);
-	return {
-		plan: get(appPlan, 'plan'),
+const mapStateToProps = state => ({
+		plan: 'growth',
 		appName: get(state, '$getCurrentApp.name'),
-	};
-};
+	});
 export default connect(mapStateToProps)(NoResultsSearch);
-
