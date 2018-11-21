@@ -1,5 +1,6 @@
 import React from 'react';
 import find from 'lodash/find';
+import { connect } from 'react-redux';
 import get from 'lodash/get';
 import filter from 'lodash/filter';
 import {
@@ -297,4 +298,9 @@ RequestLogs.propTypes = {
 	pageSize: PropTypes.number,
 };
 
-export default RequestLogs;
+const mapStateToProps = (state) => {
+	return {
+		appName: get(state, '$getCurrentApp.name'),
+	};
+};
+export default connect(mapStateToProps)(RequestLogs);

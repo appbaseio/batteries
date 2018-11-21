@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import get from 'lodash/get';
 import Searches from './Searches';
 import { getNoResultSearches, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
+import { getAppPlanByName } from '../../../modules/selectors';
 
 const headers = {
 	key: 'Search Terms',
@@ -65,4 +68,12 @@ class NoResultsSearch extends React.Component {
 NoResultsSearch.propTypes = {
 	appName: PropTypes.string.isRequired,
 };
-export default NoResultsSearch;
+const mapStateToProps = (state) => {
+	const appPlan = getAppPlanByName(state);
+	return {
+		plan: get(appPlan, 'plan'),
+		appName: get(state, '$getCurrentApp.name'),
+	};
+};
+export default connect(mapStateToProps)(NoResultsSearch);
+

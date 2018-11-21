@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import get from 'lodash/get';
 import Searches from './Searches';
 import { getPopularResults, popularResultsFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
+import { getAppPlanByName } from '../../../modules/selectors';
 
 const headers = {
 	key: 'Results',
@@ -78,4 +81,12 @@ PopularResults.propTypes = {
 	plan: PropTypes.string.isRequired,
 	appName: PropTypes.string.isRequired,
 };
-export default PopularResults;
+
+const mapStateToProps = (state) => {
+	const appPlan = getAppPlanByName(state);
+	return {
+		plan: get(appPlan, 'plan'),
+		appName: get(state, '$getCurrentApp.name'),
+	};
+};
+export default connect(mapStateToProps)(PopularResults);

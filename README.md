@@ -15,7 +15,7 @@ git submodule update --recursive --remote
 2. Installation:
 
 ```bash
-yarn add emotion react-emotion antd @appbaseio/reactivesearch react-expand-collapse codesandbox react-element-to-jsx-string appbase-js react-ace brace recharts moment lodash reselect redux-thunk
+yarn add emotion react-emotion antd @appbaseio/reactivesearch react-expand-collapse codesandbox react-element-to-jsx-string appbase-js react-ace brace recharts moment lodash reselect redux-thunk react-joyride
 yarn add -D babel-plugin-emotion babel-plugin-import
 ```
 

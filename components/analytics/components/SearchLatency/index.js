@@ -61,6 +61,7 @@ class SearchLatency extends React.Component {
 				ref={(c) => {
 					this.child = c;
 				}}
+				css="width: 100%"
 			>
 				<Card title="Search Latency" css={cls}>
 					{isLoading ? (

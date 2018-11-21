@@ -12,6 +12,7 @@ import {
 	Icon,
 	Dropdown,
 	Popover,
+	message,
 } from 'antd';
 
 import {
@@ -165,6 +166,7 @@ export default class RSWrapper extends Component {
 		this.setState({
 			showModal: false,
 		});
+		message.success('Search Preview configuration saved');
 	};
 
 	handleCancel = () => {
@@ -556,14 +558,17 @@ export default class RSWrapper extends Component {
 
 	render() {
 		const {
-			componentProps, component, id, mappings, customProps, full, showDelete, onDelete,
+			componentProps, component, id, mappings, customProps, full, showDelete, onDelete, showCodePreview, showCustomList
 		} = this.props;
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
 		const RSComponent = componentMap[component];
-
+		let tutorialClass = '';
+		let editTutorialClass = '';
 		let otherProps = {};
 		if (id === 'search') {
+			tutorialClass = 'search-tutorial-1';
+			editTutorialClass = 'search-tutorial-2';
 			otherProps = {
 				fieldWeights: generateFieldWeights(
 					componentProps.dataField,
@@ -572,6 +577,10 @@ export default class RSWrapper extends Component {
 				),
 				highlightField: componentProps.dataField,
 			};
+		}
+		if (id === 'result') {
+			tutorialClass = 'search-tutorial-4';
+			editTutorialClass = 'search-tutorial-5';
 		}
 		if (component === 'CategorySearch') {
 			// CategoryField is same as the data field of MultiList
@@ -610,8 +619,8 @@ export default class RSWrapper extends Component {
 								<img style={{ width: '100%' }} src={image} alt={title} />
 							</Col>
 							<Col span={image ? 18 : 24}>
-								<h3 style={{ fontWeight: '600' }}>{title}</h3>
-								<p style={{ fontSize: '1em' }}>{description}</p>
+								<h3 style={{ fontWeight: '600' }} dangerouslySetInnerHTML={{__html: title}} />
+								<p style={{ fontSize: '1em' }} dangerouslySetInnerHTML={{ __html: description }} />
 							</Col>
 							<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
 								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
@@ -642,10 +651,11 @@ export default class RSWrapper extends Component {
 								icon="edit"
 								shape="circle"
 								size="large"
+								className={editTutorialClass}
 								onClick={this.showModal}
 							/>
-							{this.renderComponentCode()}
-							{showPreview ? (
+							{showCodePreview && this.renderComponentCode()}
+							{showPreview && showCustomList ? (
 								<Button
 									icon="eye-o"
 									shape="circle"
@@ -666,7 +676,7 @@ export default class RSWrapper extends Component {
 							) : null}
 						</Col>
 					) : null}
-					<Col span={full ? 24 : 20} id={id}>
+					<Col span={full ? 24 : 20} id={id} className={tutorialClass}>
 						<RSComponent
 							componentId={id}
 							{...restProps}
@@ -688,9 +698,10 @@ export default class RSWrapper extends Component {
 								icon="edit"
 								shape="circle"
 								size="large"
+								className={editTutorialClass}
 								onClick={this.showModal}
 							/>
-							{this.renderComponentCode()}
+							{showCodePreview && this.renderComponentCode()}
 						</Col>
 					)}
 				</Row>
