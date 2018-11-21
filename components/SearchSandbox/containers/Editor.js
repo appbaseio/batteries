@@ -508,7 +508,16 @@ export default class Editor extends Component {
 
 	render() {
 		const {
-			componentProps, appName, credentials, url, mappings, customProps, onPropChange, mappingsType,
+			componentProps,
+			appName,
+			credentials,
+			url,
+			mappings,
+			customProps,
+			onPropChange,
+			mappingsType,
+			showCodePreview,
+			showCustomList,
 		} = this.props;
 		const {
 			renderKey, showModal, showVideo,
@@ -578,6 +587,8 @@ export default class Editor extends Component {
 										component="MultiList"
 										mappings={mappings}
 										customProps={customProps}
+										showCodePreview={showCodePreview}
+										showCustomList={showCustomList}
 										componentProps={componentProps[config] || {}}
 										onPropChange={onPropChange}
 										onDelete={this.props.deleteComponent}
@@ -595,6 +606,8 @@ export default class Editor extends Component {
 								}
 								mappings={mappings}
 								customProps={customProps}
+								showCodePreview={showCodePreview}
+								showCustomList={showCustomList}
 								componentProps={componentProps.search || {}}
 								onPropChange={onPropChange}
 							/>
@@ -609,6 +622,8 @@ export default class Editor extends Component {
 								mappings={mappings}
 								customProps={customProps}
 								mappingsType={mappingsType}
+								showCodePreview={showCodePreview}
+								showCustomList={showCustomList}
 								componentProps={resultComponentProps}
 								renderJSONEditor={this.renderJSONEditor}
 								renderDeleteJSON={this.renderDeleteJSON}
