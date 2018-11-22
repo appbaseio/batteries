@@ -3,7 +3,7 @@ import React from 'react';
 import RenderResults from '../components/RenderResults';
 import { generateFieldWeights, generateDataField } from './dataField';
 
-function dataSearchProps({ componentProps, mappings }) {
+function getDataSearchProps({ componentProps, mappings }) {
 	return {
 		...componentProps,
 		dataField: generateDataField('DataSearch', componentProps.dataField, mappings),
@@ -16,7 +16,7 @@ function dataSearchProps({ componentProps, mappings }) {
 	};
 }
 
-function categorySearchProps({ componentProps, mappings }) {
+function getCategorySearchProps({ componentProps, mappings }) {
 	return {
 		...componentProps,
 		dataField: generateDataField('CategorySearch', componentProps.dataField, mappings),
@@ -30,7 +30,7 @@ function categorySearchProps({ componentProps, mappings }) {
 	};
 }
 
-function resultProps({ componentProps, setRenderKey, mappings }) {
+function getReactiveListProps({ componentProps, setRenderKey, mappings }) {
 	const { metaFields } = componentProps;
 	const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
 	if (componentProps.sortBy === 'best') {
@@ -62,11 +62,11 @@ export default function getComponentProps({
 }) {
 	switch (component) {
 		case 'DataSearch':
-			return dataSearchProps({ componentProps, mappings });
+			return getDataSearchProps({ componentProps, mappings });
 		case 'CategorySearch':
-			return categorySearchProps({ componentProps, mappings });
+			return getCategorySearchProps({ componentProps, mappings });
 		case 'ReactiveList':
-			return resultProps({
+			return getReactiveListProps({
 				componentProps,
 				setRenderKey,
 				mappings,

@@ -447,7 +447,7 @@ class RSComponentRender extends Component {
 	renderFormItem = (item, name) => {
 		const { componentProps } = this.props;
 		let FormInput = null;
-		const value = componentProps[name] !== undefined ? componentProps[name] : item.default;
+		const value = componentProps[name] === undefined ? item.default : componentProps[name];
 
 		switch (item.input) {
 			case 'bool': {
