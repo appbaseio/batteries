@@ -104,8 +104,7 @@ export default class Editor extends Component {
 	renderFormItem = (item, name) => {
 		let FormInput = null;
 		// always set to default value
-		const { listComponentProps } = this.state;
-		const value = listComponentProps[name] === undefined ? item.default : listComponentProps[name];
+		const value = item.default;
 
 		switch (item.input) {
 			case 'bool': {

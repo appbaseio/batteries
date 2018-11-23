@@ -200,6 +200,8 @@ class RSComponentRender extends Component {
 					<NumberInput
 						name={name}
 						value={Number(value)}
+						min={item.min}
+						max={item.max}
 						handleChange={this.setComponentProps}
 					/>
 				);

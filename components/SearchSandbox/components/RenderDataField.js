@@ -34,12 +34,11 @@ class RenderDataField extends React.Component {
 	};
 
 	handleSearchWeightChange = (newWeight) => {
-		const { componentProps } = this.state;
-		const { setComponentProps } = this.props;
+		const { setComponentProps, componentProps } = this.props;
 		const fieldWeights = Object.assign([], componentProps.fieldWeights, {
-			newWeight,
+			...newWeight,
 		});
-		setComponentProps(fieldWeights);
+		setComponentProps({ fieldWeights });
 	};
 
 	handleAddFieldRow = () => {

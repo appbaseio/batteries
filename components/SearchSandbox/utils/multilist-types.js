@@ -16,6 +16,7 @@ export default {
 		description: 'Total number of list items to fetch.',
 		input: 'number',
 		default: 100,
+		min: 0,
 	},
 	sortBy: {
 		label: 'Sort By',

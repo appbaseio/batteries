@@ -36,13 +36,17 @@ export default {
 	},
 	fuzziness: {
 		label: 'Typo Tolerance',
-		description: 'Set the typo tolerance level of the search query. 0 implies no typos, 1 implies 1 character typo is tolerated and so on.',
+		description:
+			'Set the typo tolerance level of the search query. 0 implies no typos, 1 implies 1 character typo is tolerated and so on.',
 		input: 'number',
 		default: 0,
+		min: 0,
+		max: 2,
 	},
 	queryFormat: {
 		label: 'Match All or Any',
-		description: 'When multiple search terms are present, should All be matched or should Any term be matched.',
+		description:
+			'When multiple search terms are present, should All be matched or should Any term be matched.',
 		input: 'dropdown',
 		options: [{ label: 'Or', key: 'or' }, { label: 'And', key: 'and' }],
 		default: 'Or',

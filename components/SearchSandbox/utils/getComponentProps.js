@@ -4,7 +4,9 @@ import RenderResults from '../components/RenderResults';
 import { generateFieldWeights, generateDataField } from './dataField';
 
 function getDataSearchProps({ componentProps, mappings }) {
+	componentProps.fuzziness = componentProps.fuzziness ? Number(componentProps.fuzziness) : 0;
 	return {
+		fuzziness: 0,
 		...componentProps,
 		dataField: generateDataField('DataSearch', componentProps.dataField, mappings),
 		fieldWeights: generateFieldWeights(
@@ -17,6 +19,7 @@ function getDataSearchProps({ componentProps, mappings }) {
 }
 
 function getCategorySearchProps({ componentProps, mappings }) {
+	componentProps.fuzziness = componentProps.fuzziness ? Number(componentProps.fuzziness) : 0;
 	return {
 		...componentProps,
 		dataField: generateDataField('CategorySearch', componentProps.dataField, mappings),
@@ -36,12 +39,12 @@ function getReactiveListProps({ componentProps, setRenderKey, mappings }) {
 	if (componentProps.sortBy === 'best') {
 		delete componentProps.sortBy;
 	}
+	componentProps.size = componentProps.size ? Number(componentProps.size) : 10;
 	return {
 		size: 5,
 		pagination: true,
 		paginationAt: 'bottom',
 		scrollTarget: 'result',
-		fuzziness: 0,
 		...componentProps,
 		dataField: generateDataField('ReactiveList', componentProps.dataField, mappings),
 		onData: (res, triggerAnalytics) => (
@@ -71,11 +74,13 @@ export default function getComponentProps({
 				setRenderKey,
 				mappings,
 			});
-		case 'MultiList':
+		case 'MultiList': {
+			componentProps.size = componentProps.size ? Number(componentProps.size) : 100;
 			return {
 				...componentProps,
 				dataField: generateDataField('MultiList', componentProps.dataField, mappings),
 			};
+		}
 		default:
 			return {};
 	}
