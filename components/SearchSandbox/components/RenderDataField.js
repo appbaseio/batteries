@@ -25,8 +25,7 @@ class RenderDataField extends React.Component {
 	);
 
 	handleSearchDataFieldDelete = (deleteIndex) => {
-		const { componentProps } = this.state;
-		const { setComponentProps } = this.props;
+		const { setComponentProps, componentProps } = this.props;
 		const newComponentProps = {
 			dataField: componentProps.dataField.filter((i, index) => index !== deleteIndex),
 			fieldWeights: componentProps.fieldWeights.filter((i, index) => index !== deleteIndex),
