@@ -7,19 +7,19 @@ import {
  DataSearch, MultiList, ReactiveList, CategorySearch,
 } from '@appbaseio/reactivesearch';
 
-import getNestedValue from '../utils';
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
 import categorySearchTypes from '../utils/categorysearch-types';
-import { generateDataField, generateFieldWeights } from '../utils/dataField';
+import { generateDataField } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 import PreviewList from './PreviewList';
+import { SandboxContext } from '../index';
+import getComponentProps from '../utils/getComponentProps';
 import {
 	NumberInput, TextInput, DropdownInput, ToggleInput,
 } from '../../shared/Input';
-
 import {
 	deleteStyles, rowStyles, formWrapper, componentStyles,
 } from '../styles';
@@ -38,7 +38,13 @@ const propsMap = {
 	CategorySearch: categorySearchTypes,
 };
 
-export default class RSWrapper extends Component {
+const RSWrapper = props => (
+	<SandboxContext.Consumer>
+		{contextValue => <RSComponentRender {...contextValue} {...props} />}
+	</SandboxContext.Consumer>
+);
+
+class RSComponentRender extends Component {
 	constructor(props) {
 		super(props);
 
@@ -322,7 +328,7 @@ export default class RSWrapper extends Component {
 	renderFormItem = (item, name) => {
 		const { componentProps } = this.props;
 		let FormInput = null;
-		const value = componentProps[name] !== undefined ? componentProps[name] : item.default;
+		const value = componentProps[name] === undefined ? item.default : componentProps[name];
 
 		switch (item.input) {
 			case 'bool': {
@@ -346,7 +352,11 @@ export default class RSWrapper extends Component {
 				const {
 					onPropChange, id, component, mappingsURL,
 				} = this.props; // prettier-ignore
-				const { componentProps: stateComponentProps } = this.state;
+				const {
+					componentProps: stateComponentProps,
+					isInputActive,
+					searchTerm,
+				} = this.state;
 
 				if (name === 'categoryField') {
 					noOptionsMessage = (
@@ -473,107 +483,22 @@ export default class RSWrapper extends Component {
 			onDelete,
 			showCodePreview,
 			showCustomList,
+			setRenderKey,
 		} = this.props;
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
+
 		const RSComponent = componentMap[component];
 		let tutorialClass = '';
 		let editTutorialClass = '';
-		let otherProps = {};
+
 		if (id === 'search') {
 			tutorialClass = 'search-tutorial-1';
 			editTutorialClass = 'search-tutorial-2';
-			otherProps = {
-				fieldWeights: generateFieldWeights(
-					componentProps.dataField,
-					componentProps.fieldWeights,
-					mappings,
-				),
-				highlightField: componentProps.dataField,
-			};
 		}
 		if (id === 'result') {
 			tutorialClass = 'search-tutorial-4';
 			editTutorialClass = 'search-tutorial-5';
-		}
-		if (component === 'CategorySearch') {
-			// CategoryField is same as the data field of MultiList
-			otherProps = {
-				categoryField: generateDataField(
-					'MultiList',
-					componentProps.categoryField,
-					mappings,
-				),
-				fieldWeights: generateFieldWeights(
-					componentProps.dataField,
-					componentProps.fieldWeights,
-					mappings,
-				),
-				highlightField: componentProps.dataField,
-			};
-		}
-		const {
-			componentProps: { metaFields, ...restProps },
-		} = this.props;
-		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
-
-		if (id === 'result' && isMetaDataPresent) {
-			const {
-				url: urlKey,
-				title: titleKey,
-				image: imageKey,
-				description: descriptionKey,
-			} = metaFields;
-			otherProps = {
-				onData: (res) => {
-					const url = getNestedValue(res, urlKey);
-					const title = getNestedValue(res, titleKey);
-					const description = getNestedValue(res, descriptionKey);
-					const image = getNestedValue(res, imageKey);
-					const { renderJSONEditor, renderDeleteJSON } = this.props;
-
-					return (
-						<Row
-							type="flex"
-							key={res._id}
-							style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}
-						>
-							<Col span={image ? 6 : 0}>
-								<img style={{ width: '100%' }} src={image} alt={title} />
-							</Col>
-							<Col span={image ? 18 : 24}>
-								<h3
-									style={{ fontWeight: '600' }}
-									dangerouslySetInnerHTML={{ __html: title }}
-								/>
-								<p
-									style={{ fontSize: '1em' }}
-									dangerouslySetInnerHTML={{ __html: description }}
-								/>
-							</Col>
-							<div
-								style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}
-							>
-								{url ? (
-									<Button
-										shape="circle"
-										icon="link"
-										style={{ marginRight: '5px' }}
-										onClick={() => window.open(url, '_blank')}
-									/>
-								) : null}
-								{renderJSONEditor(res)}
-								{renderDeleteJSON(res)}
-							</div>
-						</Row>
-					);
-				},
-			};
-		}
-
-		// For Best Match results we remove the sortBy field & rely on ES to display result
-		if (id === 'result' && componentProps.sortBy === 'best') {
-			delete restProps.sortBy;
 		}
 
 		const showPreview = component === 'ReactiveList';
@@ -616,16 +541,10 @@ export default class RSWrapper extends Component {
 					<Col span={full ? 24 : 20} id={id} className={tutorialClass}>
 						<RSComponent
 							componentId={id}
-							{...restProps}
-							dataField={generateDataField(
-								component,
-								componentProps.dataField,
-								mappings,
-							)}
 							className={componentStyles}
-							fuzziness={componentProps.fuzziness || 0}
-							size={parseInt(componentProps.size || 10, 10)}
-							{...otherProps}
+							{...getComponentProps({
+								component, componentProps, mappings, setRenderKey,
+							})}
 							{...customComponentProps}
 						/>
 					</Col>
@@ -659,7 +578,6 @@ export default class RSWrapper extends Component {
 						options={Object.keys(mappings)}
 						componentProps={stateComponentProps}
 						componentId={id}
-						getNestedValue={getNestedValue}
 						handlePreviewModal={this.handlePreviewModal}
 						handleSavePreview={this.handleSavePreview}
 						visible={previewModal}
@@ -674,3 +592,5 @@ export default class RSWrapper extends Component {
 RSWrapper.defaultProps = {
 	showDelete: true,
 };
+
+export default RSWrapper;
