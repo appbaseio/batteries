@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import get from 'lodash/get';
 import Searches from './Searches';
 import { getPopularSearches, popularSearchesFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
+import { getAppPlanByName } from '../../../modules/selectors';
 
 const headers = {
 	key: 'Search Terms',
@@ -17,7 +20,7 @@ class PopularSearches extends React.Component {
 		this.state = {
 			isFetching: true,
 			popularSearches: [],
-		};
+		}; 
 	}
 
 	componentDidMount() {
@@ -75,4 +78,11 @@ PopularSearches.propTypes = {
 	appName: PropTypes.string.isRequired,
 };
 
-export default PopularSearches;
+const mapStateToProps = (state) => {
+	const appPlan = getAppPlanByName(state);
+	return {
+		plan: get(appPlan, 'plan'),
+		appName: get(state, '$getCurrentApp.name'),
+	};
+};
+export default connect(mapStateToProps)(PopularSearches);

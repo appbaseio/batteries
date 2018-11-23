@@ -40,6 +40,7 @@ class Main extends React.Component {
 			searchVolume,
 			popularResults,
 			popularFilters,
+			onClickViewAll,
 		} = this.props;
 		const { appName, chartWidth, plan } = this.props;
 		if (isLoading) {
@@ -62,6 +63,7 @@ class Main extends React.Component {
 					popularFilters={popularFilters}
 					popularResults={popularResults}
 					searchVolume={searchVolume}
+					onClickViewAll={onClickViewAll}
 				/>
 				<div css="margin-top: 20px">
 					<RequestLogs appName={appName} />
@@ -72,9 +74,11 @@ class Main extends React.Component {
 }
 Main.defaultProps = {
 	chartWidth: undefined,
+	onClickViewAll: null,
 };
 Main.propTypes = {
 	appName: PropTypes.string.isRequired,
+	onClickViewAll: PropTypes.object,
 	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	plan: PropTypes.string.isRequired,
 	fetchAppAnalytics: PropTypes.func.isRequired,
