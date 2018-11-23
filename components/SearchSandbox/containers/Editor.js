@@ -1,17 +1,6 @@
 import React, { Component } from 'react';
 import {
-	Row,
-	Col,
-	Card,
-	Button,
-	Modal,
-	Form,
-	Input,
-	Switch,
-	Dropdown,
-	Icon,
-	Menu,
-	message,
+ Row, Col, Card, Button, Modal, Form, message,
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import PropTypes from 'prop-types';
@@ -21,12 +10,19 @@ import RSWrapper from '../components/RSWrapper';
 import { formWrapper } from '../styles';
 import RenderDataField from '../components/RenderDataField';
 import { getAvailableDataField } from '../utils/dataField';
+import {
+ NumberInput, TextInput, DropdownInput, ToggleInput,
+} from '../../shared/Input';
 
 export default class Editor extends Component {
 	constructor(props) {
 		super(props);
 		const { mappings } = props;
-		const dataFields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
+		const dataFields = getAvailableDataField({
+			id: 'MultiList',
+			component: 'MultiList',
+			mappings,
+		});
 		this.state = {
 			showModal: false,
 			listComponentProps: {
@@ -44,8 +40,12 @@ export default class Editor extends Component {
 	};
 
 	resetNewComponentData = () => {
-		const {mappings} = this.props;
-		const dataFields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
+		const { mappings } = this.props;
+		const dataFields = getAvailableDataField({
+			id: 'MultiList',
+			component: 'MultiList',
+			mappings,
+		});
 		this.setState({
 			listComponentProps: {
 				dataField: dataFields.length ? dataFields[0] : '',
@@ -60,10 +60,7 @@ export default class Editor extends Component {
 		if (fields.length) {
 			const { filterCount, setFilterCount, onPropChange } = this.props;
 			const { listComponentProps } = this.state;
-			onPropChange(
-				`list-${filterCount + 1}`,
-				listComponentProps,
-			);
+			onPropChange(`list-${filterCount + 1}`, listComponentProps);
 			setFilterCount(filterCount + 1);
 			this.setState(
 				{
@@ -94,29 +91,12 @@ export default class Editor extends Component {
 		}));
 	};
 
-	setListComponentProps = (newComponentProps) => {
-		this.setState({
-			listComponentProps: newComponentProps,
-		});
-	}
-
-	handleSwitchPropChange = (name, value) => {
-	const { listComponentProps } = this.state;
-		this.setState({
-			listComponentProps: {
-				...listComponentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handlePropChange = (e) => {
-		const { name, value, type } = e.target;
+	setComponentProps = (newProps) => {
 		const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
 				...listComponentProps,
-				[name]: type === 'number' ? parseInt(value, 10) : value,
+				...newProps,
 			},
 		});
 	};
@@ -124,38 +104,41 @@ export default class Editor extends Component {
 	renderFormItem = (item, name) => {
 		let FormInput = null;
 		// always set to default value
-		const value = item.default;
+		const { listComponentProps } = this.state;
+		const value =			listComponentProps[name] !== undefined ? listComponentProps[name] : item.default;
 
 		switch (item.input) {
 			case 'bool': {
 				FormInput = (
-					<Switch
-						defaultChecked={value}
-						onChange={val => this.handleSwitchPropChange(name, val)}
-					/>
+					<ToggleInput name={name} value={value} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
 			case 'number': {
 				FormInput = (
-					<Input
+					<NumberInput
 						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						type="number"
-						placeholder={`Enter ${name} here`}
+						value={Number(value)}
+						min={1}
+						handleChange={this.setComponentProps}
+					/>
+				);
+				break;
+			}
+			case 'dropdown': {
+				FormInput = (
+					<DropdownInput
+						options={multiListTypes[name].options}
+						value={value}
+						name={name}
+						handleChange={this.setComponentProps}
 					/>
 				);
 				break;
 			}
 			default: {
 				FormInput = (
-					<Input
-						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						placeholder={`Enter ${name} here`}
-					/>
+					<TextInput name={name} value={value} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
@@ -190,9 +173,10 @@ export default class Editor extends Component {
 				<RenderDataField
 					label={multiListTypes.dataField.label}
 					description={multiListTypes.dataField.description}
-					setComponentProps={this.setListComponentProps}
+					setComponentProps={this.setComponentProps}
 					componentProps={listComponentProps}
-					getAvailableDataField={() => getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings })}
+					getAvailableDataField={() => getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings })
+					}
 				/>
 				{Object.keys(multiListTypes)
 					.filter(item => item !== 'dataField')
@@ -205,7 +189,7 @@ export default class Editor extends Component {
 		this.setState({
 			renderKey: newKey,
 		});
-	}
+	};
 
 	render() {
 		const {
@@ -213,28 +197,22 @@ export default class Editor extends Component {
 			appName,
 			credentials,
 			url,
+			deleteComponent,
+			useCategorySearch,
 		} = this.props;
-		const {
-			renderKey, showModal, showVideo,
-		} = this.state;
+		const { renderKey, showModal, showVideo } = this.state;
 		const title = (
 			<span>
 				Search Preview{' '}
-				{
-					window.innerWidth > 1280
-					? <Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
+				{window.innerWidth > 1280 ? (
+					<Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
 						Watch Video
-					</Button> : null
-				}
+					</Button>
+				) : null}
 			</span>
 		);
 		return (
-			<ReactiveBase
-				app={appName}
-				credentials={credentials}
-				url={url}
-				analytics
-			>
+			<ReactiveBase app={appName} credentials={credentials} url={url} analytics>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
 						<Card title={title} id="video-title">
@@ -256,7 +234,7 @@ export default class Editor extends Component {
 										id={config}
 										component="MultiList"
 										componentProps={componentProps[config] || {}}
-										onDelete={this.props.deleteComponent}
+										onDelete={deleteComponent}
 										full
 									/>
 								</Card>
@@ -266,9 +244,7 @@ export default class Editor extends Component {
 						<Card>
 							<RSWrapper
 								id="search"
-								component={
-									this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'
-								}
+								component={useCategorySearch ? 'CategorySearch' : 'DataSearch'}
 								componentProps={componentProps.search || {}}
 							/>
 						</Card>
@@ -280,13 +256,17 @@ export default class Editor extends Component {
 								component="ReactiveList"
 								key={renderKey}
 								componentProps={
-									componentProps.result ? {
-											...componentProps.result,
-											react: {
-												and: Object.keys(componentProps).filter(item => item !== 'result'),
-											},
-										} : {}
-									}
+									componentProps.result
+										? {
+												...componentProps.result,
+												react: {
+													and: Object.keys(componentProps).filter(
+														item => item !== 'result',
+													),
+												},
+										  }
+										: {}
+								}
 								setRenderKey={this.setRenderKey}
 								full
 								showDelete={false}

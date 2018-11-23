@@ -1,18 +1,6 @@
 import React, { Component } from 'react';
 import {
-	Row,
-	Col,
-	Form,
-	Input,
-	Switch,
-	Button,
-	Modal,
-	Table,
-	Menu,
-	Icon,
-	Dropdown,
-	Popover,
-	message,
+ Row, Col, Form, Button, Modal, Popover, message,
 } from 'antd';
 
 import {
@@ -29,12 +17,11 @@ import { getComponentCode } from '../template';
 import PreviewList from './PreviewList';
 import RenderDataField from './RenderDataField';
 import { SandboxContext } from '../index';
-import getComponentProps from '../utils/getComponentProps'
-
+import getComponentProps from '../utils/getComponentProps';
 import {
-	formWrapper,
-	componentStyles,
-} from '../styles';
+ NumberInput, TextInput, DropdownInput, ToggleInput,
+} from '../../shared/Input';
+import { formWrapper, componentStyles } from '../styles';
 
 const componentMap = {
 	CategorySearch,
@@ -63,8 +50,6 @@ class RSComponentRender extends Component {
 		this.state = {
 			showModal: false,
 			componentProps: props.componentProps,
-			isInputActive: false,
-			searchTerm: '',
 			previewModal: false,
 		};
 
@@ -91,11 +76,13 @@ class RSComponentRender extends Component {
 		});
 	}
 
-	setComponentProps = (newComponentProps) => {
+	setComponentProps = (newProps) => {
+		const { componentProps } = this.state;
 		this.setState({
-			componentProps: newComponentProps,
+			...componentProps,
+			...newProps,
 		});
-	}
+	};
 
 	getCategoryField = () => {
 		const { component, mappings } = this.props;
@@ -149,52 +136,13 @@ class RSComponentRender extends Component {
 		});
 	};
 
-	handleSwitchPropChange = (name, value) => {
+	setComponentProps = (newProps) => {
 		const { componentProps } = this.state;
 		this.setState({
 			componentProps: {
 				...componentProps,
-				[name]: value,
+				...newProps,
 			},
-		});
-	};
-
-	handlePropChange = (e) => {
-		const { name, value } = e.target;
-		const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handleDropdownBlur = () => {
-		this.setState({
-			isInputActive: false,
-		});
-	};
-
-	handleDropdownChange = (e, name) => {
-		const { componentProps } = this.state;
-		const value = e.key;
-		this.setState({
-			isInputActive: false,
-			componentProps: {
-				...componentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handleDropdownSearch = (e) => {
-		const {
-			target: { name, value },
-		} = e;
-		this.setState({
-			isInputActive: true,
-			[name]: value,
 		});
 	};
 
@@ -207,7 +155,6 @@ class RSComponentRender extends Component {
 	handleSavePreview = (values) => {
 		const { onPropChange, id } = this.props;
 		onPropChange(id, {
-			meta: true,
 			metaFields: values,
 		});
 		this.setState({
@@ -244,21 +191,16 @@ class RSComponentRender extends Component {
 		switch (item.input) {
 			case 'bool': {
 				FormInput = (
-					<Switch
-						defaultChecked={value}
-						onChange={val => this.handleSwitchPropChange(name, val)}
-					/>
+					<ToggleInput value={value} name={name} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
 			case 'number': {
 				FormInput = (
-					<Input
+					<NumberInput
 						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						type="number"
-						placeholder={`Enter ${name} here`}
+						value={Number(value)}
+						handleChange={this.setComponentProps}
 					/>
 				);
 				break;
@@ -272,11 +214,7 @@ class RSComponentRender extends Component {
 				const {
 					onPropChange, id, component, mappingsURL,
 				} = this.props; // prettier-ignore
-				const {
-					componentProps: stateComponentProps,
-					isInputActive,
-					searchTerm,
-				} = this.state;
+				const { componentProps: stateComponentProps } = this.state;
 
 				if (name === 'categoryField') {
 					noOptionsMessage = (
@@ -293,6 +231,7 @@ class RSComponentRender extends Component {
 						}));
 
 					if (dropdownOptions.length) {
+						// If no categoryfield is selected
 						if (!stateComponentProps.categoryField) {
 							onPropChange(id, {
 								categoryField: dropdownOptions[0].label,
@@ -316,54 +255,21 @@ class RSComponentRender extends Component {
 						: propsMap[component][name].default;
 				}
 
-				if (isInputActive) {
-					dropdownOptions = dropdownOptions.filter(option => option.label.toLowerCase().includes(searchTerm.toLowerCase()));
-				}
-
-				if (!dropdownOptions.length) {
-					dropdownOptions.push({ label: 'No options', key: '' });
-				}
-				const menu = (
-					<Menu
-						onClick={e => this.handleDropdownChange(e, name)}
-						style={{ maxHeight: 300, overflowY: 'scroll' }}
-					>
-						{dropdownOptions.map(({ label: dropLabel, key }) => (
-							<Menu.Item key={key}>{dropLabel}</Menu.Item>
-						))}
-					</Menu>
-				);
-
-				FormInput = dropdownOptions.length ? (
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Input
-							style={{
-								width: '100%',
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-							}}
-							name="searchTerm"
-							onBlur={this.handleDropdownBlur}
-							value={isInputActive ? searchTerm : selectedValue}
-							defaultValue={selectedValue}
-							onChange={this.handleDropdownSearch}
-						/>
-					</Dropdown>
-				) : (
-					noOptionsMessage
+				FormInput = (
+					<DropdownInput
+						options={dropdownOptions}
+						handleChange={this.setComponentProps}
+						value={selectedValue}
+						name={name}
+						noOptionsMessage={noOptionsMessage}
+					/>
 				);
 				break;
 			}
 
 			default: {
 				FormInput = (
-					<Input
-						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						placeholder={`Enter ${name} here`}
-					/>
+					<TextInput name={name} value={value} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
@@ -381,7 +287,7 @@ class RSComponentRender extends Component {
 
 	renderPropsForm = () => {
 		const { componentProps: stateComponentProps } = this.state;
-		const { component, id,mappings } = this.props;
+		const { component, id, mappings } = this.props;
 		const propNames = propsMap[component];
 
 		return (
@@ -473,7 +379,10 @@ class RSComponentRender extends Component {
 							componentId={id}
 							className={componentStyles}
 							{...getComponentProps({
-								component, componentProps, mappings, setRenderKey,
+								component,
+								componentProps,
+								mappings,
+								setRenderKey,
 							})}
 							{...customComponentProps}
 						/>

@@ -1,36 +1,17 @@
 import React from 'react';
-import {
- Dropdown, Menu, Button, Icon, Input, Form, Table,
-} from 'antd';
+import { Button, Form, Table } from 'antd';
+
+import { NumberInput, DropdownInput } from '../../shared/Input';
 import { rowStyles, deleteStyles } from '../styles';
 
 class RenderDataField extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			componentProps: props.componentProps,
-		};
-	}
+	handleSearchDataFieldChange = (valueObject) => {
+		const { componentProps, setComponentProps } = this.props;
 
-	handleSearchDataFieldChange = (item) => {
-		const field = item.key;
-		const index = item.item.props.value;
-		const { componentProps } = this.state;
-		const { setComponentProps } = this.props;
 		const dataField = Object.assign([], componentProps.dataField, {
-			[index]: field,
+			...valueObject,
 		});
-
-		const newComponentProps = {
-			...componentProps,
-			dataField,
-		};
-		this.setState(
-			{
-				componentProps: newComponentProps,
-			},
-			setComponentProps(newComponentProps),
-		);
+		setComponentProps({ dataField });
 	};
 
 	renderDeleteButton = (x, y, index) => (
@@ -47,107 +28,58 @@ class RenderDataField extends React.Component {
 		const { componentProps } = this.state;
 		const { setComponentProps } = this.props;
 		const newComponentProps = {
-			...componentProps,
 			dataField: componentProps.dataField.filter((i, index) => index !== deleteIndex),
 			fieldWeights: componentProps.fieldWeights.filter((i, index) => index !== deleteIndex),
 		};
-		this.setState(
-			{
-				componentProps: newComponentProps,
-			},
-			setComponentProps(newComponentProps),
-		);
+		setComponentProps(newComponentProps);
 	};
 
-	handleSearchWeightChange = (index, value) => {
+	handleSearchWeightChange = (newWeight) => {
 		const { componentProps } = this.state;
 		const { setComponentProps } = this.props;
 		const fieldWeights = Object.assign([], componentProps.fieldWeights, {
-			[index]: value,
+			newWeight,
 		});
-		const newComponentProps = {
-			...componentProps,
-			fieldWeights,
-		};
-		this.setState(
-			{
-				componentProps: newComponentProps,
-			},
-			setComponentProps(newComponentProps),
-		);
-	};
-
-	handleDataFieldChange = (item) => {
-		const dataField = item.key;
-		const { componentProps } = this.state;
-		const { setComponentProps } = this.props;
-		const newComponentProps = {
-			...componentProps,
-			dataField,
-		};
-		this.setState(
-			{
-				componentProps: newComponentProps,
-			},
-			setComponentProps(newComponentProps),
-		);
+		setComponentProps(fieldWeights);
 	};
 
 	handleAddFieldRow = () => {
-		const { componentProps } = this.state;
-		const { setComponentProps, getAvailableDataField } = this.props;
+		const { setComponentProps, getAvailableDataField, componentProps } = this.props;
 		const field = getAvailableDataField().find(
 			item => !componentProps.dataField.includes(item),
 		);
 
 		if (field) {
 			const newComponentProps = {
-				...componentProps,
 				dataField: [...componentProps.dataField, field],
 				fieldWeights: [...componentProps.fieldWeights, 1],
 			};
-			this.setState(
-				{
-					componentProps: newComponentProps,
-				},
-				setComponentProps(newComponentProps),
-			);
+			setComponentProps(newComponentProps);
 		}
 	};
 
 	renderDataFieldTable = () => {
-		const { getAvailableDataField } = this.props;
+		const { getAvailableDataField, componentProps } = this.props;
 		const fields = getAvailableDataField();
-		const { componentProps } = this.state;
 		const columns = [
 			{
 				title: 'Field',
 				dataIndex: 'field',
 				key: 'field',
 				render: (selected, x, index) => {
-					const menu = (
-						<Menu
-							onClick={this.handleSearchDataFieldChange}
-							style={{ maxHeight: 300, overflowY: 'scroll' }}
-						>
-							{fields
-								.filter(
-									item => item === selected
-										|| !componentProps.dataField.includes(item),
-								)
-								.map(item => (
-									<Menu.Item key={item} value={index}>
-										{item}
-									</Menu.Item>
-								))}
-						</Menu>
-					);
+					const options = fields
+						.filter(
+							item => item === selected || !componentProps.dataField.includes(item),
+						)
+						.map(item => ({ label: item, key: item }));
+
 					return (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button style={{ marginLeft: 8 }}>
-								{selected} <Icon type="down" />
-							</Button>
-						</Dropdown>
+						<DropdownInput
+							options={options}
+							name={index}
+							value={selected}
+							handleChange={this.handleSearchDataFieldChange}
+						/>
 					);
 				},
 			},
@@ -156,11 +88,12 @@ class RenderDataField extends React.Component {
 				dataIndex: 'weight',
 				key: 'weight',
 				render: (value, x, index) => (
-					<Input
+					<NumberInput
 						min={1}
-						type="number"
-						defaultValue={value}
-						onChange={e => this.handleSearchWeightChange(index, e.target.value)}
+						value={Number(value)}
+						name={index}
+						placeholder="Enter Field Weight"
+						handleChange={this.handleSearchWeightChange}
 					/>
 				),
 			},
@@ -199,22 +132,16 @@ class RenderDataField extends React.Component {
 	};
 
 	render() {
-		const { componentProps: stateComponentProps } = this.state;
 		const {
-            id, label, description, getAvailableDataField,
+            id, label, description, getAvailableDataField, componentProps, setComponentProps,
         } = this.props; // prettier-ignore
-		const { dataField } = stateComponentProps;
+		const { dataField } = componentProps;
 		const fields = getAvailableDataField();
-		const menu = (
-			<Menu
-				onClick={this.handleDataFieldChange}
-				style={{ maxHeight: 300, overflowY: 'scroll' }}
-			>
-				{fields.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-			</Menu>
-		);
+		const options = fields.map(item => ({
+			label: item,
+			key: item,
+		}));
+
 		return (
 			<Form.Item label={label} colon={false}>
 				<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
@@ -223,18 +150,13 @@ class RenderDataField extends React.Component {
 				{id === 'search' ? (
 					this.renderDataFieldTable()
 				) : (
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Button
-							style={{
-								width: '100%',
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-							}}
-						>
-							{dataField} <Icon type="down" />
-						</Button>
-					</Dropdown>
+					<DropdownInput
+						value={dataField}
+						handleChange={setComponentProps}
+						options={options}
+						name="dataField"
+						noOptionsMessage="No Fields Present"
+					/>
 				)}
 			</Form.Item>
 		);
