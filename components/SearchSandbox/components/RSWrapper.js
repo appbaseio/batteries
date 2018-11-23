@@ -1,18 +1,6 @@
 import React, { Component } from 'react';
 import {
-	Row,
-	Col,
-	Form,
-	Input,
-	Switch,
-	Button,
-	Modal,
-	Table,
-	Menu,
-	Icon,
-	Dropdown,
-	Popover,
-	message,
+ Row, Col, Form, Button, Modal, Table, Popover, message,
 } from 'antd';
 
 import {
@@ -28,10 +16,12 @@ import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 import PreviewList from './PreviewList';
 import { SandboxContext } from '../index';
-import getComponentProps from '../utils/getComponentProps'
-
+import getComponentProps from '../utils/getComponentProps';
 import {
- deleteStyles, rowStyles, formWrapper, componentStyles,
+	NumberInput, TextInput, DropdownInput, ToggleInput,
+} from '../../shared/Input';
+import {
+	deleteStyles, rowStyles, formWrapper, componentStyles,
 } from '../styles';
 
 const componentMap = {
@@ -62,8 +52,6 @@ class RSComponentRender extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
-			isInputActive: false,
-			searchTerm: '',
 			previewModal: false,
 		};
 
@@ -136,21 +124,6 @@ class RSComponentRender extends Component {
 		return fields;
 	};
 
-	setError = (error) => {
-		this.setState(
-			{
-				error,
-			},
-			() => {
-				setTimeout(() => {
-					this.setState({
-						error: '',
-					});
-				}, 3000);
-			},
-		);
-	};
-
 	resetComponentProps = () => {
 		const { componentProps } = this.props;
 		this.setState({
@@ -181,120 +154,41 @@ class RSComponentRender extends Component {
 		});
 	};
 
-	handleDataFieldChange = (item) => {
-		const dataField = item.key;
+	setComponentProps = (newProps) => {
 		const { componentProps } = this.state;
 		this.setState({
 			componentProps: {
 				...componentProps,
-				dataField,
+				...newProps,
 			},
 		});
 	};
 
-	handleSwitchPropChange = (name, value) => {
-		const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handlePropChange = (e) => {
-		const { name, value } = e.target;
-		const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handleDropdownBlur = () => {
-		this.setState({
-			isInputActive: false,
-		});
-	};
-
-	handleDropdownChange = (e, name) => {
-		const { componentProps } = this.state;
-		const value = e.key;
-		this.setState({
-			isInputActive: false,
-			componentProps: {
-				...componentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handleDropdownSearch = (e) => {
-		const {
-			target: { name, value },
-		} = e;
-		this.setState({
-			isInputActive: true,
-			[name]: value,
-		});
-	};
-
-	handleSearchDataFieldChange = (item) => {
-		const field = item.key;
-		const index = item.item.props.value;
+	handleSearchDataFieldChange = (valueObject) => {
 		const { componentProps } = this.state;
 
 		const dataField = Object.assign([], componentProps.dataField, {
-			[index]: field,
+			...valueObject,
 		});
-		this.setState({
-			componentProps: {
-				...componentProps,
-				dataField,
-			},
-		});
+		this.setComponentProps({ dataField });
 	};
 
 	handleSearchDataFieldDelete = (deleteIndex) => {
 		const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				dataField: componentProps.dataField.filter((i, index) => index !== deleteIndex),
-				fieldWeights: componentProps.fieldWeights.filter(
-					(i, index) => index !== deleteIndex,
-				),
-			},
-		});
+		this.setComponentProps({
+			dataField: componentProps.dataField.filter((i, index) => index !== deleteIndex),
+			fieldWeights: componentProps.fieldWeights.filter(
+				(i, index) => index !== deleteIndex,
+			),
+		})
 	};
 
-	handleMultipleDropdown = (value, name) => {
-		let selectedValue = value;
-		const { componentProps } = this.state;
-		if (selectedValue.includes('*')) {
-			selectedValue = ['*'];
-		}
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: selectedValue,
-			},
-		});
-	};
-
-	handleSearchWeightChange = (index, value) => {
+	handleSearchWeightChange = (newValueObject) => {
 		const { componentProps } = this.state;
 		const fieldWeights = Object.assign([], componentProps.fieldWeights, {
-			[index]: value,
+			...newValueObject,
 		});
-		this.setState({
-			componentProps: {
-				...componentProps,
-				fieldWeights,
-			},
-		});
+		this.setComponentProps({ fieldWeights });
 	};
 
 	handleAddFieldRow = () => {
@@ -304,12 +198,9 @@ class RSComponentRender extends Component {
 		);
 
 		if (field) {
-			this.setState({
-				componentProps: {
-					...componentProps,
-					dataField: [...componentProps.dataField, field],
-					fieldWeights: [...componentProps.fieldWeights, 1],
-				},
+			this.setComponentProps({
+				dataField: [...componentProps.dataField, field],
+				fieldWeights: [...componentProps.fieldWeights, 1],
 			});
 		}
 	};
@@ -323,7 +214,6 @@ class RSComponentRender extends Component {
 	handleSavePreview = (values) => {
 		const { onPropChange, id } = this.props;
 		onPropChange(id, {
-			meta: true,
 			metaFields: values,
 		});
 		this.setState({
@@ -371,29 +261,19 @@ class RSComponentRender extends Component {
 				dataIndex: 'field',
 				key: 'field',
 				render: (selected, x, index) => {
-					const menu = (
-						<Menu
-							onClick={this.handleSearchDataFieldChange}
-							style={{ maxHeight: 300, overflowY: 'scroll' }}
-						>
-							{fields
-								.filter(
-									item => item === selected
-										|| !componentProps.dataField.includes(item),
-								)
-								.map(item => (
-									<Menu.Item key={item} value={index}>
-										{item}
-									</Menu.Item>
-								))}
-						</Menu>
-					);
+					const options = fields
+						.filter(
+							item => item === selected || !componentProps.dataField.includes(item),
+						)
+						.map(item => ({ label: item, key: item }));
+
 					return (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button style={{ marginLeft: 8 }}>
-								{selected} <Icon type="down" />
-							</Button>
-						</Dropdown>
+						<DropdownInput
+							options={options}
+							name={index}
+							value={selected}
+							handleChange={this.handleSearchDataFieldChange}
+						/>
 					);
 				},
 			},
@@ -402,11 +282,12 @@ class RSComponentRender extends Component {
 				dataIndex: 'weight',
 				key: 'weight',
 				render: (value, x, index) => (
-					<Input
+					<NumberInput
 						min={1}
-						type="number"
-						defaultValue={value}
-						onChange={e => this.handleSearchWeightChange(index, e.target.value)}
+						value={Number(value)}
+						name={index}
+						placeholder="Enter Field Weight"
+						handleChange={this.handleSearchWeightChange}
 					/>
 				),
 			},
@@ -452,22 +333,13 @@ class RSComponentRender extends Component {
 		switch (item.input) {
 			case 'bool': {
 				FormInput = (
-					<Switch
-						defaultChecked={value}
-						onChange={val => this.handleSwitchPropChange(name, val)}
-					/>
+					<ToggleInput value={value} name={name} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
 			case 'number': {
 				FormInput = (
-					<Input
-						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						type="number"
-						placeholder={`Enter ${name} here`}
-					/>
+					<NumberInput name={name} value={Number(value)} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
@@ -501,6 +373,7 @@ class RSComponentRender extends Component {
 						}));
 
 					if (dropdownOptions.length) {
+						// If no categoryfield is selected
 						if (!stateComponentProps.categoryField) {
 							onPropChange(id, {
 								categoryField: dropdownOptions[0].label,
@@ -524,54 +397,21 @@ class RSComponentRender extends Component {
 						: propsMap[component][name].default;
 				}
 
-				if (isInputActive) {
-					dropdownOptions = dropdownOptions.filter(option => option.label.toLowerCase().includes(searchTerm.toLowerCase()));
-				}
-
-				if (!dropdownOptions.length) {
-					dropdownOptions.push({ label: 'No options', key: '' });
-				}
-				const menu = (
-					<Menu
-						onClick={e => this.handleDropdownChange(e, name)}
-						style={{ maxHeight: 300, overflowY: 'scroll' }}
-					>
-						{dropdownOptions.map(({ label: dropLabel, key }) => (
-							<Menu.Item key={key}>{dropLabel}</Menu.Item>
-						))}
-					</Menu>
-				);
-
-				FormInput = dropdownOptions.length ? (
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Input
-							style={{
-								width: '100%',
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-							}}
-							name="searchTerm"
-							onBlur={this.handleDropdownBlur}
-							value={isInputActive ? searchTerm : selectedValue}
-							defaultValue={selectedValue}
-							onChange={this.handleDropdownSearch}
-						/>
-					</Dropdown>
-				) : (
-					noOptionsMessage
+				FormInput = (
+					<DropdownInput
+						options={dropdownOptions}
+						handleChange={this.setComponentProps}
+						value={selectedValue}
+						name={name}
+						noOptionsMessage={noOptionsMessage}
+					/>
 				);
 				break;
 			}
 
 			default: {
 				FormInput = (
-					<Input
-						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						placeholder={`Enter ${name} here`}
-					/>
+					<TextInput name={name} value={value} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
@@ -593,17 +433,11 @@ class RSComponentRender extends Component {
 		const propNames = propsMap[component];
 		const { dataField } = stateComponentProps;
 		const fields = this.getAvailableDataField();
-		const menu = (
-			<Menu
-				onClick={this.handleDataFieldChange}
-				style={{ maxHeight: 300, overflowY: 'scroll' }}
-			>
-				{fields.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-			</Menu>
-		);
-
+		const fieldsOptions = [];
+		fields.map(field => fieldsOptions.push({
+			key: field,
+			label: field,
+		}));
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
 				<Form.Item label={propNames.dataField.label} colon={false}>
@@ -621,18 +455,13 @@ class RSComponentRender extends Component {
 					{id === 'search' ? (
 						this.renderDataFieldTable()
 					) : (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button
-								style={{
-									width: '100%',
-									display: 'flex',
-									justifyContent: 'space-between',
-									alignItems: 'center',
-								}}
-							>
-								{dataField} <Icon type="down" />
-							</Button>
-						</Dropdown>
+						<DropdownInput
+							value={dataField}
+							handleChange={this.setComponentProps}
+							options={fieldsOptions}
+							name="dataField"
+							noOptionsMessage="No Fields Present"
+						/>
 					)}
 				</Form.Item>
 				{Object.keys(propNames)
