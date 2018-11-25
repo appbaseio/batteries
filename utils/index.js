@@ -1,12 +1,8 @@
 import get from 'lodash/get';
 import { doGet } from './requestService';
+import { SCALR_API, ACC_API } from '../../constants/config';
 
-export const ACC_API = 'http://localhost:8000';
-export const SCALR_API = 'http://localhost:8000';
-// export const ACC_API = 'https://accapi.appbase.io';
-// export const SCALR_API = 'https://scalr.api.appbase.io';
-// export const ACC_API = 'https://accapi-staging.bottleneck.io';
-// export const SCALR_API = 'https://api-staging.bottleneck.io';
+export { ACC_API, SCALR_API };
 
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
