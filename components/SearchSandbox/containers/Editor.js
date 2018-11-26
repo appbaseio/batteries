@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import { formWrapper } from '../styles';
-import RenderDataField from '../components/RenderDataField';
+import DataFieldInput from '../components/DataFieldInput';
 import { getAvailableDataField } from '../utils/dataField';
 import {
  NumberInput, TextInput, DropdownInput, ToggleInput,
@@ -169,7 +169,7 @@ export default class Editor extends Component {
 		const { listComponentProps } = this.state;
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
-				<RenderDataField
+				<DataFieldInput
 					label={multiListTypes.dataField.label}
 					description={multiListTypes.dataField.description}
 					setComponentProps={this.setComponentProps}

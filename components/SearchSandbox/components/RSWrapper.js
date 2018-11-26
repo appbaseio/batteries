@@ -15,7 +15,7 @@ import { generateDataField, getAvailableDataField } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 import PreviewList from './PreviewList';
-import RenderDataField from './RenderDataField';
+import DataFieldInput from './DataFieldInput';
 import { SandboxContext } from '../index';
 import getComponentProps from '../utils/getComponentProps';
 import {
@@ -294,7 +294,7 @@ class RSComponentRender extends Component {
 
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
-				<RenderDataField
+				<DataFieldInput
 					label={propNames.dataField.label}
 					id={id}
 					description={propNames.dataField.description}

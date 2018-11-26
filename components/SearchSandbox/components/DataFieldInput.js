@@ -4,7 +4,7 @@ import { Button, Form, Table } from 'antd';
 import { NumberInput, DropdownInput } from '../../shared/Input';
 import { rowStyles, deleteStyles } from '../styles';
 
-class RenderDataField extends React.Component {
+class DataFieldInput extends React.Component {
 	handleSearchDataFieldChange = (valueObject) => {
 		const { componentProps, setComponentProps } = this.props;
 
@@ -161,4 +161,4 @@ class RenderDataField extends React.Component {
 	}
 }
 
-export default RenderDataField;
+export default DataFieldInput;
