@@ -51,7 +51,7 @@ export default {
 		description:
 			'When multiple values are selected, enable either match All values or match Any values.',
 		input: 'dropdown',
-		options: [{ label: 'Any', key: 'or' }, { label: 'All', key: 'and' }],
-		default: 'or',
+		options: [{ label: 'Or', key: 'or' }, { label: 'And', key: 'and' }],
+		default: 'Or',
 	},
 };

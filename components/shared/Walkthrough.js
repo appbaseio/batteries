@@ -18,7 +18,7 @@ class Walkthrough extends React.Component {
 
 		const isTutorialCompleted = this.getTutorialStatus();
 		this.state = {
-			showTutorial: false,
+			showTutorial: !isTutorialCompleted,
 			tutorialCompleted: isTutorialCompleted,
 			stepIndex: 0,
 		};
