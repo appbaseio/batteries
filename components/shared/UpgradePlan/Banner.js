@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Header from './Header';
 
 const Banner = ({
- title, description, buttonText, href,
+ title, description, buttonText, href, showButton,
 }) => (
 	<Header compact>
 		<Row type="flex" justify="space-between" gutter={16}>
@@ -24,16 +24,18 @@ const Banner = ({
 					paddingBottom: 20,
 				}}
 			>
-				<Button
-					size="large"
-					type="primary"
-					href={href}
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Icon type="info-circle" />
-					{buttonText}
-				</Button>
+				{showButton && (
+					<Button
+						size="large"
+						type="primary"
+						href={href}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<Icon type="info-circle" />
+						{buttonText}
+					</Button>
+				)}
 			</Col>
 		</Row>
 	</Header>
@@ -42,6 +44,7 @@ Banner.defaultProps = {
 	description: '',
 	href: '/billing',
 	buttonText: 'Upgrade Now',
+	showButton: true,
 };
 
 Banner.propTypes = {
@@ -49,6 +52,7 @@ Banner.propTypes = {
 	description: PropTypes.string,
 	buttonText: PropTypes.string,
 	href: PropTypes.string,
+	showButton: PropTypes.bool,
 };
 
 export default Banner;
