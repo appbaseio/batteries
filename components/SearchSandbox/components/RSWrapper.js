@@ -180,7 +180,7 @@ class RSComponentRender extends Component {
 			fieldWeights: componentProps.fieldWeights.filter(
 				(i, index) => index !== deleteIndex,
 			),
-		})
+		});
 	};
 
 	handleSearchWeightChange = (newValueObject) => {

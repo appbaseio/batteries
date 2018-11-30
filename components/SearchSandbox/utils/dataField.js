@@ -1,7 +1,7 @@
 import dataSearchTypes from './datasearch-types';
 import multiListTypes from './multilist-types';
 import reactiveListTypes from './reactivelist-types';
-import categorySearchTypes from '../utils/categorysearch-types';
+import categorySearchTypes from './categorysearch-types';
 
 const propsMap = {
 	DataSearch: dataSearchTypes,

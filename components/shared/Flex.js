@@ -3,14 +3,12 @@ import styled, { css } from 'react-emotion';
 const Flex = styled.div`
 	display: flex;
 	flex-direction: ${({ flexDirection }) => flexDirection || 'row'};
-	${({ alignItems }) =>
-		alignItems &&
-		css`
+	${({ alignItems }) => alignItems
+		&& css`
 			align-items: ${alignItems};
 		`};
-	${({ justifyContent }) =>
-		justifyContent &&
-		css`
+	${({ justifyContent }) => justifyContent
+		&& css`
 			justify-content: ${justifyContent};
 		`};
 `;

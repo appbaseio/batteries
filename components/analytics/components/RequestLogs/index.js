@@ -298,9 +298,7 @@ RequestLogs.propTypes = {
 	pageSize: PropTypes.number,
 };
 
-const mapStateToProps = (state) => {
-	return {
+const mapStateToProps = state => ({
 		appName: get(state, '$getCurrentApp.name'),
-	};
-};
+	});
 export default connect(mapStateToProps)(RequestLogs);

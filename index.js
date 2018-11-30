@@ -1,1 +1,1 @@
-export Mapping from './components/Mapping';
+export Mappings from './components/Mappings';
