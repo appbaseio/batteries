@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
- Row, Col, Form, Button, Modal, Table, Popover, message,
+ Row, Col, Form, Button, Modal, Popover, message,
 } from 'antd';
 
 import {
@@ -11,18 +11,17 @@ import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
 import reactiveListTypes from '../utils/reactivelist-types';
 import categorySearchTypes from '../utils/categorysearch-types';
-import { generateDataField } from '../utils/dataField';
+import { generateDataField, getAvailableDataField } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 import PreviewList from './PreviewList';
+import DataFieldInput from './DataFieldInput';
 import { SandboxContext } from '../index';
 import getComponentProps from '../utils/getComponentProps';
 import {
-	NumberInput, TextInput, DropdownInput, ToggleInput,
+ NumberInput, TextInput, DropdownInput, ToggleInput,
 } from '../../shared/Input';
-import {
-	deleteStyles, rowStyles, formWrapper, componentStyles,
-} from '../styles';
+import { formWrapper, componentStyles } from '../styles';
 
 const componentMap = {
 	CategorySearch,
@@ -51,14 +50,13 @@ class RSComponentRender extends Component {
 		this.state = {
 			showModal: false,
 			componentProps: props.componentProps,
-			error: '',
 			previewModal: false,
 		};
 
 		if (!props.componentProps.dataField) {
 			// set default dataField for the component if not defined
-			const { component } = props;
-			const dataFields = this.getAvailableDataField();
+			const { component, id, mappings } = props;
+			const dataFields = getAvailableDataField({ component, id, mappings });
 			const { multiple } = propsMap[component].dataField;
 			let otherProps = {};
 			if (props.id === 'search') {
@@ -78,28 +76,12 @@ class RSComponentRender extends Component {
 		});
 	}
 
-	getAvailableDataField = () => {
-		const { component, mappings, id } = this.props;
-		const { types } = propsMap[component].dataField;
-
-		if (id === 'search') {
-			return Object.keys(mappings).filter(field => types.includes(mappings[field].type));
-		}
-
-		const fields = Object.keys(mappings).filter((field) => {
-			let fieldsToCheck = [mappings[field]];
-
-			if (mappings[field].originalFields) {
-				fieldsToCheck = [
-					...fieldsToCheck,
-					...Object.values(mappings[field].originalFields),
-				];
-			}
-
-			return fieldsToCheck.some(item => types.includes(item.type));
+	setComponentProps = (newProps) => {
+		const { componentProps } = this.state;
+		this.setState({
+			...componentProps,
+			...newProps,
 		});
-
-		return fields;
 	};
 
 	getCategoryField = () => {
@@ -164,47 +146,6 @@ class RSComponentRender extends Component {
 		});
 	};
 
-	handleSearchDataFieldChange = (valueObject) => {
-		const { componentProps } = this.state;
-
-		const dataField = Object.assign([], componentProps.dataField, {
-			...valueObject,
-		});
-		this.setComponentProps({ dataField });
-	};
-
-	handleSearchDataFieldDelete = (deleteIndex) => {
-		const { componentProps } = this.state;
-		this.setComponentProps({
-			dataField: componentProps.dataField.filter((i, index) => index !== deleteIndex),
-			fieldWeights: componentProps.fieldWeights.filter(
-				(i, index) => index !== deleteIndex,
-			),
-		});
-	};
-
-	handleSearchWeightChange = (newValueObject) => {
-		const { componentProps } = this.state;
-		const fieldWeights = Object.assign([], componentProps.fieldWeights, {
-			...newValueObject,
-		});
-		this.setComponentProps({ fieldWeights });
-	};
-
-	handleAddFieldRow = () => {
-		const { componentProps } = this.state;
-		const field = this.getAvailableDataField().find(
-			item => !componentProps.dataField.includes(item),
-		);
-
-		if (field) {
-			this.setComponentProps({
-				dataField: [...componentProps.dataField, field],
-				fieldWeights: [...componentProps.fieldWeights, 1],
-			});
-		}
-	};
-
 	handlePreviewModal = () => {
 		this.setState(({ previewModal: oldValue }) => ({
 			previewModal: !oldValue,
@@ -242,89 +183,6 @@ class RSComponentRender extends Component {
 		);
 	};
 
-	renderDeleteButton = (x, y, index) => (
-		<Button
-			className={deleteStyles}
-			icon="delete"
-			shape="circle"
-			type="danger"
-			onClick={() => this.handleSearchDataFieldDelete(index)}
-		/>
-	);
-
-	renderDataFieldTable = () => {
-		const fields = this.getAvailableDataField();
-		const { componentProps } = this.state;
-		const columns = [
-			{
-				title: 'Field',
-				dataIndex: 'field',
-				key: 'field',
-				render: (selected, x, index) => {
-					const options = fields
-						.filter(
-							item => item === selected || !componentProps.dataField.includes(item),
-						)
-						.map(item => ({ label: item, key: item }));
-
-					return (
-						<DropdownInput
-							options={options}
-							name={index}
-							value={selected}
-							handleChange={this.handleSearchDataFieldChange}
-						/>
-					);
-				},
-			},
-			{
-				title: 'Weight',
-				dataIndex: 'weight',
-				key: 'weight',
-				render: (value, x, index) => (
-					<NumberInput
-						min={1}
-						value={Number(value)}
-						name={index}
-						placeholder="Enter Field Weight"
-						handleChange={this.handleSearchWeightChange}
-					/>
-				),
-			},
-			{
-				render: this.renderDeleteButton,
-			},
-		];
-
-		const dataSource = componentProps.dataField.map((field, index) => ({
-			key: field,
-			field,
-			weight: componentProps.fieldWeights[index],
-		}));
-
-		return (
-			<React.Fragment>
-				<Table
-					dataSource={dataSource}
-					columns={columns}
-					pagination={false}
-					rowClassName={rowStyles}
-				/>
-				{fields.length === componentProps.dataField.length ? null : (
-					<div style={{ paddingTop: 12, textAlign: 'right' }}>
-						<Button
-							onClick={this.handleAddFieldRow}
-							type="primary"
-							style={{ marginBottom: 16 }}
-						>
-							Add a new field
-						</Button>
-					</div>
-				)}
-			</React.Fragment>
-		);
-	};
-
 	renderFormItem = (item, name) => {
 		const { componentProps } = this.props;
 		let FormInput = null;
@@ -339,7 +197,13 @@ class RSComponentRender extends Component {
 			}
 			case 'number': {
 				FormInput = (
-					<NumberInput name={name} value={Number(value)} handleChange={this.setComponentProps} />
+					<NumberInput
+						name={name}
+						value={Number(value)}
+						min={item.min}
+						max={item.max}
+						handleChange={this.setComponentProps}
+					/>
 				);
 				break;
 			}
@@ -352,11 +216,7 @@ class RSComponentRender extends Component {
 				const {
 					onPropChange, id, component, mappingsURL,
 				} = this.props; // prettier-ignore
-				const {
-					componentProps: stateComponentProps,
-					isInputActive,
-					searchTerm,
-				} = this.state;
+				const { componentProps: stateComponentProps } = this.state;
 
 				if (name === 'categoryField') {
 					noOptionsMessage = (
@@ -428,42 +288,20 @@ class RSComponentRender extends Component {
 	};
 
 	renderPropsForm = () => {
-		const { componentProps: stateComponentProps, error } = this.state;
-		const { component, id } = this.props;
+		const { componentProps: stateComponentProps } = this.state;
+		const { component, id, mappings } = this.props;
 		const propNames = propsMap[component];
-		const { dataField } = stateComponentProps;
-		const fields = this.getAvailableDataField();
-		const fieldsOptions = [];
-		fields.map(field => fieldsOptions.push({
-			key: field,
-			label: field,
-		}));
+
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
-				<Form.Item label={propNames.dataField.label} colon={false}>
-					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
-						{propNames.dataField.description}
-					</div>
-					{error ? (
-						<div
-							style={{ color: 'tomato', margin: '0 0 6px' }}
-							className="ant-form-extra"
-						>
-							{error}
-						</div>
-					) : null}
-					{id === 'search' ? (
-						this.renderDataFieldTable()
-					) : (
-						<DropdownInput
-							value={dataField}
-							handleChange={this.setComponentProps}
-							options={fieldsOptions}
-							name="dataField"
-							noOptionsMessage="No Fields Present"
-						/>
-					)}
-				</Form.Item>
+				<DataFieldInput
+					label={propNames.dataField.label}
+					id={id}
+					description={propNames.dataField.description}
+					componentProps={stateComponentProps}
+					getAvailableDataField={() => getAvailableDataField({ component, id, mappings })}
+					setComponentProps={this.setComponentProps}
+				/>
 				{Object.keys(propNames)
 					.filter(item => item !== 'dataField')
 					.map(item => this.renderFormItem(propNames[item], item))}
@@ -543,7 +381,10 @@ class RSComponentRender extends Component {
 							componentId={id}
 							className={componentStyles}
 							{...getComponentProps({
-								component, componentProps, mappings, setRenderKey,
+								component,
+								componentProps,
+								mappings,
+								setRenderKey,
 							})}
 							{...customComponentProps}
 						/>

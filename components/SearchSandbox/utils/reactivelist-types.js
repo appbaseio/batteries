@@ -35,6 +35,7 @@ export default {
 		description: 'Total number of results to fetch (maximum value is 1000).',
 		input: 'number',
 		default: 10,
+		min: 1,
 	},
 	pagination: {
 		label: 'Show Pages',

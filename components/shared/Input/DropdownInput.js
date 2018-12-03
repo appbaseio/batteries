@@ -49,7 +49,7 @@ DropdownInput.propTypes = {
 	handleChange: func.isRequired,
 	name: any.isRequired,
 	value: string.isRequired,
-	noOptionsMessage: string,
+	noOptionsMessage: any,
 	options: array,
 };
 

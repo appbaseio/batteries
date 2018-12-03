@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 import {
-	Row,
-	Col,
-	Card,
-	Button,
-	Modal,
-	Form,
-	message,
+ Row, Col, Card, Button, Modal, Form, message,
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import PropTypes from 'prop-types';
@@ -14,6 +8,8 @@ import PropTypes from 'prop-types';
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import { formWrapper } from '../styles';
+import DataFieldInput from '../components/DataFieldInput';
+import { getAvailableDataField } from '../utils/dataField';
 import {
  NumberInput, TextInput, DropdownInput, ToggleInput,
 } from '../../shared/Input';
@@ -21,8 +17,12 @@ import {
 export default class Editor extends Component {
 	constructor(props) {
 		super(props);
-
-		const dataFields = this.getAvailableDataField();
+		const { mappings } = props;
+		const dataFields = getAvailableDataField({
+			id: 'MultiList',
+			component: 'MultiList',
+			mappings,
+		});
 		this.state = {
 			showModal: false,
 			listComponentProps: {
@@ -33,26 +33,6 @@ export default class Editor extends Component {
 		};
 	}
 
-	getAvailableDataField = () => {
-		const { types } = multiListTypes.dataField;
-		const { mappings } = this.props;
-
-		const fields = Object.keys(mappings).filter((field) => {
-			let fieldsToCheck = [mappings[field]];
-
-			if (mappings[field].originalFields) {
-				fieldsToCheck = [
-					...fieldsToCheck,
-					...Object.values(mappings[field].originalFields),
-				];
-			}
-
-			return fieldsToCheck.some(item => types.includes(item.type));
-		});
-
-		return fields;
-	};
-
 	showModal = () => {
 		this.setState({
 			showModal: true,
@@ -60,7 +40,12 @@ export default class Editor extends Component {
 	};
 
 	resetNewComponentData = () => {
-		const dataFields = this.getAvailableDataField();
+		const { mappings } = this.props;
+		const dataFields = getAvailableDataField({
+			id: 'MultiList',
+			component: 'MultiList',
+			mappings,
+		});
 		this.setState({
 			listComponentProps: {
 				dataField: dataFields.length ? dataFields[0] : '',
@@ -70,7 +55,8 @@ export default class Editor extends Component {
 
 	handleOk = () => {
 		// only set to store if dataField is valid
-		const fields = this.getAvailableDataField();
+		const { mappings } = this.props;
+		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
 		if (fields.length) {
 			const { filterCount, setFilterCount, onPropChange } = this.props;
 			const { listComponentProps } = this.state;
@@ -118,8 +104,7 @@ export default class Editor extends Component {
 	renderFormItem = (item, name) => {
 		let FormInput = null;
 		// always set to default value
-		const { listComponentProps } = this.state;
-		const value =	listComponentProps[name] !== undefined ? listComponentProps[name] : item.default;
+		const value = item.default;
 
 		switch (item.input) {
 			case 'bool': {
@@ -169,13 +154,8 @@ export default class Editor extends Component {
 	};
 
 	renderPropsForm = () => {
-		const fields = this.getAvailableDataField();
-		const fieldsOptions = [];
-		fields.map(field => fieldsOptions.push({
-				key: field,
-				label: field,
-			}));
-		const { mappingsURL } = this.props;
+		const { mappingsURL, mappings } = this.props;
+		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
 		if (!fields.length) {
 			return (
 				<p>
@@ -186,23 +166,17 @@ export default class Editor extends Component {
 			);
 		}
 
-		const {
-			listComponentProps: { dataField },
-		} = this.state;
+		const { listComponentProps } = this.state;
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
-				<Form.Item label={multiListTypes.dataField.label} colon={false}>
-					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
-						{multiListTypes.dataField.description}
-					</div>
-					<DropdownInput
-						value={dataField}
-						handleChange={this.setComponentProps}
-						options={fieldsOptions}
-						name="dataField"
-						noOptionsMessage="No Fields Present"
-					/>
-				</Form.Item>
+				<DataFieldInput
+					label={multiListTypes.dataField.label}
+					description={multiListTypes.dataField.description}
+					setComponentProps={this.setComponentProps}
+					componentProps={listComponentProps}
+					getAvailableDataField={() => getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings })
+					}
+				/>
 				{Object.keys(multiListTypes)
 					.filter(item => item !== 'dataField')
 					.map(item => this.renderFormItem(multiListTypes[item], item))}
@@ -214,7 +188,7 @@ export default class Editor extends Component {
 		this.setState({
 			renderKey: newKey,
 		});
-	}
+	};
 
 	render() {
 		const {
@@ -222,10 +196,10 @@ export default class Editor extends Component {
 			appName,
 			credentials,
 			url,
+			deleteComponent,
+			useCategorySearch,
 		} = this.props;
-		const {
-			renderKey, showModal, showVideo,
-		} = this.state;
+		const { renderKey, showModal, showVideo } = this.state;
 		const title = (
 			<span>
 				Search Preview{' '}
@@ -259,7 +233,7 @@ export default class Editor extends Component {
 										id={config}
 										component="MultiList"
 										componentProps={componentProps[config] || {}}
-										onDelete={this.props.deleteComponent}
+										onDelete={deleteComponent}
 										full
 									/>
 								</Card>
@@ -269,9 +243,7 @@ export default class Editor extends Component {
 						<Card>
 							<RSWrapper
 								id="search"
-								component={
-									this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'
-								}
+								component={useCategorySearch ? 'CategorySearch' : 'DataSearch'}
 								componentProps={componentProps.search || {}}
 							/>
 						</Card>
@@ -283,13 +255,17 @@ export default class Editor extends Component {
 								component="ReactiveList"
 								key={renderKey}
 								componentProps={
-									componentProps.result ? {
-											...componentProps.result,
-											react: {
-												and: Object.keys(componentProps).filter(item => item !== 'result'),
-											},
-										} : {}
-									}
+									componentProps.result
+										? {
+												...componentProps.result,
+												react: {
+													and: Object.keys(componentProps).filter(
+														item => item !== 'result',
+													),
+												},
+										  }
+										: {}
+								}
 								setRenderKey={this.setRenderKey}
 								full
 								showDelete={false}
