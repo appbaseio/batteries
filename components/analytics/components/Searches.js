@@ -60,8 +60,8 @@ const Searches = ({
 				/>
 				{
 					onClickViewAll ? (
-						<Button 
-							onClick={onClickViewAll} 
+						<Button
+							onClick={onClickViewAll}
 							css="width: 100%;height: 50px;margin-top: 10px;"
 						>
 							VIEW ALL
@@ -71,7 +71,7 @@ const Searches = ({
 						<Link to={href}>
 							<Button css="width: 100%;height: 50px;margin-top: 10px;">VIEW ALL</Button>
 						</Link>
-					) 
+					)
 				}
 			</Flex>
 		) : (
