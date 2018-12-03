@@ -96,15 +96,18 @@ Use this component to display the `SearchPreview` component.
 
 ## Props
 
-| Prop              | Required |   Type    | Default Value | Description                                                                                                    |
-| :---------------- | :------: | :-------: | :-----------: | :------------------------------------------------------------------------------------------------------------- |
-| appName           |  `yes`   | `string`  |       -       | Name of the app.                                                                                               |
-| appId             |   `no`   | `string`  |       -       | App id                                                                                                         |
-| isDashboard       |   `no`   | `boolean` |    `false`    | Prefrences handling and profile view                                                                           |
-| useCategorySearch |   `no`   | `boolean` |    `false`    | If true renders `CategorySearch` else `DataSearch`                                                             |
-| showCodeSandbox   |   `no`   | `boolean` |    `true`     | If false hides `Open in CodeSandbox` button                                                                    |
-| customProps       |   `no`   | `object`  |     `{}`      | To pass props directly to Reactive Components like `ReactiveList`, `MultiList`, `CategorySearch`, `DataSearch` |
-| attribution       |   `no`   | `object`  |       -       | Pass `text` and `link` key in object to be displayed at bottom right in codesandbox                            |
+| Prop               | Required |   Type    | Default Value | Description                                                                                                    |
+| :----------------- | :------: | :-------: | :-----------: | :------------------------------------------------------------------------------------------------------------- |
+| appName            |  `yes`   | `string`  |       -       | Name of the app.                                                                                               |
+| appId              |   `no`   | `string`  |       -       | App id                                                                                                         |
+| isDashboard        |   `no`   | `boolean` |    `false`    | Prefrences handling and profile view                                                                           |
+| useCategorySearch  |   `no`   | `boolean` |    `false`    | If true renders `CategorySearch` else `DataSearch`                                                             |
+| showCodeSandbox    |   `no`   | `boolean` |    `true`     | If false hides `Open in CodeSandbox` button                                                                    |
+| customProps        |   `no`   | `object`  |     `{}`      | To pass props directly to Reactive Components like `ReactiveList`, `MultiList`, `CategorySearch`, `DataSearch` |
+| attribution        |   `no`   | `object`  |       -       | Pass `text` and `link` key in object to be displayed at bottom right in codesandbox                            |
+| showCodePreview    |   `no`   | `boolean` |    `true`     | If false hides `Code Preview` button                                                                           |
+| showCustomList     |   `no`   | `boolean` |    `true`     | If false hides `Customizing ReactiveList` button                                                               |
+| showProfileOptions |   `no`   | `boolean` |    `true`     | If false hides `Profile` Dropdown                                                                              |
 
 ## Example
 
@@ -139,4 +142,28 @@ import Editor from 'batteries/components/SearchSandbox/containers/Editor';
 >
 	<Editor />
 </SearchSandbox>
+```
+
+### Shared - Input
+
+Use this components to render Input components.
+
+| Component     | Description                                                        |
+| :------------ | :----------------------------------------------------------------- |
+| NumberInput   | Render input of type number.                                       |
+| DropdownInput | Render dropdown input with search functionality to filter options. |
+| ToggleInput   | Renders Switch component that is either true or false.             |
+| TextInput     | Render input of type text.                                         |
+
+### How this input works
+
+```js
+// handleChange returns an object - { [name]: updateValue }
+<TextInput
+	name="title"
+	value="Hey"
+	handleChange={value => this.setState({ ...value })} // value = { title: updatedValue }
+/>;
+
+console.log(this.state.title); // New Updated Value
 ```

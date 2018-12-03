@@ -26,7 +26,6 @@ class DropdownInput extends React.Component {
 			<Select
 				showSearch
 				value={value}
-				placeholder="Select Font family"
 				optionFilterProp="children"
 				onChange={this.handleDropdownChange}
 				filterOption={
