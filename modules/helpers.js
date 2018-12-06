@@ -7,6 +7,9 @@ export const getPlanFromTier = (tier) => {
 			return 'bootstrap';
 		case 'growth-monthly':
 		case 'growth-annual':
+		// consider below plans same as growth level restriction (coming from shopify plugin)
+		case 'startup-monthly':
+		case 'business-monthly':
 			return 'growth';
 		default:
 			return 'free';
