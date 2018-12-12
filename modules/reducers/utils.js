@@ -6,15 +6,20 @@ export const computePlan = ({ payload }) => {
 	const isBootstrapAnnual = payload.tier === 'bootstrap-annual';
 	const isGrowthMonthly = payload.tier === 'growth-monthly';
 	const isGrowthAnnual = payload.tier === 'growth-annual';
+	// consider below plans same as growth level restriction (coming from shopify plugin)
+	const isStartupMonthly = payload.tier === 'startup-monthly';
+	const isBusinessMonthly = payload.tier === 'business-monthly';
 	return {
 		...payload,
 		isBootstrapMonthly,
 		isBootstrapAnnual,
 		isGrowthMonthly,
 		isGrowthAnnual,
+		isStartupMonthly,
+		isBusinessMonthly,
 		isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
-		isGrowth: isGrowthMonthly || isGrowthAnnual,
-		isPaid: isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual,
+		isGrowth: isGrowthMonthly || isGrowthAnnual || isStartupMonthly || isBusinessMonthly,
+		isPaid: isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual || isStartupMonthly || isBusinessMonthly,
 		plan: getPlanFromTier(payload.tier),
 		daysLeft: payload.tier_validity
 			? Math.ceil((payload.tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60))

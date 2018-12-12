@@ -6,12 +6,12 @@ export default {
 		input: 'dropdown',
 		multiple: true,
 	},
-  categoryField: {
-    label: 'Category Field',
+	categoryField: {
+		label: 'Category Field',
 		description: 'Select data field which has the category values mapped.',
 		types: ['keyword', 'integer', 'float', 'double', 'date'],
 		input: 'dropdown',
-  },
+	},
 	title: {
 		label: 'Title',
 		description: '',
@@ -39,16 +39,21 @@ export default {
 		description: 'Total number of suggestions to fetch (applicable if autosuggest is enabled).',
 		input: 'number',
 		default: 10,
+		min: 0,
 	},
 	fuzziness: {
 		label: 'Typo Tolerance',
-		description: 'Set the typo tolerance level of the search query. 0 implies no typos, 1 implies 1 character typo is tolerated and so on.',
+		description:
+			'Set the typo tolerance level of the search query. 0 implies no typos, 1 implies 1 character typo is tolerated and so on.',
 		input: 'number',
 		default: 0,
+		min: 0,
+		max: 2,
 	},
 	queryFormat: {
 		label: 'Match All or Any',
-		description: 'When multiple search terms are present, should All be matched or should Any term be matched.',
+		description:
+			'When multiple search terms are present, should All be matched or should Any term be matched.',
 		input: 'dropdown',
 		options: [{ label: 'Or', key: 'or' }, { label: 'And', key: 'and' }],
 		default: 'Or',

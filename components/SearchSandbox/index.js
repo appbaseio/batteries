@@ -7,12 +7,14 @@ import get from 'lodash/get';
 import { connect } from 'react-redux';
 
 import Header from './components/Header';
+import Walkthrough from '../shared/Walkthrough';
 import { getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
 import { getAppMappings as getMappings } from '../../modules/actions';
 import { getRawMappingsByAppName } from '../../modules/selectors';
+import { TextInput } from '../shared/Input';
 
 const wrapper = css`
 	padding: 15px;
@@ -30,7 +32,7 @@ class SearchSandbox extends Component {
 			profileList: ['default'],
 			configs: [],
 			mappings: null,
-			filterCount: 0,
+			filterCount: 0, // Tracks the id of MultiList
 			componentProps: {},
 			loading: true,
 		};
@@ -290,14 +292,14 @@ class SearchSandbox extends Component {
 			customProps,
 			isDashboard,
 			showCodeSandbox,
+			showCodePreview,
+			showCustomList,
+			showProfileOption,
 			useCategorySearch,
 		} = this.props;
 		const {
-			mappingsType,
-			componentProps,
-			filterCount,
-			profile,
-		} = this.state;
+			mappingsType, componentProps, filterCount, profile,
+		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
 			appName: appName || null,
@@ -315,6 +317,8 @@ class SearchSandbox extends Component {
 			showCodeSandbox,
 			setFilterCount: this.setFilterCount,
 			deleteComponent: this.deleteComponent,
+			showCodePreview,
+			showCustomList,
 		};
 
 		return (
@@ -323,12 +327,14 @@ class SearchSandbox extends Component {
 					<Header
 						isDashboard={isDashboard}
 						showCodeSandbox={showCodeSandbox}
+						showProfileOption={showProfileOption}
 						profileList={profileList}
 						defaultProfile={profile}
 						setProfile={this.setProfile}
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
 					/>
+					<Walkthrough component="SearchPreview" />
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
 							{props => React.cloneElement(child, { ...props })}
@@ -352,12 +358,18 @@ SearchSandbox.propTypes = {
 	getAppMappings: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
 	customProps: PropTypes.object,
+	showCodePreview: PropTypes.bool,
+	showProfileOption: PropTypes.bool,
+	showCustomList: PropTypes.bool,
 };
 
 SearchSandbox.defaultProps = {
 	appId: null,
 	attribution: null,
 	showCodeSandbox: true,
+	showCodePreview: true,
+	showProfileOption: true,
+	showCustomList: true,
 	isDashboard: false,
 	url: SCALR_API,
 	useCategorySearch: false,

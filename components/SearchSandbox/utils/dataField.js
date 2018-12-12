@@ -1,7 +1,7 @@
 import dataSearchTypes from './datasearch-types';
 import multiListTypes from './multilist-types';
 import reactiveListTypes from './reactivelist-types';
-import categorySearchTypes from '../utils/categorysearch-types';
+import categorySearchTypes from './categorysearch-types';
 
 const propsMap = {
 	DataSearch: dataSearchTypes,
@@ -10,24 +10,43 @@ const propsMap = {
 	CategorySearch: categorySearchTypes,
 };
 
-const getSubFields = (mappings, field, types) => (
-		mappings[field] && mappings[field].fields && mappings[field].fields.length
-			? [
+export const getAvailableDataField = ({ id, component, mappings }) => {
+	const { types } = propsMap[component].dataField;
+
+	if (id === 'search') {
+		return Object.keys(mappings).filter(field => types.includes(mappings[field].type));
+	}
+
+	const fields = Object.keys(mappings).filter((field) => {
+		let fieldsToCheck = [mappings[field]];
+
+		if (mappings[field].originalFields) {
+			fieldsToCheck = [...fieldsToCheck, ...Object.values(mappings[field].originalFields)];
+		}
+
+		return fieldsToCheck.some(item => types.includes(item.type));
+	});
+
+	return fields;
+};
+
+const getSubFields = (mappings, field, types) => (mappings[field] && mappings[field].fields && mappings[field].fields.length
+		? [
 				...mappings[field].fields
-				.filter(item => types.includes(mappings[field].originalFields[item].type))
-				.map(item => `${field}.${item}`),
-			]
+					.filter(item => types.includes(mappings[field].originalFields[item].type))
+					.map(item => `${field}.${item}`),
+		  ]
 		: [field]);
 
 const getKeywordField = fields => Object.keys(fields).find((item) => {
-	if (
-		fields[item].type === 'keyword'
-		|| (fields[item].index === 'not_analyzed' && fields[item].type === 'string')
-	) {
-		return true;
-	}
-	return false;
-});
+		if (
+			fields[item].type === 'keyword'
+			|| (fields[item].index === 'not_analyzed' && fields[item].type === 'string')
+		) {
+			return true;
+		}
+		return false;
+	});
 
 // generates the dataField prop for reactivesearch component
 // based on the selected-field(s)
@@ -56,15 +75,14 @@ const generateDataField = (component, selectedFields, mappings) => {
 	return validFields ? validFields[0] : null;
 };
 
-const getSubFieldWeights = (mappings, field, defaultWeight = 1) => (
-		mappings[field] && mappings[field].fields && mappings[field].fields.length
+const getSubFieldWeights = (mappings, field, defaultWeight = 1) => (mappings[field] && mappings[field].fields && mappings[field].fields.length
 		? [
-			...mappings[field].fields.map((item) => {
-				let weight = 1;
-				if (item === 'keyword') weight = defaultWeight;
-				return parseInt(weight, 10);
-			}),
-		]
+				...mappings[field].fields.map((item) => {
+					let weight = 1;
+					if (item === 'keyword') weight = defaultWeight;
+					return parseInt(weight, 10);
+				}),
+		  ]
 		: []);
 
 const generateFieldWeights = (selectedFields, weights, mappings) => {

@@ -49,7 +49,7 @@ const Analytics = ({
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
 	}
-	return ( 
+	return (
 		<React.Fragment>
 			<Card css="margin-bottom: 20px" title="Summary">
 				<Summary />

@@ -20,7 +20,7 @@ class PopularSearches extends React.Component {
 		this.state = {
 			isFetching: true,
 			popularSearches: [],
-		}; 
+		};
 	}
 
 	componentDidMount() {

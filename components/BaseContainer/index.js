@@ -45,11 +45,15 @@ class BaseContainer extends Component {
 			isAppPlanFetched,
 			isAppInfoPresent,
 		} = this.props;
-		if (shouldFetchAppInfo && !isAppInfoPresent && appId) {
+		const shouldFetchApp = shouldFetchAppInfo && !isAppInfoPresent && appId;
+		const shouldFetchPlan = shouldFetchAppPlan && !isAppPlanFetched;
+		if (shouldFetchApp) {
 			fetchAppInfo(appId);
-		} else if (shouldFetchAppPlan && !isAppPlanFetched) {
+		}
+		if (shouldFetchPlan) {
 			fetchAppPlan(appName);
-		} else {
+		} 
+		if(!shouldFetchApp && !shouldFetchApp) {
 			this.setState({
 				isLoading: false,
 			});
