@@ -334,7 +334,7 @@ class SearchSandbox extends Component {
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
 					/>
-					<Walkthrough component="SearchPreview" joyrideSteps={joyrideSteps} />
+					<Walkthrough id="SearchPreview" joyrideSteps={joyrideSteps} />
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
 							{props => React.cloneElement(child, { ...props })}

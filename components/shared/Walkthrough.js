@@ -49,28 +49,26 @@ class Walkthrough extends React.Component {
 
 	getTutorialStatus = () => {
 		let tutorialData = localStorage.getItem('tutorialData');
-		const { component } = this.props;
+		const { id } = this.props;
 		if (tutorialData) {
 			tutorialData = JSON.parse(tutorialData);
-			/* Edge Case : Whenever in future we will add other Walkthrough than existing
-			user may get error */
-			if (!tutorialData[component]) {
-				tutorialData[component] = false;
+			if (!tutorialData[id]) {
+				tutorialData[id] = false;
 				localStorage.setItem('tutorialData', JSON.stringify(tutorialData));
 			}
 		} else {
-			tutorialData = { [component]: false };
+			tutorialData = { [id]: false };
 			localStorage.setItem('tutorialData', JSON.stringify(tutorialData));
 		}
-		return tutorialData[component];
+		return tutorialData[id];
 	};
 
 	setTutorialStatus = () => {
-		const { component } = this.props;
+		const { id } = this.props;
 		const tutorialData = localStorage.getItem('tutorialData');
 		if (tutorialData) {
 			const parsedTutorialData = JSON.parse(tutorialData);
-			parsedTutorialData[component] = true;
+			parsedTutorialData[id] = true;
 			localStorage.setItem('tutorialData', JSON.stringify(parsedTutorialData));
 		}
 	};
@@ -78,7 +76,7 @@ class Walkthrough extends React.Component {
 	render() {
 		const { showTutorial, tutorialCompleted, stepIndex } = this.state;
 
-		const { component, showWalkthrough, joyrideSteps } = this.props;
+		const { showWalkthrough, joyrideSteps } = this.props;
 		return showWalkthrough ? (
 			<React.Fragment>
 				<div
@@ -126,12 +124,14 @@ class Walkthrough extends React.Component {
 }
 
 Walkthrough.propTypes = {
-	component: PropTypes.string.isRequired,
+	id: PropTypes.string.isRequired,
 	showWalkthrough: PropTypes.bool,
+	joyrideSteps: PropTypes.array,
 };
 
 Walkthrough.defaultProps = {
 	showWalkthrough: true,
+	joyrideSteps: [],
 };
 
 export default Walkthrough;
