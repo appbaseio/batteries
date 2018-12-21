@@ -41,6 +41,8 @@ export const card = css`
 export const cardTitle = css`
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
+
 	h4 {
 		font-weight: 600;
 		margin: 5px 0;
