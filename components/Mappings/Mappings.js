@@ -19,7 +19,7 @@ import {
 	closeIndex,
 	openIndex,
 	getSettings,
-	updateSynonyms,
+	updateSynonyms as updateSynonymsData,
 	REMOVED_KEYS,
 	getTypesFromMapping,
 	getESVersion,
@@ -110,7 +110,7 @@ class Mappings extends Component {
 			showFeedback: false,
 			timeTaken: '0',
 			synonyms: [],
-			credentials: '',
+			synonymsLoading: false,
 			showSynonymModal: false,
 			esVersion: '5',
 		};
@@ -687,8 +687,12 @@ class Mappings extends Component {
 		));
 
 	updateSynonyms = () => {
-		const credentials = this.props.credentials || this.state.credentials;
+		const credentials = this.props.appbaseCredentials;
 		const { url } = this.props;
+
+		this.setState({
+			synonymsLoading: true
+		})
 
 		const synonyms = this.state.synonyms.split('\n').map(pair => pair
 				.split(',')
@@ -696,19 +700,21 @@ class Mappings extends Component {
 				.join(','));
 
 		closeIndex(this.props.appName, credentials, url)
-			.then(() => updateSynonyms(this.props.appName, credentials, url, synonyms))
+			.then(() => updateSynonymsData(this.props.appName, credentials, url, synonyms))
 			.then(data => data.acknowledged)
 			.then((isUpdated) => {
 				if (isUpdated) {
 					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
-							synonyms: newSynonyms,
-							showSynonymModal: false,
-						}));
+						synonyms: newSynonyms,
+						showSynonymModal: false,
+						synonymsLoading: false,
+					}));
 				} else {
 					this.setState({
 						showSynonymModal: false,
 						showError: true,
 						errorMessage: 'Unable to update Synonyms',
+						synonymsLoading: false,
 					});
 				}
 			})
@@ -719,6 +725,7 @@ class Mappings extends Component {
 					showSynonymModal: false,
 					showError: true,
 					errorMessage: 'Unable to update Synonyms',
+					synonymsLoading: false,
 				});
 			});
 	};
@@ -754,7 +761,7 @@ class Mappings extends Component {
 
 							{this.state.editable ? (
 								<Button type="primary" onClick={this.handleSynonymModal}>
-									{this.state.synonyms ? 'Edit' : 'Add'} Synonym
+									{`${this.state.synonyms ? 'Edit' : 'Add'} Synonyms`}
 								</Button>
 							) : (
 								this.renderPromotionalButtons('synonyms', synonymMessage)
@@ -865,7 +872,8 @@ class Mappings extends Component {
 					visible={this.state.showSynonymModal}
 					onOk={this.updateSynonyms}
 					title="Add Synonym"
-					okText={this.state.synonyms ? 'Save Synonym' : 'Add Synonym'}
+					okText={this.state.synonyms ? 'Save Synonym' : 'Update Synonym'}
+					okButtonProps={{ loading: this.state.synonymsLoading }}
 					onCancel={this.handleSynonymModal}
 				>
 					<TextArea
