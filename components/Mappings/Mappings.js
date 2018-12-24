@@ -19,7 +19,7 @@ import {
 	closeIndex,
 	openIndex,
 	getSettings,
-	updateSynonyms,
+	updateSynonyms as updateSynonymsData,
 	REMOVED_KEYS,
 	getTypesFromMapping,
 	getESVersion,
@@ -102,6 +102,7 @@ class Mappings extends Component {
 			dirty: false,
 			showModal: false,
 			isLoading: true,
+			isReIndexing: false,
 			errorMessage: '',
 			showError: false,
 			errorLength: 0,
@@ -110,7 +111,7 @@ class Mappings extends Component {
 			showFeedback: false,
 			timeTaken: '0',
 			synonyms: [],
-			credentials: '',
+			synonymsLoading: false,
 			showSynonymModal: false,
 			esVersion: '5',
 		};
@@ -150,7 +151,12 @@ class Mappings extends Component {
 			isFetchingMapping,
 		} = this.props;
 
-		if (!isEqual(prevProps.mapping, mapping)) {
+		const { isLoading } = this.state;
+
+		if (
+			!isEqual(prevProps.mapping, mapping)
+			|| (isLoading && mapping)
+		) {
 			this.handleMapping(mapping);
 		}
 
@@ -178,20 +184,12 @@ class Mappings extends Component {
 			url,
 			mapping,
 			appbaseCredentials,
-			isFetchingMapping,
 		} = this.props;
 
 		// initialise or update current app state
 		updateCurrentApp(appName, appId);
 
-		if (mapping && !isFetchingMapping) {
-			// if mapping already exists:
-			// set existing mappings:
-			this.handleMapping(mapping);
-
-			// get synonyms
-			this.initializeSynonymsData();
-		} else if (url) {
+		if (url) {
 			// get mappings for non-appbase apps
 			getAppMappings(appName, credentials, url);
 		} else {
@@ -201,6 +199,7 @@ class Mappings extends Component {
 			if (appbaseCredentials && !mapping) {
 				// 2. get mappings if we have credentials
 				getAppMappings(appName, appbaseCredentials);
+				this.initializeSynonymsData();
 			} else if (!appbaseCredentials) {
 				// 2. get credentials (if not found) - before fetching mappings and synonyms
 				getPermission(appName);
@@ -379,7 +378,7 @@ class Mappings extends Component {
 
 	reIndex = () => {
 		this.setState({
-			isLoading: true,
+			isReIndexing: true,
 		});
 
 		const {
@@ -404,7 +403,7 @@ class Mappings extends Component {
 			})
 			.catch((err) => {
 				this.setState({
-					isLoading: false,
+					isReIndexing: false,
 					showError: true,
 					errorLength: Array.isArray(err) && err.length,
 					errorMessage: JSON.stringify(err, null, 4),
@@ -687,8 +686,12 @@ class Mappings extends Component {
 		));
 
 	updateSynonyms = () => {
-		const credentials = this.props.credentials || this.state.credentials;
+		const credentials = this.props.appbaseCredentials;
 		const { url } = this.props;
+
+		this.setState({
+			synonymsLoading: true
+		})
 
 		const synonyms = this.state.synonyms.split('\n').map(pair => pair
 				.split(',')
@@ -696,19 +699,21 @@ class Mappings extends Component {
 				.join(','));
 
 		closeIndex(this.props.appName, credentials, url)
-			.then(() => updateSynonyms(this.props.appName, credentials, url, synonyms))
+			.then(() => updateSynonymsData(this.props.appName, credentials, url, synonyms))
 			.then(data => data.acknowledged)
 			.then((isUpdated) => {
 				if (isUpdated) {
 					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
-							synonyms: newSynonyms,
-							showSynonymModal: false,
-						}));
+						synonyms: newSynonyms,
+						showSynonymModal: false,
+						synonymsLoading: false,
+					}));
 				} else {
 					this.setState({
 						showSynonymModal: false,
 						showError: true,
 						errorMessage: 'Unable to update Synonyms',
+						synonymsLoading: false,
 					});
 				}
 			})
@@ -719,6 +724,7 @@ class Mappings extends Component {
 					showSynonymModal: false,
 					showError: true,
 					errorMessage: 'Unable to update Synonyms',
+					synonymsLoading: false,
 				});
 			});
 	};
@@ -754,7 +760,7 @@ class Mappings extends Component {
 
 							{this.state.editable ? (
 								<Button type="primary" onClick={this.handleSynonymModal}>
-									{this.state.synonyms ? 'Edit' : 'Add'} Synonym
+									{`${this.state.synonyms ? 'Edit' : 'Add'} Synonyms`}
 								</Button>
 							) : (
 								this.renderPromotionalButtons('synonyms', synonymMessage)
@@ -847,7 +853,7 @@ class Mappings extends Component {
 					deletedPaths={this.state.deletedPaths}
 				/>
 				<Loader
-					show={this.state.isLoading}
+					show={this.state.isReIndexing}
 					message="Re-indexing your data... Please wait!"
 				/>
 				<ErrorModal
@@ -865,7 +871,8 @@ class Mappings extends Component {
 					visible={this.state.showSynonymModal}
 					onOk={this.updateSynonyms}
 					title="Add Synonym"
-					okText={this.state.synonyms ? 'Save Synonym' : 'Add Synonym'}
+					okText={this.state.synonyms ? 'Save Synonym' : 'Update Synonym'}
+					okButtonProps={{ loading: this.state.synonymsLoading }}
 					onCancel={this.handleSynonymModal}
 				>
 					<TextArea
