@@ -116,9 +116,13 @@ class PreviewList extends React.Component {
 				const description = getNestedValue(res, descriptionKey);
 				const image = getNestedValue(res, imageKey);
 				return (
-					<Row type="flex" gutter={16} key={res._id}>
+					<Row type="flex" gutter={16} style={{ marginBottom: 10 }} key={res._id}>
 						<Col span={image ? 6 : 0}>
-							<img src={image} alt={title || 'Choose a valid Title Field for alt'} />
+							<img
+								style={{ width: '100%' }}
+								src={image}
+								alt={title || 'Choose a valid Title Field for alt'}
+							/>
 						</Col>
 						<Col span={image ? 18 : 24}>
 							<h3 style={{ fontWeight: '600' }}>
