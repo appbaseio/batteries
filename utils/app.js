@@ -50,7 +50,7 @@ export const newPermission = (appId, info) => new Promise((resolve, reject) => {
 
 export const deletePermission = (appId, username) => new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
-		fetch(`${ACC_API}/app/${appId}/permission/${username}`, {
+		fetch(`${ACC_API}/_permission/${username}`, {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export const deletePermission = (appId, username) => new Promise((resolve, rejec
 			.catch(error => reject(error));
 	});
 
-export const deleteApp = appId => doDelete(`${ACC_API}/app/${appId}`);
+export const deleteApp = appId => doDelete(`${ACC_API}/${appId}`);
 
 export const getShare = appId => doGet(`${ACC_API}/app/${appId}/share`);
 

@@ -159,7 +159,7 @@ export function reIndex(mappings, appId, excludeFields, type, version = '5', cre
 		es_version: version,
 	};
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/_reindex/${appId}/`, {
+		fetch(`${ACC_API}/_reindex/${appId}`, {
 			method: 'POST',
 			headers: {
 				...getAuthHeaders(credentials),
