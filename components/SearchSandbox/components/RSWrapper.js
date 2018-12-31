@@ -3,14 +3,9 @@ import {
 	Row,
 	Col,
 	Form,
-	Input,
-	Switch,
 	Button,
 	Modal,
 	Table,
-	Menu,
-	Icon,
-	Dropdown,
 	Popover,
 	message,
 } from 'antd';
@@ -28,12 +23,12 @@ import { generateDataField, generateFieldWeights } from '../utils/dataField';
 import constants from '../utils/constants';
 import { getComponentCode } from '../template';
 import PreviewList from './PreviewList';
+import {
+ DropdownInput, NumberInput, TextInput, ToggleInput,
+} from '../../shared/Input';
 
 import {
-	deleteStyles,
-	rowStyles,
-	formWrapper,
-	componentStyles,
+ deleteStyles, rowStyles, formWrapper, componentStyles,
 } from '../styles';
 
 const componentMap = {
@@ -58,8 +53,6 @@ export default class RSWrapper extends Component {
 			showModal: false,
 			componentProps: props.componentProps,
 			error: '',
-			isInputActive: false,
-			searchTerm: '',
 			previewModal: false,
 		};
 
@@ -112,7 +105,9 @@ export default class RSWrapper extends Component {
 
 	getCategoryField = () => {
 		const { component, mappings } = this.props;
-		const { categoryField: { types } } = propsMap[component];
+		const {
+			categoryField: { types },
+		} = propsMap[component];
 
 		const fields = Object.keys(mappings).filter((field) => {
 			let fieldsToCheck = [mappings[field]];
@@ -128,21 +123,16 @@ export default class RSWrapper extends Component {
 		});
 
 		return fields;
-	}
+	};
 
-	setError = (error) => {
-		this.setState(
-			{
-				error,
+	setComponentProps = (newProps) => {
+		const { componentProps } = this.state;
+		this.setState({
+			componentProps: {
+				...componentProps,
+				...newProps,
 			},
-			() => {
-				setTimeout(() => {
-					this.setState({
-						error: '',
-					});
-				}, 3000);
-			},
-		);
+		});
 	};
 
 	resetComponentProps = () => {
@@ -175,135 +165,42 @@ export default class RSWrapper extends Component {
 		});
 	};
 
-	handleDataFieldChange = (item) => {
-		const dataField = item.key;
-		const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				dataField,
-			},
-		});
-	};
-
-	handleSwitchPropChange = (name, value) => {
-	const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handlePropChange = (e) => {
-		const { name, value } = e.target;
-		const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handleDropdownBlur = () => {
-		this.setState({
-			isInputActive: false,
-		});
-	}
-
-	handleDropdownChange = (e, name) => {
-		const { componentProps } = this.state;
-		const value = e.key;
-		this.setState({
-			isInputActive: false,
-			componentProps: {
-				...componentProps,
-				[name]: value,
-			},
-		});
-	};
-
-	handleDropdownSearch = (e) => {
-		const { target: { name, value } } = e;
-		this.setState({
-			isInputActive: true,
-			[name]: value,
-		});
-	}
-
-	handleSearchDataFieldChange = (item) => {
-		const field = item.key;
-		const index = item.item.props.value;
+	handleSearchDataFieldChange = (valueObject) => {
 		const { componentProps } = this.state;
 
 		const dataField = Object.assign([], componentProps.dataField, {
-			[index]: field,
+			...valueObject,
 		});
-		this.setState({
-			componentProps: {
-				...componentProps,
-				dataField,
-			},
-		});
+		this.setComponentProps({ dataField });
 	};
 
 	handleSearchDataFieldDelete = (deleteIndex) => {
-	const { componentProps } = this.state;
-		this.setState({
-			componentProps: {
-				...componentProps,
-				dataField: componentProps.dataField.filter(
-					(i, index) => index !== deleteIndex,
-				),
-				fieldWeights: componentProps.fieldWeights.filter(
-					(i, index) => index !== deleteIndex,
-				),
-			},
-		});
-	};
-
-	handleMultipleDropdown = (value, name) => {
-		let selectedValue = value;
 		const { componentProps } = this.state;
-		if (selectedValue.includes('*')) {
-			selectedValue = ['*'];
-		}
-		this.setState({
-			componentProps: {
-				...componentProps,
-				[name]: selectedValue,
-			},
+		this.setComponentProps({
+			dataField: componentProps.dataField.filter((i, index) => index !== deleteIndex),
+			fieldWeights: componentProps.fieldWeights.filter((i, index) => index !== deleteIndex),
 		});
 	};
 
-	handleSearchWeightChange = (index, value) => {
-	const { componentProps } = this.state;
+	handleSearchWeightChange = (newValueObject) => {
+		const { componentProps } = this.state;
 		const fieldWeights = Object.assign([], componentProps.fieldWeights, {
-			[index]: value,
+			...newValueObject,
 		});
-		this.setState({
-			componentProps: {
-				...componentProps,
-				fieldWeights,
-			},
-		});
+
+		this.setComponentProps({ fieldWeights });
 	};
 
 	handleAddFieldRow = () => {
-	const { componentProps } = this.state;
+		const { componentProps } = this.state;
 		const field = this.getAvailableDataField().find(
 			item => !componentProps.dataField.includes(item),
 		);
 
 		if (field) {
-			this.setState({
-				componentProps: {
-					...componentProps,
-					dataField: [...componentProps.dataField, field],
-					fieldWeights: [...componentProps.fieldWeights, 1],
-				},
+			this.setComponentProps({
+				dataField: [...componentProps.dataField, field],
+				fieldWeights: [...componentProps.fieldWeights, 1],
 			});
 		}
 	};
@@ -327,8 +224,8 @@ export default class RSWrapper extends Component {
 
 	renderComponentCode = () => {
 		const {
-			component, id, mappings, componentProps, customProps,
-		} = this.props;
+ component, id, mappings, componentProps, customProps,
+} = this.props;
 		const customComponentProps = customProps[component];
 
 		const config = {
@@ -365,29 +262,18 @@ export default class RSWrapper extends Component {
 				dataIndex: 'field',
 				key: 'field',
 				render: (selected, x, index) => {
-					const menu = (
-						<Menu
-							onClick={this.handleSearchDataFieldChange}
-							style={{ maxHeight: 300, overflowY: 'scroll' }}
-						>
-							{fields
-								.filter(
-									item => item === selected
-										|| !componentProps.dataField.includes(item),
-								)
-								.map(item => (
-									<Menu.Item key={item} value={index}>
-										{item}
-									</Menu.Item>
-								))}
-						</Menu>
-					);
+					const options = fields
+						.filter(
+							item => item === selected || !componentProps.dataField.includes(item),
+						)
+						.map(item => ({ label: item, key: item }));
 					return (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button style={{ marginLeft: 8 }}>
-								{selected} <Icon type="down" />
-							</Button>
-						</Dropdown>
+						<DropdownInput
+							options={options}
+							name={index}
+							value={selected}
+							handleChange={this.handleSearchDataFieldChange}
+						/>
 					);
 				},
 			},
@@ -396,11 +282,12 @@ export default class RSWrapper extends Component {
 				dataIndex: 'weight',
 				key: 'weight',
 				render: (value, x, index) => (
-					<Input
+					<NumberInput
 						min={1}
-						type="number"
-						defaultValue={value}
-						onChange={e => this.handleSearchWeightChange(index, e.target.value)}
+						value={Number(value)}
+						name={index}
+						placeholder="Enter Field Weight"
+						handleChange={this.handleSearchWeightChange}
 					/>
 				),
 			},
@@ -439,30 +326,23 @@ export default class RSWrapper extends Component {
 	};
 
 	renderFormItem = (item, name) => {
-	const { componentProps, mappings } = this.props;
+		const { componentProps, mappings } = this.props;
 		let FormInput = null;
-		const value = componentProps[name] !== undefined
-				? componentProps[name]
-				: item.default;
+		const value = componentProps[name] !== undefined ? componentProps[name] : item.default;
 
 		switch (item.input) {
 			case 'bool': {
 				FormInput = (
-					<Switch
-						defaultChecked={value}
-						onChange={val => this.handleSwitchPropChange(name, val)}
-					/>
+					<ToggleInput value={value} name={name} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
 			case 'number': {
 				FormInput = (
-					<Input
+					<NumberInput
 						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						type="number"
-						placeholder={`Enter ${name} here`}
+						value={Number(value)}
+						handleChange={this.setComponentProps}
 					/>
 				);
 				break;
@@ -475,16 +355,22 @@ export default class RSWrapper extends Component {
 
 				const {
 					onPropChange, id, component, mappingsURL,
-				} = this.props;
-				const { componentProps: stateComponentProps, isInputActive, searchTerm } = this.state;
+				} = this.props; // prettier-ignore
+				const { componentProps: stateComponentProps } = this.state;
 
 				if (name === 'categoryField') {
-					noOptionsMessage = <p style={{ lineHeight: '1.5' }}>There are no compatible fields present in your data mappings. <a href={mappingsURL}>You can edit your mappings</a> (agggregation components)</p>;
+					noOptionsMessage = (
+						<p style={{ lineHeight: '1.5' }}>
+							There are no compatible fields present in your data mappings.{' '}
+							<a href={mappingsURL}>You can edit your mappings</a> (agggregation
+							components)
+						</p>
+					);
 
 					this.getCategoryField().forEach(field => dropdownOptions.push({
-						label: field,
-						key: field,
-					}));
+							label: field,
+							key: field,
+						}));
 
 					if (dropdownOptions.length) {
 						if (!stateComponentProps.categoryField) {
@@ -493,68 +379,38 @@ export default class RSWrapper extends Component {
 							});
 						}
 
-						selectedDropdown = dropdownOptions
-							.find(option => option.key === stateComponentProps[name]);
+						selectedDropdown = dropdownOptions.find(
+							option => option.key === stateComponentProps[name],
+						);
 						selectedValue = selectedDropdown
-						? selectedDropdown.label
-						: dropdownOptions[0].label;
+							? selectedDropdown.label
+							: dropdownOptions[0].label;
 					}
 				} else {
 					dropdownOptions = propsMap[component][name].options;
-					selectedDropdown = dropdownOptions
-						.find(option => option.key === stateComponentProps[name]);
+					selectedDropdown = dropdownOptions.find(
+						option => option.key === stateComponentProps[name],
+					);
 					selectedValue = selectedDropdown
 						? selectedDropdown.label
 						: propsMap[component][name].default;
 				}
 
-				if (isInputActive) {
-					dropdownOptions = dropdownOptions
-						.filter(option => option.label.toLowerCase().includes(searchTerm.toLowerCase()));
-				}
-
-				if (!dropdownOptions.length) {
-					dropdownOptions.push({ label: 'No options', key: '' });
-				}
-				const menu = (
-					<Menu
-						onClick={e => this.handleDropdownChange(e, name)}
-						style={{ maxHeight: 300, overflowY: 'scroll' }}
-					>
-						{dropdownOptions.map(({ label: dropLabel, key }) => (
-							<Menu.Item key={key}>{dropLabel}</Menu.Item>
-						))}
-					</Menu>
+				FormInput = (
+					<DropdownInput
+						options={dropdownOptions}
+						handleChange={this.setComponentProps}
+						value={selectedValue}
+						name={name}
+						noOptionsMessage={noOptionsMessage}
+					/>
 				);
-
-				FormInput = dropdownOptions.length ? (
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Input
-							style={{
-								width: '100%',
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-							}}
-							name="searchTerm"
-							onBlur={this.handleDropdownBlur}
-							value={isInputActive ? searchTerm : selectedValue}
-							defaultValue={selectedValue}
-							onChange={this.handleDropdownSearch}
-						/>
-					</Dropdown>
-				) : noOptionsMessage;
 				break;
 			}
 
 			default: {
 				FormInput = (
-					<Input
-						name={name}
-						defaultValue={value}
-						onChange={this.handlePropChange}
-						placeholder={`Enter ${name} here`}
-					/>
+					<TextInput name={name} value={value} handleChange={this.setComponentProps} />
 				);
 				break;
 			}
@@ -576,16 +432,12 @@ export default class RSWrapper extends Component {
 		const propNames = propsMap[component];
 		const { dataField } = stateComponentProps;
 		const fields = this.getAvailableDataField();
-		const menu = (
-			<Menu
-				onClick={this.handleDataFieldChange}
-				style={{ maxHeight: 300, overflowY: 'scroll' }}
-			>
-				{fields.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-			</Menu>
-		);
+
+		const fieldsOptions = [];
+		fields.map(field => fieldsOptions.push({
+				key: field,
+				label: field,
+			}));
 
 		return (
 			<Form onSubmit={this.handleSubmit} className={formWrapper}>
@@ -604,18 +456,13 @@ export default class RSWrapper extends Component {
 					{id === 'search' ? (
 						this.renderDataFieldTable()
 					) : (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button
-								style={{
-									width: '100%',
-									display: 'flex',
-									justifyContent: 'space-between',
-									alignItems: 'center',
-								}}
-							>
-								{dataField} <Icon type="down" />
-							</Button>
-						</Dropdown>
+						<DropdownInput
+							value={dataField}
+							handleChange={this.setComponentProps}
+							options={fieldsOptions}
+							name="dataField"
+							noOptionsMessage="No Fields Present"
+						/>
 					)}
 				</Form.Item>
 				{Object.keys(propNames)
@@ -627,7 +474,16 @@ export default class RSWrapper extends Component {
 
 	render() {
 		const {
-			componentProps, component, id, mappings, customProps, full, showDelete, onDelete, showCodePreview, showCustomList
+			componentProps,
+			component,
+			id,
+			mappings,
+			customProps,
+			full,
+			showDelete,
+			onDelete,
+			showCodePreview,
+			showCustomList,
 		} = this.props;
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
@@ -666,23 +522,32 @@ export default class RSWrapper extends Component {
 				highlightField: componentProps.dataField,
 			};
 		}
-		const { componentProps: { metaFields, ...restProps } } = this.props;
+		const {
+			componentProps: { metaFields, ...restProps },
+		} = this.props;
 		const isMetaDataPresent = metaFields && metaFields.title && metaFields.description;
 
 		if (id === 'result' && isMetaDataPresent) {
 			const {
-				url: urlKey, title: titleKey, image: imageKey, description: descriptionKey,
+				url: urlKey,
+				title: titleKey,
+				image: imageKey,
+				description: descriptionKey,
 			} = metaFields;
 			otherProps = {
-					onData: (res) => {
-						const url = getNestedValue(res, urlKey);
-						const title = getNestedValue(res, titleKey);
-						const description = getNestedValue(res, descriptionKey);
-						const image = getNestedValue(res, imageKey);
-						const { renderJSONEditor, renderDeleteJSON } = this.props;
+				onData: (res) => {
+					const url = getNestedValue(res, urlKey);
+					const title = getNestedValue(res, titleKey);
+					const description = getNestedValue(res, descriptionKey);
+					const image = getNestedValue(res, imageKey);
+					const { renderJSONEditor, renderDeleteJSON } = this.props;
 
-						return (
-						<Row type="flex" key={res._id} style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}>
+					return (
+						<Row
+							type="flex"
+							key={res._id}
+							style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}
+						>
 							<Col span={image ? 6 : 0}>
 								<img style={{ width: '100%' }} src={image} alt={title} />
 							</Col>
@@ -690,9 +555,17 @@ export default class RSWrapper extends Component {
 								<h3 style={{ fontWeight: '600' }}>{title}</h3>
 								<p style={{ fontSize: '1em' }}>{description}</p>
 							</Col>
-							<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
-								{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />
-								: null}
+							<div
+								style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}
+							>
+								{url ? (
+									<Button
+										shape="circle"
+										icon="link"
+										style={{ marginRight: '5px' }}
+										onClick={() => window.open(url, '_blank')}
+									/>
+								) : null}
 								{renderJSONEditor(res)}
 								{renderDeleteJSON(res)}
 							</div>
@@ -706,7 +579,7 @@ export default class RSWrapper extends Component {
 			delete restProps.sortBy;
 		}
 
-		const showPreview =	component === 'ReactiveList';
+		const showPreview = component === 'ReactiveList';
 		const customComponentProps = customProps[component];
 
 		return (
@@ -793,11 +666,7 @@ export default class RSWrapper extends Component {
 						handlePreviewModal={this.handlePreviewModal}
 						handleSavePreview={this.handleSavePreview}
 						visible={previewModal}
-						dataField={generateDataField(
-							component,
-							componentProps.dataField,
-							mappings,
-						)}
+						dataField={generateDataField(component, componentProps.dataField, mappings)}
 					/>
 				) : null}
 			</div>
