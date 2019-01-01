@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import {
-	string,
-	object,
-	func,
-	bool,
+ string, object, func, bool,
 } from 'prop-types';
-import { Tooltip, Icon, Input, Popover } from 'antd';
+import {
+ Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu,
+} from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
@@ -27,30 +26,21 @@ import {
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
-import {
-	getRawMappingsByAppName,
-} from '../../modules/selectors';
-import {
-	setCurrentApp,
-	getAppMappings as getMappings,
-} from '../../modules/actions';
+import { getRawMappingsByAppName } from '../../modules/selectors';
+import { setCurrentApp, getAppMappings as getMappings } from '../../modules/actions';
 
 import {
 	card,
-	HeaderWrapper,
+	cardTitle,
 	Header,
-	heading,
 	row,
 	title,
 	dropdown,
 	item,
 	subItem,
 	Footer,
-	Button,
 	deleteBtn,
-	promotionContainer,
 } from './styles';
-import Modal from '../shared/Modal';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 
@@ -86,19 +76,18 @@ const synonymMessage = () => (
 
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
-	<Modal show={show} onClose={onClose}>
-		<h3>Re-index successful</h3>
-
+	<Modal
+		visible={show}
+		title="Re-index successful"
+		onOk={onClose}
+		closable={false}
+		onCancel={onClose}
+		okText="Done"
+	>
 		<p>
 			The mappings have been updated and the data has been successfully re-indexed in{' '}
 			{timeTaken}ms.
 		</p>
-
-		<div style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}>
-			<Button ghost onClick={onClose}>
-				Done
-			</Button>
-		</div>
 	</Modal>
 );
 
@@ -130,8 +119,8 @@ class Mappings extends Component {
 	async componentDidMount() {
 		this.init();
 
-		const { appName } = this.props;
-		const esVersion = await getESVersion(appName, credentials);
+		const { appName, appbaseCredentials } = this.props;
+		const esVersion = await getESVersion(appName, appbaseCredentials);
 
 		this.setState({
 			esVersion: esVersion.split('.')[0],
@@ -195,12 +184,11 @@ class Mappings extends Component {
 	initializeSynonymsData = () => {
 		const { appbaseCredentials } = this.props;
 
-		this.fetchSynonyms(appbaseCredentials)
-			.then((synonyms) => {
-				this.setState({
-					synonyms,
-				});
+		this.fetchSynonyms(appbaseCredentials).then((synonyms) => {
+			this.setState({
+				synonyms,
 			});
+		});
 	};
 
 	/**
@@ -267,8 +255,9 @@ class Mappings extends Component {
 			activeType = activeType.filter(field => field !== type);
 
 			// add all the fields to excludeFields
-			const deletedTypesPath = Object.keys(_mapping[type].properties)
-				.map(property => `${type}.properties.${property}`);
+			const deletedTypesPath = Object.keys(_mapping[type].properties).map(
+				property => `${type}.properties.${property}`,
+			);
 			deletedPaths = [...deletedPaths, ...deletedTypesPath];
 		} else {
 			deletedPaths = [..._deletedPaths, path];
@@ -324,11 +313,9 @@ class Mappings extends Component {
 		return getSettings(appName, credentials, url).then((data) => {
 			if (get(data[appName], 'settings.index')) {
 				const { index } = data[appName].settings;
-				return (
-					index.analysis && index.analysis.filter.synonyms_filter
-						? index.analysis.filter.synonyms_filter.synonyms.join('\n')
-						: ''
-				);
+				return index.analysis && index.analysis.filter.synonyms_filter
+					? index.analysis.filter.synonyms_filter.synonyms.join('\n')
+					: '';
 			}
 			return '';
 		});
@@ -369,11 +356,8 @@ class Mappings extends Component {
 		});
 
 		const {
-			deletedPaths,
-			activeType,
-			mapping,
-			esVersion,
-		} = this.state;
+ deletedPaths, activeType, mapping, esVersion,
+} = this.state;
 
 		const { appId, credentials } = this.props;
 
@@ -403,26 +387,17 @@ class Mappings extends Component {
 
 	renderUsecase = (field, fieldname) => {
 		if (field.type === 'text') {
-			const selected = field.fields
-				? this.getUsecase(field.fields, this.usecases)
-				: 'none';
+			const selected = field.fields ? this.getUsecase(field.fields, this.usecases) : 'none';
 
-			return (
-				<select
-					name="field-usecase"
-					defaultValue={selected}
-					className={dropdown}
-					onChange={(e) => {
-						this.setMapping(fieldname, 'text', e.target.value);
-					}}
-				>
-					{Object.entries(this.usecases).map(value => (
-						<option key={value[0]} value={value[0]}>
-							{value[1]}
-						</option>
-					))}
-				</select>
-			);
+			return this.renderDropDown({
+				name: 'field-usecase',
+				value: selected,
+				handleChange: e => this.setMapping(fieldname, 'text', e.key),
+				options: Object.entries(this.usecases).map(entry => ({
+					value: entry[0],
+					label: entry[1],
+				})),
+			});
 		}
 		return null;
 	};
@@ -456,7 +431,7 @@ class Mappings extends Component {
 		}
 	};
 
-  getConversionMap = field => conversionMap[field] || [];
+	getConversionMap = field => conversionMap[field] || [];
 
 	getIcon = (type) => {
 		const iconStyle = { margin: 0, fontSize: 13 };
@@ -487,33 +462,58 @@ class Mappings extends Component {
 		}
 	};
 
-	renderTransformationFields = (originalFields, fields, field) => {
-		if (originalFields[field]) {
-			return this.getConversionMap(this.getType(originalFields[field].type))
-				.map(itemType => (
-					<option
-						key={itemType}
-						value={this.getType(itemType)}
-					>
-						{this.getType(itemType)
-							.split('_')
-							.join(' ')}
-					</option>
-				));
-		}
+	renderOptions = (originalFields, fields, field) => {
+		const options = [];
 
-		return this.getConversionMap(this.getType(fields[field].type))
-			.map(itemType => (
-				<option
-					key={itemType}
-					value={this.getType(itemType)}
-				>
-					{this.getType(itemType)
+		if (originalFields[field]) {
+			options.push({
+				label: this.getType(originalFields[field].type),
+				value: this.getType(originalFields[field].type),
+			});
+			this.getConversionMap(this.getType(originalFields[field].type)).map(itemType => options.push({
+					label: this.getType(itemType)
 						.split('_')
-						.join(' ')}
-				</option>
-			));
-	}
+						.join(' '),
+					value: this.getType(itemType),
+				}));
+			return options;
+		}
+		options.push({
+			label: this.getType(fields[field].type),
+			value: this.getType(fields[field].type),
+		});
+
+		this.getConversionMap(this.getType(fields[field].type)).map(itemType => options.push({
+				label: this.getType(itemType)
+					.split('_')
+					.join(' '),
+				value: this.getType(itemType),
+			}));
+		return options;
+	};
+
+	renderDropDown = ({
+		name,
+		options,
+		value,
+		handleChange, // prettier-ignore
+	}) => {
+		const menu = (
+			<Menu onClick={e => handleChange(e)}>
+				{options.map(option => (
+					<Menu.Item key={option.value}>{option.label}</Menu.Item>
+				))}
+			</Menu>
+		);
+		return (
+			<Dropdown overlay={menu}>
+				<Button className={dropdown}>
+					{value}
+					<Icon type="down" />
+				</Button>
+			</Dropdown>
+		);
+	};
 
 	renderMapping = (type, fields, originalFields, address = '') => {
 		if (fields) {
@@ -582,27 +582,12 @@ class Mappings extends Component {
 								</div>
 								<div className={subItem}>
 									{this.renderUsecase(fields[field], field)}
-									<select
-										className={dropdown}
-										name={`${field}-mapping`}
-										defaultValue={fields[field].type}
-										onChange={(e) => {
-											this.setMapping(field, e.target.value);
-										}}
-									>
-										{originalFields[field] ? (
-											<option
-												value={this.getType(originalFields[field].type)}
-											>
-												{this.getType(originalFields[field].type)}
-											</option>
-										) : (
-											<option value={this.getType(fields[field].type)}>
-												{this.getType(fields[field].type)}
-											</option>
-										)}
-										{this.renderTransformationFields(originalFields, fields, field)}
-									</select>
+									{this.renderDropDown({
+										name: `${field}-mapping`,
+										value: fields[field].type,
+										handleChange: e => this.setMapping(field, e.key),
+										options: this.renderOptions(originalFields, fields, field),
+									})}
 								</div>
 							</div>
 						);
@@ -670,27 +655,38 @@ class Mappings extends Component {
 		if (!this.state.mapping) return null;
 		return (
 			<React.Fragment>
-				<div className={card}>
-					<div className="card-info">
-						<HeaderWrapper>
-							<h2 className={heading}>Manage Synonyms</h2>
-							<p>Add new synonyms or edit the existing ones.</p>
-						</HeaderWrapper>
-						<Button ghost onClick={this.handleSynonymModal} className="card-button">
-							{this.state.synonyms ? 'Edit' : 'Add'} Synonym
-						</Button>
-					</div>
-				</div>
-				<div className={card}>
-					<div className="card-info">
-						<HeaderWrapper>
-							<h2 className={heading}>Manage Mappings</h2>
-							<p>Add new fields or change the types of existing ones.</p>
-						</HeaderWrapper>
-						<Button ghost onClick={this.toggleModal} className="card-button">
-							Add New Field
-						</Button>
-					</div>
+				<Card
+					hoverable
+					title={(
+<div className={cardTitle}>
+							<div>
+								<h4>Manage Synonyms</h4>
+								<p>Add new synonyms or edit the existing ones.</p>
+							</div>
+							<Button type="primary" onClick={this.handleSynonymModal}>
+								{this.state.synonyms ? 'Edit' : 'Add'} Synonym
+							</Button>
+</div>
+)}
+					bodyStyle={{ padding: 0 }}
+					className={card}
+				/>
+				<Card
+					hoverable
+					title={(
+<div className={cardTitle}>
+							<div>
+								<h4>Manage Mappings</h4>
+								<p>Add new fields or change the types of existing ones.</p>
+							</div>
+							<Button onClick={this.toggleModal} type="primary">
+								Add New Field
+							</Button>
+</div>
+)}
+					bodyStyle={{ padding: 0 }}
+					className={card}
+				>
 					<div style={{ padding: '5px 20px' }}>
 						<Header>
 							<span>
@@ -713,15 +709,11 @@ class Mappings extends Component {
 								<span className="col">Data Type</span>
 							</div>
 						</Header>
-						{
-							(!this.state.mapping || !Object.keys(this.state.mapping).length)
-								? (
-									<p style={{ padding: '40px 0', color: '#999', textAlign: 'center' }}>
-										No data or mappings found
-									</p>
-								)
-								: null
-						}
+						{!this.state.mapping || !Object.keys(this.state.mapping).length ? (
+							<p style={{ padding: '40px 0', color: '#999', textAlign: 'center' }}>
+								No data or mappings found
+							</p>
+						) : null}
 						{Object.keys(this.state.mapping).map((field) => {
 							if (this.state.mapping[field]) {
 								const currentMappingFields = this.state.mapping[field].properties;
@@ -738,61 +730,56 @@ class Mappings extends Component {
 							return null;
 						})}
 					</div>
-					{this.state.dirty ? (
-						<Footer>
-							<Button onClick={this.reIndex}>Confirm Mapping Changes</Button>
-							<Button ghost onClick={this.cancelChanges}>
-								Cancel
-							</Button>
-						</Footer>
-					) : null}
-					<NewFieldModal
-						types={Object.keys(this.state.mapping).filter(type => !REMOVED_KEYS.includes(type))}
-						show={this.state.showModal}
-						addField={this.addField}
-						onClose={this.toggleModal}
-						deletedPaths={this.state.deletedPaths}
-					/>
-					<Loader
-						show={this.state.isLoading}
-						message="Re-indexing your data... Please wait!"
-					/>
-					<ErrorModal
-						show={this.state.showError}
-						errorLength={this.state.errorLength}
-						error={this.state.errorMessage}
-						onClose={this.hideErrorModal}
-					/>
-					<FeedbackModal
-						show={this.state.showFeedback}
-						timeTaken={this.state.timeTaken}
-						onClose={() => window.location.reload()}
-					/>
-					<Modal show={this.state.showSynonymModal} onClose={this.handleSynonymModal}>
-						<TextArea
-							name="synonyms"
-							value={this.state.synonyms}
-							onChange={this.handleChange}
-							placeholder={
-								'Enter comma separated synonym pairs. Enter additional synonym pairs separated by new lines, e.g.\nbritish, english\nqueen, monarch'
-							}
-							autosize={{ minRows: 2, maxRows: 10 }}
-						/>
-						<Button
-							onClick={this.updateSynonyms}
-							style={{ float: 'right', margin: '10px 0' }}
-						>
-							{this.state.synonyms ? 'Save' : 'Add'} Synonym
+				</Card>
+				{this.state.dirty ? (
+					<Footer>
+						<Button type="primary" onClick={this.reIndex}>
+							Confirm Mapping Changes
 						</Button>
-						<Button
-							ghost
-							onClick={this.handleSynonymModal}
-							style={{ float: 'right', margin: '10px' }}
-						>
-							Cancel
-						</Button>
-					</Modal>
-				</div>
+						<Button onClick={this.cancelChanges}>Cancel</Button>
+					</Footer>
+				) : null}
+				<NewFieldModal
+					types={Object.keys(this.state.mapping).filter(
+						type => !REMOVED_KEYS.includes(type),
+					)}
+					show={this.state.showModal}
+					addField={this.addField}
+					onClose={this.toggleModal}
+					deletedPaths={this.state.deletedPaths}
+				/>
+				<Loader
+					show={this.state.isLoading}
+					message="Re-indexing your data... Please wait!"
+				/>
+				<ErrorModal
+					show={this.state.showError}
+					errorLength={this.state.errorLength}
+					error={this.state.errorMessage}
+					onClose={this.hideErrorModal}
+				/>
+				<FeedbackModal
+					show={this.state.showFeedback}
+					timeTaken={this.state.timeTaken}
+					onClose={() => window.location.reload()}
+				/>
+				<Modal
+					visible={this.state.showSynonymModal}
+					onOk={this.updateSynonyms}
+					title="Add Synonym"
+					okText={this.state.synonyms ? 'Save Synonym' : 'Add Synonym'}
+					onCancel={this.handleSynonymModal}
+				>
+					<TextArea
+						name="synonyms"
+						value={this.state.synonyms}
+						onChange={this.handleChange}
+						placeholder={
+							'Enter comma separated synonym pairs. Enter additional synonym pairs separated by new lines, e.g.\nbritish, english\nqueen, monarch'
+						}
+						autosize={{ minRows: 2, maxRows: 10 }}
+					/>
+				</Modal>
 			</React.Fragment>
 		);
 	}
@@ -822,7 +809,7 @@ Mappings.defaultProps = {
 
 const mapStateToProps = (state) => {
 	const { username, password } = get(state, 'user.data', {});
-	return ({
+	return {
 		appName: get(state, '$getCurrentApp.name'),
 		appId: get(state, '$getCurrentApp.name'),
 		mapping: getRawMappingsByAppName(state) || null,
@@ -830,7 +817,7 @@ const mapStateToProps = (state) => {
 		loadingError: get(state, '$getAppMappings.error', null),
 		appbaseCredentials: username ? `${username}:${password}` : null,
 		credentials: username ? `${username}:${password}` : null,
-	});
+	};
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -840,4 +827,7 @@ const mapDispatchToProps = dispatch => ({
 	},
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Mappings);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(Mappings);
