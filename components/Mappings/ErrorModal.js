@@ -1,15 +1,17 @@
 import React from 'react';
-import Modal from '../shared/Modal';
-import { Button, ErrorLogger } from './styles';
+
+import { Modal } from 'antd';
+import { ErrorLogger } from './styles';
 
 const ErrorModal = props => (
-	<Modal show={props.show} onClose={props.onClose}>
-		<h3>
-			{props.errorLength
-				? `${props.errorLength} records failed to index`
-				: 'An error occured'}
-		</h3>
-
+	<Modal
+		visible={props.show}
+		onCancel={props.onClose}
+		onOk={props.onClose}
+		title={
+			props.errorLength ? `${props.errorLength} records failed to index` : 'An error occured'
+		}
+	>
 		{props.message ? (
 			<p>{props.message}</p>
 		) : (
@@ -20,12 +22,6 @@ const ErrorModal = props => (
 		)}
 
 		{props.error ? <ErrorLogger>{props.error}</ErrorLogger> : null}
-
-		<div style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px 0' }}>
-			<Button ghost onClick={props.onClose}>
-				Close
-			</Button>
-		</div>
 	</Modal>
 );
 

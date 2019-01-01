@@ -18,22 +18,44 @@ export const card = css`
 		margin: 3px 3px 0px 8px;
 	}
 
-	.card-info{
+	.card-info {
 		border-bottom: 1px solid #eee;
 		padding: 20px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		@media (max-width: 620px){
+		@media (max-width: 620px) {
 			align-items: flex-start;
 			flex-direction: column;
 		}
 	}
 
-	.card-button{
-		@media (max-width: 620px){
+	.card-button {
+		@media (max-width: 620px) {
 			margin-left: 0;
 			margin-top: 10px;
+		}
+	}
+`;
+
+export const cardTitle = css`
+	display: flex;
+	justify-content: space-between;
+	h4 {
+		font-weight: 600;
+		margin: 5px 0;
+	}
+	p {
+		margin: 5px 0;
+		color: rgba(0, 0, 0, 0.65);
+		font-size: 14px;
+		white-space: initial;
+	}
+	@media (max-width: 768px) {
+		width: 100%;
+		flex-direction: column;
+		p {
+			margin: 2px 0;
 		}
 	}
 `;
@@ -58,12 +80,12 @@ export const Header = styled('header')`
 	font-weight: 600;
 	padding-top: 20px;
 
-	@media (max-width:700px){
-		flex-direction:column;
+	@media (max-width: 700px) {
+		flex-direction: column;
 		padding: 0 10px;
 	}
 
-	.col-container{
+	.col-container {
 		display: flex;
 		justify-content: space-between;
 	}
@@ -82,7 +104,7 @@ export const Header = styled('header')`
 			flex-grow: 1;
 		}
 
-		@media (max-width:460px){
+		@media (max-width: 460px) {
 			min-width: 80px;
 		}
 	}
@@ -113,25 +135,18 @@ export const title = css`
 `;
 
 export const dropdown = css`
-	width: auto;
 	min-width: 150px;
-	height: 34px;
-	border: 1px solid #f8f8f8;
-	box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.05);
-	background-color: #fff;
-	border-radius: 2px;
-	outline-color: #c7f4ff;
 	margin-left: 12px;
-	padding: 6px 15px 6px 6px;
 	text-transform: capitalize;
-
-	@media (max-width:700px){
-		margin-left:0px;
+	align-items: center;
+	justify-content: space-between;
+	display: flex;
+	@media (max-width: 700px) {
+		margin-left: 0px;
 		margin-top: 10px;
 		padding: 0;
 	}
-
-	@media (max-width:460px){
+	@media (max-width: 460px) {
 		min-width: 80px;
 	}
 `;
@@ -145,7 +160,7 @@ export const item = css`
 	align-items: center;
 	background-color: rgba(255, 255, 255, 0.8);
 
-	@media (max-width:700px){
+	@media (max-width: 700px) {
 		flex-direction: column;
 		align-items: flex-start;
 	}
@@ -156,7 +171,7 @@ export const subItem = css`
 	flex-direction: row;
 	align-items: center;
 
-	@media (max-width:700px){
+	@media (max-width: 700px) {
 		width: 100%;
 		justify-content: space-between;
 	}
@@ -207,7 +222,7 @@ export const deleteBtn = css`
 	flex-direction: row;
 	cursor: pointer;
 
-	@media (max-width:700px){
+	@media (max-width: 700px) {
 		width: 100%;
 		font-weight: 600;
 	}
@@ -225,12 +240,12 @@ export const deleteBtn = css`
 		color: #444;
 		margin-left: 15px;
 		transition: all 0.3s ease;
-		color:tomato;
+		color: tomato;
 		flex-direction: row;
 		justify-content: center;
 		align-items: center;
 
-		@media (max-width:700px){
+		@media (max-width: 700px) {
 			display: inline-flex;
 		}
 	}
@@ -246,17 +261,10 @@ export const deleteBtn = css`
 	}
 `;
 
-export const Input = styled('input')`
+export const inputStyles = css`
 	diplay: flex;
 	flex-grow: 1;
 	min-width: 150px;
-	height: 34px;
-	border: 1px solid #f8f8f8;
-	box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.05);
-	background-color: #fff;
-	border-radius: 2px;
-	outline-color: #c7f4ff;
-	padding: 5px;
 `;
 
 export const ErrorLogger = styled('pre')`
@@ -275,24 +283,24 @@ export const promotionContainer = css`
 	flex-direction: row;
 	align-items: center;
 
-	@media (max-width:940px){
+	@media (max-width: 940px) {
 		margin: 10px 0;
 		align-items: flex-start;
 		flex-direction: column;
 	}
 
-	.promotional-button{
-		@media (max-width:940px){
+	.promotional-button {
+		@media (max-width: 940px) {
 			margin-left: 0;
 			margin-top: 10px;
 		}
 	}
 
-	.promotional-info{
+	.promotional-info {
 		margin: 0 8px 0 0;
 		color: #888;
-		@media (max-width:940px){
-			font-size:14px;
+		@media (max-width: 940px) {
+			font-size: 14px;
 			font-weight: 400;
 		}
 	}
