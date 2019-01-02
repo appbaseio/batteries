@@ -3,7 +3,7 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
- Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu,
+	Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Layout,
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
@@ -46,7 +46,7 @@ import {
 	dropdown,
 	item,
 	subItem,
-	Footer,
+	footerStyles,
 	deleteBtn,
 	promotionContainer,
 } from './styles';
@@ -54,6 +54,7 @@ import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 
 const { TextArea } = Input;
+const { Footer } = Layout;
 
 const fieldNameMessage = () => (
 	<div style={{ maxWidth: 220 }}>
@@ -789,6 +790,7 @@ class Mappings extends Component {
 					)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
+					style={{ marginBottom: 70 }}
 				>
 					<div style={{ padding: '5px 20px' }}>
 						<Header>
@@ -836,7 +838,7 @@ class Mappings extends Component {
 				</Card>
 
 				{this.state.dirty && this.state.editable ? (
-					<Footer>
+					<Footer className={footerStyles}>
 						<Button type="primary" style={{ margin: '0 10px' }} onClick={this.reIndex}>
 							Confirm Mapping Changes
 						</Button>
