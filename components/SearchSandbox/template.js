@@ -36,7 +36,7 @@ export function getComponentCode(config) {
 					config.mappings,
 				),
 				...config.customProps,
-				onData: '{onData}',
+				renderData: '{renderData}',
 			};
 			componentStyle = { marginTop: 20 };
 			break;
@@ -108,7 +108,7 @@ export function getComponentCode(config) {
 		useBooleanShorthandSyntax: false,
 	});
 
-	code = code.replace('onData="{onData}"', 'onData={onData}');
+	code = code.replace('renderData="{renderData}"', 'renderData={renderData}');
 	code = code.replace('div', config.component);
 
 	return code;
