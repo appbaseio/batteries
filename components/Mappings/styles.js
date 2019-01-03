@@ -163,11 +163,10 @@ export const subItem = css`
 `;
 
 export const footerStyles = css`
-	position: fixed;
-	bottom: 0;
-	width: 100%;
-	padding: 10px;
+	padding: 15px 10px;
 	background: white;
+	box-shadow: 0 -2px 5px 0 rgba(0, 0, 0, 0.15);
+	text-align: right;
 `;
 
 export const Button = styled('a')`

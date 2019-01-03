@@ -3,7 +3,7 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
-	Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Layout,
+ Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix,
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
@@ -54,7 +54,6 @@ import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 
 const { TextArea } = Input;
-const { Footer } = Layout;
 
 const fieldNameMessage = () => (
 	<div style={{ maxWidth: 220 }}>
@@ -86,7 +85,14 @@ const synonymMessage = () => (
 
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
-	<Modal visible={show} title="Re-index successful" onOk={onClose} closable={false} onCancel={onClose} okText="Done">
+	<Modal
+		visible={show}
+		title="Re-index successful"
+		onOk={onClose}
+		closable={false}
+		onCancel={onClose}
+		okText="Done"
+	>
 		<p>
 			The mappings have been updated and the data has been successfully re-indexed in{' '}
 			{timeTaken}ms.
@@ -154,10 +160,7 @@ class Mappings extends Component {
 
 		const { isLoading } = this.state;
 
-		if (
-			!isEqual(prevProps.mapping, mapping)
-			|| (isLoading && mapping)
-		) {
+		if (!isEqual(prevProps.mapping, mapping) || (isLoading && mapping)) {
 			this.handleMapping(mapping);
 		}
 
@@ -528,7 +531,10 @@ class Mappings extends Component {
 	};
 
 	renderDropDown = ({
-		name, options, value, handleChange, // prettier-ignore
+		name,
+		options,
+		value,
+		handleChange, // prettier-ignore
 	}) => {
 		const menu = (
 			<Menu onClick={e => handleChange(e)}>
@@ -691,8 +697,8 @@ class Mappings extends Component {
 		const { url } = this.props;
 
 		this.setState({
-			synonymsLoading: true
-		})
+			synonymsLoading: true,
+		});
 
 		const synonyms = this.state.synonyms.split('\n').map(pair => pair
 				.split(',')
@@ -705,10 +711,10 @@ class Mappings extends Component {
 			.then((isUpdated) => {
 				if (isUpdated) {
 					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
-						synonyms: newSynonyms,
-						showSynonymModal: false,
-						synonymsLoading: false,
-					}));
+							synonyms: newSynonyms,
+							showSynonymModal: false,
+							synonymsLoading: false,
+						}));
 				} else {
 					this.setState({
 						showSynonymModal: false,
@@ -790,7 +796,6 @@ class Mappings extends Component {
 					)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
-					style={{ marginBottom: 70 }}
 				>
 					<div style={{ padding: '5px 20px' }}>
 						<Header>
@@ -835,16 +840,23 @@ class Mappings extends Component {
 							return null;
 						})}
 					</div>
+					{this.state.dirty && this.state.editable ? (
+						<Affix offsetBottom={0}>
+							<div className={footerStyles}>
+								<Button
+									type="primary"
+									size="large"
+									style={{ margin: '0 10px' }}
+									onClick={this.reIndex}
+								>
+									Confirm Mapping Changes
+								</Button>
+								<Button size="large" onClick={this.cancelChanges}>Cancel</Button>
+							</div>
+						</Affix>
+					) : null}
 				</Card>
 
-				{this.state.dirty && this.state.editable ? (
-					<Footer className={footerStyles}>
-						<Button type="primary" style={{ margin: '0 10px' }} onClick={this.reIndex}>
-							Confirm Mapping Changes
-						</Button>
-						<Button onClick={this.cancelChanges}>Cancel</Button>
-					</Footer>
-				) : null}
 				<NewFieldModal
 					types={Object.keys(this.state.mapping).filter(
 						type => !REMOVED_KEYS.includes(type),
