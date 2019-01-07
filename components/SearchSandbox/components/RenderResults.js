@@ -89,12 +89,13 @@ class RenderResultsConsumer extends React.Component {
 						type="flex"
 						onClick={triggerClickAnalytics}
 						key={res._id}
+						gutter={20}
 						style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}
 					>
 						<Col span={image ? 6 : 0}>
 							<img style={{ width: '100%' }} src={image} alt={title} />
 						</Col>
-						<Col span={image ? 18 : 24}>
+						<Col span={image ? 18 : 24} style={{ padding: '2px 10px' }}>
 							<h3
 								style={{ fontWeight: '600' }}
 								dangerouslySetInnerHTML={{ __html: title }}
