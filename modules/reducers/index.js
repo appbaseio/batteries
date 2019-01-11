@@ -60,6 +60,12 @@ export default {
 		AppConstants.APP.ANALYTICS.GET_LATENCY_ERROR,
 		computeStateByAppName,
 	),
+	$getAppRequestDistribution: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION,
+		AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_ERROR,
+		computeStateByAppName,
+	),
 	$getAppGeoDistribution: createRequestReducer(
 		AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION,
 		AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_SUCCESS,
