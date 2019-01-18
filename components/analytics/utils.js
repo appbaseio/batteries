@@ -392,6 +392,13 @@ export function getAnalyticsSummary(appName) {
 	return doGet(`${ACC_API}/analytics/${appName}/summary`);
 }
 /**
+ * Get the request distribution
+ * @param {string} appName
+ */
+export function getRequestDistribution(appName) {
+	return doGet(`${ACC_API}/analytics/${appName}/requestdistribution`);
+}
+/**
  * Get the popular seraches
  * @param {string} appName
  */
