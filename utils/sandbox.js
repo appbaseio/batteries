@@ -1,7 +1,8 @@
-import { ACC_API } from './index';
+import { getURL } from '../../constants/config';
 
 export function getPreferences(name) {
 	return new Promise((resolve, reject) => {
+		const ACC_API = getURL();
 		fetch(`${ACC_API}/app/${name}/preferences`, {
 			method: 'GET',
 			credentials: 'include',
@@ -16,6 +17,7 @@ export function getPreferences(name) {
 }
 
 export function setPreferences(name, preferences) {
+	const ACC_API = getURL();
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${name}/preferences`, {
 			method: 'POST',

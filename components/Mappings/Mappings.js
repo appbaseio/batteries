@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
-import { isEqual, SCALR_API } from '../../utils';
+import { isEqual } from '../../utils';
 import {
 	updateMapping,
 	transformToES5,
@@ -43,6 +43,7 @@ import {
 } from './styles';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
+import { getURL } from '../../../constants/config';
 
 const { TextArea } = Input;
 
@@ -802,7 +803,7 @@ Mappings.propTypes = {
 Mappings.defaultProps = {
 	appId: null,
 	credentials: null,
-	url: SCALR_API,
+	url: getURL(),
 	appbaseCredentials: null,
 	mapping: null,
 };

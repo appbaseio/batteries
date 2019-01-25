@@ -1,8 +1,6 @@
 import get from 'lodash/get';
 import { doGet } from './requestService';
-import { SCALR_API, ACC_API } from '../../constants/config';
-
-export { ACC_API, SCALR_API };
+import { getURL } from '../../constants/config';
 
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
@@ -51,8 +49,7 @@ export function getReadCredentialsFromPermissions(permissions = []) {
 const getAuthToken = () => {
 	let token = null;
 	try {
-		// eslint-disable-next-line
-		token = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user).data.authToken;
+		token = sessionStorage.getItem('authToken');
 	} catch (e) {
 		console.error(e);
 	}
@@ -62,6 +59,7 @@ const getAuthToken = () => {
 export function getCredentials(appId) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(`${ACC_API}/app/${appId}/permissions`, {
 			method: 'GET',
 			headers: {
@@ -98,10 +96,15 @@ export function isEqual(x, y) {
 	}
 	return true;
 }
-export const getUserAppsPermissions = () => doGet(`${ACC_API}/_permissions`);
+export const getUserAppsPermissions = () => {
+	const ACC_API = getURL();
+	return doGet(`${ACC_API}/_permissions`);
+};
+
 export const setUserInfo = userInfo =>
 	new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(`${ACC_API}/user/profile`, {
 			method: 'PUT',
 			headers: {

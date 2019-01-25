@@ -16,9 +16,7 @@ const createRequest = (
 		let status;
 		let authToken = null;
 		try {
-			// eslint-disable-next-line
-			authToken = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user).data
-				.authToken;
+			authToken = sessionStorage.getItem('authToken');
 		} catch (e) {
 			console.error(e);
 		}

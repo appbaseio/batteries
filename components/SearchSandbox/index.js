@@ -10,10 +10,10 @@ import Header from './components/Header';
 import Walkthrough from '../shared/Walkthrough';
 import { getMappingsTree } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
-import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
 import { getAppMappings as getMappings } from '../../modules/actions';
 import { getRawMappingsByAppName } from '../../modules/selectors';
+import { getURL } from '../../../constants/config';
 
 const wrapper = css`
 	padding: 15px;
@@ -370,7 +370,7 @@ SearchSandbox.defaultProps = {
 	showProfileOption: true,
 	showCustomList: true,
 	isDashboard: false,
-	url: SCALR_API,
+	url: getURL(),
 	useCategorySearch: false,
 	customProps: {},
 };

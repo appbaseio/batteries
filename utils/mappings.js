@@ -1,6 +1,6 @@
 import mappingUsecase from './mappingUsecase';
 import analyzerSettings from './analyzerSettings';
-import { SCALR_API, ACC_API } from './index';
+import { getURL } from '../../constants/config';
 
 const PRESERVED_KEYS = ['meta'];
 export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
@@ -14,7 +14,7 @@ function getAuthHeaders(credentials) {
 	return {};
 }
 
-export function getMappings(appName, credentials, url = SCALR_API) {
+export function getMappings(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_mapping`, {
 			method: 'GET',
@@ -44,7 +44,7 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 	});
 }
 
-export function getSettings(appName, credentials, url = SCALR_API) {
+export function getSettings(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_settings`, {
 			method: 'GET',
@@ -63,7 +63,7 @@ export function getSettings(appName, credentials, url = SCALR_API) {
 	});
 }
 
-export function closeIndex(appName, credentials, url = SCALR_API) {
+export function closeIndex(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_close`, {
 			method: 'POST',
@@ -82,7 +82,7 @@ export function closeIndex(appName, credentials, url = SCALR_API) {
 	});
 }
 
-export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsArray) {
+export function updateSynonyms(appName, credentials, url = getURL(), synonymsArray) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_settings`, {
 			method: 'PUT',
@@ -117,7 +117,7 @@ export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsAr
 	});
 }
 
-export function openIndex(appName, credentials, url = SCALR_API) {
+export function openIndex(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_open`, {
 			method: 'POST',
@@ -137,6 +137,7 @@ export function openIndex(appName, credentials, url = SCALR_API) {
 }
 
 export async function getESVersion(appName, credentials) {
+	const ACC_API = getURL();
 	const response = await fetch(`${ACC_API}/app/${appName}`, {
 		headers: {
 			...getAuthHeaders(credentials),
@@ -159,6 +160,7 @@ export function reIndex(mappings, appId, excludeFields, type, version = '5', cre
 		es_version: version,
 	};
 	return new Promise((resolve, reject) => {
+		const ACC_API = getURL();
 		fetch(`${ACC_API}/_reindex/${appId}`, {
 			method: 'POST',
 			headers: {

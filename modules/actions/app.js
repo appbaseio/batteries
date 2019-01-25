@@ -14,7 +14,7 @@ import {
 } from '../../utils/app';
 import { getMappings } from '../../utils/mappings';
 import { doDelete } from '../../utils/requestService';
-import { ACC_API } from '../../utils/index';
+import { getURL } from '../../../constants/config';
 
 /**
  * @param {string} appId
@@ -88,6 +88,7 @@ export function deleteAppShare(username, payload, appId) {
 	return (dispatch, getState) => {
 		const appIdCalc = appId || get(getState(), '$getCurrentApp.id');
 		dispatch(createAction(AppConstants.APP.DELETE_SHARE));
+		const ACC_API = getURL();
 		return doDelete(`${ACC_API}/app/${appIdCalc}/share/${username}`, payload)
 			.then(res => dispatch(createAction(AppConstants.APP.DELETE_SHARE_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.DELETE_SHARE_ERROR, null, error)));
@@ -113,7 +114,7 @@ export function getAppPlan(name) {
 // 		const appId = id || get(getState(), '$getCurrentApp.id', 'default');
 // 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 // 		dispatch(createAction(AppConstants.APP.GET_METRICS));
-		// return GetAppMetrics(appId)
+// return GetAppMetrics(appId)
 // 			.then(res => dispatch(
 // 					createAction(AppConstants.APP.GET_METRICS_SUCCESS, res, null, { appName }),
 // 				))

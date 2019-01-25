@@ -1,9 +1,9 @@
 import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
-import { ACC_API } from '../../utils';
 import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
+import { getURL } from '../../../constants/config';
 
 const requestOpt = css`
 	color: #00ff88;
@@ -304,8 +304,7 @@ export const requestLogs = [
 const getAuthToken = () => {
 	let token = null;
 	try {
-		// eslint-disable-next-line
-		token = JSON.parse(JSON.parse(localStorage.getItem('persist:root')).user).data.authToken;
+		token = sessionStorage.getItem('authToken');
 	} catch (e) {
 		console.error(e);
 	}
@@ -323,19 +322,15 @@ const getApp = (app) => {
  */
 export function getAnalytics(appName, userPlan, clickanalytics = true) {
 	return new Promise((resolve, reject) => {
-		const plan = 'growth';
-		const url = plan === 'growth'
-				? `${ACC_API}/_analytics/${getApp(appName)}advanced`
-				: `${ACC_API}/_analytics/${getApp(appName)}overview`;
-		const queryParams = plan === 'growth'
-				? getQueryParams({
-						clickanalytics,
-						from: moment()
-							.subtract(30, 'days')
-							.format('YYYY/MM/DD'),
-						to: moment().format('YYYY/MM/DD'),
-				  })
-				: getQueryParams({ clickanalytics });
+		const ACC_API = getURL();
+		const url = `${ACC_API}/_analytics/${getApp(appName)}advanced`;
+		const queryParams = getQueryParams({
+			clickanalytics,
+			from: moment()
+				.subtract(30, 'days')
+				.format('YYYY/MM/DD'),
+			to: moment().format('YYYY/MM/DD'),
+		});
 
 		const authToken = getAuthToken();
 		fetch(url + queryParams, {
@@ -363,6 +358,7 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 export function getSearchLatency(appName) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(`${ACC_API}/_analytics/${getApp(appName)}latency`, {
 			method: 'GET',
 			headers: {
@@ -388,6 +384,7 @@ export function getSearchLatency(appName) {
 export function getGeoDistribution(appName) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(`${ACC_API}/_analytics/${getApp(appName)}geo-distribution`, {
 			method: 'GET',
 			headers: {
@@ -411,6 +408,7 @@ export function getGeoDistribution(appName) {
  * @param {string} appName
  */
 export function getAnalyticsSummary(appName) {
+	const ACC_API = getURL();
 	return doGet(`${ACC_API}/_analytics/${getApp(appName)}summary`);
 }
 /**
@@ -420,6 +418,7 @@ export function getAnalyticsSummary(appName) {
 export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-searches${getQueryParams({
 				clickanalytics,
@@ -452,6 +451,7 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 export function getNoResultSearches(appName, size = 100) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(`${ACC_API}/_analytics/${getApp(appName)}no-result-searches?size=${size}`, {
 			method: 'GET',
 			headers: {
@@ -473,6 +473,7 @@ export function getNoResultSearches(appName, size = 100) {
 export function getPopularResults(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-results${getQueryParams({
 				clickanalytics,
@@ -500,6 +501,7 @@ export function getPopularResults(appName, clickanalytics = true, size = 100) {
 export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-filters${getQueryParams({
 				clickanalytics,
@@ -528,6 +530,7 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 export function getRequestLogs(appName, size = 1000) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
+		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/${getApp(appName)}logs${getQueryParams({
 				size,
