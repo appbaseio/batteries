@@ -523,11 +523,14 @@ class Mappings extends Component {
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>{type}</span>
 						<a
+							type="danger"
+							size="small"
 							onClick={() => {
 								this.deletePath(address, true);
 							}}
 						>
 							<Icon type="delete" />
+							Delete
 						</a>
 					</h4>
 					{Object.keys(fields).map((field) => {
@@ -579,6 +582,7 @@ class Mappings extends Component {
 										}}
 									>
 										<Icon type="delete" />
+										Delete
 									</a>
 								</div>
 								<div className={subItem}>
