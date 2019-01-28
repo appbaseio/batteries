@@ -47,6 +47,12 @@ export default {
 		AppConstants.APP.ANALYTICS.GET_ERROR,
 		computeStateByAppName,
 	),
+	$getAppRequestDistribution: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION,
+		AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_ERROR,
+		computeStateByAppName,
+	),
 	$getAppAnalyticsSummary: createRequestReducer(
 		AppConstants.APP.ANALYTICS.GET_SUMMARY,
 		AppConstants.APP.ANALYTICS.GET_SUMMARY_SUCCESS,
