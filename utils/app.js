@@ -36,7 +36,7 @@ export const getPermission = () => new Promise((resolve, reject) => {
 
 export const updatePermission = (appId, username, info) => {
 	const ACC_API = getURL();
-	return doPatch(`${ACC_API}/app/${appId}/permission/${username}`, info);
+	return doPatch(`${ACC_API}/_permission/${username}`, info);
 };
 
 export const newPermission = (appId, info) => new Promise((resolve, reject) => {
