@@ -11,6 +11,7 @@ import SearchVolumeChart from '../../shared/Chart/SearchVolume';
 import SearchLatency from './SearchLatency';
 import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
+import RequestDistribution from './RequestDistribution';
 
 const results = css`
 	width: 100%;
@@ -63,7 +64,7 @@ const Analytics = ({
 						title="Popular Searches"
 						plan={plan}
 						css="height: 100%"
-						onClickViewAll={onClickViewAll && onClickViewAll.popularSearches || null}
+						onClickViewAll={(onClickViewAll && onClickViewAll.popularSearches) || null}
 					/>
 				</div>
 				<div css={noResultsCls}>
@@ -73,7 +74,7 @@ const Analytics = ({
 						title="No Result Searches"
 						plan={plan}
 						css="height: 100%"
-						onClickViewAll={onClickViewAll && onClickViewAll.noResultsSearch || null}
+						onClickViewAll={(onClickViewAll && onClickViewAll.noResultsSearch) || null}
 					/>
 				</div>
 			</Flex>
@@ -87,7 +88,9 @@ const Analytics = ({
 								title="Popular Results"
 								href="popular-results"
 								css="height: 100%"
-								onClickViewAll={onClickViewAll && onClickViewAll.popularResults || null}
+								onClickViewAll={
+									(onClickViewAll && onClickViewAll.popularResults) || null
+								}
 							/>
 						</div>
 						<div css={noResultsCls}>
@@ -97,7 +100,9 @@ const Analytics = ({
 								title="Popular Filters"
 								href="popular-filters"
 								css="height: 100%"
-								onClickViewAll={onClickViewAll && onClickViewAll.popularFilters || null}
+								onClickViewAll={
+									(onClickViewAll && onClickViewAll.popularFilters) || null
+								}
 							/>
 						</div>
 					</Flex>
@@ -106,6 +111,9 @@ const Analytics = ({
 					</Flex>
 					<Flex css="width: 100%;margin-top: 20px">
 						<SearchLatency />
+					</Flex>
+					<Flex css="width: 100%;margin-top: 20px">
+						<RequestDistribution />
 					</Flex>
 				</React.Fragment>
 			)}
