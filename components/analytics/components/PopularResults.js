@@ -50,7 +50,7 @@ class PopularResults extends React.Component {
 		return (
 			<Searches
 				tableProps={{
-					scroll: { x: 700 },
+					scroll: { x: 1000 },
 				}}
 				showViewOption={false}
 				columns={popularResultsFull(plan)}

@@ -67,7 +67,12 @@ export const popularFiltersCol = (plan) => {
 	const defaults = [
 		{
 			title: 'Filters',
-			render: item => `${item.key}=${item.value}`,
+			render: item => (
+				<React.Fragment>
+					<strong>{item.key}</strong>
+					{` ${item.value}`}
+				</React.Fragment>
+			),
 		},
 		{
 			title: 'Impressions',
@@ -227,6 +232,11 @@ export const popularResultsFull = (plan) => {
 			dataIndex: 'clickrate',
 		},
 		{
+			title: 'Click Position',
+			dataIndex: 'clickposition',
+			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
+		},
+		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversionrate',
 			key: 'conversionrate',
@@ -256,9 +266,9 @@ export const popularFiltersFull = (plan) => {
 			dataIndex: 'clickrate',
 		},
 		{
-			title: 'Source',
-			dataIndex: 'source',
-			key: 'source',
+			title: 'Click Position',
+			dataIndex: 'clickposition',
+			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
 		},
 		{
 			title: 'Conversion Rate',

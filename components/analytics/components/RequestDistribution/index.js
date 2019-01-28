@@ -8,6 +8,7 @@ import {
  LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend,
 } from 'recharts';
 import Loader from '../../../shared/Loader/Spinner';
+import EmptyData from '../../../shared/EmptyData';
 import { displayErrors } from '../../../../utils/heplers';
 import { getAppRequestDistribution } from '../../../../modules/actions';
 import { getAppRequestDistributionByName } from '../../../../modules/selectors';
@@ -53,7 +54,9 @@ class RequestDistribution extends React.Component {
 				.subtract(1, 'd')
 				.startOf('day')
 				.valueOf(),
-			moment().startOf('day').valueOf(),
+			moment()
+				.startOf('day')
+				.valueOf(),
 			moment()
 				.add(1, 'd')
 				.startOf('day')
@@ -75,9 +78,9 @@ class RequestDistribution extends React.Component {
 	}
 
 	render() {
-		const { isLoading, results } = this.props;
+		const { isLoading, results, success } = this.props;
 		const { width } = this.state;
-		console.log('THESE ARE THE THINGS', this.ticks, normalizedData(results));
+		const data = normalizedData(results);
 		return (
 			<div
 				ref={(c) => {
@@ -94,68 +97,70 @@ class RequestDistribution extends React.Component {
 					{isLoading ? (
 						<Loader />
 					) : (
-						<LineChart
-							width={width}
-							height={400}
-							data={normalizedData(results)}
-							margin={{
-								top: 20,
-								right: 50,
-								bottom: 20,
-								left: 0,
-							}}
-						>
-							<CartesianGrid strokeDasharray="3 3" />
-							<XAxis
-								tickFormatter={unixTime => moment(unixTime).format('Do ddd')}
-								type="number"
-								dataKey="key"
-								domain={[this.ticks[0], this.ticks[6]]}
-								ticks={this.ticks}
-								tickCount={7}
-							/>
-							<YAxis
-								allowDecimals={false}
-								label={{
-									value: 'rpm',
-									angle: -90,
-									position: 'insideLeft',
+						(success && !data.length && <EmptyData css="height: 400px" />) || (
+							<LineChart
+								width={width}
+								height={400}
+								data={data}
+								margin={{
+									top: 20,
+									right: 50,
+									bottom: 20,
+									left: 0,
 								}}
-							/>
-							<Tooltip
-								labelFormatter={unixTime => moment(unixTime).format('MMMM Do YYYY, HH:MM:SS')
-								}
-							/>
-							<Legend />
-							<Line
-								connectNulls
-								name="200 OK"
-								type="monotone"
-								dataKey="200"
-								stroke="#2eaa49"
-							/>
-							<Line
-								connectNulls
-								name="201 Created"
-								type="monotone"
-								dataKey="201"
-								stroke="#1c72f6"
-							/>
-							<Line
-								connectNulls
-								name="400 Bad Request"
-								type="monotone"
-								dataKey="400"
-								stroke="#ead533"
-							/>
-							<Line
-								connectNulls
-								name="401 Unauthorized"
-								type="monotone"
-								dataKey="401"
-								stroke="#e82055"
-							/>
-						</LineChart>
+							>
+								<CartesianGrid />
+								<XAxis
+									tickFormatter={unixTime => moment(unixTime).format('Do ddd')}
+									type="number"
+									dataKey="key"
+									domain={[this.ticks[0], this.ticks[6]]}
+									ticks={this.ticks}
+									tickCount={7}
+								/>
+								<YAxis
+									allowDecimals={false}
+									label={{
+										value: 'rpm',
+										angle: -90,
+										position: 'insideLeft',
+									}}
+								/>
+								<Tooltip
+									labelFormatter={unixTime => moment(unixTime).format('MMMM Do YYYY, HH:MM:SS')
+									}
+								/>
+								<Legend />
+								<Line
+									connectNulls
+									name="200 OK"
+									type="monotone"
+									dataKey="200"
+									stroke="#2eaa49"
+								/>
+								<Line
+									connectNulls
+									name="201 Created"
+									type="monotone"
+									dataKey="201"
+									stroke="#1c72f6"
+								/>
+								<Line
+									connectNulls
+									name="400 Bad Request"
+									type="monotone"
+									dataKey="400"
+									stroke="#ead533"
+								/>
+								<Line
+									connectNulls
+									name="401 Unauthorized"
+									type="monotone"
+									dataKey="401"
+									stroke="#e82055"
+								/>
+							</LineChart>
+						)
 					)}
 				</Card>
 			</div>
@@ -166,11 +171,13 @@ RequestDistribution.propTypes = {
 	fetchAppRequestDistribution: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	results: PropTypes.array.isRequired,
+	success: PropTypes.bool.isRequired,
 	errors: PropTypes.array.isRequired,
 };
 const mapStateToProps = state => ({
 	isLoading: get(state, '$getAppRequestDistribution.isFetching'),
 	errors: [get(state, '$getAppRequestDistribution.error')],
+	success: get(state, '$getAppRequestDistribution.success'),
 	results: get(getAppRequestDistributionByName(state), 'request_distribution', []),
 });
 const mapDispatchToProps = dispatch => ({
