@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from 'antd';
 import { css } from 'react-emotion';
 import {
- BarChart, XAxis, YAxis, Bar,
+ BarChart, XAxis, YAxis, Bar, Label,
 } from 'recharts';
 import find from 'lodash/find';
 import { connect } from 'react-redux';
@@ -32,9 +32,6 @@ const getSearchLatencyDummy = (latency = []) => {
 
 const cls = css`
 	width: 100%;
-	.recharts-label {
-		transform: translate(-50px, 15px);
-	}
 `;
 
 class SearchLatency extends React.Component {
@@ -71,17 +68,30 @@ class SearchLatency extends React.Component {
 							<BarChart
 								margin={{
 									top: 20,
-									right: 20,
+									right: 50,
 									bottom: 20,
-									left: 70,
+									left: 20,
 								}}
 								barCategoryGap={0}
 								width={width}
 								height={400}
 								data={getSearchLatencyDummy(searchLatency)}
 							>
-								<XAxis label="Latency (in ms)" dataKey="key" />
-								<YAxis allowDecimals={false} label="Search Count" />
+								<XAxis dataKey="key">
+									<Label
+										value="Latency (in ms)"
+										offset={0}
+										position="insideBottom"
+									/>
+								</XAxis>
+								<YAxis
+									label={{
+										value: 'Search Count',
+										angle: -90,
+										position: 'insideLeft',
+									}}
+									allowDecimals={false}
+								/>
 								<Bar dataKey="count" fill="#A4C7FF" />
 							</BarChart>
 						)

@@ -16,8 +16,6 @@ const normalizedData = (data = []) => {
 	const dataTobeReturned = [];
 	data.forEach((item) => {
 		const modifiedItem = item;
-		const date = new Date(item.key_as_string);
-		modifiedItem.formatDate = `${date.getMonth() + 1}/${date.getDate()}`;
 		if (item.buckets) {
 			item.buckets.forEach((bucket) => {
 				modifiedItem[bucket.key] = bucket.count;
@@ -37,24 +35,30 @@ class RequestDistribution extends React.Component {
 		this.ticks = [
 			moment()
 				.subtract(5, 'd')
+				.startOf('day')
 				.valueOf(),
 			moment()
 				.subtract(4, 'd')
+				.startOf('day')
 				.valueOf(),
 			moment()
 				.subtract(3, 'd')
+				.startOf('day')
 				.valueOf(),
 			moment()
 				.subtract(2, 'd')
+				.startOf('day')
 				.valueOf(),
 			moment()
 				.subtract(1, 'd')
+				.startOf('day')
 				.valueOf(),
-			moment().valueOf(),
+			moment().startOf('day').valueOf(),
 			moment()
 				.add(1, 'd')
+				.startOf('day')
 				.valueOf(),
-		]
+		];
 	}
 
 	componentDidMount() {
@@ -73,6 +77,7 @@ class RequestDistribution extends React.Component {
 	render() {
 		const { isLoading, results } = this.props;
 		const { width } = this.state;
+		console.log('THESE ARE THE THINGS', this.ticks, normalizedData(results));
 		return (
 			<div
 				ref={(c) => {
@@ -105,7 +110,7 @@ class RequestDistribution extends React.Component {
 								tickFormatter={unixTime => moment(unixTime).format('Do ddd')}
 								type="number"
 								dataKey="key"
-								domain={[this.ticks[0], this.ticks[7]]}
+								domain={[this.ticks[0], this.ticks[6]]}
 								ticks={this.ticks}
 								tickCount={7}
 							/>
