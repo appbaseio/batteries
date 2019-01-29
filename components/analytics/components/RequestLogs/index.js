@@ -267,41 +267,23 @@ class RequestLogs extends React.Component {
 								/>
 							</TabPane>
 						</Tabs>
-						{showDetails
-							&& this.currentRequest && (
-								<RequestDetails
-									show={showDetails}
-									handleCancel={this.handleCancel}
-									headers={get(
-										this.currentRequest,
-										'request.headers',
-										{},
-									)}
-									request={
-										parseData(
-											get(this.currentRequest, 'request.body'),
-										) || {}
-									}
-									response={
-										parseData(
-											get(this.currentRequest, 'response.body'),
-										) || {}
-									}
-									time={get(this.currentRequest, 'timestamp', '')}
-									method={get(this.currentRequest, 'request.method', '')}
-									url={get(this.currentRequest, 'request.uri', '')}
-									ip={get(
-										this.currentRequest,
-										'request.headers.X-Forwarded-For[0]',
-									)}
-									status={get(this.currentRequest, 'response.status', '')}
-									processingTime={get(
-										this.currentRequest,
-										'response.timetaken',
-										'',
-									)}
-								/>
-							)}
+						{showDetails && this.currentRequest && (
+							<RequestDetails
+								show={showDetails}
+								handleCancel={this.handleCancel}
+								headers={get(this.currentRequest, 'request.header', {})}
+								request={parseData(get(this.currentRequest, 'request.body')) || {}}
+								response={
+									parseData(get(this.currentRequest, 'response.body')) || {}
+								}
+								time={get(this.currentRequest, 'timestamp', '')}
+								method={get(this.currentRequest, 'request.method', '')}
+								url={get(this.currentRequest, 'request.uri', '')}
+								ip={get(this.currentRequest, 'request.header.X-Forwarded-For[0]')}
+								status={get(this.currentRequest, 'response.status', '')}
+								processingTime={get(this.currentRequest, 'response.timetaken', '')}
+							/>
+						)}
 					</React.Fragment>
 				)}
 			</Card>
@@ -322,9 +304,7 @@ RequestLogs.propTypes = {
 	pageSize: PropTypes.number,
 };
 
-const mapStateToProps = (state) => {
-	return {
+const mapStateToProps = state => ({
 		appName: get(state, '$getCurrentApp.name'),
-	};
-};
+	});
 export default connect(mapStateToProps)(RequestLogs);

@@ -514,7 +514,7 @@ export function getPopularResults(appName, clickanalytics = true, size = 100) {
  */
 export function getRequestDistribution(appName) {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_analytics/${getApp(appName)}requestdistribution`);
+	return doGet(`${ACC_API}/_analytics/${getApp(appName)}request-distribution`);
 }
 
 export function getPopularFilters(appName, clickanalytics = true, size = 100) {
