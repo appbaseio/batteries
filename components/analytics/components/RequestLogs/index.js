@@ -21,7 +21,7 @@ const normalizeData = data => data.map((i) => {
 				method: get(i, 'request.method'),
 				uri: get(i, 'request.uri'),
 			},
-			classifier: get(i, 'classifier', '').toUpperCase(),
+			classifier: get(i, 'category', '').toUpperCase(),
 			timeTaken: `${timeDuration.time} ${timeDuration.formattedUnit} ago`,
 			status: get(i, 'response.status'),
 		};
@@ -33,7 +33,7 @@ const filterHits = (hits = []) => {
 	const deleteHits = [];
 	hits.forEach((h) => {
 		const status = get(h, 'response.status');
-		if (get(h, 'classifier') === 'search') {
+		if (get(h, 'category') === 'search') {
 			searchHits.push(h);
 		}
 		if (get(h, 'request.method', '').toLowerCase() === 'delete') {
