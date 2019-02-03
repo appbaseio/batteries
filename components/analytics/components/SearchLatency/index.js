@@ -11,7 +11,7 @@ import get from 'lodash/get';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { getAppSearchLatency } from '../../../../modules/actions';
-import { getAppSearchLatencyByName } from '../../../../modules/selectors';
+import { getAppSearchLatencyByName, getAppPlanByName } from '../../../../modules/selectors';
 
 const getSearchLatencyDummy = (latency = []) => {
 	const dummyLatency = latency.map(l => l);
@@ -33,6 +33,10 @@ const getSearchLatencyDummy = (latency = []) => {
 const cls = css`
 	width: 100%;
 `;
+const label = css`
+	font-weight: bold;
+	font-size: 12px;
+`;
 
 class SearchLatency extends React.Component {
 	constructor(props) {
@@ -51,7 +55,9 @@ class SearchLatency extends React.Component {
 	}
 
 	render() {
-		const { searchLatency, isLoading, success } = this.props;
+		const {
+ searchLatency, isLoading, success, plan,
+} = this.props;
 		const { width } = this.state;
 		return (
 			<div
@@ -60,7 +66,15 @@ class SearchLatency extends React.Component {
 				}}
 				css="width: 100%"
 			>
-				<Card title="Search Latency" css={cls}>
+				<Card
+					title={(
+<span>
+							Search Latency (
+							<span css={label}>{plan === 'growth' ? 'Monthly' : 'Weekly'}</span>)
+</span>
+)}
+					css={cls}
+				>
 					{isLoading ? (
 						<Loader />
 					) : (
@@ -104,6 +118,7 @@ class SearchLatency extends React.Component {
 SearchLatency.propTypes = {
 	fetchAppSearchLatency: PropTypes.func.isRequired,
 	searchLatency: PropTypes.array.isRequired,
+	plan: PropTypes.string.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	success: PropTypes.bool.isRequired,
 };
@@ -114,6 +129,7 @@ const mapStateToProps = (state) => {
 		isLoading: get(state, '$getAppSearchLatency.isFetching'),
 		success: get(state, '$getAppSearchLatency.success'),
 		isSearchLatencyPresent: !!searchLatency,
+		plan: get(getAppPlanByName(state), 'plan', 'free'),
 	};
 };
 const mapDispatchToProps = dispatch => ({

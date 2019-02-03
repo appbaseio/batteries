@@ -21,8 +21,8 @@ class NoResultsSearch extends React.Component {
 	}
 
 	componentDidMount() {
-		const { appName } = this.props;
-		getNoResultSearches(appName)
+		const { appName, plan } = this.props;
+		getNoResultSearches(appName, plan)
 			.then((res) => {
 				this.setState({
 					noResults: res,
@@ -67,11 +67,12 @@ class NoResultsSearch extends React.Component {
 }
 NoResultsSearch.propTypes = {
 	appName: PropTypes.string.isRequired,
+	plan: PropTypes.string.isRequired,
 };
 const mapStateToProps = (state) => {
 	const appPlan = getAppPlanByName(state);
 	return {
-		plan: get(appPlan, 'plan'),
+		plan: get(appPlan, 'plan', 'free'),
 		appName: get(state, '$getCurrentApp.name'),
 	};
 };

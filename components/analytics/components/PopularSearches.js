@@ -24,8 +24,8 @@ class PopularSearches extends React.Component {
 	}
 
 	componentDidMount() {
-		const { appName } = this.props;
-		getPopularSearches(appName)
+		const { appName, plan } = this.props;
+		getPopularSearches(appName, plan)
 			.then((res) => {
 				this.setState({
 					popularSearches: res,

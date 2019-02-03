@@ -25,8 +25,8 @@ class PopularFilters extends React.Component {
 	}
 
 	componentDidMount() {
-		const { appName } = this.props;
-		getPopularFilters(appName)
+		const { appName, plan } = this.props;
+		getPopularFilters(appName, plan)
 			.then((res) => {
 				this.setState({
 					popularFilters: res,

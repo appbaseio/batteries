@@ -8,6 +8,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import { getRequestLogs, requestLogs, getTimeDuration } from '../../utils';
+import { getAppPlanByName } from '../../../../modules/selectors';
 import RequestDetails from './RequestDetails';
 import Loader from '../../../shared/Loader/Spinner';
 
@@ -94,8 +95,8 @@ class RequestLogs extends React.Component {
 	}
 
 	componentDidMount() {
-		const { appName } = this.props;
-		getRequestLogs(appName)
+		const { appName, plan } = this.props;
+		getRequestLogs(appName, plan)
 			.then((res) => {
 				const filteredHits = filterHits(res.hits);
 				this.setState({
@@ -305,9 +306,11 @@ RequestLogs.defaultProps = {
 	onTabChange: undefined, // Use this to override the default redirect logic on tab change
 	tab: 'all',
 	pageSize: 10,
+	plan: 'free',
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
+	plan: PropTypes.string,
 	onTabChange: PropTypes.func,
 	appName: PropTypes.string.isRequired,
 	changeUrlOnTabChange: PropTypes.bool,
@@ -316,5 +319,6 @@ RequestLogs.propTypes = {
 
 const mapStateToProps = state => ({
 	appName: get(state, '$getCurrentApp.name'),
+	plan: get(getAppPlanByName(state), 'plan'),
 });
 export default connect(mapStateToProps)(RequestLogs);

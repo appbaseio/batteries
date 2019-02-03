@@ -26,8 +26,8 @@ class PopularResults extends React.Component {
 	}
 
 	componentDidMount() {
-		const { appName } = this.props;
-		getPopularResults(appName)
+		const { appName, plan } = this.props;
+		getPopularResults(appName, plan)
 			.then((res) => {
 				this.setState({
 					popularResults: res,

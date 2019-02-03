@@ -35,6 +35,10 @@ const noResultsCls = css`
 		margin-top: 20px;
 	}
 `;
+const label = css`
+	font-weight: bold;
+	font-size: 12px;
+`;
 
 const Analytics = ({
 	noResults,
@@ -52,7 +56,15 @@ const Analytics = ({
 	}
 	return (
 		<React.Fragment>
-			<Card css="margin-bottom: 20px" title="Summary">
+			<Card
+				css="margin-bottom: 20px"
+				title={(
+<span>
+						Summary (<span css={label}>{plan === 'growth' ? 'Monthly' : 'Weekly'}</span>
+						)
+</span>
+)}
+			>
 				<Summary />
 			</Card>
 			<SearchVolumeChart height={300} data={searchVolume} />
