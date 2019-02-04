@@ -12,13 +12,13 @@ export default {
 		fields: {
 			search: {
 				type: 'text',
-				index: 'analyzed',
+				index: 'true',
 				analyzer: 'ngram_analyzer',
 				search_analyzer: 'simple',
 			},
 			autosuggest: {
 				type: 'text',
-				index: 'analyzed',
+				index: 'true',
 				analyzer: 'autosuggest_analyzer',
 				search_analyzer: 'simple',
 			},
@@ -30,17 +30,17 @@ export default {
 		fields: {
 			keyword: {
 				type: 'keyword',
-				index: 'not_analyzed',
+				index: 'true',
 			},
 			search: {
 				type: 'text',
-				index: 'analyzed',
+				index: 'true',
 				analyzer: 'ngram_analyzer',
 				search_analyzer: 'simple',
 			},
 			autosuggest: {
 				type: 'text',
-				index: 'analyzed',
+				index: 'true',
 				analyzer: 'autosuggest_analyzer',
 				search_analyzer: 'simple',
 			},
