@@ -9,7 +9,7 @@ import { getAppPlanByName } from '../../../modules/selectors';
 
 const headers = {
 	key: 'Filters',
-	count: 'Impressions',
+	count: 'Count',
 	clicks: 'Clicks',
 	source: 'Source',
 	conversionrate: 'Conversion Rate',
