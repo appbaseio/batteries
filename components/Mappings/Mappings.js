@@ -60,21 +60,6 @@ const usecaseMessage = () => (
 	</div>
 );
 
-const mappingMessage = () => (
-	<div style={{ maxWidth: 220 }}>
-		Editing mappings isn{"'"}t a native feature in Elasticsearch. All appbase.io paid plans
-		offer editable mappings by performing a lossless re-indexing of your data whenever you edit
-		them from this UI.
-	</div>
-);
-
-const synonymMessage = () => (
-	<div style={{ maxWidth: 220 }}>
-		Editing synonyms isn{"'"}t a native feature in Elasticsearch. All appbase.io paid plans
-		offer editable synonym.
-	</div>
-);
-
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
 	<Modal

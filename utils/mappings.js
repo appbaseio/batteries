@@ -138,7 +138,7 @@ export function openIndex(appName, credentials, url = getURL()) {
 
 export async function getESVersion(appName, credentials) {
 	const ACC_API = getURL();
-	const response = await fetch(`${ACC_API}/app/${appName}`, {
+	const response = await fetch(ACC_API, {
 		headers: {
 			...getAuthHeaders(credentials),
 		},
@@ -148,7 +148,7 @@ export async function getESVersion(appName, credentials) {
 		throw new Error(data);
 	}
 
-	return data.body.es_version;
+	return data.version.number;
 }
 
 export function reIndex(mappings, appId, excludeFields, type, version = '5', credentials) {
