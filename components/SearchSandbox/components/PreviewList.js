@@ -110,7 +110,7 @@ class PreviewList extends React.Component {
 		let resultComponentProps = this.props.componentProps.result || {};
 		resultComponentProps = {
 			...resultComponentProps,
-			onData: (res) => {
+			renderData: (res) => {
 				const url = getNestedValue(res, urlKey);
 				const title = getNestedValue(res, titleKey);
 				const description = getNestedValue(res, descriptionKey);
