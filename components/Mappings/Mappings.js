@@ -412,6 +412,10 @@ class Mappings extends Component {
 					errorLength: Array.isArray(err) && err.length,
 					errorMessage: JSON.stringify(err, null, 4),
 				});
+				Modal.error({
+					title: 'Something error occured while reindexing.',
+					content: JSON.stringify(err, null, 4),
+				});
 			});
 	};
 
@@ -695,11 +699,9 @@ class Mappings extends Component {
 	updateSynonyms = () => {
 		const credentials = this.props.appbaseCredentials;
 		const { url } = this.props;
-
 		this.setState({
 			synonymsLoading: true,
 		});
-
 		const synonyms = this.state.synonyms.split('\n').map(pair => pair
 				.split(',')
 				.map(synonym => synonym.trim())
@@ -709,6 +711,7 @@ class Mappings extends Component {
 			.then(() => updateSynonymsData(this.props.appName, credentials, url, synonyms))
 			.then(data => data.acknowledged)
 			.then((isUpdated) => {
+
 				if (isUpdated) {
 					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
 							synonyms: newSynonyms,
@@ -722,6 +725,9 @@ class Mappings extends Component {
 						errorMessage: 'Unable to update Synonyms',
 						synonymsLoading: false,
 					});
+					Modal.error({
+						title: 'Error occured while updating Synonyms.'
+					});
 				}
 			})
 			.then(() => openIndex(this.props.appName, credentials, url))
@@ -733,25 +739,18 @@ class Mappings extends Component {
 					errorMessage: 'Unable to update Synonyms',
 					synonymsLoading: false,
 				});
+				Modal.error({
+					title: 'Error occured while updating Synonyms.'
+				});
 			});
 	};
 
 	render() {
 		if (this.props.loadingError) {
-			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
+			return <p style={{ padding: 20 }}>{this.props.loadingError.message}</p>;
 		}
 		if ((this.props.isFetchingMapping || this.state.isLoading) && !this.state.mapping) {
 			return <Loader show message="Fetching mappings... Please wait!" />;
-		}
-		if (this.state.mappingsError) {
-			return (
-				<ErrorModal
-					show={this.state.showError}
-					message="Some error occured while fetching the mappings"
-					error={JSON.stringify(this.state.mappingsError, null, 2)}
-					onClose={this.hideErrorModal}
-				/>
-			);
 		}
 		if (!this.state.mapping) return null;
 		return (
@@ -869,12 +868,6 @@ class Mappings extends Component {
 				<Loader
 					show={this.state.isReIndexing}
 					message="Re-indexing your data... Please wait!"
-				/>
-				<ErrorModal
-					show={this.state.showError}
-					errorLength={this.state.errorLength}
-					error={this.state.errorMessage}
-					onClose={this.hideErrorModal}
 				/>
 				<FeedbackModal
 					show={this.state.showFeedback}

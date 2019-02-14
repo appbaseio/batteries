@@ -28,7 +28,6 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 				const types = Object.keys(data[appName].mappings).filter(
 					type => !REMOVED_KEYS.includes(type),
 				);
-
 				let mappings = {};
 				types.forEach((type) => {
 					mappings = {
