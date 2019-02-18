@@ -39,21 +39,14 @@ export const updatePermission = (appId, username, info) => {
 	return doPatch(`${ACC_API}/_permission/${username}`, info);
 };
 
-export const newPermission = (appId, info) => new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(`${ACC_API}/_permission`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${authToken}`,
-			},
-			body: JSON.stringify(info),
-		})
-			.then(res => res.json())
-			.then(data => resolve(data))
-			.catch(error => reject(error));
+export const newPermission = (appId, info) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_permission`, info, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
+};
 
 export const deletePermission = (appId, username) => new Promise((resolve, reject) => {
 		const authToken = getAuthToken();

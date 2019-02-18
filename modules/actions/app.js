@@ -2,7 +2,6 @@ import get from 'lodash/get';
 import { createAction } from './utils';
 import AppConstants from '../constants';
 import {
-	getAppInfo as fetchAppInfo,
 	deleteApp as DeleteApp,
 	getShare,
 	getAppPlan as fetchAppPlan,
@@ -12,8 +11,10 @@ import {
 	// getAppMetrics as GetAppMetrics,
 	transferOwnership,
 } from '../../utils/app';
-import { getMappings } from '../../utils/mappings';
-import { doDelete } from '../../utils/requestService';
+import { getMappings, getAuthHeaders } from '../../utils/mappings';
+import {
+ doDelete, doGet, doPost, doPatch,
+} from '../../utils/requestService';
 import { getURL } from '../../../constants/config';
 
 /**
@@ -26,23 +27,6 @@ export function transferAppOwnership(id, info) {
 		return transferOwnership(appId, info)
 			.then(res => dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP_SUCCESS, res)))
 			.catch(error => dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP_ERROR, null, error)));
-	};
-}
-/**
- * To fetch app details
- * @param {string} appId
- */
-export function getAppInfo(appId, name) {
-	return (dispatch, getState) => {
-		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		dispatch(createAction(AppConstants.APP.GET_INFO));
-		return fetchAppInfo(appId)
-			.then(res => dispatch(
-					createAction(AppConstants.APP.GET_INFO_SUCCESS, res, null, {
-						appName,
-					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.GET_INFO_ERROR, null, error)));
 	};
 }
 
@@ -102,6 +86,46 @@ export function getAppPlan(name) {
 		return fetchAppPlan(appName)
 			.then(res => dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res, null, { appName })))
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
+	};
+}
+
+export function getClusterUsers(credentials) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.USERS.GET));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_users`, getAuthHeaders(credentials))
+			.then(res => dispatch(createAction(AppConstants.APP.USERS.GET_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.USERS.GET_ERROR, null, error)));
+	};
+}
+
+export function createClusterUser(credentials, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.USERS.CREATE_USER));
+		const ACC_API = getURL();
+		return doPost(`${ACC_API}/_user`, payload, getAuthHeaders(credentials))
+			.then(res => dispatch(createAction(AppConstants.APP.USERS.CREATE_USER_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.USERS.CREATE_USER_SUCCESS, null, error)));
+	};
+}
+
+export function updateClusterUser(credentials, username, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.USERS.EDIT_USER));
+		const ACC_API = getURL();
+		return doPatch(`${ACC_API}/_user/${username}`, payload, getAuthHeaders(credentials))
+			.then(res => dispatch(createAction(AppConstants.APP.USERS.EDIT_USER_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.USERS.EDIT_USER_ERROR, null, error)));
+	};
+}
+
+export function deleteClusterUser(credentials, username) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.USERS.DELETE_USER));
+		const ACC_API = getURL();
+		return doDelete(`${ACC_API}/_user/${username}`, getAuthHeaders(credentials))
+			.then(res => dispatch(createAction(AppConstants.APP.USERS.DELETE_USER_SUCCESS, res)))
+			.catch(error => dispatch(createAction(AppConstants.APP.USERS.DELETE_USER_ERROR, null, error)));
 	};
 }
 /**

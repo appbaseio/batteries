@@ -5,7 +5,7 @@ import { getURL } from '../../constants/config';
 const PRESERVED_KEYS = ['meta'];
 export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
 
-function getAuthHeaders(credentials) {
+export function getAuthHeaders(credentials) {
 	if (credentials) {
 		return {
 			Authorization: `Basic ${btoa(credentials)}`,

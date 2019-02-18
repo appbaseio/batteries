@@ -42,6 +42,9 @@ const createRequest = (
 			})
 			.then((data) => {
 				if (status >= 400) {
+					if (data.error) {
+						return reject(data.error);
+					}
 					return reject(data);
 				}
 				if (data.body) {

@@ -4,7 +4,6 @@ import get from 'lodash/get';
 const appName = (state, name) => name || get(state, '$getCurrentApp.name');
 const rawMappings = state => get(state, '$getAppMappings.rawMappings');
 const traversedMappings = state => get(state, '$getAppMappings.traversedMappings');
-const appInfo = state => get(state, '$getAppInfo.apps');
 const appPlan = () => 'growth';
 const appAnalytics = state => get(state, '$getAppAnalytics.results');
 const appPermission = state => get(state, '$getAppPermissions.results');
@@ -22,11 +21,6 @@ const getRawMappingsByAppName = createSelector(
 );
 const getTraversedMappingsByAppName = createSelector(
 	traversedMappings,
-	appName,
-	getCollectionByKey,
-);
-const getAppInfoByName = createSelector(
-	appInfo,
 	appName,
 	getCollectionByKey,
 );
@@ -72,7 +66,6 @@ export {
 	getAppGeoDistributionByName,
 	getAppRequestDistributionByName,
 	getAppAnalyticsSummaryByName,
-	getAppInfoByName,
 	getAppAnalyticsByName,
 	getAppPermissionsByName,
 	getAppPlanByName,

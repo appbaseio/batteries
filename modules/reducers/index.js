@@ -1,5 +1,4 @@
 import AppConstants from '../constants';
-import getAppInfo from './getAppInfo';
 import getAppMappings from './getAppMappings';
 import getCurrentApp from './getCurrentApp';
 import createRequestReducer from './request';
@@ -11,7 +10,6 @@ import {
 } from './utils';
 
 export default {
-	$getAppInfo: getAppInfo,
 	$getAppMappings: getAppMappings,
 	$getAppPermissions: createRequestReducer(
 		AppConstants.APP.PERMISSION.GET,
@@ -29,6 +27,26 @@ export default {
 		AppConstants.APP.GET_PLAN_SUCCESS,
 		AppConstants.APP.GET_PLAN_ERROR,
 		computeAppPlanState,
+	),
+	$getClusterUsers: createRequestReducer(
+		AppConstants.APP.USERS.GET,
+		AppConstants.APP.USERS.GET_SUCCESS,
+		AppConstants.APP.USERS.GET_ERROR,
+	),
+	$createClusterUser: createRequestReducer(
+		AppConstants.APP.USERS.CREATE_USER,
+		AppConstants.APP.USERS.CREATE_USER_SUCCESS,
+		AppConstants.APP.USERS.CREATE_USER_ERROR,
+	),
+	$updateClusterUser: createRequestReducer(
+		AppConstants.APP.USERS.EDIT_USER,
+		AppConstants.APP.USERS.EDIT_USER_SUCCESS,
+		AppConstants.APP.USERS.EDIT_USER_ERROR,
+	),
+	$deleteClusterUser: createRequestReducer(
+		AppConstants.APP.USERS.DELETE_USER,
+		AppConstants.APP.USERS.DELETE_USER_SUCCESS,
+		AppConstants.APP.USERS.DELETE_USER_ERROR,
 	),
 	$getUserPlan: createRequestReducer(
 		AppConstants.ACCOUNT.CHECK_USER_PLAN.GET,

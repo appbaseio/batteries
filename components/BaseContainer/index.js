@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
-import { getAppInfo, setCurrentApp, getAppPlan } from '../../modules/actions';
-import { getAppInfoByName, getAppPlanByName } from '../../modules/selectors';
+import { setCurrentApp, getAppPlan } from '../../modules/actions';
+import { getAppPlanByName } from '../../modules/selectors';
 import Loader from '../shared/Loader/Spinner';
 import { displayErrors } from '../../utils/heplers';
 
@@ -36,18 +35,9 @@ class BaseContainer extends Component {
 	componentDidMount() {
 		// Fetch some common api calls
 		const {
-			appId,
-			appName,
-			fetchAppInfo,
-			fetchAppPlan,
-			shouldFetchAppInfo,
-			shouldFetchAppPlan,
-			isAppPlanFetched,
-			isAppInfoPresent,
-		} = this.props;
-		if (shouldFetchAppInfo && !isAppInfoPresent && appId) {
-			fetchAppInfo(appId);
-		} else if (shouldFetchAppPlan && !isAppPlanFetched) {
+ appName, fetchAppPlan, shouldFetchAppPlan, isAppPlanFetched,
+} = this.props;
+		if (shouldFetchAppPlan && !isAppPlanFetched) {
 			fetchAppPlan(appName);
 		} else {
 			this.setState({
@@ -82,7 +72,6 @@ BaseContainer.defaultProps = {
 	errors: [],
 	component: undefined,
 	children: null,
-	shouldFetchAppInfo: true,
 	shouldFetchAppPlan: true,
 	appId: undefined,
 };
@@ -93,28 +82,20 @@ BaseContainer.propTypes = {
 	isLoading: PropTypes.bool,
 	errors: PropTypes.array,
 	shouldFetchAppPlan: PropTypes.bool,
-	shouldFetchAppInfo: PropTypes.bool,
 	children: PropTypes.oneOfType([PropTypes.element, PropTypes.node, PropTypes.func]),
-	fetchAppInfo: PropTypes.func.isRequired,
 	fetchAppPlan: PropTypes.func.isRequired,
 	updateCurrentApp: PropTypes.func.isRequired,
 	component: PropTypes.func,
 	isAppPlanFetched: PropTypes.bool.isRequired,
-	isAppInfoPresent: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => ({
-	isLoading: get(state, '$getAppInfo.isFetching') || get(state, '$getAppPlan.isFetching'),
+	isLoading: get(state, '$getAppPlan.isFetching'),
 	isAppPlanFetched: !!getAppPlanByName(state),
-	isAppInfoPresent: !!getAppInfoByName(state),
-	errors: [
-		ownProps.shouldFetchAppInfo !== false && get(state, '$getAppInfo.error'),
-		ownProps.shouldFetchAppPlan !== false && get(state, '$getAppPlan.error'),
-	],
+	errors: [ownProps.shouldFetchAppPlan !== false && get(state, '$getAppPlan.error')],
 });
 
 const mapDispatchToProps = dispatch => ({
-	fetchAppInfo: appId => dispatch(getAppInfo(appId)),
 	fetchAppPlan: appName => dispatch(getAppPlan(appName)),
 	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
 });
