@@ -34,7 +34,7 @@ const generateDataField = (component, selectedFields, mappings) => {
 	// no need to get subfields if it is a result component
 	if (component === 'ReactiveList') {
 		let dataField = '';
-		if (mappings[selectedFields].fields.length > 0) {
+		if (mappings[selectedFields] && mappings[selectedFields].fields.length > 0) {
 			const subField = getKeywordField(mappings[selectedFields].originalFields);
 			dataField = `${selectedFields}${subField ? `.${subField}` : ''}`;
 			return dataField;
