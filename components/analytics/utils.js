@@ -277,6 +277,12 @@ export const popularFiltersFull = (plan) => {
 		},
 	];
 };
+let lastIndex = 0;
+const updateIndex = () => {
+	lastIndex += 1;
+	return lastIndex;
+};
+
 export const requestLogs = [
 	{
 		title: 'Operation',
@@ -293,21 +299,25 @@ export const requestLogs = [
 				</Flex>
 			</div>
 		),
+		key: `operation${updateIndex()}`,
 	},
 	{
 		title: 'Type',
 		dataIndex: 'classifier',
 		width: '100px',
+		key: `type${updateIndex()}`,
 	},
 	{
 		title: 'Time',
 		dataIndex: 'timeTaken',
 		width: '140px',
+		key: `time${updateIndex()}`,
 	},
 	{
 		title: 'Status',
 		dataIndex: 'status',
 		width: '100px',
+		key: `status${updateIndex()}`,
 	},
 ];
 

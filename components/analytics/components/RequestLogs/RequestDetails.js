@@ -93,7 +93,7 @@ RequestDetails.propTypes = {
 	processingTime: PropTypes.string.isRequired,
 	headers: PropTypes.object.isRequired,
 	request: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
-	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
+	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.array]).isRequired,
 };
 
 export default RequestDetails;

@@ -23,7 +23,7 @@ const normalizeData = data => data.map((i) => {
 			},
 			classifier: get(i, 'category', '').toUpperCase(),
 			timeTaken: `${timeDuration.time} ${timeDuration.formattedUnit} ago`,
-			status: get(i, 'response.status'),
+			status: get(i, 'response.code'),
 		};
 	});
 const filterHits = (hits = []) => {
@@ -32,7 +32,7 @@ const filterHits = (hits = []) => {
 	const searchHits = [];
 	const deleteHits = [];
 	hits.forEach((h) => {
-		const status = get(h, 'response.status');
+		const status = get(h, 'response.code');
 		if (get(h, 'category') === 'search') {
 			searchHits.push(h);
 		}
@@ -280,7 +280,7 @@ class RequestLogs extends React.Component {
 								method={get(this.currentRequest, 'request.method', '')}
 								url={get(this.currentRequest, 'request.uri', '')}
 								ip={get(this.currentRequest, 'request.header.X-Forwarded-For[0]')}
-								status={get(this.currentRequest, 'response.status', '')}
+								status={get(this.currentRequest, 'response.code', '')}
 								processingTime={get(this.currentRequest, 'response.timetaken', '')}
 							/>
 						)}
@@ -305,6 +305,6 @@ RequestLogs.propTypes = {
 };
 
 const mapStateToProps = state => ({
-		appName: get(state, '$getCurrentApp.name'),
-	});
+	appName: get(state, '$getCurrentApp.name'),
+});
 export default connect(mapStateToProps)(RequestLogs);
