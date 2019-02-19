@@ -3,7 +3,7 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
- Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu,
+ Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
@@ -38,7 +38,7 @@ import {
 	dropdown,
 	item,
 	subItem,
-	Footer,
+	footerStyles,
 	deleteBtn,
 } from './styles';
 import NewFieldModal from './NewFieldModal';
@@ -720,15 +720,22 @@ class Mappings extends Component {
 							return null;
 						})}
 					</div>
+					{this.state.dirty ? (
+						<Affix offsetBottom={0}>
+							<div className={footerStyles}>
+								<Button
+									type="primary"
+									size="large"
+									style={{ margin: '0 10px' }}
+									onClick={this.reIndex}
+								>
+									Confirm Mapping Changes
+								</Button>
+								<Button size="large" onClick={this.cancelChanges}>Cancel</Button>
+							</div>
+						</Affix>
+					) : null}
 				</Card>
-				{this.state.dirty ? (
-					<Footer>
-						<Button type="primary" onClick={this.reIndex}>
-							Confirm Mapping Changes
-						</Button>
-						<Button onClick={this.cancelChanges}>Cancel</Button>
-					</Footer>
-				) : null}
 				<NewFieldModal
 					types={Object.keys(this.state.mapping).filter(
 						type => !REMOVED_KEYS.includes(type),
