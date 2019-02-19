@@ -42,15 +42,17 @@ const generateDataField = (component, selectedFields, mappings) => {
 		return selectedFields;
 	}
 
+	// this works for the case of search component
 	const { types, multiple } = propsMap[component].dataField;
 	if (multiple) {
 		let resultFields = [];
 		selectedFields.forEach((item) => {
-			resultFields = [item, ...resultFields, ...getSubFields(mappings, item, types)];
+			resultFields = [...resultFields, item, ...getSubFields(mappings, item, types)];
 		});
 		return resultFields;
 	}
 
+	// this works for the case of list components
 	const validFields = getSubFields(mappings, selectedFields, types);
 	return validFields ? validFields[0] : null;
 };
