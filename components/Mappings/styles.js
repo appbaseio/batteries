@@ -179,20 +179,11 @@ export const subItem = css`
 	}
 `;
 
-export const Footer = styled('footer')`
-	position: sticky;
-	bottom: 0;
-	width: 100%;
-	height: 66px;
-	box-shadow: 0 -3px 5px 0 rgba(0, 0, 0, 0.02);
-	background-color: #fff;
-	transition: all 0.3s ease;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
-	padding: 0 20px;
-	display: flex;
-	flex-direction: row-reverse;
-	align-items: center;
+export const footerStyles = css`
+	padding: 15px 10px;
+	background: white;
+	box-shadow: 0 -2px 5px 0 rgba(0, 0, 0, 0.15);
+	text-align: right;
 `;
 
 export const Button = styled('a')`

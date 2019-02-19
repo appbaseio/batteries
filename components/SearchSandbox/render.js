@@ -60,7 +60,7 @@ const renderAsTree = (res, key = '0') => {
 	});
 };
 
-function onData(res) {
+function renderData(res) {
 	return (
 		<div className="list-item" key={res._id}>
 			<ExpandCollapse
@@ -90,7 +90,7 @@ function getNestedValue(obj, path) {
 	return currentObject;
 }
 
-function onData(res) {
+function renderData(res) {
 	let { image, url, description, title } = ${JSON.stringify(config.componentProps.result.metaFields)};
 	image = getNestedValue(res,image);
 	title = getNestedValue(res,title);
