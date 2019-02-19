@@ -1,6 +1,6 @@
 import React from 'react';
 
-const searchPreviewSteps = [
+const joyrideSteps = [
 	{
 		content: (
 			<span>
@@ -59,14 +59,5 @@ const searchPreviewSteps = [
 		placement: 'bottom',
 	},
 ];
-
-const joyrideSteps = (component) => {
-	switch (component) {
-		case 'SearchPreview':
-			return searchPreviewSteps;
-		default:
-			return null;
-	}
-};
 
 export default joyrideSteps;

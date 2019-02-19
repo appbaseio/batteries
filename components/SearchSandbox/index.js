@@ -14,6 +14,7 @@ import getSearchTemplate, { getTemplateStyles } from './template';
 import { getAppMappings as getMappings } from '../../modules/actions';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import { getURL } from '../../../constants/config';
+import joyrideSteps from './utils/joyrideSteps';
 
 const wrapper = css`
 	padding: 15px;
@@ -333,7 +334,7 @@ class SearchSandbox extends Component {
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
 					/>
-					<Walkthrough component="SearchPreview" />
+					<Walkthrough id="SearchPreview" joyrideSteps={joyrideSteps} />
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
 							{props => React.cloneElement(child, { ...props })}
