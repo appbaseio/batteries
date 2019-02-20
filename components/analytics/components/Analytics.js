@@ -84,7 +84,6 @@ const Analytics = ({
 						href="no-results-searches"
 						dataSource={getFilteredResults(noResults)}
 						title="No Result Searches"
-						plan={plan}
 						css="height: 100%"
 						onClickViewAll={(onClickViewAll && onClickViewAll.noResultsSearch) || null}
 					/>
