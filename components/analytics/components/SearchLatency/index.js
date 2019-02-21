@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from 'antd';
 import { css } from 'react-emotion';
 import {
- BarChart, XAxis, YAxis, Bar, Label,
+ BarChart, XAxis, YAxis, Bar, Label, Tooltip,
 } from 'recharts';
 import find from 'lodash/find';
 import { connect } from 'react-redux';
@@ -33,7 +33,7 @@ const getSearchLatencyDummy = (latency = []) => {
 const cls = css`
 	width: 100%;
 `;
-const label = css`
+const labelCls = css`
 	font-weight: bold;
 	font-size: 12px;
 `;
@@ -70,7 +70,7 @@ class SearchLatency extends React.Component {
 					title={(
 <span>
 							Search Latency (
-							<span css={label}>{plan === 'growth' ? 'Monthly' : 'Weekly'}</span>)
+							<span css={labelCls}>{plan === 'growth' ? 'Monthly' : 'Weekly'}</span>)
 </span>
 )}
 					css={cls}
@@ -106,6 +106,7 @@ class SearchLatency extends React.Component {
 									}}
 									allowDecimals={false}
 								/>
+								<Tooltip labelFormatter={label => `Latency - ${label}ms`} />
 								<Bar dataKey="count" fill="#A4C7FF" />
 							</BarChart>
 						)
