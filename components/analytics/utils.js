@@ -543,7 +543,6 @@ export function getRequestLogs(appName, plan, size = 1000) {
 		fetch(
 			`${ACC_API}/app/${appName}/logs${getQueryParams({
 				size,
-				...getDateRangeByPlan(plan),
 			})}`,
 			{
 				method: 'GET',

@@ -95,8 +95,8 @@ class RequestLogs extends React.Component {
 	}
 
 	componentDidMount() {
-		const { appName, plan } = this.props;
-		getRequestLogs(appName, plan)
+		const { appName, plan, size } = this.props;
+		getRequestLogs(appName, plan, size)
 			.then((res) => {
 				const filteredHits = filterHits(res.hits);
 				this.setState({
@@ -307,6 +307,7 @@ RequestLogs.defaultProps = {
 	tab: 'all',
 	pageSize: 10,
 	plan: 'free',
+	size: 1000,
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
@@ -315,6 +316,7 @@ RequestLogs.propTypes = {
 	appName: PropTypes.string.isRequired,
 	changeUrlOnTabChange: PropTypes.bool,
 	pageSize: PropTypes.number,
+	size: PropTypes.number,
 };
 
 const mapStateToProps = state => ({

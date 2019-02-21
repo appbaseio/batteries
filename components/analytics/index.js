@@ -58,7 +58,7 @@ class Main extends React.Component {
 					onClickViewAll={onClickViewAll}
 				/>
 				<div css="margin-top: 20px">
-					<RequestLogs appName={appName} />
+					<RequestLogs size={100} appName={appName} />
 				</div>
 			</React.Fragment>
 		);
