@@ -1,10 +1,9 @@
 import React from 'react';
-import { Icon, Spin } from 'antd';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Flex from '../shared/Flex';
 import Analytics from './components/Analytics';
+import Loader from '../shared/Loader/Spinner';
 import { getAppAnalytics } from '../../modules/actions';
 import { getAppAnalyticsByName } from '../../modules/selectors';
 import RequestLogs from './components/RequestLogs';
@@ -44,14 +43,7 @@ class Main extends React.Component {
 		} = this.props;
 		const { appName, chartWidth, plan } = this.props;
 		if (isLoading) {
-			const antIcon = (
-				<Icon type="loading" style={{ fontSize: 50, marginTop: '250px' }} spin />
-			);
-			return (
-				<Flex justifyContent="center" alignItems="center">
-					<Spin indicator={antIcon} />
-				</Flex>
-			);
+			return <Loader />;
 		}
 		return (
 			<React.Fragment>
