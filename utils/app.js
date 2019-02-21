@@ -18,21 +18,15 @@ const getAuthToken = () => {
 	return token;
 };
 
-export const getPermission = () => new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
+export const getPermission = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
 
-		fetch(`${ACC_API}/_permissions`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${authToken}`,
-			},
-		})
-			.then(res => res.json())
-			.then(data => resolve(data))
-			.catch(error => reject(error));
+	return doGet(`${ACC_API}/_permissions`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
+};
 
 export const updatePermission = (appId, username, info) => {
 	const ACC_API = getURL();
