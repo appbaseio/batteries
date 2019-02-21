@@ -82,7 +82,9 @@ Main.propTypes = {
 	isFetching: PropTypes.bool.isRequired, //eslint-disable-line
 };
 const mapStateToProps = (state) => {
-	const analyticsArr = getAppAnalyticsByName(state) || [];
+	const analyticsArr = Array.isArray(getAppAnalyticsByName(state))
+		? getAppAnalyticsByName(state)
+		: [];
 	let appAnalytics = {};
 	analyticsArr.forEach((item) => {
 		appAnalytics = {
