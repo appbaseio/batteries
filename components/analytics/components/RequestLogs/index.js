@@ -7,6 +7,7 @@ import {
  Card, Tabs, Table, notification,
 } from 'antd';
 import PropTypes from 'prop-types';
+import Parser from 'partial-json-parser';
 import { getRequestLogs, requestLogs, getTimeDuration } from '../../utils';
 import { getAppPlanByName } from '../../../../modules/selectors';
 import RequestDetails from './RequestDetails';
@@ -59,19 +60,28 @@ const parseData = (data = '') => {
 		return JSON.parse(data);
 	} catch (e) {
 		try {
-			const removeBackslash = data.split('\n');
-			const formatted = filter(removeBackslash, o => o !== '');
-			if (formatted.length) {
-				return (
-					<div>
-						{formatted.map((i, index) => (
-							// eslint-disable-next-line
-							<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
-						))}
-					</div>
-				);
+			try {
+				const partiallyParsed = Parser(data);
+				const hits = get(partiallyParsed, 'responses[0].hits.hits');
+				if (hits) {
+					partiallyParsed.responses[0].hits.hits.pop();
+				}
+				return partiallyParsed;
+			} catch (err) {
+				const removeBackslash = data.split('\n');
+				const formatted = filter(removeBackslash, o => o !== '');
+				if (formatted.length) {
+					return (
+						<div>
+							{formatted.map((i, index) => (
+								// eslint-disable-next-line
+								<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
+							))}
+						</div>
+					);
+				}
+				throw Error;
 			}
-			throw Error;
 		} catch (error) {
 			return data;
 		}
