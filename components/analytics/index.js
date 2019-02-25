@@ -27,8 +27,10 @@ class Main extends React.Component {
 
 	componentDidMount() {
 		// Comment out the below code to test paid user
-		const { fetchAppAnalytics } = this.props;
-		fetchAppAnalytics();
+		const { fetchAppAnalytics, plan, isPaid } = this.props;
+		if (isPaid) {
+			fetchAppAnalytics();
+		}
 	}
 
 	render() {
@@ -73,6 +75,7 @@ Main.propTypes = {
 	onClickViewAll: PropTypes.object,
 	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	plan: PropTypes.string.isRequired,
+	isPaid: PropTypes.bool.isRequired,
 	fetchAppAnalytics: PropTypes.func.isRequired,
 	popularSearches: PropTypes.array.isRequired,
 	popularResults: PropTypes.array.isRequired,
@@ -86,6 +89,7 @@ const mapStateToProps = (state) => {
 	const appAnalytics = getAppAnalyticsByName(state);
 	return {
 		plan: get(appPlan, 'plan'),
+		isPaid: get(appPlan, 'isPaid', false),
 		appName: get(state, '$getCurrentApp.name'),
 		popularSearches: get(appAnalytics, 'popularSearches', []),
 		popularResults: get(appAnalytics, 'popularResults', []),
