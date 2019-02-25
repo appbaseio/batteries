@@ -35,6 +35,7 @@ import {
 	getPermission as getPermissionFromAppbase,
 	setCurrentApp,
 	getAppMappings as getMappings,
+	clearMappings,
 } from '../../modules/actions';
 
 import {
@@ -139,6 +140,7 @@ class Mappings extends Component {
 	}
 
 	async componentDidMount() {
+		this.props.clearMappings(this.props.appName);
 		this.init();
 
 		const { appName } = this.props;
@@ -186,7 +188,6 @@ class Mappings extends Component {
 			getAppMappings,
 			credentials,
 			url,
-			mapping,
 			appbaseCredentials,
 		} = this.props;
 
@@ -200,7 +201,7 @@ class Mappings extends Component {
 			// this executes only for appbase.io hosted apps
 			const { getPermission } = this.props;
 
-			if (appbaseCredentials && !mapping) {
+			if (appbaseCredentials) {
 				// 2. get mappings if we have credentials
 				getAppMappings(appName, appbaseCredentials);
 				this.initializeSynonymsData();
@@ -253,12 +254,14 @@ class Mappings extends Component {
 	};
 
 	handleMapping = (res) => {
-		this.originalMapping = res;
-		this.setState({
-			isLoading: false,
-			mapping: res ? transformToES5(res) : res,
-			activeType: getTypesFromMapping(res),
-		});
+		if (res) {
+			this.originalMapping = res;
+			this.setState({
+				isLoading: false,
+				mapping: res ? transformToES5(res) : res,
+				activeType: getTypesFromMapping(res),
+			});
+		}
 	};
 
 	handleSynonymModal = () => {
@@ -947,6 +950,7 @@ const mapDispatchToProps = dispatch => ({
 	getAppMappings: (appName, credentials, url) => {
 		dispatch(getMappings(appName, credentials, url));
 	},
+	clearMappings: appName => dispatch(clearMappings(appName)),
 });
 
 export default connect(

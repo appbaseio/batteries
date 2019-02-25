@@ -36,6 +36,18 @@ function getAppMappings(state = initialState, action) {
 				isFetching: false,
 				error: action.error,
 			};
+		case AppConstants.APP.CLEAR_MAPPINGS: {
+			const { rawMappings, traversedMappings } = state;
+			delete rawMappings[action.meta.appName];
+			delete traversedMappings[action.meta.appName];
+			return {
+				...state,
+				isFetching: false,
+				rawMappings: Object.assign({}, rawMappings),
+				traversedMappings: Object.assign({}, traversedMappings),
+				success: true,
+			};
+		}
 		default:
 			return state;
 	}
