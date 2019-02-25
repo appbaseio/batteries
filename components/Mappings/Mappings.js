@@ -27,7 +27,7 @@ import {
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
 import { getRawMappingsByAppName } from '../../modules/selectors';
-import { setCurrentApp, getAppMappings as getMappings } from '../../modules/actions';
+import { setCurrentApp, getAppMappings as getMappings, clearMappings } from '../../modules/actions';
 
 import {
 	card,
@@ -103,6 +103,7 @@ class Mappings extends Component {
 	}
 
 	async componentDidMount() {
+		this.props.clearMappings(this.props.appName);
 		this.init();
 
 		const { appName, appbaseCredentials } = this.props;
@@ -148,21 +149,12 @@ class Mappings extends Component {
 			getAppMappings,
 			appbaseCredentials,
 			url,
-			mapping,
-			isFetchingMapping,
 		} = this.props;
 
 		// initialise or update current app state
 		updateCurrentApp(appName, appId);
 
-		if (mapping && !isFetchingMapping) {
-			// if mapping already exists:
-			// set existing mappings:
-			this.handleMapping(mapping);
-
-			// get synonyms
-			this.initializeSynonymsData();
-		} else if (url) {
+		if (url) {
 			getAppMappings(appName, appbaseCredentials, url);
 		}
 	}
@@ -209,12 +201,14 @@ class Mappings extends Component {
 	};
 
 	handleMapping = (res) => {
-		this.originalMapping = res;
-		this.setState({
-			isLoading: false,
-			mapping: res ? transformToES5(res) : res,
-			activeType: getTypesFromMapping(res),
-		});
+		if (res) {
+			this.originalMapping = res;
+			this.setState({
+				isLoading: false,
+				mapping: res ? transformToES5(res) : res,
+				activeType: getTypesFromMapping(res),
+			});
+		}
 	};
 
 	handleSynonymModal = () => {
@@ -822,6 +816,7 @@ const mapDispatchToProps = dispatch => ({
 	getAppMappings: (appName, credentials, url) => {
 		dispatch(getMappings(appName, credentials, url));
 	},
+	clearMappings: appName => dispatch(clearMappings(appName)),
 });
 
 export default connect(

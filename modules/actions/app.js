@@ -30,6 +30,13 @@ export function transferAppOwnership(id, info) {
 	};
 }
 
+export function clearMappings(appName) {
+	return {
+		type: AppConstants.APP.CLEAR_MAPPINGS,
+		meta: { appName },
+	};
+}
+
 export function getAppMappings(appName, credentials, url) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.GET_MAPPINGS));
