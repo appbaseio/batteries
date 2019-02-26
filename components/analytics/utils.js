@@ -343,7 +343,7 @@ const getApp = (app) => {
 export function getAnalytics(appName, userPlan, clickanalytics = true) {
 	return new Promise((resolve, reject) => {
 		const ACC_API = getURL();
-		const url = `${ACC_API}/_analytics/${getApp(appName)}advanced`;
+		const url = `${ACC_API}/_analytics/${getApp(appName)}overview`;
 		const queryParams = getQueryParams({
 			clickanalytics,
 			from: moment()
