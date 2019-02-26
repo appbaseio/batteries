@@ -4,10 +4,12 @@ import filter from 'lodash/filter';
 export const displayErrors = (nextErrors = [], prevErrors = []) => {
 	nextErrors.map((error, index) => {
 		if (error && error !== prevErrors[index]) {
-			notification.error({
-				message: 'Error',
-				description: error.message,
-			});
+			if (process.env.NODE_ENV === 'development') {
+				notification.error({
+					message: 'Error',
+					description: error.message,
+				});
+			}
 		}
 		return null;
 	});
