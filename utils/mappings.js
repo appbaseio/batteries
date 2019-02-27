@@ -146,13 +146,14 @@ export async function getESVersion(appName) {
 	return data.body.es_version;
 }
 
-export function reIndex(mappings, appId, excludeFields, type, version = '5') {
+export function reIndex(mappings, appId, excludeFields, type, version = '5', shards) {
 	const body = {
 		mappings,
 		settings: analyzerSettings,
 		exclude_fields: excludeFields,
 		type,
 		es_version: version,
+		shard_count: shards.toString(),
 	};
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/reindex`, {
