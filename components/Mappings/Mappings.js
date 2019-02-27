@@ -83,6 +83,14 @@ const synonymMessage = () => (
 	</div>
 );
 
+
+const shardsMessage = () => (
+	<div style={{ maxWidth: 220 }}>
+		Editing number of shards isn{"'"}t a native feature in Elasticsearch. All appbase.io paid plans
+		offer setting number of Shards.
+	</div>
+);
+
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
 	<Modal
@@ -838,7 +846,7 @@ class Mappings extends Component {
 									Change Shards
 								</Button>
 							) : (
-									this.renderPromotionalButtons('mappings', mappingMessage)
+									this.renderPromotionalButtons('shards', shardsMessage)
 								)}
 						</div>
 					)}
