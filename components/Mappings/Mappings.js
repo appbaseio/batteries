@@ -781,12 +781,32 @@ class Mappings extends Component {
 			});
 	};
 
-	getMaxShards = () => {
+	getShardValues = (max, step = 3) => {
+		const shards = {};
+
+		for (let i = 3; i <= max; i += 3) {
+			shards[i] = i;
+		}
+		return shards;
+	}
+
+	getShards = () => {
 		const {isBootstrapPlan, isGrowthPlan} = this.props;
+		if (isBootstrapPlan) {
+			return this.getShardValues(9);
+		}
+		else if (isGrowthPlan) {
+			return this.getShardValues(21);
+		}
+		return 0;
+	}
+
+	getMaxShards = () => {
+		const { isBootstrapPlan, isGrowthPlan } = this.props;
 		if (isBootstrapPlan) {
 			return 9;
 		}
-		else if(isGrowthPlan){
+		else if (isGrowthPlan) {
 			return 21;
 		}
 		return 0;
@@ -985,7 +1005,7 @@ class Mappings extends Component {
 					onCancel={this.handleShardsModal}
 				>
 					<h4>Move Slider to set number of Shards.</h4>
-					<Slider step={3} value={+this.state.shards} max={this.getMaxShards()} min={3} onChange={this.handleSlider} />
+					<Slider tooltipVisible={false} step={null} max={this.getMaxShards()} value={+this.state.shards} marks={this.getShards()} onChange={this.handleSlider} />
 				</Modal>
 			</React.Fragment>
 		);
