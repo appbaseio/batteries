@@ -238,6 +238,7 @@ class Mappings extends Component {
 		this.fetchSettings(appbaseCredentials).then((shards) => {
 			this.setState({
 				shards,
+				allocated_shards: shards,
 			});
 		});
 	};
@@ -996,17 +997,20 @@ class Mappings extends Component {
 						autosize={{ minRows: 2, maxRows: 10 }}
 					/>
 				</Modal>
-				<Modal
-					visible={this.state.shardsModal}
-					onOk={this.updateShards}
-					title="Update Shards"
-					okText="Update"
-					okButtonProps={{disabled: !this.state.editable}}
-					onCancel={this.handleShardsModal}
-				>
-					<h4>Move Slider to set number of Shards.</h4>
-					<Slider tooltipVisible={false} step={null} max={this.getMaxShards()} value={+this.state.shards} marks={this.getShards()} onChange={this.handleSlider} />
-				</Modal>
+				{
+					this.state.editable && <Modal
+						visible={this.state.shardsModal}
+						onOk={this.updateShards}
+						title="Update Shards"
+						okText="Update"
+						okButtonProps={{ disabled: this.state.allocated_shards == this.state.shards }}
+						onCancel={this.handleShardsModal}
+					>
+						<h4>Move Slider to set number of Shards.</h4>
+						<Slider tooltipVisible={false} step={null} max={this.getMaxShards()} value={+this.state.shards} marks={{ [this.state.allocated_shards]: this.state.allocated_shards, ...this.getShards() }} onChange={this.handleSlider} />
+					</Modal>
+				}
+
 			</React.Fragment>
 		);
 	}
