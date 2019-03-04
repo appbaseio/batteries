@@ -99,9 +99,10 @@ export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsAr
 						},
 					},
 					analyzer: {
-						search_analyzer: {
+						english_synonyms_analyzer: {
+							filter: ['lowercase', 'synonyms_filter', 'asciifolding', 'porter_stem'],
 							tokenizer: 'standard',
-							filter: ['lowercase', 'synonyms_filter'],
+							type: 'custom'
 						},
 					},
 				},
