@@ -10,9 +10,12 @@ import RequestLogs from './components/RequestLogs';
 
 let prevProps = {};
 class Main extends React.Component {
-	state = {
-		isLoading: true,
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			isLoading: props.isPaid,
+		}
+	}
 
 	static getDerivedStateFromProps(props) {
 		if (prevProps.isFetching && !props.isFetching) {
@@ -27,7 +30,7 @@ class Main extends React.Component {
 
 	componentDidMount() {
 		// Comment out the below code to test paid user
-		const { fetchAppAnalytics, plan, isPaid } = this.props;
+		const { fetchAppAnalytics, isPaid } = this.props;
 		if (isPaid) {
 			fetchAppAnalytics();
 		}
@@ -88,7 +91,7 @@ const mapStateToProps = (state) => {
 	const appPlan = getAppPlanByName(state);
 	const appAnalytics = getAppAnalyticsByName(state);
 	return {
-		plan: get(appPlan, 'plan'),
+		plan: get(appPlan, 'plan', 'free'),
 		isPaid: get(appPlan, 'isPaid', false),
 		appName: get(state, '$getCurrentApp.name'),
 		popularSearches: get(appAnalytics, 'popularSearches', []),
