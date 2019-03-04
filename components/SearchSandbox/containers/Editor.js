@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {
- Row, Col, Card, Button, Modal, Form, message,
+ Row, Col, Card, Button, Modal, Form, message, Icon,
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import PropTypes from 'prop-types';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
-import { formWrapper } from '../styles';
+import { formWrapper, tagContainer } from '../styles';
 import DataFieldInput from '../components/DataFieldInput';
 import { getAvailableDataField } from '../utils/dataField';
 import {
@@ -249,7 +249,55 @@ export default class Editor extends Component {
 						</Card>
 
 						<Card>
-							<SelectedFilters />
+							<SelectedFilters
+								render={(props) => {
+									const { selectedValues, setValue, clearValues } = props;
+									const clearFilter = (component) => {
+										setValue(component, null);
+									};
+
+									const filters = Object.keys(selectedValues).map((component) => {
+										if (
+											!selectedValues[component].value
+											|| selectedValues[component].value.length === 0
+										) return null;
+										const value = `${component} : ${
+											selectedValues[component].value
+										}`;
+
+										return (
+											<div
+												className="tag"
+												onClick={() => clearFilter(component, null)}
+											>
+												<div
+													dangerouslySetInnerHTML={{ __html: value }}
+													key={component}
+												/>
+												<Icon
+													style={{ marginLeft: 5, color: '#595959' }}
+													type="close"
+												/>
+											</div>
+										);
+									});
+
+									return (
+										<div className={tagContainer}>
+											{filters}
+											{filters.filter(Boolean).length ? (
+												<div
+													className="tag"
+													key="clear all"
+													onClick={clearValues}
+												>
+													Clear All
+												</div>
+											) : null}
+										</div>
+									);
+								}}
+							/>
 							<RSWrapper
 								id="result"
 								component="ReactiveList"

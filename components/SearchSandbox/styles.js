@@ -128,6 +128,45 @@ const listLabel = css`
 	}
 `;
 
+const tagContainer = css`
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	.tag {
+		display: inline-flex;
+		justify-content: space-between;
+		align-items: center;
+		border: 1px solid #d9d9d9;
+		background: #fafafa;
+		color: #595959;
+		padding: 5px 8px;
+		border-radius: 2px;
+		margin: 0 5px 5px 0;
+		cursor: pointer;
+
+		& * {
+			margin: 0 !important;
+			padding: 0 !important;
+			list-style: none !important;
+			display: inline !important;
+			font-size: inherit !important;
+		}
+
+		&:hover {
+			background: #f5f5f5;
+			border-color: #bfbfbf;
+		}
+	}
+`;
+
 export {
- listItem, title, formWrapper, rowStyles, deleteStyles, fieldBadge, label, listLabel,
+	listItem,
+	title,
+	formWrapper,
+	rowStyles,
+	deleteStyles,
+	fieldBadge,
+	label,
+	listLabel,
+	tagContainer,
 };
