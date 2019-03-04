@@ -90,19 +90,6 @@ const rowStyles = css`
 	}
 `;
 
-const componentStyles = css`
-	label {
-		font-weight: normal;
-	}
-	/* To fix the checkbox overlap in MulitList Cards */
-	ul li > label > span {
-		width: 80%;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-	}
-`;
-
 const fieldBadge = css`
 	margin-left: 10px;
 	font-size: 10px;
@@ -119,13 +106,32 @@ const label = css`
 	margin: 20px 0;
 `;
 
+const listLabel = css`
+	display: flex;
+	overflow: hidden;
+	align-items: center;
+	width: 100%;
+	justify-content: space-between;
+	div {
+		width: 80%;
+		font-size: inherit;
+		& > * {
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+		}
+	}
+`;
+
 export {
 	listItem,
 	title,
 	formWrapper,
 	rowStyles,
 	deleteStyles,
-	componentStyles,
+	listLabel,
 	fieldBadge,
 	label,
 };

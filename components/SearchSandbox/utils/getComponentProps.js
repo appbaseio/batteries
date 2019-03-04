@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { listLabel } from '../styles';
 import RenderResults from '../components/RenderResults';
 import { generateFieldWeights, generateDataField } from './dataField';
 
@@ -79,6 +80,12 @@ export default function getComponentProps({
 			return {
 				...componentProps,
 				dataField: generateDataField('MultiList', componentProps.dataField, mappings),
+				renderItem: (label, count) => (
+					<div className={listLabel}>
+						<div dangerouslySetInnerHTML={{ __html: label }} />
+						{componentProps.showCount === false ? null : <span>{count}</span>}
+					</div>
+				),
 			};
 		}
 		default:
