@@ -27,6 +27,10 @@ export const getAvailableDataField = ({ id, component, mappings }) => {
 		return fieldsToCheck.some(item => types.includes(item.type));
 	});
 
+	if (id === 'result') {
+		return ['_score', ...fields];
+	}
+
 	return fields;
 };
 
@@ -77,15 +81,11 @@ const generateDataField = (component, selectedFields, mappings) => {
 	return validFields ? validFields[0] : null;
 };
 
-const getSubFieldWeights = (mappings, field, defaultWeight = 1) => (mappings[field] && mappings[field].fields && mappings[field].fields.length
-		? [
-				...mappings[field].fields.map((item) => {
-					let weight = 1;
-					if (item === 'keyword') weight = defaultWeight;
-					return parseInt(weight, 10);
-				}),
-		  ]
-		: []);
+// defaultWeight is ignored - we return the same weight (1) for every subfield
+// eslint-disable-next-line
+const getSubFieldWeights = (mappings, field, defaultWeight) => mappings[field] && mappings[field].fields && mappings[field].fields.length
+		? [...mappings[field].fields.map(() => 1)]
+		: [];
 
 const generateFieldWeights = (selectedFields, weights, mappings) => {
 	let resultWeights = [];
