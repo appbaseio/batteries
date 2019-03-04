@@ -74,6 +74,10 @@ export const getAvailableDataField = ({ id, component, mappings }) => {
 		return fieldsToCheck.some(item => types.includes(item.type));
 	});
 
+	if (id === 'result') {
+		return ['_score', ...fields];
+	}
+
 	return fields;
 };
 
