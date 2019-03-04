@@ -25,7 +25,7 @@ export default {
 			english: {
 				type: 'text',
 				index: 'true',
-				analyzer: 'english_synonyms_analyzer',
+				analyzer: 'english_analyzer',
 				search_analyzer: 'english_synonyms_analyzer'
 			},
 		},
@@ -53,7 +53,7 @@ export default {
 			english: {
 				type: 'text',
 				index: 'true',
-				analyzer: 'english_synonyms_analyzer',
+				analyzer: 'english_analyzer',
 				search_analyzer: 'english_synonyms_analyzer'
 			},
 		},
