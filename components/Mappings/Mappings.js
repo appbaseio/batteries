@@ -838,6 +838,26 @@ class Mappings extends Component {
 					title={(
 						<div className={cardTitle}>
 							<div>
+								<h4>Manage Shards</h4>
+								<p>Configure the number of shards for your app.</p>
+							</div>
+							{this.state.editable ? (
+								<Button onClick={this.handleShardsModal} type="primary">
+									Change Shards
+								</Button>
+							) : (
+									this.renderPromotionalButtons('shards', shardsMessage)
+								)}
+						</div>
+					)}
+					bodyStyle={{ padding: 0 }}
+					className={card}
+				/>
+				<Card
+					hoverable
+					title={(
+						<div className={cardTitle}>
+							<div>
 								<h4>Manage Synonyms</h4>
 								<p>Add new synonyms or edit the existing ones.</p>
 							</div>
@@ -849,26 +869,6 @@ class Mappings extends Component {
 							) : (
 								this.renderPromotionalButtons('synonyms', synonymMessage)
 							)}
-						</div>
-					)}
-					bodyStyle={{ padding: 0 }}
-					className={card}
-				/>
-				<Card
-					hoverable
-					title={(
-						<div className={cardTitle}>
-							<div>
-								<h4>Manage Shards</h4>
-								<p>Change number of shards allocated.</p>
-							</div>
-							{this.state.editable ? (
-								<Button onClick={this.handleShardsModal} type="primary">
-									Change Shards
-								</Button>
-							) : (
-									this.renderPromotionalButtons('shards', shardsMessage)
-								)}
 						</div>
 					)}
 					bodyStyle={{ padding: 0 }}
@@ -1001,12 +1001,12 @@ class Mappings extends Component {
 					this.state.editable && <Modal
 						visible={this.state.shardsModal}
 						onOk={this.updateShards}
-						title="Update Shards"
+						title="Configure Shards"
 						okText="Update"
 						okButtonProps={{ disabled: this.state.allocated_shards == this.state.shards }}
 						onCancel={this.handleShardsModal}
 					>
-						<h4>Move Slider to set number of Shards.</h4>
+						<h4>Move slider to change the number of shards for your app. Read more <a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">here</a>.</h4>
 						<Slider tooltipVisible={false} step={null} max={this.getMaxShards()} value={+this.state.shards} marks={{ [this.state.allocated_shards]: this.state.allocated_shards, ...this.getShards() }} onChange={this.handleSlider} />
 					</Modal>
 				}
