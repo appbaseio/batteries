@@ -3,7 +3,7 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
- Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix,
+ Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix, Slider,
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
@@ -84,6 +84,14 @@ const synonymMessage = () => (
 	</div>
 );
 
+
+const shardsMessage = () => (
+	<div style={{ maxWidth: 220 }}>
+		Editing number of shards isn{"'"}t a native feature in Elasticsearch. All appbase.io paid plans
+		offer setting number of Shards.
+	</div>
+);
+
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
 	<Modal
@@ -122,6 +130,7 @@ class Mappings extends Component {
 			synonymsLoading: false,
 			showSynonymModal: false,
 			esVersion: '5',
+			shardsModal: false,
 		};
 
 		this.usecases = textUsecases;
@@ -176,6 +185,7 @@ class Mappings extends Component {
 				getAppMappings(appName, appbaseCredentials);
 			}
 			this.initializeSynonymsData();
+			this.initializeShards();
 		}
 	}
 
@@ -205,6 +215,7 @@ class Mappings extends Component {
 				// 2. get mappings if we have credentials
 				getAppMappings(appName, appbaseCredentials);
 				this.initializeSynonymsData();
+				this.initializeShards()
 			} else if (!appbaseCredentials) {
 				// 2. get credentials (if not found) - before fetching mappings and synonyms
 				getPermission(appName);
@@ -218,6 +229,17 @@ class Mappings extends Component {
 		this.fetchSynonyms(appbaseCredentials).then((synonyms) => {
 			this.setState({
 				synonyms,
+			});
+		});
+	};
+
+	initializeShards = () => {
+		const { appbaseCredentials } = this.props;
+
+		this.fetchSettings(appbaseCredentials).then((shards) => {
+			this.setState({
+				shards,
+				allocated_shards: shards,
 			});
 		});
 	};
@@ -341,6 +363,18 @@ class Mappings extends Component {
 		});
 	};
 
+	handleShardsModal = () => {
+		this.setState(prevState => ({
+			shardsModal: !prevState.shardsModal,
+		}));
+	}
+
+	handleSlider = (value) => {
+		this.setState({
+			shards: value,
+		});
+	}
+
 	fetchSynonyms = (credentials) => {
 		const { url, appName } = this.props;
 		return getSettings(appName, credentials, url).then((data) => {
@@ -353,6 +387,13 @@ class Mappings extends Component {
 			return '';
 		});
 	};
+
+	fetchSettings = (credentials) => {
+		const { url, appName } = this.props;
+		return getSettings(appName, credentials, url).then((data) => {
+			return get(data[appName], 'settings.index.number_of_shards');
+		});
+	}
 
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
@@ -389,7 +430,7 @@ class Mappings extends Component {
 		});
 
 		const {
- deletedPaths, activeType, mapping, esVersion,
+ deletedPaths, activeType, mapping, esVersion, shards
 } = this.state;
 
 		const { appId } = this.props;
@@ -401,7 +442,7 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType, esVersion)
+		reIndex(mapping, appId, excludedFields, activeType, esVersion, shards)
 			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
@@ -695,6 +736,11 @@ class Mappings extends Component {
 			</div>
 		));
 
+	updateShards = () => {
+		this.handleShardsModal();
+		this.reIndex();
+	}
+
 	updateSynonyms = () => {
 		const credentials = this.props.appbaseCredentials;
 		const { url } = this.props;
@@ -739,6 +785,37 @@ class Mappings extends Component {
 			});
 	};
 
+	getShardValues = (max, step = 3) => {
+		const shards = {};
+
+		for (let i = 3; i <= max; i += 3) {
+			shards[i] = i;
+		}
+		return shards;
+	}
+
+	getShards = () => {
+		const {isBootstrapPlan, isGrowthPlan} = this.props;
+		if (isBootstrapPlan) {
+			return this.getShardValues(9);
+		}
+		else if (isGrowthPlan) {
+			return this.getShardValues(21);
+		}
+		return 0;
+	}
+
+	getMaxShards = () => {
+		const { isBootstrapPlan, isGrowthPlan } = this.props;
+		if (isBootstrapPlan) {
+			return 9;
+		}
+		else if (isGrowthPlan) {
+			return 21;
+		}
+		return 0;
+	}
+
 	render() {
 		if (this.props.loadingError) {
 			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
@@ -759,6 +836,26 @@ class Mappings extends Component {
 		if (!this.state.mapping) return null;
 		return (
 			<React.Fragment>
+				<Card
+					hoverable
+					title={(
+						<div className={cardTitle}>
+							<div>
+								<h4>Manage Shards</h4>
+								<p>Configure the number of shards for your app.</p>
+							</div>
+							{this.state.editable ? (
+								<Button onClick={this.handleShardsModal} type="primary">
+									Change Shards
+								</Button>
+							) : (
+									this.renderPromotionalButtons('shards', shardsMessage)
+								)}
+						</div>
+					)}
+					bodyStyle={{ padding: 0 }}
+					className={card}
+				/>
 				<Card
 					hoverable
 					title={(
@@ -903,6 +1000,20 @@ class Mappings extends Component {
 						autosize={{ minRows: 2, maxRows: 10 }}
 					/>
 				</Modal>
+				{
+					this.state.editable && <Modal
+						visible={this.state.shardsModal}
+						onOk={this.updateShards}
+						title="Configure Shards"
+						okText="Update"
+						okButtonProps={{ disabled: this.state.allocated_shards == this.state.shards }}
+						onCancel={this.handleShardsModal}
+					>
+						<h4>Move slider to change the number of shards for your app. Read more <a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">here</a>.</h4>
+						<Slider tooltipVisible={false} step={null} max={this.getMaxShards()} value={+this.state.shards} marks={{ [this.state.allocated_shards]: this.state.allocated_shards, ...this.getShards() }} onChange={this.handleSlider} />
+					</Modal>
+				}
+
 			</React.Fragment>
 		);
 	}
@@ -933,13 +1044,16 @@ Mappings.defaultProps = {
 
 const mapStateToProps = (state) => {
 	const { username, password } = get(getAppPermissionsByName(state), 'credentials', {});
+	const appPlan = getAppPlanByName(state);
 	return {
 		appName: get(state, '$getCurrentApp.name'),
 		appId: get(state, '$getCurrentApp.id'),
 		mapping: getRawMappingsByAppName(state) || null,
 		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
 		loadingError: get(state, '$getAppMappings.error', null),
-		isPaid: get(getAppPlanByName(state), 'isPaid'),
+		isPaid: get(appPlan, 'isPaid'),
+		isBootstrapPlan: get(appPlan, 'isBootstrap'),
+		isGrowthPlan: get(appPlan, 'isGrowth'),
 		appbaseCredentials: username ? `${username}:${password}` : null,
 	};
 };
