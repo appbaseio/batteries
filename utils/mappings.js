@@ -102,7 +102,7 @@ export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsAr
 						english_synonyms_analyzer: {
 							filter: ['lowercase', 'synonyms_filter', 'asciifolding', 'porter_stem'],
 							tokenizer: 'standard',
-							type: 'custom'
+							type: 'custom',
 						},
 					},
 				},
@@ -147,7 +147,7 @@ export async function getESVersion(appName) {
 	return data.body.es_version;
 }
 
-export function reIndex(mappings, appId, excludeFields, type, version = '5', shards) {
+export function reIndex(mappings, appName, excludeFields, type, version = '5', shards) {
 	const body = {
 		mappings,
 		settings: analyzerSettings,
@@ -157,7 +157,7 @@ export function reIndex(mappings, appId, excludeFields, type, version = '5', sha
 		shard_count: shards.toString(),
 	};
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/app/${appId}/reindex`, {
+		fetch(`${ACC_API}/app/${appName}/reindex`, {
 			method: 'POST',
 			credentials: 'include',
 			headers: {

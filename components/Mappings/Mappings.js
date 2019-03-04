@@ -433,7 +433,7 @@ class Mappings extends Component {
  deletedPaths, activeType, mapping, esVersion, shards
 } = this.state;
 
-		const { appId } = this.props;
+		const { appName } = this.props;
 
 		const excludedFields = deletedPaths
 			.map(path => path.split('.properties.').join('.'))
@@ -442,7 +442,7 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType, esVersion, shards)
+		reIndex(mapping, appName, excludedFields, activeType, esVersion, shards)
 			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
@@ -587,10 +587,11 @@ class Mappings extends Component {
 				))}
 			</Menu>
 		);
+		const selectedOption = options.find(option => option.value === value);
 		return (
 			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
-					{value}
+					{selectedOption.label || value}
 					<Icon type="down" />
 				</Button>
 			</Dropdown>
@@ -882,7 +883,7 @@ class Mappings extends Component {
 					title={(
 						<div className={cardTitle}>
 							<div>
-								<h4>Manage Mappings</h4>
+								<h4>App Settings</h4>
 								<p>Add new fields or change the types of existing ones.</p>
 							</div>
 							{this.state.editable ? (
