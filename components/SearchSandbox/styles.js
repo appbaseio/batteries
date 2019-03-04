@@ -115,6 +115,8 @@ const listLabel = css`
 	div {
 		width: 80%;
 		font-size: inherit;
+		text-overflow: ellipsis;
+		overflow: hidden;
 		& > * {
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -126,12 +128,5 @@ const listLabel = css`
 `;
 
 export {
-	listItem,
-	title,
-	formWrapper,
-	rowStyles,
-	deleteStyles,
-	listLabel,
-	fieldBadge,
-	label,
+ listItem, title, formWrapper, rowStyles, deleteStyles, listLabel, fieldBadge, label,
 };
