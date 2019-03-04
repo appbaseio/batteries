@@ -11,6 +11,16 @@ export default {
 				tokenizer: 'standard',
 				type: 'custom',
 			},
+			english_analyzer: {
+				filter: ['lowercase', 'asciifolding', 'porter_stem'],
+				tokenizer: 'standard',
+				type: 'custom'
+			},
+			english_synonyms_analyzer: {
+				filter: ['lowercase', 'synonyms_filter', 'asciifolding', 'porter_stem'],
+				tokenizer: 'standard',
+				type: 'custom'
+			},
 		},
 		filter: {
 			autosuggest_filter: {
@@ -24,6 +34,10 @@ export default {
 				min_gram: '2',
 				token_chars: ['letter', 'digit', 'punctuation', 'symbol'],
 				type: 'ngram',
+			},
+			synonyms_filter: {
+				type: 'synonyms',
+				synonyms: [],
 			},
 		},
 	},
