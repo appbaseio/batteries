@@ -31,7 +31,9 @@ const filterHits = (hits = []) => {
 	const errorHits = [];
 	const searchHits = [];
 	const deleteHits = [];
-	hits.forEach((h) => {
+	hits.forEach((h, index) => {
+		// eslint-disable-next-line
+		h._id = index;
 		const status = get(h, 'response.code');
 		if (get(h, 'category') === 'search') {
 			searchHits.push(h);
