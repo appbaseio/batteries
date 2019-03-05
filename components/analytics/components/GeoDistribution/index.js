@@ -168,7 +168,7 @@ GeoDistribution.propTypes = {
 	fetchAppGeoDistribution: PropTypes.func.isRequired,
 };
 const mapStateToProps = state => ({
-	geoData: get(getAppGeoDistributionByName(state), 'aggrByCountry'),
+	geoData: get(getAppGeoDistributionByName(state), 'geo_distribution', []),
 	isSuccess: get(state, '$getAppGeoDistribution.success'),
 });
 const mapDispatchToProps = dispatch => ({

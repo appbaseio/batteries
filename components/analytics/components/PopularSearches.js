@@ -9,9 +9,9 @@ import Loader from '../../shared/Loader/Spinner';
 const headers = {
 	key: 'Search Terms',
 	count: 'Total Queries',
-	clicks: 'Clicks',
-	clickposition: 'Click Position',
-	conversionrate: 'Conversion Rate',
+	// clicks: 'Clicks',
+	// clickposition: 'Click Position',
+	// conversionrate: 'Conversion Rate',
 };
 class PopularSearches extends React.Component {
 	constructor(props) {
@@ -78,7 +78,7 @@ PopularSearches.propTypes = {
 };
 
 const mapStateToProps = state => ({
-	plan: 'growth',
+	plan: 'free',
 	appName: get(state, '$getCurrentApp.name'),
 });
 export default connect(mapStateToProps)(PopularSearches);

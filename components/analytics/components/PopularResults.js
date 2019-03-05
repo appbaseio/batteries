@@ -9,10 +9,10 @@ import Loader from '../../shared/Loader/Spinner';
 const headers = {
 	key: 'Results',
 	count: 'Impressions',
-	source: 'Source',
-	clicks: 'Clicks',
-	clickposition: 'Click Position',
-	conversionrate: 'Conversion Rate',
+	// source: 'Source',
+	// clicks: 'Clicks',
+	// clickposition: 'Click Position',
+	// conversionrate: 'Conversion Rate',
 };
 
 class PopularResults extends React.Component {
@@ -49,7 +49,7 @@ class PopularResults extends React.Component {
 		return (
 			<Searches
 				tableProps={{
-					scroll: { x: 700 },
+					scroll: { x: 1000 },
 				}}
 				showViewOption={false}
 				columns={popularResultsFull(plan)}
@@ -81,10 +81,9 @@ PopularResults.propTypes = {
 	appName: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => {
-	return {
-		plan: 'growth',
-		appName: get(state, '$getCurrentApp.name'),
-	};
-};
+const mapStateToProps = state => ({
+	plan: 'free',
+	appName: get(state, '$getCurrentApp.name'),
+});
+
 export default connect(mapStateToProps)(PopularResults);

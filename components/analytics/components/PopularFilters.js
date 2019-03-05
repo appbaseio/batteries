@@ -8,10 +8,10 @@ import Loader from '../../shared/Loader/Spinner';
 
 const headers = {
 	key: 'Filters',
-	count: 'Impressions',
-	clicks: 'Clicks',
-	source: 'Source',
-	conversionrate: 'Conversion Rate',
+	count: 'Count',
+	// clicks: 'Clicks',
+	// source: 'Source',
+	// conversionrate: 'Conversion Rate',
 };
 
 class PopularFilters extends React.Component {
@@ -79,7 +79,7 @@ PopularFilters.propTypes = {
 };
 
 const mapStateToProps = state => ({
-		plan: 'growth',
+		plan: 'free',
 		appName: get(state, '$getCurrentApp.name'),
 	});
 export default connect(mapStateToProps)(PopularFilters);

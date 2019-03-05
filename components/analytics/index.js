@@ -98,7 +98,7 @@ const mapStateToProps = (state) => {
 		popularSearches: get(appAnalytics, 'popular_searches', []),
 		popularResults: get(appAnalytics, 'popular_results', []),
 		popularFilters: get(appAnalytics, 'popular_filters', []),
-		searchVolume: get(appAnalytics, 'search_volume', []),
+		searchVolume: get(appAnalytics, 'search_histogram', []),
 		noResults: get(appAnalytics, 'no_results_searches', []),
 		isFetching: get(state, '$getAppAnalytics.isFetching'),
 	};

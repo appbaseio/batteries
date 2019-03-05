@@ -5,6 +5,12 @@ import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 import { getURL } from '../../../constants/config';
 
+let lastIndex = 0;
+const updateIndex = () => {
+	lastIndex += 1;
+	return lastIndex;
+};
+
 const requestOpt = css`
 	color: #00ff88;
 	text-transform: uppercase;
@@ -73,10 +79,12 @@ export const popularFiltersCol = (plan) => {
 					{` ${item.value}`}
 				</React.Fragment>
 			),
+			key: `pf-filters${updateIndex()}`,
 		},
 		{
 			title: 'Impressions',
 			dataIndex: 'count',
+			key: `pf-count${updateIndex()}`,
 		},
 	];
 	if (!plan || plan !== 'growth') {
@@ -84,10 +92,10 @@ export const popularFiltersCol = (plan) => {
 	}
 	return [
 		...defaults,
-		{
-			title: 'Click Rate',
-			dataIndex: 'clickrate',
-		},
+		// {
+		// 	title: 'Click Rate',
+		// 	dataIndex: 'clickrate',
+		// },
 	];
 };
 export const popularResultsCol = (plan) => {
@@ -95,10 +103,12 @@ export const popularResultsCol = (plan) => {
 		{
 			title: 'Results',
 			dataIndex: 'key',
+			key: `pr-results${updateIndex()}`,
 		},
 		{
 			title: 'Impressions',
 			dataIndex: 'count',
+			key: `pr-count${updateIndex()}`,
 		},
 	];
 	if (!plan || plan !== 'growth') {
@@ -109,6 +119,7 @@ export const popularResultsCol = (plan) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'clickrate',
+			key: `pr-clickrate${updateIndex()}`,
 		},
 	];
 };
@@ -117,10 +128,12 @@ export const defaultColumns = (plan) => {
 		{
 			title: 'Search Terms',
 			dataIndex: 'key',
+			key: `search-term${updateIndex()}`,
 		},
 		{
 			title: 'Total Queries',
 			dataIndex: 'count',
+			key: `count${updateIndex()}`,
 		},
 	];
 	if (!plan || plan !== 'growth') {
@@ -131,6 +144,7 @@ export const defaultColumns = (plan) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'clickrate',
+			key: `clickrate${updateIndex()}`,
 		},
 	];
 };
@@ -192,18 +206,22 @@ export const popularSearchesFull = (plan) => {
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
+			key: `ps-clicks${updateIndex()}`,
 		},
 		{
 			title: 'Avg Click Position',
 			dataIndex: 'clickposition',
+			key: `ps-clickposition${updateIndex()}`,
 		},
 		{
 			title: 'Click Rate',
 			dataIndex: 'clickrate',
+			key: `ps-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversionrate',
+			key: `ps-conversionrate${updateIndex()}`,
 		},
 	];
 };
@@ -214,7 +232,7 @@ export const popularResultsFull = (plan) => {
 			{
 				title: 'Source',
 				dataIndex: 'source',
-				key: 'source',
+				key: `pr-source${updateIndex()}`,
 				width: '30%',
 				render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
 			},
@@ -225,26 +243,28 @@ export const popularResultsFull = (plan) => {
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
-			key: 'clicks',
+			key: `pr-clicks${updateIndex()}`,
 		},
 		{
 			title: 'Click Rate',
 			dataIndex: 'clickrate',
+			key: `pr-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Click Position',
 			dataIndex: 'clickposition',
 			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
+			key: `pr-clickposition${updateIndex()}`,
 		},
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversionrate',
-			key: 'conversionrate',
+			key: `pr-conversionrate${updateIndex()}`,
 		},
 		{
 			title: 'Source',
 			dataIndex: 'source',
-			key: 'source',
+			key: `pr-source${updateIndex()}`,
 			width: '30%',
 			render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
 		},
@@ -259,28 +279,25 @@ export const popularFiltersFull = (plan) => {
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
-			key: 'clicks',
+			key: `pf-clicks${updateIndex()}`,
 		},
 		{
 			title: 'Click Rate',
 			dataIndex: 'clickrate',
+			key: `pf-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Click Position',
 			dataIndex: 'clickposition',
+			key: `pf-clickposition${updateIndex()}`,
 			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
 		},
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversionrate',
-			key: 'conversionrate',
+			key: `pf-conversionrate${updateIndex()}`,
 		},
 	];
-};
-let lastIndex = 0;
-const updateIndex = () => {
-	lastIndex += 1;
-	return lastIndex;
 };
 
 export const requestLogs = [
@@ -340,16 +357,15 @@ const getApp = (app) => {
  * Get the analytics
  * @param {string} appName
  */
-export function getAnalytics(appName, userPlan, clickanalytics = true) {
+export function getAnalytics(appName) {
 	return new Promise((resolve, reject) => {
 		const ACC_API = getURL();
-		const url = `${ACC_API}/_analytics/${getApp(appName)}overview`;
+		const url = `${ACC_API}/_analytics/${getApp(appName)}advanced`;
 		const queryParams = getQueryParams({
-			clickanalytics,
-			from: moment()
-				.subtract(30, 'days')
-				.format('YYYY/MM/DD'),
-			to: moment().format('YYYY/MM/DD'),
+			// from: moment()
+			// 	.subtract(30, 'days')
+			// 	.format('YYYY/MM/DD'),
+			// to: moment().format('YYYY/MM/DD'),
 		});
 
 		const authToken = getAuthToken();
@@ -435,13 +451,13 @@ export function getAnalyticsSummary(appName) {
  * Get the popular seraches
  * @param {string} appName
  */
+// eslint-disable-next-line
 export function getPopularSearches(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-searches${getQueryParams({
-				clickanalytics,
 				size,
 			})}`,
 			{
@@ -490,13 +506,13 @@ export function getNoResultSearches(appName, size = 100) {
 			});
 	});
 }
+// eslint-disable-next-line
 export function getPopularResults(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-results${getQueryParams({
-				clickanalytics,
 				size,
 			})}`,
 			{
@@ -526,14 +542,13 @@ export function getRequestDistribution(appName) {
 	const ACC_API = getURL();
 	return doGet(`${ACC_API}/_analytics/${getApp(appName)}request-distribution`);
 }
-
+// eslint-disable-next-line
 export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-filters${getQueryParams({
-				clickanalytics,
 				size,
 			})}`,
 			{

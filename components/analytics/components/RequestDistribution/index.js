@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Card } from 'antd';
+import { Card, Select } from 'antd';
 import {
  LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend,
 } from 'recharts';
@@ -11,7 +11,7 @@ import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { displayErrors } from '../../../../utils/heplers';
 import { getAppRequestDistribution } from '../../../../modules/actions';
-import { getAppRequestDistributionByName } from '../../../../modules/selectors';
+import { getAppRequestDistributionByName, getAppPlanByName } from '../../../../modules/selectors';
 
 const normalizedData = (data = []) => {
 	const dataTobeReturned = [];
@@ -32,36 +32,8 @@ class RequestDistribution extends React.Component {
 		super(props);
 		this.state = {
 			width: undefined,
+			ticks: this.calculateTicks().monthlyTicks,
 		};
-		this.ticks = [
-			moment()
-				.subtract(5, 'd')
-				.startOf('day')
-				.valueOf(),
-			moment()
-				.subtract(4, 'd')
-				.startOf('day')
-				.valueOf(),
-			moment()
-				.subtract(3, 'd')
-				.startOf('day')
-				.valueOf(),
-			moment()
-				.subtract(2, 'd')
-				.startOf('day')
-				.valueOf(),
-			moment()
-				.subtract(1, 'd')
-				.startOf('day')
-				.valueOf(),
-			moment()
-				.startOf('day')
-				.valueOf(),
-			moment()
-				.add(1, 'd')
-				.startOf('day')
-				.valueOf(),
-		];
 	}
 
 	componentDidMount() {
@@ -77,11 +49,69 @@ class RequestDistribution extends React.Component {
 		displayErrors(errors, prevProps.errors);
 	}
 
+	getformatedDate(date) {
+		const { ticks } = this.state;
+		return ticks.length > 9 ? moment(date).format('MM/DD')
+		: moment(date).format('Do ddd');
+	}
+
+	handleChange = (value) => {
+		const { fetchAppRequestDistribution } = this.props;
+		if (value === 'weekly') {
+			fetchAppRequestDistribution({
+				from: moment()
+					.subtract(7, 'days')
+					.format('YYYY/MM/DD'),
+				to: moment().format('YYYY/MM/DD'),
+			});
+			this.setState({
+				ticks: this.weeklyTicks,
+			});
+		} else {
+			fetchAppRequestDistribution();
+			this.setState({
+				ticks: this.monthlyTicks,
+			});
+		}
+	};
+
+	calculateTicks() {
+		const baseTicks = [
+			moment()
+				.startOf('day')
+				.valueOf(),
+			moment()
+				.add(1, 'd')
+				.startOf('day')
+				.valueOf(),
+		];
+		const monthlyTicks = [
+			...[...Array(30)].map((x, i) => moment()
+					.subtract(30 - i, 'd')
+					.startOf('day')
+					.valueOf()),
+			...baseTicks,
+		];
+		const weeklyTicks = [
+			...[...Array(7)].map((x, i) => moment()
+					.subtract(7 - i, 'd')
+					.startOf('day')
+					.valueOf()),
+			...baseTicks,
+		];
+		this.weeklyTicks = weeklyTicks;
+		this.monthlyTicks = monthlyTicks;
+		return {
+			weeklyTicks,
+			monthlyTicks,
+		};
+	}
+
 	render() {
 		const {
- isLoading, results, success, errors,
+ isLoading, results, success,
 } = this.props;
-		const { width } = this.state;
+		const { width, ticks } = this.state;
 		const data = normalizedData(results);
 		return (
 			<div
@@ -95,13 +125,21 @@ class RequestDistribution extends React.Component {
 					style={{
 						width: '100%',
 					}}
+					extra={(
+							<Select onChange={this.handleChange} defaultValue="monthly">
+								<Select.Option value="monthly" key="monthly">
+									Monthly
+								</Select.Option>
+								<Select.Option value="weekly" key="weekly">
+									weekly
+								</Select.Option>
+							</Select>
+						)}
 				>
 					{isLoading ? (
 						<Loader />
 					) : (
-						((success || errors.length) && !data.length && (
-							<EmptyData css="height: 400px" />
-						)) || (
+						(success && !data.length && <EmptyData css="height: 400px" />) || (
 							<LineChart
 								width={width}
 								height={400}
@@ -115,12 +153,12 @@ class RequestDistribution extends React.Component {
 							>
 								<CartesianGrid />
 								<XAxis
-									tickFormatter={unixTime => moment(unixTime).format('Do ddd')}
+									tickFormatter={unixTime => this.getformatedDate(unixTime)}
 									type="number"
 									dataKey="key"
-									domain={[this.ticks[0], this.ticks[6]]}
-									ticks={this.ticks}
-									tickCount={7}
+									domain={[ticks[0], ticks[ticks.length - 1]]}
+									ticks={ticks}
+									tickCount={ticks.length * 2}
 								/>
 								<YAxis
 									allowDecimals={false}
@@ -185,7 +223,7 @@ const mapStateToProps = state => ({
 	results: get(getAppRequestDistributionByName(state), 'request_distribution', []),
 });
 const mapDispatchToProps = dispatch => ({
-	fetchAppRequestDistribution: appName => dispatch(getAppRequestDistribution(appName)),
+	fetchAppRequestDistribution: filters => dispatch(getAppRequestDistribution(null, null, filters)),
 });
 export default connect(
 	mapStateToProps,
