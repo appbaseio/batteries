@@ -215,7 +215,7 @@ class Mappings extends Component {
 				// 2. get mappings if we have credentials
 				getAppMappings(appName, appbaseCredentials);
 				this.initializeSynonymsData();
-				this.initializeShards()
+				this.initializeShards();
 			} else if (!appbaseCredentials) {
 				// 2. get credentials (if not found) - before fetching mappings and synonyms
 				getPermission(appName);
@@ -395,6 +395,26 @@ class Mappings extends Component {
 		});
 	}
 
+	updateField = () => {
+		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
+		const { activeType } = this.state;
+		if (mapping && activeType[0] && mapping[activeType[0]] && mapping[activeType[0]].properties) {
+			const { properties } = mapping[activeType[0]];
+			const keys = Object.keys(properties);
+
+			keys.forEach((key) => {
+				if (properties[key] && properties[key].fields && properties[key].fields.english) {
+					properties[key].fields.english.search_analyzer = 'english_synonyms_analyzer';
+				}
+			});
+
+			this.setState({
+				mapping,
+			});
+			this.reIndex();
+		}
+	}
+
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const fields = name.split('.');
@@ -424,16 +444,20 @@ class Mappings extends Component {
 		});
 	};
 
-	reIndex = () => {
+	reIndex = async () => {
 		this.setState({
 			isReIndexing: true,
 		});
 
 		const {
- deletedPaths, activeType, mapping, esVersion, shards
+ deletedPaths, activeType, mapping, esVersion, shards,
 } = this.state;
 
-		const { appId } = this.props;
+		const { appId, appbaseCredentials, url, appName } = this.props;
+
+		const settings = await getSettings(appName, appbaseCredentials, url).then((data) => {
+			return get(data[appName], 'settings.index.analysis');
+		});
 
 		const excludedFields = deletedPaths
 			.map(path => path.split('.properties.').join('.'))
@@ -442,7 +466,7 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType, esVersion, shards)
+		reIndex(mapping, appId, excludedFields, activeType, esVersion, shards, settings)
 			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
@@ -744,7 +768,7 @@ class Mappings extends Component {
 	updateSynonyms = () => {
 		const credentials = this.props.appbaseCredentials;
 		const { url } = this.props;
-
+		let synonymsUpdated = false;
 		this.setState({
 			synonymsLoading: true,
 		});
@@ -763,7 +787,8 @@ class Mappings extends Component {
 							synonyms: newSynonyms,
 							showSynonymModal: false,
 							synonymsLoading: false,
-						}));
+						}))
+						synonymsUpdated = true;
 				} else {
 					this.setState({
 						showSynonymModal: false,
@@ -774,7 +799,13 @@ class Mappings extends Component {
 				}
 			})
 			.then(() => openIndex(this.props.appName, credentials, url))
-			.catch(() => {
+			.then(() => {
+				if (synonymsUpdated) {
+					this.updateField();
+				}
+			})
+			.catch((e) => {
+				console.error(e)
 				openIndex(this.props.appName, credentials, url);
 				this.setState({
 					showSynonymModal: false,
