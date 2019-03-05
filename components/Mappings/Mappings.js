@@ -71,8 +71,7 @@ const FeedbackModal = ({ show, onClose, timeTaken }) => (
 		okText="Done"
 	>
 		<p>
-			The mappings have been updated and the data has been successfully re-indexed in{' '}
-			{timeTaken}ms.
+			The mappings have been updated and the data has been successfully re-indexed.
 		</p>
 	</Modal>
 );
@@ -349,10 +348,9 @@ class Mappings extends Component {
 			});
 
 		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials)
-			.then((timeTaken) => {
+			.then((data) => {
 				this.setState({
 					showFeedback: true,
-					timeTaken,
 				});
 			})
 			.catch((err) => {

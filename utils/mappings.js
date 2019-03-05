@@ -180,13 +180,10 @@ export function reIndex(mappings, appId, excludeFields, type, version = '5', cre
 				if (data.error) {
 					reject(data.error);
 				}
-				if (data.body && data.body.response_info.failures.length) {
-					reject(data.body.response_info.failures);
-				}
-				if (data.message !== 'App has been successfully reindexed.') {
+				if (data.code >= 400) {
 					reject(data.message);
 				}
-				resolve(data.body.response_info.took);
+				resolve(data);
 			})
 			.catch((e) => {
 				reject(e);
