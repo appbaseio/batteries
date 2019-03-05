@@ -133,28 +133,19 @@ const tagContainer = css`
 	flex-wrap: wrap;
 	align-items: center;
 	.tag {
-		display: inline-flex;
-		justify-content: space-between;
-		align-items: center;
-		border: 1px solid #d9d9d9;
-		background: #fafafa;
-		color: #595959;
-		padding: 5px 8px;
-		border-radius: 2px;
-		margin: 0 5px 5px 0;
-		cursor: pointer;
-
+		justify-content: end;
+		margin-right: 10px;
 		& * {
 			margin: 0 !important;
 			padding: 0 !important;
+			max-width: 200px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
 			list-style: none !important;
 			display: inline !important;
-			font-size: inherit !important;
-		}
-
-		&:hover {
-			background: #f5f5f5;
-			border-color: #bfbfbf;
+			line-height: inherit !important;
+			font-size: 14px !important;
 		}
 	}
 `;

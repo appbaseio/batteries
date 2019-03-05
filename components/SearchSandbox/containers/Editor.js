@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import {
- Row, Col, Card, Button, Modal, Form, message, Icon,
+ Row, Col, Card, Button, Modal, Form, message,
 } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
+import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';
 
 import multiListTypes from '../utils/multilist-types';
@@ -266,19 +267,14 @@ export default class Editor extends Component {
 										}`;
 
 										return (
-											<div
+											<SelectedTag
 												className="tag"
 												onClick={() => clearFilter(component, null)}
+												key={component}
 											>
-												<div
-													dangerouslySetInnerHTML={{ __html: value }}
-													key={component}
-												/>
-												<Icon
-													style={{ marginLeft: 5, color: '#595959' }}
-													type="close"
-												/>
-											</div>
+												<span dangerouslySetInnerHTML={{ __html: value }} />
+												<span>&nbsp; &#x2715;</span>
+											</SelectedTag>
 										);
 									});
 
@@ -286,13 +282,13 @@ export default class Editor extends Component {
 										<div className={tagContainer}>
 											{filters}
 											{filters.filter(Boolean).length ? (
-												<div
+												<SelectedTag
 													className="tag"
 													key="clear all"
 													onClick={clearValues}
 												>
 													Clear All
-												</div>
+												</SelectedTag>
 											) : null}
 										</div>
 									);
