@@ -118,6 +118,28 @@ export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsAr
 	});
 }
 
+export function putMapping(appName, credentials, url = SCALR_API, mappings, type) {
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/${appName}/_mapping/${type}`, {
+			method: 'PUT',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				...mappings,
+			}),
+		})
+			.then(res => res.json())
+			.then((data) => {
+				resolve(data);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
 export function openIndex(appName, credentials, url = SCALR_API) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_open`, {
