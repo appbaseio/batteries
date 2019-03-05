@@ -22,7 +22,7 @@ import {
  DropdownInput, NumberInput, TextInput, ToggleInput,
 } from '../../shared/Input';
 
-import { formWrapper, componentStyles } from '../styles';
+import { formWrapper } from '../styles';
 
 const componentMap = {
 	CategorySearch,
@@ -371,7 +371,6 @@ class RSComponentRender extends Component {
 					<Col span={full ? 24 : 20} id={id} className={tutorialClass}>
 						<RSComponent
 							componentId={id}
-							className={componentStyles}
 							{...getComponentProps({
 								component,
 								componentProps,
