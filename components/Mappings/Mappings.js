@@ -3,7 +3,7 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
- Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix, Slider,message
+ Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix, Slider, message,
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
