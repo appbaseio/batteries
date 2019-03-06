@@ -406,7 +406,14 @@ class Mappings extends Component {
 			keys.forEach((key) => {
 				if (properties[key] && properties[key].fields && properties[key].fields.english) {
 					properties[key].fields.english.search_analyzer = 'english_synonyms_analyzer';
-					properties[key].fields.english.analyzer = 'english_synonyms_analyzer';
+					properties[key].fields.english.analyzer = 'english_analyzer';
+				} else if (properties[key] && properties[key].fields) {
+					properties[key].fields.english = {
+						type: 'text',
+						index: 'true',
+						analyzer: 'english_analyzer',
+						search_analyzer: 'english_synonyms_analyzer',
+					};
 				}
 			});
 		}
@@ -477,13 +484,6 @@ class Mappings extends Component {
 		const settings = await getSettings(appName, appbaseCredentials, url).then((data) => {
 			return get(data[appName], 'settings.index.analysis');
 		});
-
-		// Remove english field if synonyms_analyzer is not present
-		if (get(settings, 'analyzer.english_synonyms_analyzer')) {
-			mapping = this.updateField();
-		}else{
-			mapping = this.deleteField();
-		}
 
 		const excludedFields = deletedPaths
 			.map(path => path.split('.properties.').join('.'))

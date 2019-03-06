@@ -14,7 +14,7 @@ export default {
 			english_analyzer: {
 				filter: ['lowercase', 'asciifolding', 'porter_stem'],
 				tokenizer: 'standard',
-				type: 'custom'
+				type: 'custom',
 			},
 		},
 		filter: {

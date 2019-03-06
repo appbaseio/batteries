@@ -104,6 +104,11 @@ export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsAr
 							tokenizer: 'standard',
 							type: 'custom',
 						},
+						english_analyzer: {
+							filter: ['lowercase', 'asciifolding', 'porter_stem'],
+							tokenizer: 'standard',
+							type: 'custom'
+						},
 					},
 				},
 			}),
