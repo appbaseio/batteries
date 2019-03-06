@@ -348,7 +348,7 @@ class Mappings extends Component {
 			});
 
 		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials)
-			.then((data) => {
+			.then(() => {
 				this.setState({
 					showFeedback: true,
 				});
