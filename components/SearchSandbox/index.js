@@ -54,27 +54,29 @@ class SearchSandbox extends Component {
 	componentDidMount() {
 		const { appName, isDashboard } = this.props;
 		const { profileList: profileListState, profile } = this.state;
-		if (isDashboard) {
-			getPreferences(appName)
-				.then((pref) => {
-					this.pref = pref || {};
-					const profileList = Array.from(
-						new Set([...profileListState, ...Object.keys(this.pref)]),
-					);
-					const componentProps = this.pref[profile] || {};
-					this.setState({
-						componentProps,
-						profileList,
-						loading: false,
-						filterCount: Object.keys(componentProps).filter(
-							item => item !== 'search' && item !== 'result',
-						).length,
-					});
-				})
-				.catch(() => this.getLocalPref());
-		} else {
-			this.getLocalPref();
-		}
+		// if (isDashboard) {
+		// 	getPreferences(appName)
+		// 		.then((pref) => {
+		// 			this.pref = pref || {};
+		// 			const profileList = Array.from(
+		// 				new Set([...profileListState, ...Object.keys(this.pref)]),
+		// 			);
+		// 			const componentProps = this.pref[profile] || {};
+		// 			this.setState({
+		// 				componentProps,
+		// 				profileList,
+		// 				loading: false,
+		// 				filterCount: Object.keys(componentProps).filter(
+		// 					item => item !== 'search' && item !== 'result',
+		// 				).length,
+		// 			});
+		// 		})
+		// 		.catch(() => this.getLocalPref());
+		// } else {
+		// 	this.getLocalPref();
+		// }
+
+		this.getLocalPref();
 
 		const { mappings, isFetchingMapping, url } = this.props;
 		if (mappings) {
@@ -132,11 +134,13 @@ class SearchSandbox extends Component {
 			[profile]: componentProps,
 		};
 
-		if (isDashboard) {
-			setPreferences(appName, this.pref).catch(() => this.setLocalPref(this.pref));
-		} else {
-			this.setLocalPref(this.pref);
-		}
+		// if (isDashboard) {
+		// 	setPreferences(appName, this.pref).catch(() => this.setLocalPref(this.pref));
+		// } else {
+		// 	this.setLocalPref(this.pref);
+		// }
+
+		this.setLocalPref(this.pref);
 	};
 
 	deleteComponent = (id) => {
@@ -327,7 +331,7 @@ class SearchSandbox extends Component {
 					<Header
 						isDashboard={isDashboard}
 						showCodeSandbox={showCodeSandbox}
-						showProfileOption={showProfileOption}
+						showProfileOption={false}
 						profileList={profileList}
 						defaultProfile={profile}
 						setProfile={this.setProfile}
