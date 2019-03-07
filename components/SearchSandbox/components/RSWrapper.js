@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
-import {
- Row, Col, Form, Button, Modal, Popover, message,
-} from 'antd';
+import { Row, Col, Form, Button, Modal, Popover, message } from 'antd';
 
-import {
- DataSearch, MultiList, ReactiveList, CategorySearch,
-} from '@appbaseio/reactivesearch';
+import { DataSearch, MultiList, ReactiveList, CategorySearch } from '@appbaseio/reactivesearch';
 
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
@@ -18,9 +14,7 @@ import PreviewList from './PreviewList';
 import DataFieldInput from './DataFieldInput';
 import { SandboxContext } from '../index';
 import getComponentProps from '../utils/getComponentProps';
-import {
- NumberInput, TextInput, DropdownInput, ToggleInput,
-} from '../../shared/Input';
+import { NumberInput, TextInput, DropdownInput, ToggleInput } from '../../shared/Input';
 import { formWrapper } from '../styles';
 
 const componentMap = {
@@ -70,10 +64,13 @@ class RSComponentRender extends Component {
 		}
 	}
 
-	componentWillReceiveProps(nextProps) {
-		this.setState({
-			componentProps: nextProps.componentProps,
-		});
+	static getDerivedStateFromProps(props, state) {
+		if (props.componentProps !== state.componentProps) {
+			return {
+				componentProps: props.componentProps,
+			};
+		}
+		return null;
 	}
 
 	setComponentProps = (newProps) => {
@@ -227,7 +224,8 @@ class RSComponentRender extends Component {
 						</p>
 					);
 
-					this.getCategoryField().forEach(field => dropdownOptions.push({
+					this.getCategoryField().forEach(field =>
+						dropdownOptions.push({
 							label: field,
 							key: field,
 						}));
@@ -240,18 +238,14 @@ class RSComponentRender extends Component {
 							});
 						}
 
-						selectedDropdown = dropdownOptions.find(
-							option => option.key === stateComponentProps[name],
-						);
+						selectedDropdown = dropdownOptions.find(option => option.key === stateComponentProps[name]);
 						selectedValue = selectedDropdown
 							? selectedDropdown.label
 							: dropdownOptions[0].label;
 					}
 				} else {
 					dropdownOptions = propsMap[component][name].options;
-					selectedDropdown = dropdownOptions.find(
-						option => option.key === stateComponentProps[name],
-					);
+					selectedDropdown = dropdownOptions.find(option => option.key === stateComponentProps[name]);
 					selectedValue = selectedDropdown
 						? selectedDropdown.label
 						: propsMap[component][name].default;

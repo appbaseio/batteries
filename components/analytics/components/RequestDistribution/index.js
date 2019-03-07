@@ -40,7 +40,7 @@ class RequestDistribution extends React.Component {
 		const { fetchAppRequestDistribution } = this.props;
 		fetchAppRequestDistribution();
 		this.setState({
-			width: this.child.parentNode.clientWidth - 60,
+			width: this.child.parentNode.clientWidth - 70,
 		});
 	}
 

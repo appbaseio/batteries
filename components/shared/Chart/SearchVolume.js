@@ -47,7 +47,7 @@ class SearchVolumeChart extends React.Component {
 	componentDidMount() {
 		const { margin } = this.props;
 		this.setState({
-			width: this.child.parentNode.clientWidth - (40 + margin),
+			width: this.child.parentNode.clientWidth - (70 + margin),
 		});
 	}
 

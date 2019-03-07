@@ -8,61 +8,54 @@ import { getAppInfoByName, getAppPlanByName } from '../../modules/selectors';
 import Loader from '../shared/Loader/Spinner';
 import { displayErrors } from '../../utils/heplers';
 
-let previousProps = {};
+let prevProps;
 
 class BaseContainer extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			isLoading: true,
-		};
-		const { appName, appId, updateCurrentApp } = props;
-		if (appName || appId) {
-			updateCurrentApp(appName, appId);
-		}
-	}
-
-	static getDerivedStateFromProps(props) {
-		if (previousProps.isLoading && !props.isLoading) {
-			previousProps = props;
-			return {
-				isLoading: false,
-			};
-		}
-		previousProps = props;
-		return null;
-	}
-
-	componentDidMount() {
-		// Fetch some common api calls
+		let isLoading = true;
 		const {
-			appId,
 			appName,
+			appId,
+			updateCurrentApp,
 			fetchAppInfo,
 			fetchAppPlan,
 			shouldFetchAppInfo,
 			shouldFetchAppPlan,
 			isAppPlanFetched,
 			isAppInfoPresent,
-		} = this.props;
+		} = props;
+		if (appName || appId) {
+			updateCurrentApp(appName, appId);
+		}
 		const shouldFetchApp = shouldFetchAppInfo && !isAppInfoPresent && appId;
 		const shouldFetchPlan = shouldFetchAppPlan && !isAppPlanFetched;
 		if (shouldFetchApp) {
 			fetchAppInfo(appId);
-		}
-		if (shouldFetchPlan) {
+		} else if (shouldFetchPlan) {
 			fetchAppPlan(appName);
-		} 
-		if(!shouldFetchApp && !shouldFetchApp) {
-			this.setState({
-				isLoading: false,
-			});
+		} else {
+			isLoading = false;
 		}
+		this.state = {
+			isLoading,
+		};
 	}
 
-	componentDidUpdate(prevProps) {
+	static getDerivedStateFromProps(props, state) {
+		// Only call after first update
+		if (prevProps && state.isLoading && !props.isLoading) {
+			return {
+				isLoading: false,
+			};
+		}
+		return null;
+	}
+
+	componentDidUpdate(props) {
 		const { errors } = this.props;
-		displayErrors(errors, prevProps.errors);
+		displayErrors(errors, props.errors);
+		prevProps = this.props;
 	}
 
 	render() {
@@ -72,9 +65,7 @@ class BaseContainer extends Component {
 			return <Loader />;
 		}
 		if (component) {
-			return (
-				<div key={props.appName}>{React.createElement(children || component, props)}</div>
-			);
+			return <div key={props.appName}>{React.createElement(component, props)}</div>;
 		}
 
 		return <div key={props.appName}>{children}</div>;
@@ -108,7 +99,10 @@ BaseContainer.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-	isLoading: get(state, '$getAppInfo.isFetching') || get(state, '$getAppPlan.isFetching'),
+	isLoading:
+		ownProps.shouldFetchAppInfo && ownProps.shouldFetchAppPlan
+			? get(state, '$getAppInfo.isFetching') && get(state, '$getAppPlan.isFetching')
+			: get(state, '$getAppInfo.isFetching') || get(state, '$getAppPlan.isFetching'),
 	isAppPlanFetched: !!getAppPlanByName(state),
 	isAppInfoPresent: !!getAppInfoByName(state),
 	errors: [

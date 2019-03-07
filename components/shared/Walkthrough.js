@@ -1,8 +1,7 @@
 import React from 'react';
 import { injectGlobal } from 'emotion';
-import Joyride from 'react-joyride';
+import Joyride, { ACTIONS, EVENTS } from 'react-joyride';
 import { message, Button, Tooltip } from 'antd';
-import { ACTIONS, EVENTS } from 'react-joyride/es/constants';
 import PropTypes from 'prop-types';
 
 /* eslint-disable-next-line */

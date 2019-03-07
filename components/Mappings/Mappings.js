@@ -816,6 +816,10 @@ class Mappings extends Component {
 		return 0;
 	}
 
+	handleClose = () => {
+		window.location.reload();
+	}
+
 	render() {
 		if (this.props.loadingError) {
 			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
@@ -979,7 +983,7 @@ class Mappings extends Component {
 				<FeedbackModal
 					show={this.state.showFeedback}
 					timeTaken={this.state.timeTaken}
-					onClose={() => window.location.reload()}
+					onClose={this.handleClose}
 				/>
 				<Modal
 					visible={this.state.showSynonymModal}

@@ -50,7 +50,7 @@ class SearchLatency extends React.Component {
 		const { fetchAppSearchLatency } = this.props;
 		fetchAppSearchLatency();
 		this.setState({
-			width: this.child.parentNode.clientWidth - 60,
+			width: this.child.parentNode.clientWidth - 70,
 		});
 	}
 
