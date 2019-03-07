@@ -26,7 +26,7 @@ export default {
 				type: 'text',
 				index: 'true',
 				analyzer: 'english_analyzer',
-				search_analyzer: 'english_analyzer'
+				search_analyzer: 'english_analyzer',
 			},
 		},
 		analyzer: 'standard',
@@ -54,7 +54,7 @@ export default {
 				type: 'text',
 				index: 'true',
 				analyzer: 'english_analyzer',
-				search_analyzer: 'english_analyzer'
+				search_analyzer: 'english_analyzer',
 			},
 		},
 		analyzer: 'standard',
