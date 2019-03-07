@@ -1,7 +1,7 @@
 import React from 'react';
 import { injectGlobal } from 'emotion';
 import Joyride from 'react-joyride';
-import { ACTIONS, EVENTS } from 'react-joyride/es/constants';
+import { ACTIONS, EVENTS } from 'react-joyride/lib/constants';
 import { message, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 
