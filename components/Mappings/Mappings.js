@@ -27,6 +27,7 @@ import {
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
+import analyzerSettings from '../../utils/analyzerSettings';
 import {
 	getRawMappingsByAppName,
 	getAppPermissionsByName,
@@ -420,22 +421,23 @@ class Mappings extends Component {
 		return mapping;
 	}
 
-	deleteField = () => {
-		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
-		const { activeType } = this.state;
-		if (mapping && activeType[0] && mapping[activeType[0]] && mapping[activeType[0]].properties) {
-			const { properties } = mapping[activeType[0]];
-			const keys = Object.keys(properties);
+	getUpdatedSettings = (settings) => {
+		const { analyzer: currentAnalyzer, filter: currentFilter } = settings;
+		const { analysis: { analyzer, filter } } = analyzerSettings;
 
-			keys.forEach((key) => {
-				if (properties[key] && properties[key].fields && properties[key].fields.english) {
-					const { english, ...rest } = properties[key].fields;
+		Object.keys(analyzer).forEach((key) => {
+			if (!currentAnalyzer[key]) {
+				currentAnalyzer[key] = analyzer[key];
+			}
+		});
 
-					properties[key].fields = {...rest};
-				}
-			});
-		}
-		return mapping;
+		Object.keys(filter).forEach((key) => {
+			if (!currentFilter[key]) {
+				currentFilter[key] = filter[key];
+			}
+		});
+
+		return settings;
 	}
 
 	addField = ({ name, type, usecase }) => {
@@ -476,14 +478,24 @@ class Mappings extends Component {
  deletedPaths, activeType, esVersion, shards,
 } = this.state;
 
-		let {mapping} = this.state;
+		let { mapping } = this.state;
 
 		const { appId, appbaseCredentials, url, appName } = this.props;
 
 		// Fetch latest settings so that we dont override settings.
-		const settings = await getSettings(appName, appbaseCredentials, url).then((data) => {
+		let settings = await getSettings(appName, appbaseCredentials, url).then((data) => {
 			return get(data[appName], 'settings.index.analysis');
 		});
+
+		settings = this.getUpdatedSettings(settings);
+
+		// We need to update english search_analyzer to synonyms_analzer.
+		// This is useful when we have the synonyms in place and change the mapping
+		// the english field have english_analyzer so we need to change it to search_analyzer.
+
+		if (get(settings, 'analyzer.english_synonyms_analyzer')) {
+			mapping = this.updateField();
+		}
 
 		const excludedFields = deletedPaths
 			.map(path => path.split('.properties.').join('.'))
