@@ -71,10 +71,16 @@ class RSComponentRender extends Component {
 		}
 	}
 
-	componentWillReceiveProps(nextProps) {
-		this.setState({
-			componentProps: nextProps.componentProps,
-		});
+	componentDidUpdate(prevProps) {
+		const { componentProps } = this.props;
+		const { componentProps: prevComponentProps } = prevProps;
+
+		if (prevComponentProps !== componentProps) {
+			// eslint-disable-next-line
+			this.setState({
+				componentProps,
+			});
+		}
 	}
 
 	getCategoryField = () => {

@@ -60,9 +60,9 @@ const renderAsTree = (res, key = '0') => {
 	});
 };
 
-function renderData(res) {
+function renderData(res, triggerClickAnalytics) {
 	return (
-		<div className="list-item" key={res._id}>
+		<div onClick={triggerClickAnalytics} className="list-item" key={res._id}>
 			<ExpandCollapse
 				previewHeight="390px"
 				expandText="Show more"
@@ -90,14 +90,14 @@ function getNestedValue(obj, path) {
 	return currentObject;
 }
 
-function renderData(res) {
+function renderData(res, triggerClickAnalytics) {
 	let { image, url, description, title } = ${JSON.stringify(config.componentProps.result.metaFields)};
 	image = getNestedValue(res,image);
 	title = getNestedValue(res,title);
 	url = getNestedValue(res,url);
 	description = getNestedValue(res,description)
 	return (
-		<Row type="flex" gutter={16} key={res._id} style={{margin:'20px auto',borderBottom:'1px solid #ededed'}}>
+		<Row onClick={triggerClickAnalytics} type="flex" gutter={16} key={res._id} style={{margin:'20px auto',borderBottom:'1px solid #ededed'}}>
 			<Col span={image ? 6 : 0}>
 				{image &&  <img src={image} alt={title} /> }
 			</Col>
