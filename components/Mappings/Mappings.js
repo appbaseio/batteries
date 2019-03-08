@@ -480,7 +480,7 @@ class Mappings extends Component {
 
 		let { mapping } = this.state;
 
-		const { appId, appbaseCredentials, url, appName } = this.props;
+		const { appbaseCredentials, url, appName } = this.props;
 
 		// Fetch latest settings so that we dont override settings.
 		let settings = await getSettings(appName, appbaseCredentials, url).then((data) => {
@@ -504,7 +504,7 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType, esVersion, shards, settings)
+		reIndex(mapping, appName, excludedFields, activeType, esVersion, shards, settings)
 			.then((timeTaken) => {
 				this.setState({
 					showFeedback: true,
