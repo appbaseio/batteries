@@ -47,14 +47,14 @@ function getReactiveListProps({ componentProps, setRenderKey, mappings }) {
 		scrollTarget: 'result',
 		...componentProps,
 		dataField: generateDataField('ReactiveList', componentProps.dataField, mappings),
-		renderData: (res, triggerAnalytics) => (
+		renderData: (res, triggerClickAnalytics) => (
 			<RenderResults
 				key={res._id}
 				res={res}
 				type={isMetaDataPresent ? 'list' : 'tree'}
 				metaFields={metaFields}
 				setRenderKey={setRenderKey}
-				triggerAnalytics={triggerAnalytics}
+				triggerClickAnalytics={triggerClickAnalytics}
 			/>
 		),
 	};
