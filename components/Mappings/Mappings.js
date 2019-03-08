@@ -483,10 +483,11 @@ class Mappings extends Component {
 				))}
 			</Menu>
 		);
+		const selectedOption = options.find(option => option.value === value);
 		return (
 			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
-					{value}
+					{selectedOption.label || value}
 					<Icon type="down" />
 				</Button>
 			</Dropdown>
