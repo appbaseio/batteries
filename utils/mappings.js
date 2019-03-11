@@ -151,10 +151,18 @@ export async function getESVersion(appName, credentials) {
 	return data.version.number;
 }
 
-export function reIndex(mappings, appId, excludeFields, type, version = '5', credentials) {
+export function reIndex(
+	mappings,
+	appId,
+	excludeFields,
+	type,
+	version = '5',
+	credentials,
+	settings,
+) {
 	const body = {
 		mappings,
-		settings: analyzerSettings,
+		settings: settings || analyzerSettings,
 		exclude_fields: excludeFields,
 		type,
 		es_version: version,
