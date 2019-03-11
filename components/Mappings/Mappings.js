@@ -371,7 +371,7 @@ class Mappings extends Component {
 			}
 		};
 		if (settings.index.analysis) {
-			const { analysis: { analyzer: currentAnalyzer, filter: currentFilter } } = settings;
+			const { index: { analysis: { analyzer: currentAnalyzer, filter: currentFilter } } } = settings;
 			const { analysis: { analyzer, filter } } = analyzerSettings;
 
 			Object.keys(analyzer).forEach((key) => {
@@ -388,7 +388,7 @@ class Mappings extends Component {
 
 			updatedSettings.index.analysis = settings.analysis;
 
-			return settings;
+			return updatedSettings;
 		}
 		updatedSettings.index.analysis = analyzerSettings.analysis;
 		return updatedSettings;
@@ -530,7 +530,7 @@ class Mappings extends Component {
 
 	updateShards = async () => {
 		this.handleShardsModal();
-		this.reIndex()
+		this.reIndex();
 	}
 
 	renderOptions = (originalFields, fields, field) => {
