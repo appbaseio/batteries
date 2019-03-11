@@ -11,6 +11,11 @@ export default {
 				tokenizer: 'standard',
 				type: 'custom',
 			},
+			english_analyzer: {
+				filter: ['lowercase', 'asciifolding', 'porter_stem'],
+				tokenizer: 'standard',
+				type: 'custom',
+			},
 		},
 		filter: {
 			autosuggest_filter: {
