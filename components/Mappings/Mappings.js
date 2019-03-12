@@ -23,6 +23,7 @@ import {
 	REMOVED_KEYS,
 	getTypesFromMapping,
 	getESVersion,
+	getNodes,
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
@@ -97,6 +98,7 @@ class Mappings extends Component {
 			showSynonymModal: false,
 			esVersion: '5',
 			shardsModal: false,
+			replicasModal: false,
 		};
 
 		this.usecases = textUsecases;
@@ -109,9 +111,11 @@ class Mappings extends Component {
 
 		const { appName, appbaseCredentials } = this.props;
 		const esVersion = await getESVersion(appName, appbaseCredentials);
+		const nodes = await getNodes(appName, appbaseCredentials);
 
 		this.setState({
 			esVersion: esVersion.split('.')[0],
+			totalNodes: nodes._nodes.total,
 		});
 	}
 
@@ -175,10 +179,12 @@ class Mappings extends Component {
 	initializeShards = () => {
 		const { appbaseCredentials } = this.props;
 
-		this.fetchSettings(appbaseCredentials).then((shards) => {
+		this.fetchSettings(appbaseCredentials).then(({ shards, replicas }) => {
 			this.setState({
 				shards,
 				allocated_shards: shards,
+				replicas,
+				allocated_replicas: replicas,
 			});
 		});
 	};
@@ -220,9 +226,15 @@ class Mappings extends Component {
 		}));
 	}
 
-	handleSlider = (value) => {
+	handleReplicasModal = () => {
+		this.setState(prevState => ({
+			replicasModal: !prevState.replicasModal,
+		}));
+	}
+
+	handleSlider = (name, value) => {
 		this.setState({
-			shards: value,
+			[name]: value,
 		});
 	}
 
@@ -330,7 +342,10 @@ class Mappings extends Component {
 	fetchSettings = (credentials) => {
 		const { appName } = this.props;
 		return getSettings(appName, credentials).then((data) => {
-			return get(data[appName], 'settings.index.number_of_shards');
+			const shards = get(data[appName], 'settings.index.number_of_shards');
+			const replicas = get(data[appName], 'settings.index.number_of_replicas');
+
+			return { shards, replicas };
 		});
 	}
 
@@ -364,10 +379,11 @@ class Mappings extends Component {
 	};
 
 	getUpdatedSettings = (settings) => {
-		const { shards } = this.state;
+		const { shards, replicas } = this.state;
 		const updatedSettings = {
 			index:{
 				number_of_shards: shards,
+				number_of_replicas: replicas,
 			}
 		};
 		if (settings.index.analysis) {
@@ -511,25 +527,13 @@ class Mappings extends Component {
 		}
 	};
 
-	getShardValues = (max, step = 3) => {
-		const shards = {};
-
-		for (let i = 3; i <= max; i += 3) {
-			shards[i] = i;
-		}
-		return shards;
-	}
-
-	getShards = () => {
-		return this.getShardValues(21);
-	}
-
-	getMaxShards = () => {
-		return 21;
-	}
-
 	updateShards = async () => {
 		this.handleShardsModal();
+		this.reIndex();
+	}
+
+	updateReplicas = async () => {
+		this.handleReplicasModal();
 		this.reIndex();
 	}
 
@@ -750,6 +754,22 @@ class Mappings extends Component {
 				<Card
 					hoverable
 					title={(
+						<div className={cardTitle}>
+							<div>
+								<h4>Manage Replicas</h4>
+								<p>Configure the number of replicas for your app.</p>
+							</div>
+							<Button onClick={this.handleReplicasModal} type="primary">
+								Change Replicas
+							</Button>
+						</div>
+					)}
+					bodyStyle={{ padding: 0 }}
+					className={card}
+				/>
+				<Card
+					hoverable
+					title={(
 <div className={cardTitle}>
 							<div>
 								<h4>Manage Synonyms</h4>
@@ -888,7 +908,18 @@ class Mappings extends Component {
 					onCancel={this.handleShardsModal}
 				>
 					<h4>Move slider to change the number of shards for your app. Read more <a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">here</a>.</h4>
-					<Slider tooltipVisible={false} step={null} max={this.getMaxShards()} value={+this.state.shards} marks={{ [this.state.allocated_shards]: this.state.allocated_shards, ...this.getShards() }} onChange={this.handleSlider} />
+					<Slider step={1} max={100} value={+this.state.shards} onChange={(value) => this.handleSlider('shards', value)} />
+				</Modal>
+				<Modal
+					visible={this.state.replicasModal}
+					onOk={this.updateReplicas}
+					title="Configure Replicas"
+					okText="Update"
+					okButtonProps={{ disabled: this.state.allocated_replicas == this.state.replicas }}
+					onCancel={this.handleReplicasModal}
+				>
+					<h4>Move slider to change the number of replicas for your app.</h4>
+					<Slider step={null} marks={{ 0: '0', 1: '1', 2: '2' }} max={this.state.totalNodes - 1} value={+this.state.replicas} onChange={(value) => this.handleSlider('replicas', value)} />
 				</Modal>
 			</React.Fragment>
 		);
