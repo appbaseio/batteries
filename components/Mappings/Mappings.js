@@ -164,7 +164,7 @@ class Mappings extends Component {
 		if (url) {
 			getAppMappings(appName, appbaseCredentials, url);
 			this.initializeShards();
-				this.initializeSynonymsData();
+			this.initializeSynonymsData();
 		}
 	}
 
@@ -383,12 +383,12 @@ class Mappings extends Component {
 	getUpdatedSettings = (settings) => {
 		const { shards, replicas } = this.state;
 		const updatedSettings = {
-			index:{
+			index: {
 				number_of_shards: shards,
 				number_of_replicas: replicas,
-			}
+			},
 		};
-		if (settings.index.analysis) {
+		if (settings && settings.index && settings.index.analysis) {
 			const { index: { analysis: { analyzer: currentAnalyzer, filter: currentFilter } } } = settings;
 			const { analysis: { analyzer, filter } } = analyzerSettings;
 
