@@ -86,6 +86,25 @@ export function getSettings(appName, credentials, url = getURL()) {
 	});
 }
 
+export function getNodes(appName, credentials, url = getURL()) {
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/_nodes`, {
+			method: 'GET',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then((data) => {
+				resolve(data);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
 export function closeIndex(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_close`, {
