@@ -3,7 +3,7 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
- Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix
+ Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix, Slider,
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
@@ -23,6 +23,7 @@ import {
 	REMOVED_KEYS,
 	getTypesFromMapping,
 	getESVersion,
+	getNodes,
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
@@ -44,6 +45,7 @@ import {
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 import { getURL } from '../../../constants/config';
+import analyzerSettings from '../../utils/analyzerSettings';
 
 const { TextArea } = Input;
 
@@ -95,6 +97,8 @@ class Mappings extends Component {
 			credentials: '',
 			showSynonymModal: false,
 			esVersion: '5',
+			shardsModal: false,
+			replicasModal: false,
 		};
 
 		this.usecases = textUsecases;
@@ -107,9 +111,11 @@ class Mappings extends Component {
 
 		const { appName, appbaseCredentials } = this.props;
 		const esVersion = await getESVersion(appName, appbaseCredentials);
+		const nodes = await getNodes(appName, appbaseCredentials);
 
 		this.setState({
 			esVersion: esVersion.split('.')[0],
+			totalNodes: nodes._nodes.total,
 		});
 	}
 
@@ -134,6 +140,7 @@ class Mappings extends Component {
 			// handle mappings + synonyms if credentials have changed
 			if (!isFetchingMapping) {
 				getAppMappings(appName, appbaseCredentials);
+				this.initializeShards();
 			}
 			this.initializeSynonymsData();
 		}
@@ -155,6 +162,7 @@ class Mappings extends Component {
 
 		if (url) {
 			getAppMappings(appName, appbaseCredentials, url);
+			this.initializeShards();
 		}
 	}
 
@@ -164,6 +172,19 @@ class Mappings extends Component {
 		this.fetchSynonyms(appbaseCredentials).then((synonyms) => {
 			this.setState({
 				synonyms,
+			});
+		});
+	};
+
+	initializeShards = () => {
+		const { appbaseCredentials } = this.props;
+
+		this.fetchSettings(appbaseCredentials).then(({ shards, replicas }) => {
+			this.setState({
+				shards,
+				allocated_shards: shards,
+				replicas,
+				allocated_replicas: replicas,
 			});
 		});
 	};
@@ -198,6 +219,24 @@ class Mappings extends Component {
 			dirty: true,
 		});
 	};
+
+	handleShardsModal = () => {
+		this.setState(prevState => ({
+			shardsModal: !prevState.shardsModal,
+		}));
+	}
+
+	handleReplicasModal = () => {
+		this.setState(prevState => ({
+			replicasModal: !prevState.replicasModal,
+		}));
+	}
+
+	handleSlider = (name, value) => {
+		this.setState({
+			[name]: value,
+		});
+	}
 
 	handleMapping = (res) => {
 		if (res) {
@@ -300,6 +339,16 @@ class Mappings extends Component {
 		});
 	};
 
+	fetchSettings = (credentials) => {
+		const { appName } = this.props;
+		return getSettings(appName, credentials).then((data) => {
+			const shards = get(data[appName], 'settings.index.number_of_shards');
+			const replicas = get(data[appName], 'settings.index.number_of_replicas');
+
+			return { shards, replicas };
+		});
+	}
+
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const fields = name.split('.');
@@ -329,7 +378,39 @@ class Mappings extends Component {
 		});
 	};
 
-	reIndex = () => {
+	getUpdatedSettings = (settings) => {
+		const { shards, replicas } = this.state;
+		const updatedSettings = {
+			index:{
+				number_of_shards: shards,
+				number_of_replicas: replicas,
+			}
+		};
+		if (settings.index.analysis) {
+			const { index: { analysis: { analyzer: currentAnalyzer, filter: currentFilter } } } = settings;
+			const { analysis: { analyzer, filter } } = analyzerSettings;
+
+			Object.keys(analyzer).forEach((key) => {
+				if (!currentAnalyzer[key]) {
+					currentAnalyzer[key] = analyzer[key];
+				}
+			});
+
+			Object.keys(filter).forEach((key) => {
+				if (!currentFilter[key]) {
+					currentFilter[key] = filter[key];
+				}
+			});
+
+			updatedSettings.index.analysis = settings.analysis;
+
+			return updatedSettings;
+		}
+		updatedSettings.index.analysis = analyzerSettings.analysis;
+		return updatedSettings;
+	}
+
+	reIndex = async () => {
 		this.setState({
 			isLoading: true,
 		});
@@ -340,6 +421,12 @@ class Mappings extends Component {
 
 		const { appId, credentials } = this.props;
 
+		let appSettings = await getSettings(appId, credentials).then((data) => {
+			return data[appId].settings;
+		});
+
+		appSettings = this.getUpdatedSettings(appSettings);
+
 		const excludedFields = deletedPaths
 			.map(path => path.split('.properties.').join('.'))
 			.map((path) => {
@@ -347,7 +434,7 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials)
+		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials, appSettings)
 			.then(() => {
 				this.setState({
 					showFeedback: true,
@@ -439,6 +526,16 @@ class Mappings extends Component {
 				return <Icon style={iconStyle} type="file-unknown" theme="outlined" />;
 		}
 	};
+
+	updateShards = async () => {
+		this.handleShardsModal();
+		this.reIndex();
+	}
+
+	updateReplicas = async () => {
+		this.handleReplicasModal();
+		this.reIndex();
+	}
 
 	renderOptions = (originalFields, fields, field) => {
 		const options = [];
@@ -641,6 +738,38 @@ class Mappings extends Component {
 				<Card
 					hoverable
 					title={(
+						<div className={cardTitle}>
+							<div>
+								<h4>Manage Shards</h4>
+								<p>Configure the number of shards for your app.</p>
+							</div>
+							<Button onClick={this.handleShardsModal} type="primary">
+								Change Shards
+							</Button>
+						</div>
+					)}
+					bodyStyle={{ padding: 0 }}
+					className={card}
+				/>
+				<Card
+					hoverable
+					title={(
+						<div className={cardTitle}>
+							<div>
+								<h4>Manage Replicas</h4>
+								<p>Configure the number of replicas for your app.</p>
+							</div>
+							<Button onClick={this.handleReplicasModal} type="primary">
+								Change Replicas
+							</Button>
+						</div>
+					)}
+					bodyStyle={{ padding: 0 }}
+					className={card}
+				/>
+				<Card
+					hoverable
+					title={(
 <div className={cardTitle}>
 							<div>
 								<h4>Manage Synonyms</h4>
@@ -769,6 +898,28 @@ class Mappings extends Component {
 						}
 						autosize={{ minRows: 2, maxRows: 10 }}
 					/>
+				</Modal>
+				<Modal
+					visible={this.state.shardsModal}
+					onOk={this.updateShards}
+					title="Configure Shards"
+					okText="Update"
+					okButtonProps={{ disabled: this.state.allocated_shards == this.state.shards }}
+					onCancel={this.handleShardsModal}
+				>
+					<h4>Move slider to change the number of shards for your app. Read more <a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">here</a>.</h4>
+					<Slider step={1} max={100} value={+this.state.shards} onChange={(value) => this.handleSlider('shards', value)} />
+				</Modal>
+				<Modal
+					visible={this.state.replicasModal}
+					onOk={this.updateReplicas}
+					title="Configure Replicas"
+					okText="Update"
+					okButtonProps={{ disabled: this.state.allocated_replicas == this.state.replicas }}
+					onCancel={this.handleReplicasModal}
+				>
+					<h4>Move slider to change the number of replicas for your app.</h4>
+					<Slider step={null} marks={{ 0: '0', 1: '1', 2: '2' }} max={this.state.totalNodes - 1} value={+this.state.replicas} onChange={(value) => this.handleSlider('replicas', value)} />
 				</Modal>
 			</React.Fragment>
 		);

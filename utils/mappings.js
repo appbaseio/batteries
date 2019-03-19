@@ -63,6 +63,25 @@ export function getSettings(appName, credentials, url = getURL()) {
 	});
 }
 
+export function getNodes(appName, credentials, url = getURL()) {
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/_nodes`, {
+			method: 'GET',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then((data) => {
+				resolve(data);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
 export function closeIndex(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_close`, {
@@ -151,10 +170,18 @@ export async function getESVersion(appName, credentials) {
 	return data.version.number;
 }
 
-export function reIndex(mappings, appId, excludeFields, type, version = '5', credentials) {
+export function reIndex(
+	mappings,
+	appId,
+	excludeFields,
+	type,
+	version = '5',
+	credentials,
+	settings,
+) {
 	const body = {
 		mappings,
-		settings: analyzerSettings,
+		settings: settings || analyzerSettings,
 		exclude_fields: excludeFields,
 		type,
 		es_version: version,
