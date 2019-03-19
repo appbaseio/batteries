@@ -1,5 +1,5 @@
 export default {
-	text: [],
+	text: ['integer', 'long', 'float', 'double', 'date', 'boolean'],
 	object: [],
 
 	integer: ['float', 'long', 'text'],
