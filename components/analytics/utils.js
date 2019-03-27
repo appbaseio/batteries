@@ -576,7 +576,7 @@ export function getRequestLogs(appName, size = 1000) {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		fetch(
-			`${ACC_API}/${getApp(appName)}logs${getQueryParams({
+			`${ACC_API}/${getApp(appName)}_logs${getQueryParams({
 				size,
 			})}`,
 			{
