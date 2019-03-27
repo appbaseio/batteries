@@ -934,7 +934,7 @@ class Mappings extends Component {
 				<FeedbackModal
 					show={this.state.showFeedback}
 					timeTaken={this.state.timeTaken}
-					onClose={() => window.location.reload()}
+					onClose={() => { window.location.href = window.location.origin; }}
 				/>
 				<Modal
 					visible={this.state.showSynonymModal}
