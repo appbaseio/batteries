@@ -64,7 +64,7 @@ const usecaseMessage = () => (
 );
 
 // eslint-disable-next-line
-const FeedbackModal = ({ show, onClose, timeTaken }) => (
+const FeedbackModal = ({ show, onClose, timeTaken, message }) => (
 	<Modal
 		visible={show}
 		title="Re-index successful"
@@ -73,9 +73,7 @@ const FeedbackModal = ({ show, onClose, timeTaken }) => (
 		onCancel={onClose}
 		okText="Done"
 	>
-		<p>
-			The mappings have been updated and the data has been successfully re-indexed.
-		</p>
+		<p dangerouslySetInnerHTML={{__html: message}} />
 	</Modal>
 );
 
@@ -100,6 +98,7 @@ class Mappings extends Component {
 			esVersion: '5',
 			shardsModal: false,
 			replicasModal: false,
+			reIndexMessage: '',
 		};
 
 		this.usecases = textUsecases;
@@ -443,8 +442,9 @@ class Mappings extends Component {
 			});
 
 		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials, appSettings)
-			.then(() => {
+			.then((data) => {
 				this.setState({
+					reIndexMessage: data.message || '',
 					showFeedback: true,
 				});
 			})
@@ -824,7 +824,7 @@ class Mappings extends Component {
 				<Card
 					hoverable
 					title={(
-<div className={cardTitle}>
+						<div className={cardTitle}>
 							<div>
 								<h4>Manage Synonyms</h4>
 								<p>Add new synonyms or edit the existing ones.</p>
@@ -832,15 +832,15 @@ class Mappings extends Component {
 							<Button type="primary" onClick={this.handleSynonymModal}>
 								{this.state.synonyms ? 'Edit' : 'Add'} Synonym
 							</Button>
-</div>
-)}
+						</div>
+					)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
 				/>
 				<Card
 					hoverable
 					title={(
-<div className={cardTitle}>
+						<div className={cardTitle}>
 							<div>
 								<h4>Manage Mappings</h4>
 								<p>Add new fields or change the types of existing ones.</p>
@@ -848,8 +848,8 @@ class Mappings extends Component {
 							<Button onClick={this.toggleModal} type="primary">
 								Add New Field
 							</Button>
-</div>
-)}
+						</div>
+					)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
 				>
@@ -934,6 +934,7 @@ class Mappings extends Component {
 				<FeedbackModal
 					show={this.state.showFeedback}
 					timeTaken={this.state.timeTaken}
+					message={this.state.reIndexMessage}
 					onClose={() => window.location.reload()}
 				/>
 				<Modal

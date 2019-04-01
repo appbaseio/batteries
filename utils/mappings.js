@@ -44,7 +44,7 @@ export function getMappings(appName, credentials, url = getURL()) {
 	});
 }
 
-export function putMapping(appName, credentials,mappings, type, url = getURL()) {
+export function putMapping(appName, credentials, mappings, type, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_mapping/${type}`, {
 			method: 'PUT',
@@ -65,7 +65,6 @@ export function putMapping(appName, credentials,mappings, type, url = getURL()) 
 			});
 	});
 }
-
 
 export function getSettings(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
@@ -151,7 +150,7 @@ export function updateSynonyms(appName, credentials, url = getURL(), synonymsArr
 						english_analyzer: {
 							filter: ['lowercase', 'asciifolding', 'porter_stem'],
 							tokenizer: 'standard',
-							type: 'custom'
+							type: 'custom',
 						},
 					},
 				},
@@ -229,7 +228,8 @@ export function reIndex(
 		})
 			.then((res) => {
 				if (res.status === 504) {
-					resolve('~100');
+					const message = `The re-index request is in progress and may take few more minutes to complete. You can see the live status of the reindex in the <a href="/" target="_blank">Cluster Overview Page</a> where an index with the name ${appId}_reindexed_# will be present.`;
+					resolve({ message });
 				}
 				return res;
 			})
@@ -241,7 +241,11 @@ export function reIndex(
 				if (data.code >= 400) {
 					reject(data.message);
 				}
-				resolve(data);
+				const resolvedData = {
+					message:
+						'The mappings have been updated and the data has been successfully re-indexed.',
+				};
+				resolve(resolvedData);
 			})
 			.catch((e) => {
 				reject(e);
