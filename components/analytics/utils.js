@@ -571,7 +571,7 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 	});
 }
 // To fetch request logs
-export function getRequestLogs(appName, size = 1000) {
+export function getRequestLogs(appName, size = 100) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
