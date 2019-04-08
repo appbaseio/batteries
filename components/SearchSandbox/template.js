@@ -167,7 +167,7 @@ function getApp(config) {
 			}
 			default: {
 				const listComponentProps = {
-					dataField: config.componentProps[item].dataField,
+					...config.componentProps[item],
 				};
 				componentConfig = {
 					component: 'MultiList',
