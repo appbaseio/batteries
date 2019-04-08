@@ -60,7 +60,7 @@ const renderAsTree = (res, key = '0') => {
 	});
 };
 
-function renderData(res, triggerClickAnalytics) {
+function renderItem(res, triggerClickAnalytics) {
 	return (
 		<div onClick={triggerClickAnalytics} className="list-item" key={res._id}>
 			<ExpandCollapse
@@ -94,7 +94,7 @@ function getNestedValue(obj, path) {
 	return nestedValue;
 }
 
-function renderData(res, triggerClickAnalytics) {
+function renderItem(res, triggerClickAnalytics) {
 	let { image, url, description, title } = ${JSON.stringify(config.componentProps.result.metaFields)};
 	image = getNestedValue(res,image);
 	title = getNestedValue(res,title);

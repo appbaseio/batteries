@@ -47,7 +47,7 @@ function getReactiveListProps({ componentProps, setRenderKey, mappings }) {
 		scrollTarget: 'result',
 		...componentProps,
 		dataField: generateDataField('ReactiveList', componentProps.dataField, mappings),
-		renderData: (res, triggerClickAnalytics) => (
+		renderItem: (res, triggerClickAnalytics) => (
 			<RenderResults
 				key={res._id}
 				res={res}
