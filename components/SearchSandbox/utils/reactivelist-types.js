@@ -42,7 +42,7 @@ export default {
 		description:
 			'Enable pagination within the results. If set to false, it creates an infinite scroll view.',
 		input: 'bool',
-		default: false,
+		default: true,
 	},
 	stream: {
 		label: 'Stream',

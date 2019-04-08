@@ -36,7 +36,7 @@ export function getComponentCode(config) {
 					config.mappings,
 				),
 				...config.customProps,
-				renderData: '{renderData}',
+				renderItem: '{renderItem}',
 			};
 			componentStyle = { marginTop: 20 };
 			break;
@@ -108,7 +108,7 @@ export function getComponentCode(config) {
 		useBooleanShorthandSyntax: false,
 	});
 
-	code = code.replace('renderData="{renderData}"', 'renderData={renderData}');
+	code = code.replace('renderItem="{renderItem}"', 'renderItem={renderItem}');
 	code = code.replace('div', config.component);
 
 	return code;
