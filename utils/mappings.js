@@ -378,7 +378,7 @@ function getFieldsTree(mappings = {}, prefix = null) {
 		if (mappings[key].properties) {
 			tree = {
 				...tree,
-				...getFieldsTree(mappings[key].properties, key),
+				...getFieldsTree(mappings[key].properties, `${prefix ? `${prefix}.` : ''}${key}`),
 			};
 		} else {
 			const originalFields = mappings[key].fields;
