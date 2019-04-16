@@ -24,6 +24,7 @@ import {
 	getTypesFromMapping,
 	getESVersion,
 	putMapping,
+	updateMappingES7,
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import mappingUsecase from '../../utils/mappingUsecase';
@@ -269,20 +270,32 @@ class Mappings extends Component {
 	};
 
 	setMapping = (field, type, usecase) => {
-		const { mapping: currentMapping } = this.state;
-		const mapping = updateMapping(currentMapping, field, type, usecase);
+		const { mapping: currentMapping, esVersion } = this.state;
+		let mapping = null;
+		if (esVersion === '7') {
+			mapping = updateMappingES7(currentMapping, field, type, usecase);
+		} else {
+			mapping = updateMapping(currentMapping, field, type, usecase, esVersion);
+		}
 		this.setState({
 			mapping,
 			dirty: true,
 		});
 	};
 
-	handleMapping = (res) => {
+	handleMapping = async (res) => {
 		if (res) {
-			this.originalMapping = res;
+			const { appName } = this.props;
+			const esVersion = await getESVersion(appName);
+			let mapping = res ? transformToES5(res) : res;
+			if (esVersion === '7') {
+				mapping = mapping.properties;
+			}
+
+			this.originalMapping = mapping;
 			this.setState({
 				isLoading: false,
-				mapping: res ? transformToES5(res) : res,
+				mapping,
 				activeType: getTypesFromMapping(res),
 			});
 		}
@@ -422,22 +435,24 @@ class Mappings extends Component {
 	}
 
 	getUpdatedSettings = (settings) => {
-		const { analyzer: currentAnalyzer, filter: currentFilter } = settings;
-		const { analysis: { analyzer, filter } } = analyzerSettings;
+		if (settings) {
+			const { analyzer: currentAnalyzer, filter: currentFilter } = settings;
+			const { analysis: { analyzer, filter } } = analyzerSettings;
 
-		Object.keys(analyzer).forEach((key) => {
-			if (!currentAnalyzer[key]) {
-				currentAnalyzer[key] = analyzer[key];
-			}
-		});
+			Object.keys(analyzer).forEach((key) => {
+				if (!currentAnalyzer[key]) {
+					currentAnalyzer[key] = analyzer[key];
+				}
+			});
 
-		Object.keys(filter).forEach((key) => {
-			if (!currentFilter[key]) {
-				currentFilter[key] = filter[key];
-			}
-		});
-
-		return settings;
+			Object.keys(filter).forEach((key) => {
+				if (!currentFilter[key]) {
+					currentFilter[key] = filter[key];
+				}
+			});
+			return settings;
+		}
+		return analyzerSettings.analysis;
 	}
 
 	addField = ({ name, type, usecase }) => {
@@ -920,6 +935,8 @@ class Mappings extends Component {
 			);
 		}
 		if (!this.state.mapping) return null;
+
+		const { mapping } = this.state;
 		return (
 			<React.Fragment>
 				<Card
@@ -1005,17 +1022,17 @@ class Mappings extends Component {
 								<span className="col">Data Type</span>
 							</div>
 						</Header>
-						{!this.state.mapping || !Object.keys(this.state.mapping).length ? (
+						{!mapping || !Object.keys(mapping).length ? (
 							<p style={{ padding: '40px 0', color: '#999', textAlign: 'center' }}>
 								No data or mappings found
 							</p>
 						) : null}
-						{Object.keys(this.state.mapping).map((field) => {
-							if (this.state.mapping[field]) {
-								const currentMappingFields = this.state.mapping[field].properties;
+						{Object.keys(mapping).map((field) => {
+							if (mapping[field]) {
+								const currentMappingFields = mapping[field].properties;
 								const originalMappingFields = this.originalMapping[field]
 									? this.originalMapping[field].properties
-									: this.state.mapping[field].properties;
+									: mapping[field].properties;
 								return this.renderMapping(
 									field,
 									currentMappingFields,

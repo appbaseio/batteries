@@ -183,6 +183,11 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 		es_version: version,
 		shard_count: shards.toString(),
 	};
+	if (version >= 7) {
+		delete body.type;
+	}
+	const { properties, ...rest } = mappings;
+	body.mappings = { properties: { ...properties, ...rest } };
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appName}/reindex`, {
 			method: 'POST',
@@ -293,6 +298,44 @@ export function updateMapping(mapping, field, type, usecase) {
 				[key]: {
 					...newUsecase,
 					type,
+				},
+			};
+		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
+			_mapping = {
+				..._mapping,
+				[key]: {
+					..._mapping[key],
+					...updateMapping(_mapping[key], field, type, usecase),
+				},
+			};
+		}
+		return true;
+	});
+	return _mapping;
+}
+
+export function updateMappingES7(mapping, field, type, usecase, es_version) {
+	// eslint-disable-next-line
+	let _mapping = { ...mapping };
+
+	Object.keys(_mapping).every((key) => {
+		if (PRESERVED_KEYS.includes(key)) return false;
+
+		if (key === field) {
+			let newUsecase = {};
+			if (usecase) {
+				newUsecase = mappingUsecase[usecase];
+			}
+			_mapping = {
+				..._mapping,
+				[key]: {
+					properties: {
+						..._mapping[key].properties,
+						[field]: {
+							...newUsecase,
+							type,
+						},
+					},
 				},
 			};
 		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
