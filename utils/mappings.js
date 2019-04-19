@@ -185,9 +185,9 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 	};
 	if (version >= 7) {
 		delete body.type;
+		const { properties, ...rest } = mappings;
+		body.mappings = { properties: { ...properties, ...rest } };
 	}
-	const { properties, ...rest } = mappings;
-	body.mappings = { properties: { ...properties, ...rest } };
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appName}/reindex`, {
 			method: 'POST',
