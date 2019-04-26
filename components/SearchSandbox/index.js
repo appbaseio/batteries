@@ -296,6 +296,7 @@ class SearchSandbox extends Component {
 			showCustomList,
 			showProfileOption,
 			useCategorySearch,
+			customJoyrideSteps,
 		} = this.props;
 		const {
 			mappingsType, componentProps, filterCount, profile,
@@ -334,7 +335,7 @@ class SearchSandbox extends Component {
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
 					/>
-					<Walkthrough id="SearchPreview" joyrideSteps={joyrideSteps} />
+					<Walkthrough id="SearchPreview" joyrideSteps={customJoyrideSteps || joyrideSteps} />
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
 							{props => React.cloneElement(child, { ...props })}
@@ -357,6 +358,7 @@ SearchSandbox.propTypes = {
 	useCategorySearch: PropTypes.bool,
 	getAppMappings: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
+	customJoyrideSteps: PropTypes.array,
 	customProps: PropTypes.object,
 	showCodePreview: PropTypes.bool,
 	showProfileOption: PropTypes.bool,
