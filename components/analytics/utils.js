@@ -571,13 +571,19 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100) {
 	});
 }
 // To fetch request logs
-export function getRequestLogs(appName, size = 100) {
+export function getRequestLogs(appName, size = 10, from = 0, filter) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
+		const validFilters = ['search', 'success', 'error', 'delete'];
 		fetch(
 			`${ACC_API}/${getApp(appName)}_logs${getQueryParams({
 				size,
+				from,
+				...(filter
+					&& validFilters.includes(filter) && {
+						filter,
+					}),
 			})}`,
 			{
 				method: 'GET',

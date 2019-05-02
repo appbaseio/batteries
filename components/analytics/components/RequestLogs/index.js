@@ -7,7 +7,9 @@ import {
  Card, Tabs, Table, notification,
 } from 'antd';
 import PropTypes from 'prop-types';
+import Parser from 'partial-json-parser';
 import { getRequestLogs, requestLogs, getTimeDuration } from '../../utils';
+import { getAppPlanByName } from '../../../../modules/selectors';
 import RequestDetails from './RequestDetails';
 import Loader from '../../../shared/Loader/Spinner';
 
@@ -26,53 +28,34 @@ const normalizeData = data => data.map((i) => {
 			status: get(i, 'response.code'),
 		};
 	});
-const filterHits = (hits = []) => {
-	const successHits = [];
-	const errorHits = [];
-	const searchHits = [];
-	const deleteHits = [];
-	hits.forEach((h, index) => {
-		// eslint-disable-next-line
-		h._id = index;
-		const status = get(h, 'response.code');
-		if (get(h, 'category') === 'search') {
-			searchHits.push(h);
-		}
-		if (get(h, 'request.method', '').toLowerCase() === 'delete') {
-			deleteHits.push(h);
-		}
-		if (status >= 200 && status <= 300) {
-			successHits.push(h);
-		} else {
-			errorHits.push(h);
-		}
-	});
-	return {
-		successHits,
-		deleteHits,
-		errorHits,
-		searchHits,
-	};
-};
 
 const parseData = (data = '') => {
 	try {
 		return JSON.parse(data);
 	} catch (e) {
 		try {
-			const removeBackslash = data.split('\n');
-			const formatted = filter(removeBackslash, o => o !== '');
-			if (formatted.length) {
-				return (
-					<div>
-						{formatted.map((i, index) => (
-							// eslint-disable-next-line
-							<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
-						))}
-					</div>
-				);
+			try {
+				const partiallyParsed = Parser(data);
+				const hits = get(partiallyParsed, 'responses[0].hits.hits');
+				if (hits) {
+					partiallyParsed.responses[0].hits.hits.pop();
+				}
+				return partiallyParsed;
+			} catch (err) {
+				const removeBackslash = data.split('\n');
+				const formatted = filter(removeBackslash, o => o !== '');
+				if (formatted.length) {
+					return (
+						<div>
+							{formatted.map((i, index) => (
+								// eslint-disable-next-line
+								<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
+							))}
+						</div>
+					);
+				}
+				throw Error;
 			}
-			throw Error;
 		} catch (error) {
 			return data;
 		}
@@ -83,53 +66,28 @@ class RequestLogs extends React.Component {
 		super(props);
 		this.tabKeys = ['all', 'search', 'success', 'delete', 'error'];
 		const { tab } = this.props;
-		this.state = {
+		const defaultTabState = {
+			currentPage: 0,
+			0: {
+				hits: [],
+				isLoading: false,
+			},
+			total: 0,
+		};
+		const state = {
 			activeTabKey: this.tabKeys.includes(tab) ? props.tab : this.tabKeys[0],
-			logs: undefined,
+			logs: [],
 			isFetching: true,
-			hits: [],
-			successHits: [],
-			errorHits: [],
-			searchHits: [],
-			deleteHits: [],
 			showDetails: false,
 		};
+		this.tabKeys.forEach((tabKey) => {
+			state[tabKey] = defaultTabState;
+		});
+		this.state = state;
 	}
 
 	componentDidMount() {
-		const { appName } = this.props;
-		getRequestLogs(appName)
-			.then((res) => {
-				const filteredHits = filterHits(res.logs);
-				this.setState({
-					logs: res.logs,
-					isFetching: false,
-					hits: normalizeData(res.logs),
-					successHits: normalizeData(filteredHits.successHits),
-					errorHits: normalizeData(filteredHits.errorHits),
-					searchHits: normalizeData(filteredHits.searchHits),
-					deleteHits: normalizeData(filteredHits.deleteHits),
-				});
-				// Update the request time locally
-				setInterval(() => {
-					this.setState({
-						hits: normalizeData(res.logs),
-						successHits: normalizeData(filteredHits.successHits),
-						errorHits: normalizeData(filteredHits.errorHits),
-						searchHits: normalizeData(filteredHits.searchHits),
-						deleteHits: normalizeData(filteredHits.deleteHits),
-					});
-				}, 60000);
-			})
-			.catch((e) => {
-				notification.error({
-					message: 'Error',
-					description: get(e, 'responseJSON.message', 'Unable to fetch logs.'),
-				});
-				this.setState({
-					isFetching: false,
-				});
-			});
+		this.fetchRequestLogs();
 	}
 
 	changeActiveTabKey = (tab) => {
@@ -137,7 +95,10 @@ class RequestLogs extends React.Component {
 			{
 				activeTabKey: tab,
 			},
-			() => this.redirectTo(tab),
+			() => {
+				this.redirectTo(tab);
+				this.fetchRequestLogs(0, 0, tab);
+			},
 		);
 	};
 
@@ -170,18 +131,93 @@ class RequestLogs extends React.Component {
 		});
 	};
 
-	render() {
-		const {
-			activeTabKey,
-			hits,
-			isFetching,
-			showDetails,
-			successHits,
-			errorHits,
-			searchHits,
-			deleteHits,
-		} = this.state;
+	handlePageChange = (page) => {
 		const { pageSize } = this.props;
+		this.fetchRequestLogs(pageSize * (page - 1), page);
+	};
+
+	// eslint-disable-next-line
+	fetchRequestLogs = (from = 0, currentPage = 0, tab = this.state.activeTabKey) => {
+		const { appName, pageSize } = this.props;
+		// Set loading to true
+		this.setState({
+			[tab]: {
+				...this.state[tab], // eslint-disable-line
+				[currentPage]: {
+					...this.state[tab][currentPage], // eslint-disable-line
+					isLoading: true,
+				},
+			},
+		});
+		getRequestLogs(appName, pageSize, from, tab)
+			.then((res) => {
+				const { logs } = this.state;
+				const hits = res.logs.map((item, index) => ({
+					_id: `${index}-${new Date().toISOString()}`,
+					...item,
+				}));
+				this.setState({
+					logs: [...hits, ...logs],
+					isFetching: false,
+					[tab]: {
+						currentPage,
+						total: res.total,
+						[currentPage]: {
+							...this.state[tab][currentPage], // eslint-disable-line
+							hits: normalizeData(hits),
+							isLoading: false,
+						},
+					},
+				});
+				// Update the request time locally
+				setInterval(() => {
+					this.setState({
+						[tab]: {
+							...this.state[tab], // eslint-disable-line
+							[currentPage]: {
+								...this.state[tab][currentPage], // eslint-disable-line
+								hits: normalizeData(hits),
+							},
+						},
+					});
+				}, 60000);
+			})
+			.catch((e) => {
+				notification.error({
+					message: 'Error',
+					description: get(e, 'responseJSON.message', 'Unable to fetch logs.'),
+				});
+				this.setState({
+					isFetching: false,
+				});
+			});
+	};
+
+	renderTable = (tab) => {
+		const { pageSize } = this.props;
+		const { currentPage, total } = this.state[tab]; // eslint-disable-line
+		const { hits } = this.state[tab][currentPage]; // eslint-disable-line
+		return (
+			<Table
+				css=".ant-table-row { cursor: pointer }"
+				rowKey={record => record.id}
+				dataSource={hits}
+				columns={requestLogs}
+				pagination={{
+					pageSize,
+					total,
+					onChange: this.handlePageChange,
+				}}
+				scroll={{ x: 700 }}
+				onRow={record => ({
+					onClick: () => this.handleLogClick(record),
+				})}
+			/>
+		);
+	};
+
+	render() {
+		const { activeTabKey, isFetching, showDetails } = this.state;
 		return (
 			<Card title="Latest Operations">
 				{isFetching ? (
@@ -194,79 +230,19 @@ class RequestLogs extends React.Component {
 							activeKey={activeTabKey}
 						>
 							<TabPane tab="ALL" key={this.tabKeys[0]}>
-								<Table
-									css=".ant-table-row { cursor: pointer }"
-									rowKey={record => record.id}
-									dataSource={hits}
-									columns={requestLogs}
-									pagination={{
-										pageSize,
-									}}
-									scroll={{ x: 700 }}
-									onRow={record => ({
-										onClick: () => this.handleLogClick(record),
-									})}
-								/>
+								{this.renderTable(this.tabKeys[0])}
 							</TabPane>
 							<TabPane tab="SEARCH" key={this.tabKeys[1]}>
-								<Table
-									css=".ant-table-row { cursor: pointer }"
-									rowKey={record => record.id}
-									dataSource={searchHits}
-									columns={requestLogs}
-									pagination={{
-										pageSize,
-									}}
-									onRow={record => ({
-										onClick: () => this.handleLogClick(record),
-									})}
-									scroll={{ x: 700 }}
-								/>
+								{this.renderTable(this.tabKeys[1])}
 							</TabPane>
 							<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
-								<Table
-									css=".ant-table-row { cursor: pointer }"
-									rowKey={record => record.id}
-									dataSource={successHits}
-									columns={requestLogs}
-									pagination={{
-										pageSize,
-									}}
-									onRow={record => ({
-										onClick: () => this.handleLogClick(record),
-									})}
-									scroll={{ x: 700 }}
-								/>
+								{this.renderTable(this.tabKeys[2])}
 							</TabPane>
 							<TabPane tab="DELETE" key={this.tabKeys[3]}>
-								<Table
-									css=".ant-table-row { cursor: pointer }"
-									rowKey={record => record.id}
-									dataSource={deleteHits}
-									columns={requestLogs}
-									pagination={{
-										pageSize,
-									}}
-									onRow={record => ({
-										onClick: () => this.handleLogClick(record),
-									})}
-									scroll={{ x: 700 }}
-								/>
+								{this.renderTable(this.tabKeys[3])}
 							</TabPane>
 							<TabPane tab="ERROR" key={this.tabKeys[4]}>
-								<Table
-									css=".ant-table-row { cursor: pointer }"
-									rowKey={record => record.id}
-									dataSource={errorHits}
-									columns={requestLogs}
-									pagination={{
-										pageSize,
-									}}
-									onRow={record => ({
-										onClick: () => this.handleLogClick(record),
-									})}
-									scroll={{ x: 700 }}
-								/>
+								{this.renderTable(this.tabKeys[4])}
 							</TabPane>
 						</Tabs>
 						{showDetails && this.currentRequest && (
@@ -297,9 +273,11 @@ RequestLogs.defaultProps = {
 	onTabChange: undefined, // Use this to override the default redirect logic on tab change
 	tab: 'all',
 	pageSize: 10,
+	plan: 'free',
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
+	plan: PropTypes.string,
 	onTabChange: PropTypes.func,
 	appName: PropTypes.string.isRequired,
 	changeUrlOnTabChange: PropTypes.bool,
@@ -308,5 +286,6 @@ RequestLogs.propTypes = {
 
 const mapStateToProps = state => ({
 	appName: get(state, '$getCurrentApp.name'),
+	plan: get(getAppPlanByName(state), 'plan'),
 });
 export default connect(mapStateToProps)(RequestLogs);
