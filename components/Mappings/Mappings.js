@@ -422,7 +422,7 @@ class Mappings extends Component {
 	}
 
 	getUpdatedSettings = (settings) => {
-		if (settings) {
+		if (settings && settings.analyzer && settings.analyzer.analysis) {
 			const { analyzer: currentAnalyzer, filter: currentFilter } = settings;
 			const { analysis: { analyzer, filter } } = analyzerSettings;
 
