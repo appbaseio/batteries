@@ -422,22 +422,26 @@ class Mappings extends Component {
 	}
 
 	getUpdatedSettings = (settings) => {
-		const { analyzer: currentAnalyzer, filter: currentFilter } = settings;
-		const { analysis: { analyzer, filter } } = analyzerSettings;
+		if (settings && settings.analyzer && settings.analyzer.analysis) {
+			const { analyzer: currentAnalyzer, filter: currentFilter } = settings;
+			const { analysis: { analyzer, filter } } = analyzerSettings;
 
-		Object.keys(analyzer).forEach((key) => {
-			if (!currentAnalyzer[key]) {
-				currentAnalyzer[key] = analyzer[key];
-			}
-		});
+			Object.keys(analyzer).forEach((key) => {
+				if (!currentAnalyzer[key]) {
+					currentAnalyzer[key] = analyzer[key];
+				}
+			});
 
-		Object.keys(filter).forEach((key) => {
-			if (!currentFilter[key]) {
-				currentFilter[key] = filter[key];
-			}
-		});
+			Object.keys(filter).forEach((key) => {
+				if (!currentFilter[key]) {
+					currentFilter[key] = filter[key];
+				}
+			});
 
-		return settings;
+			return settings;
+		}
+
+		return analyzerSettings.analysis;
 	}
 
 	addField = ({ name, type, usecase }) => {
