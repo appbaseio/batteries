@@ -324,9 +324,7 @@ const getDateRangeByPlan = (plan, filters) => {
 			to: filters.to,
 		};
 	}
-	return plan === 'growth'
-	? growthTimeRange
-	: '';
+	return plan === 'growth' ? growthTimeRange : '';
 };
 /**
  * Get the analytics
@@ -367,13 +365,16 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
  */
 export function getSearchLatency(appName, plan) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/analytics/${appName}/latency${getQueryParams(getDateRangeByPlan(plan))}`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
+		fetch(
+			`${ACC_API}/analytics/${appName}/latency${getQueryParams(getDateRangeByPlan(plan))}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 			// Comment out this line
 			.then(res => res.json())
 			.then((res) => {
@@ -415,14 +416,20 @@ export function getGeoDistribution(appName, plan) {
  * @param {string} appName
  */
 export function getAnalyticsSummary(appName, plan) {
-	return doGet(`${ACC_API}/analytics/${appName}/summary${getQueryParams(getDateRangeByPlan(plan))}`);
+	return doGet(
+		`${ACC_API}/analytics/${appName}/summary${getQueryParams(getDateRangeByPlan(plan))}`,
+	);
 }
 /**
  * Get the request distribution
  * @param {string} appName
  */
 export function getRequestDistribution(appName, plan, filters) {
-	return doGet(`${ACC_API}/analytics/${appName}/requestdistribution${getQueryParams(getDateRangeByPlan(plan, filters))}`);
+	return doGet(
+		`${ACC_API}/analytics/${appName}/requestdistribution${getQueryParams(
+			getDateRangeByPlan(plan, filters),
+		)}`,
+	);
 }
 /**
  * Get the popular seraches
@@ -462,16 +469,19 @@ export function getPopularSearches(appName, plan, clickanalytics = true, size = 
  */
 export function getNoResultSearches(appName, plan, size = 100) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/analytics/${appName}/noresultsearches${getQueryParams({
-			size,
-			...getDateRangeByPlan(plan),
-		})}`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
+		fetch(
+			`${ACC_API}/analytics/${appName}/noresultsearches${getQueryParams({
+				size,
+				...getDateRangeByPlan(plan),
+			})}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 			// Comment out this line
 			.then(res => res.json())
 			.then((res) => {
@@ -537,12 +547,18 @@ export function getPopularFilters(appName, plan, clickanalytics = true, size = 1
 			});
 	});
 }
+const validFilters = ['search', 'success', 'error', 'delete'];
 // To fetch request logs
-export function getRequestLogs(appName, plan, size = 1000) {
+export function getRequestLogs(appName, plan, size = 10, from = 0, filter) {
 	return new Promise((resolve, reject) => {
 		fetch(
 			`${ACC_API}/app/${appName}/logs${getQueryParams({
 				size,
+				from,
+				...(filter
+					&& validFilters.includes(filter) && {
+						filter,
+					}),
 			})}`,
 			{
 				method: 'GET',
