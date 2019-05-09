@@ -3,7 +3,18 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
- Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix, Slider, message,
+	Tooltip,
+	Icon,
+	Input,
+	Popover,
+	Card,
+	Button,
+	Modal,
+	Dropdown,
+	Menu,
+	Affix,
+	Slider,
+	message,
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
@@ -86,11 +97,10 @@ const synonymMessage = () => (
 	</div>
 );
 
-
 const shardsMessage = () => (
 	<div style={{ maxWidth: 220 }}>
-		Editing number of shards isn{"'"}t a native feature in Elasticsearch. All appbase.io paid plans
-		offer setting number of Shards.
+		Editing number of shards isn{"'"}t a native feature in Elasticsearch. All appbase.io paid
+		plans offer setting number of Shards.
 	</div>
 );
 
@@ -369,13 +379,13 @@ class Mappings extends Component {
 		this.setState(prevState => ({
 			shardsModal: !prevState.shardsModal,
 		}));
-	}
+	};
 
 	handleSlider = (value) => {
 		this.setState({
 			shards: value,
 		});
-	}
+	};
 
 	fetchSynonyms = (credentials) => {
 		const { url, appName } = this.props;
@@ -392,15 +402,18 @@ class Mappings extends Component {
 
 	fetchSettings = (credentials) => {
 		const { url, appName } = this.props;
-		return getSettings(appName, credentials, url).then((data) => {
-			return get(data[appName], 'settings.index.number_of_shards');
-		});
-	}
+		return getSettings(appName, credentials, url).then(data => get(data[appName], 'settings.index.number_of_shards'));
+	};
 
 	updateField = () => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const { activeType } = this.state;
-		if (mapping && activeType[0] && mapping[activeType[0]] && mapping[activeType[0]].properties) {
+		if (
+			mapping
+			&& activeType[0]
+			&& mapping[activeType[0]]
+			&& mapping[activeType[0]].properties
+		) {
 			const { properties } = mapping[activeType[0]];
 			const keys = Object.keys(properties);
 
@@ -419,12 +432,14 @@ class Mappings extends Component {
 			});
 		}
 		return mapping;
-	}
+	};
 
 	getUpdatedSettings = (settings) => {
-		if (settings && settings.analyzer && settings.analyzer.analysis) {
+		if (settings && settings.analyzer) {
 			const { analyzer: currentAnalyzer, filter: currentFilter } = settings;
-			const { analysis: { analyzer, filter } } = analyzerSettings;
+			const {
+				analysis: { analyzer, filter },
+			} = analyzerSettings;
 
 			Object.keys(analyzer).forEach((key) => {
 				if (!currentAnalyzer[key]) {
@@ -442,7 +457,7 @@ class Mappings extends Component {
 		}
 
 		return analyzerSettings.analysis;
-	}
+	};
 
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
@@ -487,9 +502,7 @@ class Mappings extends Component {
 		const { appbaseCredentials, url, appName } = this.props;
 
 		// Fetch latest settings so that we dont override settings.
-		let settings = await getSettings(appName, appbaseCredentials, url).then((data) => {
-			return get(data[appName], 'settings.index.analysis');
-		});
+		let settings = await getSettings(appName, appbaseCredentials, url).then(data => get(data[appName], 'settings.index.analysis'));
 
 		settings = this.getUpdatedSettings(settings);
 
@@ -806,7 +819,7 @@ class Mappings extends Component {
 	updateShards = () => {
 		this.handleShardsModal();
 		this.reIndex();
-	}
+	};
 
 	updateSynonyms = () => {
 		const credentials = this.props.appbaseCredentials;
@@ -829,7 +842,7 @@ class Mappings extends Component {
 					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
 							synonyms: newSynonyms,
 						}));
-						synonymsUpdated = true;
+					synonymsUpdated = true;
 				} else {
 					this.setState({
 						showSynonymModal: false,
@@ -843,14 +856,20 @@ class Mappings extends Component {
 			.then(() => {
 				if (synonymsUpdated) {
 					// If synonyms request is successful than update mapping via PUT request
-					const {activeType} = this.state;
+					const { activeType } = this.state;
 					const updatedMappings = this.updateField();
-					putMapping(this.props.appName, credentials, url, updatedMappings[activeType[0]], activeType[0]).then(({acknowledged}) => {
-						if(acknowledged){
-							message.success("Synonyms Updated")
+					putMapping(
+						this.props.appName,
+						credentials,
+						url,
+						updatedMappings[activeType[0]],
+						activeType[0],
+					).then(({ acknowledged }) => {
+						if (acknowledged) {
+							message.success('Synonyms Updated');
 							this.setState({
-								mapping: updatedMappings
-							})
+								mapping: updatedMappings,
+							});
 						}
 					});
 				}
@@ -860,7 +879,7 @@ class Mappings extends Component {
 				});
 			})
 			.catch((e) => {
-				console.error(e)
+				console.error(e);
 				openIndex(this.props.appName, credentials, url);
 				this.setState({
 					showSynonymModal: false,
@@ -878,33 +897,31 @@ class Mappings extends Component {
 			shards[i] = i;
 		}
 		return shards;
-	}
+	};
 
 	getShards = () => {
-		const {isBootstrapPlan, isGrowthPlan} = this.props;
+		const { isBootstrapPlan, isGrowthPlan } = this.props;
 		if (isBootstrapPlan) {
 			return this.getShardValues(9);
-		}
-		else if (isGrowthPlan) {
+		} if (isGrowthPlan) {
 			return this.getShardValues(21);
 		}
 		return 0;
-	}
+	};
 
 	getMaxShards = () => {
 		const { isBootstrapPlan, isGrowthPlan } = this.props;
 		if (isBootstrapPlan) {
 			return 9;
-		}
-		else if (isGrowthPlan) {
+		} if (isGrowthPlan) {
 			return 21;
 		}
 		return 0;
-	}
+	};
 
 	handleClose = () => {
 		window.location.reload();
-	}
+	};
 
 	render() {
 		if (this.props.loadingError) {
@@ -929,7 +946,7 @@ class Mappings extends Component {
 				<Card
 					hoverable
 					title={(
-						<div className={cardTitle}>
+<div className={cardTitle}>
 							<div>
 								<h4>Manage Shards</h4>
 								<p>Configure the number of shards for your app.</p>
@@ -939,17 +956,17 @@ class Mappings extends Component {
 									Change Shards
 								</Button>
 							) : (
-									this.renderPromotionalButtons('shards', shardsMessage)
-								)}
-						</div>
-					)}
+								this.renderPromotionalButtons('shards', shardsMessage)
+							)}
+</div>
+)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
 				/>
 				<Card
 					hoverable
 					title={(
-						<div className={cardTitle}>
+<div className={cardTitle}>
 							<div>
 								<h4>Manage Synonyms</h4>
 								<p>Add new synonyms or edit the existing ones.</p>
@@ -962,15 +979,15 @@ class Mappings extends Component {
 							) : (
 								this.renderPromotionalButtons('synonyms', synonymMessage)
 							)}
-						</div>
-					)}
+</div>
+)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
 				/>
 				<Card
 					hoverable
 					title={(
-						<div className={cardTitle}>
+<div className={cardTitle}>
 							<div>
 								<h4>Manage Mappings</h4>
 								<p>Add new fields or change the types of existing ones.</p>
@@ -982,8 +999,8 @@ class Mappings extends Component {
 							) : (
 								this.renderPromotionalButtons('mappings', mappingMessage)
 							)}
-						</div>
-					)}
+</div>
+)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
 				>
@@ -1041,7 +1058,9 @@ class Mappings extends Component {
 								>
 									Confirm Mapping Changes
 								</Button>
-								<Button size="large" onClick={this.cancelChanges}>Cancel</Button>
+								<Button size="large" onClick={this.cancelChanges}>
+									Cancel
+								</Button>
 							</div>
 						</Affix>
 					) : null}
@@ -1090,20 +1109,37 @@ class Mappings extends Component {
 						autosize={{ minRows: 2, maxRows: 10 }}
 					/>
 				</Modal>
-				{
-					this.state.editable && <Modal
+				{this.state.editable && (
+					<Modal
 						visible={this.state.shardsModal}
 						onOk={this.updateShards}
 						title="Configure Shards"
 						okText="Update"
-						okButtonProps={{ disabled: this.state.allocated_shards == this.state.shards }}
+						okButtonProps={{
+							disabled: this.state.allocated_shards == this.state.shards,
+						}}
 						onCancel={this.handleShardsModal}
 					>
-						<h4>Move slider to change the number of shards for your app. Read more <a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">here</a>.</h4>
-						<Slider tooltipVisible={false} step={null} max={this.getMaxShards()} value={+this.state.shards} marks={{ [this.state.allocated_shards]: this.state.allocated_shards, ...this.getShards() }} onChange={this.handleSlider} />
+						<h4>
+							Move slider to change the number of shards for your app. Read more{' '}
+							<a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">
+								here
+							</a>
+							.
+						</h4>
+						<Slider
+							tooltipVisible={false}
+							step={null}
+							max={this.getMaxShards()}
+							value={+this.state.shards}
+							marks={{
+								[this.state.allocated_shards]: this.state.allocated_shards,
+								...this.getShards(),
+							}}
+							onChange={this.handleSlider}
+						/>
 					</Modal>
-				}
-
+				)}
 			</React.Fragment>
 		);
 	}
