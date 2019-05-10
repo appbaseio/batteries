@@ -66,9 +66,9 @@ export default class Header extends Component {
 		Modal.confirm({
 			title: 'Delete Profile',
 			content: (
-				<>
+				<React.Fragment>
 					Are you sure you want to delete <strong>{profile}</strong> profile?
-				</>
+				</React.Fragment>
 			),
 			okText: 'Delete',
 			cancelText: 'Cancel',
