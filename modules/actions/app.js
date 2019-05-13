@@ -86,12 +86,19 @@ export function deleteAppShare(username, payload, appId) {
 	};
 }
 
-export function getAppPlan(name) {
-	return (dispatch, getState) => {
-		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+export function getAppPlan() {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.GET_PLAN));
-		return fetchAppPlan(appName)
-			.then(res => dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res, null, { appName })))
+		return fetchAppPlan()
+			.then((res) => {
+				dispatch(
+					createAction(
+						AppConstants.APP.GET_PLAN_SUCCESS,
+						get(res, 'arc_records[0]'),
+						null,
+					),
+				);
+			})
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
 	};
 }
@@ -155,11 +162,10 @@ export function deleteClusterUser(credentials, username) {
 // 	};
 // }
 
-export function createAppSubscription(stripeToken, plan, name) {
-	return (dispatch, getState) => {
-		const appName = name || get(getState(), '$getCurrentApp.name');
+export function createAppSubscription(stripeToken, plan) {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION));
-		return createSubscription(stripeToken, plan, appName)
+		return createSubscription(stripeToken, plan)
 			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS, res)))
 			.catch((error) => {
 				dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_ERROR, null, error));
@@ -167,11 +173,10 @@ export function createAppSubscription(stripeToken, plan, name) {
 	};
 }
 
-export function deleteAppSubscription(name) {
-	return (dispatch, getState) => {
-		const appName = name || get(getState(), '$getCurrentApp.name');
+export function deleteAppSubscription(payload) {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION));
-		return deleteSubscription(appName)
+		return deleteSubscription(payload)
 			.then(res => dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION_SUCCESS, res)))
 			.catch((error) => {
 				dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION_ERROR, null, error));

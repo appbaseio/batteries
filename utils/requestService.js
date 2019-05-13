@@ -12,6 +12,7 @@ const createRequest = (
 		'Content-Type': 'application/json',
 	},
 	method,
+	credentials = false,
 ) => new Promise((resolve, reject) => {
 		let status;
 		let authToken = null;
@@ -23,9 +24,10 @@ const createRequest = (
 		const requestOptions = JSON.parse(
 			JSON.stringify({
 				method,
+				...(credentials && { credentials: 'include' }),
 				headers: {
 					...headers,
-					Authorization: `Basic ${authToken}`,
+					...(!credentials && { Authorization: `Basic ${authToken}` }),
 				},
 				body: body ? JSON.stringify(body) : undefined,
 			}),
@@ -58,25 +60,29 @@ const createRequest = (
  * To create a delete request
  * @param {string} url
  * @param {Object} headers
+ * @param {boolean} credentials
  */
-export const doDelete = (url, headers) => createRequest(url, undefined, headers, 'DELETE');
+export const doDelete = (url, headers, credentials, body) => createRequest(url, body, headers, 'DELETE', credentials);
+/**
+ * To create a get request
+ * @param {string} url
+ * @param {Object} headers
+ * @param {boolean} credentials
+ */
+export const doGet = (url, headers, credentials) => createRequest(url, undefined, headers, 'GET', credentials);
 /**
  * To create a post request
  * @param {string} url
  * @param {Object} body
  * @param {Object} headers
+ * @param {boolean} credentials
  */
-export const doGet = (url, headers) => createRequest(url, undefined, headers, 'GET');
+export const doPost = (url, body, headers, credentials) => createRequest(url, body, headers, 'POST', credentials);
 /**
- * To create a get request
- * @param {string} url
- * @param {Object} headers
- */
-export const doPost = (url, body, headers) => createRequest(url, body, headers, 'POST');
-/**
- * To create a patch request
+ * To create a put request
  * @param {string} url
  * @param {Object} body
  * @param {Object} headers
+ * @param {boolean} credentials
  */
-export const doPatch = (url, body, headers) => createRequest(url, body, headers, 'PATCH');
+export const doPatch = (url, body, headers, credentials) => createRequest(url, body, headers, 'PATCH', credentials);

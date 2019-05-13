@@ -1,5 +1,5 @@
 import get from 'lodash/get';
-import { doGet } from './requestService';
+import { doGet, doPost } from './requestService';
 import { getURL } from '../../constants/config';
 
 // Get credentials if permissions are already present
@@ -101,19 +101,9 @@ export const getUserAppsPermissions = () => {
 	return doGet(`${ACC_API}/_permissions`);
 };
 
-export const setUserInfo = userInfo =>
-	new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(`${ACC_API}/user/profile`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${authToken}`,
-			},
-			body: JSON.stringify(userInfo),
-		})
-			.then(res => res.json())
-			.then(data => resolve(data))
-			.catch(error => reject(error));
+export const setUserInfo = userInfo => {
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/arc/metadata`, userInfo, {
+		'Content-Type': 'application/json',
 	});
+};

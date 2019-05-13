@@ -72,17 +72,17 @@ export const createShare = (appId, payload) => {
 	return doPost(`${ACC_API}/app/${appId}/share`, payload);
 };
 
-export const getAppPlan = (appName) => {
+export const getAppPlan = () => {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/app/${appName}/plan`);
+	return doGet(`${ACC_API}/arc/instance`);
 };
 
-export const createSubscription = (token, plan, appName) => {
+export const createSubscription = (token, plan) => {
 	const ACC_API = getURL();
-	return doPost(`${ACC_API}/app/${appName}/subscription`, { token, plan });
+	return doPost(`${ACC_API}/arc/subscription`, { token, plan });
 };
 
-export const deleteSubscription = (appName) => {
+export const deleteSubscription = (payload) => {
 	const ACC_API = getURL();
-	return doDelete(`${ACC_API}/app/${appName}/subscription`);
+	return doDelete(`${ACC_API}/arc/subscription`, undefined, undefined, payload);
 };
