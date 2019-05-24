@@ -45,6 +45,7 @@ class Main extends React.Component {
 			popularResults,
 			popularFilters,
 			onClickViewAll,
+			toolTipMessages,
 		} = this.props;
 		const { appName, chartWidth, plan } = this.props;
 		if (isLoading) {
@@ -53,6 +54,7 @@ class Main extends React.Component {
 		return (
 			<React.Fragment>
 				<Analytics
+					toolTipMessages={toolTipMessages}
 					noResults={noResults}
 					chartWidth={chartWidth}
 					plan={plan}

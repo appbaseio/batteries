@@ -49,6 +49,7 @@ const Analytics = ({
 	plan,
 	loading,
 	onClickViewAll,
+	toolTipMessages
 }) => {
 	if (loading) {
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
@@ -65,7 +66,7 @@ const Analytics = ({
 </span>
 )}
 			>
-				<Summary />
+				<Summary toolTipMessages={toolTipMessages} />
 			</Card>
 			<SearchVolumeChart height={300} data={searchVolume} />
 			<Flex css={results}>

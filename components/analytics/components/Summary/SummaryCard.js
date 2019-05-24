@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
 import Flex from '../../../shared/Flex';
+import { Tooltip, Button } from 'antd';
 
 const main = css`
 	height: 113px;
@@ -10,6 +11,15 @@ const main = css`
 	border-top: 2px solid #00f68e;
 	margin-bottom: 20px;
 	margin-right: 20px;
+	position: relative;
+	.tooltip {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		font-size: 20px;
+		background: transparent;
+		border: transparent;
+	}
 `;
 const titleCls = css`
 	height: 19px;
@@ -25,7 +35,7 @@ const countCls = css`
 	line-height: 49px;
 	text-align: center;
 `;
-const SummaryCard = ({ border, title, count }) => (
+const SummaryCard = ({ border, title, count, toolTipMessage }) => (
 	<Flex
 		flexDirection="column"
 		justifyContent="center"
@@ -36,6 +46,11 @@ const SummaryCard = ({ border, title, count }) => (
 	>
 		<span css={titleCls}>{title}</span>
 		<span css={countCls}>{count}</span>
+		{toolTipMessage && (
+			<Tooltip placement="rightTop" title={toolTipMessage}>
+				<Button className="tooltip" icon="question-circle"/>
+			</Tooltip>
+		)}
 	</Flex>
 );
 SummaryCard.defaultProps = {
@@ -44,6 +59,7 @@ SummaryCard.defaultProps = {
 };
 SummaryCard.propTypes = {
 	border: PropTypes.string,
+	toolTipMessage: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	count: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
