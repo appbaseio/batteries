@@ -623,7 +623,6 @@ class Mappings extends Component {
 
 	renderOptions = (originalFields, fields, field) => {
 		const options = [];
-
 		if (originalFields[field]) {
 			options.push({
 				label: this.getType(originalFields[field].type),
