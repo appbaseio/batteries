@@ -25,7 +25,7 @@ export default {
 				type: 'edge_ngram',
 			},
 			ngram_filter: {
-				max_gram: '3',
+				max_gram: '9',
 				min_gram: '2',
 				token_chars: ['letter', 'digit', 'punctuation', 'symbol'],
 				type: 'ngram',
