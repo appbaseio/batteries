@@ -56,7 +56,7 @@ class SearchSandbox extends Component {
 		const { profileList: profileListState, profile } = this.state;
 		if (isDashboard) {
 			getPreferences(appName)
-				.then((pref) => {
+				.then(pref => {
 					this.pref = pref || {};
 					const profileList = Array.from(
 						new Set([...profileListState, ...Object.keys(this.pref)]),
@@ -118,7 +118,7 @@ class SearchSandbox extends Component {
 		return configs.find(config => config.profile === profile);
 	};
 
-	setFilterCount = (filterCount) => {
+	setFilterCount = filterCount => {
 		this.setState({
 			filterCount,
 		});
@@ -139,7 +139,7 @@ class SearchSandbox extends Component {
 		}
 	};
 
-	deleteComponent = (id) => {
+	deleteComponent = id => {
 		const { componentProps } = this.state;
 		const { [id]: del, ...remProps } = componentProps;
 		this.setState(
@@ -151,7 +151,7 @@ class SearchSandbox extends Component {
 		message.error('Filter Deleted');
 	};
 
-	setProfile = (profile) => {
+	setProfile = profile => {
 		const componentProps = this.pref[profile] || {};
 		this.setState({
 			profile,
@@ -193,7 +193,7 @@ class SearchSandbox extends Component {
 		}
 	};
 
-	deleteProfile = (profile) => {
+	deleteProfile = profile => {
 		const { profileList } = this.state;
 		const filteredProfile = profileList.filter(item => item !== profile);
 		const componentProps = this.pref[filteredProfile[0]];
@@ -264,7 +264,7 @@ class SearchSandbox extends Component {
 							react: '16.3.2',
 							'react-dom': '16.3.2',
 							antd: '^3.6.6',
-							'@appbaseio/reactivesearch': '3.0.0-rc.0',
+							'@appbaseio/reactivesearch': '3.0.0-rc.12',
 							'react-expand-collapse': 'latest',
 						},
 					},

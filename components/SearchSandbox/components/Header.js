@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
-import {
- Menu, Button, Dropdown, Icon, Modal, Input, message,
-} from 'antd';
-import {
- bool, arrayOf, string, func,
-} from 'prop-types';
+import { Menu, Button, Dropdown, Icon, Modal, Input, message } from 'antd';
+import { bool, arrayOf, string, func } from 'prop-types';
 
 const CREATE_NEW_PROFILE = 'SEARCH_SANDBOX_CREATE_NEW_PROFILE_APPBASE';
 const SAVE_AS_NEW_PROFILE = 'SEARCH_SANDBOX_SAVE_AS_NEW_PROFILE_APPBASE';
@@ -33,7 +29,7 @@ export default class Header extends Component {
 		return null;
 	}
 
-	handleProfileChange = (e) => {
+	handleProfileChange = e => {
 		const { key } = e;
 		const { setProfile } = this.props;
 
