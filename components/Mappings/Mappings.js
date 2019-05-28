@@ -272,7 +272,7 @@ class Mappings extends Component {
 	setMapping = (field, type, usecase) => {
 		const { mapping: currentMapping, esVersion } = this.state;
 		let mapping = null;
-		if (esVersion === '7') {
+		if (+esVersion >= 7) {
 			mapping = updateMappingES7(currentMapping, field, type, usecase);
 		} else {
 			mapping = updateMapping(currentMapping, field, type, usecase, esVersion);
@@ -286,10 +286,17 @@ class Mappings extends Component {
 	handleMapping = async (res) => {
 		if (res) {
 			const { appName } = this.props;
-			const esVersion = await getESVersion(appName);
+			const {esVersion} = this.state;
 			let mapping = res ? transformToES5(res) : res;
-			if (esVersion === '7') {
-				mapping = mapping.properties;
+
+			if (!mapping.properties && esVersion >= 7) {
+				// Default Value for Version 7 Mappings
+				mapping = { properties: { } };
+			}
+
+			if ((!mapping._doc || !mapping._doc.properties) && esVersion >= 6 && esVersion < 7) {
+				// Default Value for Version 6 Mappings
+				mapping = { _doc: { properties: {} } };
 			}
 
 			this.originalMapping = mapping;
@@ -466,19 +473,27 @@ class Mappings extends Component {
 			newUsecase = mappingUsecase[usecase];
 		}
 
-		fields.reduce((acc, val, index) => {
-			if (index === fields.length - 1) {
-				acc[val] = {
-					type,
-					...newUsecase,
-				};
-				return true;
-			}
-			if (!acc[val] || !acc[val].properties) {
-				acc[val] = { properties: {} };
-			}
-			return acc[val].properties;
-		}, mapping);
+		if (+this.state.esVersion >= 7) {
+			const fieldChanged = name.split('.')[1];
+			mapping.properties[fieldChanged] = {
+				type,
+				...newUsecase,
+			};
+		} else {
+			fields.reduce((acc, val, index) => {
+				if (index === fields.length - 1) {
+					acc[val] = {
+						type,
+						...newUsecase,
+					};
+					return true;
+				}
+				if (!acc[val] || !acc[val].properties) {
+					acc[val] = { properties: {} };
+				}
+				return acc[val].properties;
+			}, mapping);
+		}
 
 		this.setState({
 			dirty: true,
@@ -682,7 +697,7 @@ class Mappings extends Component {
 				<section key={type} className={row}>
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>{type}</span>
-						{this.state.editable ? (
+						{this.state.editable && this.state.esVersion < 6 ? (
 							<a
 								type="danger"
 								size="small"
@@ -741,7 +756,8 @@ class Mappings extends Component {
 									{this.state.editable ? (
 										<a
 											onClick={() => {
-												this.deletePath(`${address}.${field}`);
+												const addressField = +this.state.esVersion >= 7 ? `properties.${field}` : `${address}.${field}`
+												this.deletePath(addressField);
 											}}
 										>
 											<Icon type="delete" />
@@ -938,6 +954,7 @@ class Mappings extends Component {
 		if (!this.state.mapping) return null;
 
 		const { mapping } = this.state;
+
 		return (
 			<React.Fragment>
 				<Card
@@ -1030,15 +1047,22 @@ class Mappings extends Component {
 						) : null}
 						{Object.keys(mapping).map((field) => {
 							if (mapping[field]) {
-								const currentMappingFields = mapping[field].properties;
-								const originalMappingFields = this.originalMapping[field]
+								let currentMappingFields = mapping[field].properties;
+								let originalMappingFields = this.originalMapping[field]
 									? this.originalMapping[field].properties
 									: mapping[field].properties;
+								const fieldName = `${field}.properties`;
+
+								if (+this.state.esVersion >= 7) {
+									currentMappingFields = mapping[field];
+									originalMappingFields = this.originalMapping[field] ? this.originalMapping[field] : mapping[field];
+								}
+
 								return this.renderMapping(
 									field,
 									currentMappingFields,
 									originalMappingFields,
-									`${field}.properties`,
+									fieldName,
 								);
 							}
 							return null;
@@ -1065,6 +1089,7 @@ class Mappings extends Component {
 					types={Object.keys(this.state.mapping).filter(
 						type => !REMOVED_KEYS.includes(type),
 					)}
+					esVersion={this.state.esVersion}
 					show={this.state.showModal}
 					addField={this.addField}
 					onClose={this.toggleModal}
