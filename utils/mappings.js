@@ -44,7 +44,7 @@ export function getMappings(appName, credentials, url = getURL()) {
 	});
 }
 
-export function putMapping(appName, credentials,mappings, type, url = getURL()) {
+export function putMapping(appName, credentials, mappings, type, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_mapping/${type}`, {
 			method: 'PUT',
@@ -65,7 +65,6 @@ export function putMapping(appName, credentials,mappings, type, url = getURL()) 
 			});
 	});
 }
-
 
 export function getSettings(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
@@ -151,7 +150,7 @@ export function updateSynonyms(appName, credentials, url = getURL(), synonymsArr
 						english_analyzer: {
 							filter: ['lowercase', 'asciifolding', 'porter_stem'],
 							tokenizer: 'standard',
-							type: 'custom'
+							type: 'custom',
 						},
 					},
 				},
@@ -201,6 +200,14 @@ export async function getESVersion(appName, credentials) {
 	return data.version.number;
 }
 
+/**
+ *
+ * @param {*} mappings
+ * @returns Boolean
+ */
+
+ const checkVersion7 = (mappings = {}) => Object.keys(mappings).length === 1 && Object.keys(mappings).includes('properties');
+
 export function reIndex(
 	mappings,
 	appId,
@@ -217,6 +224,12 @@ export function reIndex(
 		type,
 		es_version: version,
 	};
+	if (version >= 7) {
+		delete body.type;
+		const { properties, ...rest } = mappings;
+		body.mappings = { properties: { ...properties, ...rest } };
+	}
+
 	return new Promise((resolve, reject) => {
 		const ACC_API = getURL();
 		fetch(`${ACC_API}/_reindex/${appId}`, {
@@ -341,6 +354,44 @@ export function updateMapping(mapping, field, type, usecase) {
 	return _mapping;
 }
 
+export function updateMappingES7(mapping, field, type, usecase) {
+	// eslint-disable-next-line
+	let _mapping = { ...mapping };
+
+	Object.keys(_mapping).every((key) => {
+		if (PRESERVED_KEYS.includes(key)) return false;
+
+		if (key === field) {
+			let newUsecase = {};
+			if (usecase) {
+				newUsecase = mappingUsecase[usecase];
+			}
+			_mapping = {
+				..._mapping,
+				[key]: {
+					properties: {
+						..._mapping[key].properties,
+						[field]: {
+							...newUsecase,
+							type,
+						},
+					},
+				},
+			};
+		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
+			_mapping = {
+				..._mapping,
+				[key]: {
+					..._mapping[key],
+					...updateMapping(_mapping[key], field, type, usecase),
+				},
+			};
+		}
+		return true;
+	});
+	return _mapping;
+}
+
 /**
  * Traverse the mappings object & returns the fields (leaf)
  * @param {Object} mappings
@@ -368,7 +419,11 @@ export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 		};
 		setFields(m);
 	};
-	Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
+	if (checkVersion7(mappings)) {
+		checkIfPropertyPresent(mappings, 'properties');
+	} else {
+		Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
+	}
 	return fieldObject;
 }
 
@@ -403,14 +458,25 @@ function getFieldsTree(mappings = {}, prefix = null) {
  */
 export function getMappingsTree(mappings = {}) {
 	let tree = {};
-	Object.keys(mappings).forEach((key) => {
-		if (mappings[key].properties) {
+
+	if(checkVersion7(mappings)) {
+		// For Elasticsearch version 7
+		if (mappings.properties) {
 			tree = {
 				...tree,
-				...getFieldsTree(mappings[key].properties, null),
+				...getFieldsTree(mappings.properties, null),
 			};
 		}
-	});
+	} else {
+		Object.keys(mappings).forEach((key) => {
+			if (mappings[key].properties) {
+				tree = {
+					...tree,
+					...getFieldsTree(mappings[key].properties, null),
+				};
+			}
+		});
+	}
 
 	return tree;
 }

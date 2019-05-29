@@ -3,7 +3,18 @@ import {
  string, object, func, bool,
 } from 'prop-types';
 import {
- Tooltip, Icon, Input, Popover, Card, Button, Modal, Dropdown, Menu, Affix, Slider, message,
+	Tooltip,
+	Icon,
+	Input,
+	Popover,
+	Card,
+	Button,
+	Modal,
+	Dropdown,
+	Menu,
+	Affix,
+	Slider,
+	message,
 } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
@@ -13,6 +24,7 @@ import textUsecases from './usecases';
 import { isEqual } from '../../utils';
 import {
 	updateMapping,
+	updateMappingES7,
 	transformToES5,
 	hasAggs,
 	reIndex,
@@ -73,9 +85,7 @@ const FeedbackModal = ({ show, onClose, timeTaken }) => (
 		onCancel={onClose}
 		okText="Done"
 	>
-		<p>
-			The mappings have been updated and the data has been successfully re-indexed.
-		</p>
+		<p>The mappings have been updated and the data has been successfully re-indexed.</p>
 	</Modal>
 );
 
@@ -214,8 +224,13 @@ class Mappings extends Component {
 	};
 
 	setMapping = (field, type, usecase) => {
-		const { mapping: currentMapping } = this.state;
-		const mapping = updateMapping(currentMapping, field, type, usecase);
+		const { mapping: currentMapping, esVersion } = this.state;
+		let mapping = null;
+		if (+esVersion >= 7) {
+			mapping = updateMappingES7(currentMapping, field, type, usecase);
+		} else {
+			mapping = updateMapping(currentMapping, field, type, usecase, esVersion);
+		}
 		this.setState({
 			mapping,
 			dirty: true,
@@ -226,26 +241,42 @@ class Mappings extends Component {
 		this.setState(prevState => ({
 			shardsModal: !prevState.shardsModal,
 		}));
-	}
+	};
 
 	handleReplicasModal = () => {
 		this.setState(prevState => ({
 			replicasModal: !prevState.replicasModal,
 		}));
-	}
+	};
 
 	handleSlider = (name, value) => {
 		this.setState({
 			[name]: value,
 		});
-	}
+	};
 
-	handleMapping = (res) => {
+	handleMapping = async (res) => {
 		if (res) {
-			this.originalMapping = res;
+			const { appName, appbaseCredentials } = this.props;
+			const fullVersion = await getESVersion(appName, appbaseCredentials);
+
+			const esVersion = fullVersion.split('.')[0];
+			let mapping = res ? transformToES5(res) : res;
+
+			if ((!mapping || !mapping.properties) && +esVersion >= 7) {
+				// Default Value for Version 7 Mappings
+				mapping = { properties: { } };
+			}
+
+			if ((!mapping || !mapping._doc || !mapping._doc.properties) && +esVersion >= 6 && +esVersion < 7) {
+				// Default Value for Version 6 Mappings
+				mapping = { _doc: { properties: {} } };
+			}
+
+			this.originalMapping = mapping;
 			this.setState({
 				isLoading: false,
-				mapping: res ? transformToES5(res) : res,
+				mapping,
 				activeType: getTypesFromMapping(res),
 			});
 		}
@@ -349,7 +380,7 @@ class Mappings extends Component {
 
 			return { shards, replicas };
 		});
-	}
+	};
 
 	addField = ({ name, type, usecase }) => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
@@ -360,19 +391,27 @@ class Mappings extends Component {
 			newUsecase = mappingUsecase[usecase];
 		}
 
-		fields.reduce((acc, val, index) => {
-			if (index === fields.length - 1) {
-				acc[val] = {
-					type,
-					...newUsecase,
-				};
-				return true;
-			}
-			if (!acc[val] || !acc[val].properties) {
-				acc[val] = { properties: {} };
-			}
-			return acc[val].properties;
-		}, mapping);
+		if (+this.state.esVersion >= 7) {
+			const fieldChanged = name.split('.')[1];
+			mapping.properties[fieldChanged] = {
+				type,
+				...newUsecase,
+			};
+		} else {
+				fields.reduce((acc, val, index) => {
+				if (index === fields.length - 1) {
+					acc[val] = {
+						type,
+						...newUsecase,
+					};
+					return true;
+				}
+				if (!acc[val] || !acc[val].properties) {
+					acc[val] = { properties: {} };
+				}
+				return acc[val].properties;
+			}, mapping);
+		}
 
 		this.setState({
 			dirty: true,
@@ -389,8 +428,14 @@ class Mappings extends Component {
 			},
 		};
 		if (settings && settings.index && settings.index.analysis) {
-			const { index: { analysis: { analyzer: currentAnalyzer, filter: currentFilter } } } = settings;
-			const { analysis: { analyzer, filter } } = analyzerSettings;
+			const {
+				index: {
+					analysis: { analyzer: currentAnalyzer, filter: currentFilter },
+				},
+			} = settings;
+			const {
+				analysis: { analyzer, filter },
+			} = analyzerSettings;
 
 			Object.keys(analyzer).forEach((key) => {
 				if (!currentAnalyzer[key]) {
@@ -410,24 +455,20 @@ class Mappings extends Component {
 		}
 		updatedSettings.index.analysis = analyzerSettings.analysis;
 		return updatedSettings;
-	}
+	};
 
 	reIndex = async () => {
 		this.setState({
 			isLoading: true,
 		});
 
-		const {
- deletedPaths, activeType, esVersion,
-} = this.state;
+		const { deletedPaths, activeType, esVersion } = this.state;
 
 		const { appId, credentials } = this.props;
 
 		let { mapping } = this.state;
 
-		let appSettings = await getSettings(appId, credentials).then((data) => {
-			return data[appId].settings;
-		});
+		let appSettings = await getSettings(appId, credentials).then(data => data[appId].settings);
 
 		appSettings = this.getUpdatedSettings(appSettings);
 
@@ -538,12 +579,12 @@ class Mappings extends Component {
 	updateShards = async () => {
 		this.handleShardsModal();
 		this.reIndex();
-	}
+	};
 
 	updateReplicas = async () => {
 		this.handleReplicasModal();
 		this.reIndex();
-	}
+	};
 
 	renderOptions = (originalFields, fields, field) => {
 		const options = [];
@@ -605,16 +646,19 @@ class Mappings extends Component {
 				<section key={type} className={row}>
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>{type}</span>
-						<a
-							type="danger"
-							size="small"
-							onClick={() => {
-								this.deletePath(address, true);
-							}}
-						>
-							<Icon type="delete" />
-							Delete
-						</a>
+						{this.state.esVersion < 6 && (
+								<a
+									type="danger"
+									size="small"
+									onClick={() => {
+										this.deletePath(address, true);
+									}}
+								>
+									<Icon type="delete" />
+									Delete
+								</a>
+							)
+						}
 					</h4>
 					{Object.keys(fields).map((field) => {
 						if (fields[field].properties) {
@@ -661,7 +705,8 @@ class Mappings extends Component {
 									</span>
 									<a
 										onClick={() => {
-											this.deletePath(`${address}.${field}`);
+											const addressField = +this.state.esVersion >= 7 ? `properties.${field}` : `${address}.${field}`;
+											this.deletePath(addressField);
 										}}
 									>
 										<Icon type="delete" />
@@ -689,7 +734,12 @@ class Mappings extends Component {
 	updateField = () => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const { activeType } = this.state;
-		if (mapping && activeType[0] && mapping[activeType[0]] && mapping[activeType[0]].properties) {
+		if (
+			mapping
+			&& activeType[0]
+			&& mapping[activeType[0]]
+			&& mapping[activeType[0]].properties
+		) {
 			const { properties } = mapping[activeType[0]];
 			const keys = Object.keys(properties);
 
@@ -708,7 +758,7 @@ class Mappings extends Component {
 			});
 		}
 		return mapping;
-	}
+	};
 
 	updateSynonyms = () => {
 		const credentials = this.props.credentials || this.state.credentials;
@@ -742,13 +792,18 @@ class Mappings extends Component {
 			.then(() => {
 				if (synonymsUpdated) {
 					// If synonyms request is successful than update mapping via PUT request
-					const {activeType} = this.state;
+					const { activeType } = this.state;
 					const updatedMappings = this.updateField();
-					putMapping(this.props.appName, credentials, updatedMappings[activeType[0]], activeType[0]).then(({acknowledged}) => {
-						if(acknowledged){
-							message.success("Synonyms Updated")
+					putMapping(
+						this.props.appName,
+						credentials,
+						updatedMappings[activeType[0]],
+						activeType[0],
+					).then(({ acknowledged }) => {
+						if (acknowledged) {
+							message.success('Synonyms Updated');
 							this.setState({
-								mapping: updatedMappings
+								mapping: updatedMappings,
 							});
 						}
 					});
@@ -759,7 +814,7 @@ class Mappings extends Component {
 				});
 			})
 			.catch((e) => {
-				console.error(e)
+				console.error(e);
 				openIndex(this.props.appName, credentials, url);
 				this.setState({
 					showSynonymModal: false,
@@ -792,7 +847,7 @@ class Mappings extends Component {
 				<Card
 					hoverable
 					title={(
-						<div className={cardTitle}>
+<div className={cardTitle}>
 							<div>
 								<h4>Manage Shards</h4>
 								<p>Configure the number of shards for your app.</p>
@@ -800,15 +855,15 @@ class Mappings extends Component {
 							<Button onClick={this.handleShardsModal} type="primary">
 								Change Shards
 							</Button>
-						</div>
-					)}
+</div>
+)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
 				/>
 				<Card
 					hoverable
 					title={(
-						<div className={cardTitle}>
+<div className={cardTitle}>
 							<div>
 								<h4>Manage Replicas</h4>
 								<p>Configure the number of replicas for your app.</p>
@@ -816,8 +871,8 @@ class Mappings extends Component {
 							<Button onClick={this.handleReplicasModal} type="primary">
 								Change Replicas
 							</Button>
-						</div>
-					)}
+</div>
+)}
 					bodyStyle={{ padding: 0 }}
 					className={card}
 				/>
@@ -882,15 +937,22 @@ class Mappings extends Component {
 						) : null}
 						{Object.keys(this.state.mapping).map((field) => {
 							if (this.state.mapping[field]) {
-								const currentMappingFields = this.state.mapping[field].properties;
-								const originalMappingFields = this.originalMapping[field]
+								let currentMappingFields = this.state.mapping[field].properties;
+								let originalMappingFields = this.originalMapping[field]
 									? this.originalMapping[field].properties
 									: this.state.mapping[field].properties;
+								const fieldName = `${field}.properties`;
+
+								if (+this.state.esVersion >= 7) {
+									currentMappingFields = this.state.mapping[field];
+									originalMappingFields = this.originalMapping[field] ? this.originalMapping[field] : this.state.mapping[field];
+								}
+
 								return this.renderMapping(
 									field,
 									currentMappingFields,
 									originalMappingFields,
-									`${field}.properties`,
+									fieldName,
 								);
 							}
 							return null;
@@ -907,7 +969,9 @@ class Mappings extends Component {
 								>
 									Confirm Mapping Changes
 								</Button>
-								<Button size="large" onClick={this.cancelChanges}>Cancel</Button>
+								<Button size="large" onClick={this.cancelChanges}>
+									Cancel
+								</Button>
 							</div>
 						</Affix>
 					) : null}
@@ -919,6 +983,7 @@ class Mappings extends Component {
 					show={this.state.showModal}
 					addField={this.addField}
 					onClose={this.toggleModal}
+					esVersion={this.state.esVersion}
 					deletedPaths={this.state.deletedPaths}
 				/>
 				<Loader
@@ -934,7 +999,9 @@ class Mappings extends Component {
 				<FeedbackModal
 					show={this.state.showFeedback}
 					timeTaken={this.state.timeTaken}
-					onClose={() => { window.location.href = window.location.origin; }}
+					onClose={() => {
+						window.location.href = window.location.origin;
+					}}
 				/>
 				<Modal
 					visible={this.state.showSynonymModal}
@@ -961,19 +1028,38 @@ class Mappings extends Component {
 					okButtonProps={{ disabled: this.state.allocated_shards == this.state.shards }}
 					onCancel={this.handleShardsModal}
 				>
-					<h4>Move slider to change the number of shards for your app. Read more <a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">here</a>.</h4>
-					<Slider step={1} max={100} value={+this.state.shards} onChange={(value) => this.handleSlider('shards', value)} />
+					<h4>
+						Move slider to change the number of shards for your app. Read more{' '}
+						<a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">
+							here
+						</a>
+						.
+					</h4>
+					<Slider
+						step={1}
+						max={100}
+						value={+this.state.shards}
+						onChange={value => this.handleSlider('shards', value)}
+					/>
 				</Modal>
 				<Modal
 					visible={this.state.replicasModal}
 					onOk={this.updateReplicas}
 					title="Configure Replicas"
 					okText="Update"
-					okButtonProps={{ disabled: this.state.allocated_replicas == this.state.replicas }}
+					okButtonProps={{
+						disabled: this.state.allocated_replicas == this.state.replicas,
+					}}
 					onCancel={this.handleReplicasModal}
 				>
 					<h4>Move slider to change the number of replicas for your app.</h4>
-					<Slider step={null} marks={{ 0: '0', 1: '1', 2: '2' }} max={this.state.totalNodes - 1} value={+this.state.replicas} onChange={(value) => this.handleSlider('replicas', value)} />
+					<Slider
+						step={null}
+						marks={{ 0: '0', 1: '1', 2: '2' }}
+						max={this.state.totalNodes - 1}
+						value={+this.state.replicas}
+						onChange={value => this.handleSlider('replicas', value)}
+					/>
 				</Modal>
 			</React.Fragment>
 		);
