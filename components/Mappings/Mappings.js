@@ -258,15 +258,17 @@ class Mappings extends Component {
 	handleMapping = async (res) => {
 		if (res) {
 			const { appName, appbaseCredentials } = this.props;
-			const { esVersion } = this.state;
+			const fullVersion = await getESVersion(appName, appbaseCredentials);
+
+			const esVersion = fullVersion.split('.')[0];
 			let mapping = res ? transformToES5(res) : res;
 
-			if (!mapping.properties && esVersion >= 7) {
+			if ((!mapping || !mapping.properties) && +esVersion >= 7) {
 				// Default Value for Version 7 Mappings
 				mapping = { properties: { } };
 			}
 
-			if ((!mapping._doc || !mapping._doc.properties) && esVersion >= 6 && esVersion < 7) {
+			if ((!mapping || !mapping._doc || !mapping._doc.properties) && +esVersion >= 6 && +esVersion < 7) {
 				// Default Value for Version 6 Mappings
 				mapping = { _doc: { properties: {} } };
 			}
