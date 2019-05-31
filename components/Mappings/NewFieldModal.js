@@ -65,6 +65,7 @@ export default class NewFieldModal extends Component {
 			esType, fieldType, name, usecase, type,
 		} = this.state; // prettier-ignore
 		const deletedPaths = this.props.deletedPaths.map(item => item.split('.properties.').join('.'));
+
 		const fieldName = `${fieldType || esType}.${name}`;
 
 		if (name && deletedPaths.includes(fieldName)) {
@@ -132,7 +133,7 @@ export default class NewFieldModal extends Component {
 			>
 				<section>
 					<Header>
-						<span className="col">Type</span>
+						{this.props.esVersion >= 6 ? null : <span className="col">Type</span>}
 						<span className="col col--grow">
 							Field Name
 							<Tooltip title={fieldNameMessage}>
@@ -154,18 +155,20 @@ export default class NewFieldModal extends Component {
 						<span className="col">Data Type</span>
 					</Header>
 					<div style={{ padding: '10px 0', display: 'flex' }}>
-						<span style={{ width: 150, marginRight: 12 }}>
-							<Dropdown overlay={menu}>
-								<Input
-									type="text"
-									name="fieldType"
-									className={inputStyles}
-									value={this.state.fieldType}
-									placeholder="Select or Create Type"
-									onChange={this.handleNewFieldChange}
-								/>
-							</Dropdown>
-						</span>
+						{+this.props.esVersion >= 6 ? null : (
+							<span style={{ width: 150, marginRight: 12 }}>
+								<Dropdown overlay={menu}>
+									<Input
+										type="text"
+										name="fieldType"
+										className={inputStyles}
+										value={this.state.fieldType}
+										placeholder="Select or Create Type"
+										onChange={this.handleNewFieldChange}
+									/>
+								</Dropdown>
+							</span>
+						)}
 						{/* <select
 							className={dropdown}
 							style={{ textTransform: 'none', marginLeft: 0, marginRight: 12 }}
