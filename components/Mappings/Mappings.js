@@ -1160,7 +1160,7 @@ class Mappings extends Component {
 					>
 						<h4>
 							Move slider to change the number of shards for your app. Read more{' '}
-							<a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">
+							<a href="https://docs.appbase.io/concepts/mappings.html#manage-shards" target="_blank" rel="noopener noreferrer">
 								here
 							</a>
 							.
