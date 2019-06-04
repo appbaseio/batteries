@@ -183,6 +183,11 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 		es_version: version,
 		shard_count: shards.toString(),
 	};
+	if (version >= 7) {
+		delete body.type;
+		const { properties, ...rest } = mappings;
+		body.mappings = { properties: { ...properties, ...rest } };
+	}
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appName}/reindex`, {
 			method: 'POST',
@@ -309,6 +314,52 @@ export function updateMapping(mapping, field, type, usecase) {
 	return _mapping;
 }
 
+export function updateMappingES7(mapping, field, type, usecase) {
+	// eslint-disable-next-line
+	let _mapping = { ...mapping };
+
+	Object.keys(_mapping).every((key) => {
+		if (PRESERVED_KEYS.includes(key)) return false;
+
+		if (key === field) {
+			let newUsecase = {};
+			if (usecase) {
+				newUsecase = mappingUsecase[usecase];
+			}
+			_mapping = {
+				..._mapping,
+				[key]: {
+					properties: {
+						..._mapping[key].properties,
+						[field]: {
+							...newUsecase,
+							type,
+						},
+					},
+				},
+			};
+		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
+			_mapping = {
+				..._mapping,
+				[key]: {
+					..._mapping[key],
+					...updateMapping(_mapping[key], field, type, usecase),
+				},
+			};
+		}
+		return true;
+	});
+	return _mapping;
+}
+
+/**
+ *
+ * @param {*} mappings
+ * @returns Boolean
+ */
+
+const checkVersion7 = (mappings = {}) => Object.keys(mappings).length === 1 && Object.keys(mappings).includes('properties');
+
 /**
  * Traverse the mappings object & returns the fields (leaf)
  * @param {Object} mappings
@@ -336,7 +387,11 @@ export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 		};
 		setFields(m);
 	};
-	Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
+	if (checkVersion7(mappings)) {
+		checkIfPropertyPresent(mappings, 'properties');
+	} else {
+		Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
+	}
 	return fieldObject;
 }
 
@@ -371,14 +426,26 @@ function getFieldsTree(mappings = {}, prefix = null) {
  */
 export function getMappingsTree(mappings = {}) {
 	let tree = {};
-	Object.keys(mappings).forEach((key) => {
-		if (mappings[key].properties) {
+
+	if (checkVersion7(mappings)) {
+		// For Elasticsearch version 7
+		if (mappings.properties) {
 			tree = {
 				...tree,
-				...getFieldsTree(mappings[key].properties, null),
+				...getFieldsTree(mappings.properties, null),
 			};
 		}
-	});
+	} else {
+		// For Elasticsearch version below 7 for backward compatibility
+		Object.keys(mappings).forEach((key) => {
+			if (mappings[key].properties) {
+				tree = {
+					...tree,
+					...getFieldsTree(mappings[key].properties, null),
+				};
+			}
+		});
+	}
 
 	return tree;
 }

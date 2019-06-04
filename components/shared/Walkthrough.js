@@ -18,10 +18,19 @@ class Walkthrough extends React.Component {
 
 		const isTutorialCompleted = this.getTutorialStatus();
 		this.state = {
-			showTutorial: !isTutorialCompleted,
+			showTutorial: props.showTutorial || !isTutorialCompleted,
 			tutorialCompleted: isTutorialCompleted,
 			stepIndex: 0,
 		};
+	}
+
+	componentDidUpdate(prevProps) {
+		const { showTutorial } = this.props;
+		if(showTutorial !==  prevProps.showTutorial) {
+			this.setState({
+				showTutorial,
+			})
+		}
 	}
 
 	handleJoyrideSteps = ({ action, index, type }) => {
@@ -76,10 +85,10 @@ class Walkthrough extends React.Component {
 	render() {
 		const { showTutorial, tutorialCompleted, stepIndex } = this.state;
 
-		const { showWalkthrough, joyrideSteps } = this.props;
+		const { showWalkthrough, joyrideSteps, hideButtons } = this.props;
 		return showWalkthrough ? (
 			<React.Fragment>
-				<div
+				{!hideButtons && <div
 					style={{
 						position: 'fixed',
 						bottom: '15px',
@@ -101,7 +110,7 @@ class Walkthrough extends React.Component {
 							icon={tutorialCompleted ? 'check-circle' : 'play-circle'}
 						/>
 					</Tooltip>
-				</div>
+				</div>}
 				<Joyride
 					run={showTutorial}
 					steps={joyrideSteps}
@@ -124,13 +133,17 @@ class Walkthrough extends React.Component {
 }
 
 Walkthrough.propTypes = {
+	hideButtons: PropTypes.bool,
 	id: PropTypes.string.isRequired,
 	showWalkthrough: PropTypes.bool,
+	showTutorial: PropTypes.bool,
 	joyrideSteps: PropTypes.array,
 };
 
 Walkthrough.defaultProps = {
+	hideButtons: false,
 	showWalkthrough: true,
+	showTutorial: false,
 	joyrideSteps: [],
 };
 

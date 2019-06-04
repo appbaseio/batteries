@@ -207,6 +207,29 @@ class SearchSandbox extends Component {
 		}
 	};
 
+	deleteProfile = (profile) => {
+		const { profileList } = this.state;
+		const filteredProfile = profileList.filter(item => item !== profile);
+		const componentProps = this.pref[filteredProfile[0]];
+		try {
+			delete this.pref[profile];
+			this.setState(
+				{
+					profile: filteredProfile[0],
+					profileList: filteredProfile,
+					filterCount: Object.keys(componentProps).filter(
+						item => item !== 'search' && item !== 'result',
+					).length,
+					componentProps,
+				},
+				this.savePreferences,
+			);
+			message.success(`Successfully deleted ${profile}`);
+		} catch (e) {
+			message.error('Something went wrong while deleting profile. Please try again.');
+		}
+	};
+
 	handleComponentPropChange = (component, newProps) => {
 		// strip out onData prop from result component
 		const { onData, ...validProps } = newProps;
@@ -255,7 +278,7 @@ class SearchSandbox extends Component {
 							react: '16.3.2',
 							'react-dom': '16.3.2',
 							antd: '^3.6.6',
-							'@appbaseio/reactivesearch': '3.0.0-rc.0',
+							'@appbaseio/reactivesearch': '3.0.0-rc.12',
 							'react-expand-collapse': 'latest',
 						},
 					},
@@ -311,6 +334,8 @@ class SearchSandbox extends Component {
 			showProfileOption,
 			useCategorySearch,
 			customJoyrideSteps,
+			hideWalkthroughButtons,
+			showTutorial,
 		} = this.props;
 		const {
 			mappingsType, componentProps, filterCount, profile,
@@ -346,12 +371,15 @@ class SearchSandbox extends Component {
 						profileList={profileList}
 						defaultProfile={profile}
 						setProfile={this.setProfile}
+						deleteProfile={this.deleteProfile}
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
 					/>
 					<Walkthrough
 						id="SearchPreview"
 						joyrideSteps={customJoyrideSteps || joyrideSteps}
+						hideButtons={hideWalkthroughButtons}
+						showTutorial={showTutorial}
 					/>
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
@@ -380,14 +408,18 @@ SearchSandbox.propTypes = {
 	customJoyrideSteps: PropTypes.array,
 	customProps: PropTypes.object,
 	showCodePreview: PropTypes.bool,
+	hideWalkthroughButtons: PropTypes.bool,
 	showProfileOption: PropTypes.bool,
 	showCustomList: PropTypes.bool,
+	showTutorial: PropTypes.bool,
 };
 
 SearchSandbox.defaultProps = {
 	appId: null,
 	attribution: null,
 	showCodeSandbox: true,
+	showTutorial: false,
+	hideWalkthroughButtons: false,
 	showCodePreview: true,
 	showProfileOption: true,
 	showCustomList: true,

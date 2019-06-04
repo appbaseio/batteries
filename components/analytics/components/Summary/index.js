@@ -22,19 +22,37 @@ class Summary extends React.Component {
 
 	render() {
 		const {
- isLoading, avgClickRate, avgConversionRate, totalSearches,
+ isLoading, avgClickRate, avgConversionRate, totalSearches, toolTipMessages,
 } = this.props;
 		if (isLoading) {
 			return <Loader />;
 		}
 		return (
 			<Flex flexDirection="row" css="flex-wrap:wrap">
-				<SummaryCard title="Total Searches" count={totalSearches} border="#00f68e" />
-				<SummaryCard title="Average Click Rate" count={avgClickRate} border="#1A74FF" />
-				<SummaryCard title="Conversion" count={avgConversionRate} border="#C944FF" />
+				<SummaryCard
+					title="Total Searches"
+					toolTipMessage={toolTipMessages.totalSearches}
+					count={totalSearches}
+					border="#00f68e"
+				/>
+				<SummaryCard
+					title="Average Click Rate"
+					toolTipMessage={toolTipMessages.averageClickRate}
+					count={avgClickRate}
+					border="#1A74FF"
+				/>
+				<SummaryCard
+					title="Conversion"
+					toolTipMessage={toolTipMessages.conversion}
+					count={avgConversionRate}
+					border="#C944FF"
+				/>
 			</Flex>
 		);
 	}
+}
+Summary.defaultProps = {
+	toolTipMessages: {}
 }
 Summary.propTypes = {
 	fetchAppAnalyticsSummary: PropTypes.func.isRequired,
@@ -43,6 +61,7 @@ Summary.propTypes = {
 	avgConversionRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	totalSearches: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	errors: PropTypes.array.isRequired,
+	toolTipMessages: PropTypes.object,
 };
 const mapStateToProps = (state) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);

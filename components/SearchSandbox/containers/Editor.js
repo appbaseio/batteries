@@ -253,12 +253,16 @@ export default class Editor extends Component {
 						<Card>
 							<SelectedFilters
 								render={(props) => {
-									const { selectedValues, setValue, clearValues } = props;
+									const { selectedValues, setValue, clearValues, components } = props;
 									const clearFilter = (component) => {
 										setValue(component, null);
 									};
 
 									const filters = Object.keys(selectedValues).map((component) => {
+										if(!components.includes(component)) {
+											return null;
+										}
+
 										if (
 											!selectedValues[component].value
 											|| selectedValues[component].value.length === 0

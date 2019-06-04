@@ -32,9 +32,11 @@ class BaseContainer extends Component {
 		const shouldFetchPlan = shouldFetchAppPlan && !isAppPlanFetched;
 		if (shouldFetchApp) {
 			fetchAppInfo(appId);
-		} else if (shouldFetchPlan) {
+		}
+		if (shouldFetchPlan) {
 			fetchAppPlan(appName);
-		} else {
+		}
+		if(!shouldFetchApp && !shouldFetchPlan) {
 			isLoading = false;
 		}
 		this.state = {
@@ -59,10 +61,10 @@ class BaseContainer extends Component {
 	}
 
 	render() {
-		const { children, component, ...props } = this.props;
+		const { children, component, loader, ...props } = this.props;
 		const { isLoading } = this.state;
 		if (isLoading) {
-			return <Loader />;
+			return loader || <Loader />;
 		}
 		if (component) {
 			return <div key={props.appName}>{React.createElement(component, props)}</div>;
@@ -75,6 +77,7 @@ class BaseContainer extends Component {
 BaseContainer.defaultProps = {
 	isLoading: false,
 	errors: [],
+	loader: undefined,
 	component: undefined,
 	children: null,
 	shouldFetchAppInfo: true,
@@ -84,6 +87,7 @@ BaseContainer.defaultProps = {
 
 BaseContainer.propTypes = {
 	appName: PropTypes.string.isRequired,
+	loader: PropTypes.node,
 	appId: PropTypes.string,
 	isLoading: PropTypes.bool,
 	errors: PropTypes.array,
