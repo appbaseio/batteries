@@ -99,6 +99,7 @@ export default class Header extends Component {
 			showProfileOption,
 			profileList,
 			openSandbox,
+			isUnsaved,
 		} = this.props;
 
 		const { profile, showNewProfileModal, modalError } = this.state;
@@ -108,66 +109,70 @@ export default class Header extends Component {
 				onClick={this.handleProfileChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{profileList.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-				<Menu.Divider />
-				<Menu.Item key={CREATE_NEW_PROFILE}>
-					<Icon type="plus" />
-					&nbsp; Create a New Profile
-				</Menu.Item>
 				<Menu.Item key={SAVE_AS_NEW_PROFILE}>
 					<Icon type="save" />
 					&nbsp; Save as New Profile
 				</Menu.Item>
+				<Menu.Item key={CREATE_NEW_PROFILE}>
+					<Icon type="plus" />
+					&nbsp; Create a New Profile
+				</Menu.Item>
+				<Menu.Divider />
+				{profileList.map(item => (
+					<Menu.Item key={item}>{item}</Menu.Item>
+				))}
 			</Menu>
 		);
 
 		let showHeader = true;
 
-		if(!showCodeSandbox && !showProfileOption){
+		if (!showCodeSandbox && !showProfileOption) {
 			showHeader = false;
 		}
 
-		return showHeader ?
-			<div
-				style={{
-					display: 'flex',
-					flexDirection: 'row-reverse',
-					padding: '10px 20px 0',
-				}}
-			>
-				{isDashboard && showProfileOption ? (
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Button size="large" style={{ marginLeft: 8 }}>
-							Search Profile - {profile} <Icon type="down" />
-						</Button>
-					</Dropdown>
-				) : null}
-				{showCodeSandbox ? (
-					<Button onClick={openSandbox} size="large" type="primary">
-						Open in Codesandbox
-					</Button>
-				) : null}
-
-				<Modal
-					title="Create a new Search Profile"
-					visible={showNewProfileModal}
-					onOk={this.handleSaveProfile}
-					onCancel={this.handleCancel}
-					destroyOnClose
+		return showHeader
+			? (
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row-reverse',
+						padding: '10px 20px 0',
+					}}
 				>
-					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
-						Set search profile name
-					</div>
-					<Input type="text" ref={this.profileInput} placeholder="Search Profile Name" />
-					{modalError ? <p style={{ color: 'tomato' }}>{modalError}</p> : null}
-				</Modal>
-			</div> : null
+					{isDashboard && showProfileOption ? (
+						<Dropdown overlay={menu} trigger={['click']}>
+							<Button size="large" style={{ marginLeft: 8 }}>
+								{`Search Profile - ${isUnsaved ? 'unsaved' : profile}`}{' '}
+								<Icon type="down" />
+							</Button>
+						</Dropdown>
+					) : null}
+					{showCodeSandbox ? (
+						<Button onClick={openSandbox} size="large" type="primary">
+							Open in Codesandbox
+						</Button>
+					) : null}
+
+					<Modal
+						title="Create a new Search Profile"
+						visible={showNewProfileModal}
+						onOk={this.handleSaveProfile}
+						onCancel={this.handleCancel}
+						destroyOnClose
+					>
+						<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
+							Set search profile name
+						</div>
+						<Input type="text" ref={this.profileInput} placeholder="Search Profile Name" />
+						{modalError ? <p style={{ color: 'tomato' }}>{modalError}</p> : null}
+					</Modal>
+				</div>
+			) : null;
 	}
 }
 
 Header.propTypes = {
+	isUnsaved: bool.isRequired,
 	isDashboard: bool.isRequired,
 	showCodeSandbox: bool.isRequired,
 	showProfileOption: bool.isRequired,

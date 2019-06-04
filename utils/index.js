@@ -119,9 +119,15 @@ export const parseSearchState = (searchState = {}) => {
 	const componentIds = {};
 	// Filter out the components
 	Object.keys(searchState).forEach(key => {
-		const { value, ...state } = searchState[key];
+		const { value, dataField, URLParams, ...state } = searchState[key];
 		// Change value to defaultValue
+		// Don't set URL params
 		state.defaultValue = value;
+		if (Array.isArray(dataField)) {
+			state.dataField = dataField.filter(i => !i.split('.')[1]);
+		} else if (typeof dataField === 'string') {
+			state.dataField = dataField.split('.')[0];
+		}
 		switch (state.componentType) {
 			case componentTypes.dataSearch:
 				searchProfile.search = state;

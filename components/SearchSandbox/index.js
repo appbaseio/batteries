@@ -138,16 +138,33 @@ class SearchSandbox extends Component {
 		});
 	};
 
-	savePreferences = () => {
-		const { isDashboard, appName, credentials } = this.props;
+	get isUnsaved() {
+		const { searchState } = this.props;
+		return !!searchState;
+	}
+
+	savePreferences = (forceUpdate) => {
+		const {
+			isDashboard, appName, clearProfile, credentials,
+		} = this.props;
 		const { profile, componentProps } = this.state;
+		const filteredProps = {};
+		Object.keys(componentProps).forEach((item) => {
+			const { defaultValue, value, ...state } = componentProps[item];
+			filteredProps[item] = state;
+		});
 		this.pref = {
 			...this.pref,
-			[profile]: componentProps,
+			[profile]: filteredProps,
 		};
 
-		if (isDashboard) {
-			setPreferences(appName, credentials, this.pref).catch(() => this.setLocalPref(this.pref));
+		if (isDashboard && (forceUpdate || !this.isUnsaved)) {
+			setPreferences(appName, credentials, this.pref)
+			.then(() => {
+				// clear saved profile after save
+				clearProfile();
+			})
+			.catch(() => this.setLocalPref(this.pref));
 		} else {
 			this.setLocalPref(this.pref);
 		}
@@ -168,6 +185,9 @@ class SearchSandbox extends Component {
 	};
 
 	setProfile = (profile) => {
+		const { clearProfile } = this.props;
+		// clear the saved profile when profile changes
+		clearProfile();
 		const componentProps = this.pref[profile] || {};
 		this.setState({
 			profile,
@@ -182,6 +202,9 @@ class SearchSandbox extends Component {
 		const { profileList } = this.state;
 
 		if (createEmpty) {
+			const { clearProfile } = this.props;
+			// clear when new profile being created
+			clearProfile();
 			this.setState(
 				{
 					profile,
@@ -193,7 +216,6 @@ class SearchSandbox extends Component {
 			);
 		} else {
 			const { componentProps } = this.state;
-
 			this.setState(
 				{
 					profile,
@@ -203,7 +225,7 @@ class SearchSandbox extends Component {
 					).length,
 					componentProps,
 				},
-				this.savePreferences,
+				() => this.savePreferences(true),
 			);
 		}
 	};
@@ -341,6 +363,7 @@ class SearchSandbox extends Component {
 			<SandboxContext.Provider value={contextValue}>
 				<div className={wrapper} key={profile}>
 					<Header
+						isUnsaved={this.isUnsaved}
 						isDashboard={isDashboard}
 						showCodeSandbox={showCodeSandbox}
 						showProfileOption
