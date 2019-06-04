@@ -117,6 +117,7 @@ export default class Header extends Component {
 			showProfileOption,
 			profileList,
 			openSandbox,
+			isUnsaved,
 		} = this.props;
 
 		const { profile, showNewProfileModal, modalError } = this.state;
@@ -126,18 +127,18 @@ export default class Header extends Component {
 				onClick={this.handleProfileChange}
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
-				{profileList.map(item => (
-					<Menu.Item key={item}>{item}</Menu.Item>
-				))}
-				<Menu.Divider />
-				<Menu.Item key={CREATE_NEW_PROFILE}>
-					<Icon type="plus" />
-					&nbsp; Create a New Profile
-				</Menu.Item>
 				<Menu.Item key={SAVE_AS_NEW_PROFILE}>
 					<Icon type="save" />
 					&nbsp; Save as New Profile
 				</Menu.Item>
+				<Menu.Item key={CREATE_NEW_PROFILE}>
+					<Icon type="plus" />
+					&nbsp; Create a New Profile
+				</Menu.Item>
+				<Menu.Divider />
+				{profileList.map(item => (
+					<Menu.Item key={item}>{item}</Menu.Item>
+				))}
 			</Menu>
 		);
 
@@ -169,7 +170,8 @@ export default class Header extends Component {
 				{isDashboard && showProfileOption ? (
 					<Dropdown overlay={menu} trigger={['click']}>
 						<Button size="large" style={{ marginLeft: 8 }}>
-							{`Search Profile - ${profile}`} <Icon type="down" />
+							{`Search Profile - ${isUnsaved ? 'unsaved' : profile}`}{' '}
+							<Icon type="down" />
 						</Button>
 					</Dropdown>
 				) : null}
@@ -198,6 +200,7 @@ export default class Header extends Component {
 }
 
 Header.propTypes = {
+	isUnsaved: bool.isRequired,
 	isDashboard: bool.isRequired,
 	showCodeSandbox: bool.isRequired,
 	showProfileOption: bool.isRequired,

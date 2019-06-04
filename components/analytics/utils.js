@@ -30,11 +30,11 @@ const replaySearch = [
 	{
 		title: 'Replay Search',
 		key: 'search_state',
-		width: '10%',
+		width: 125,
 		render: item => (
-			<Button onClick={() => item.handleReplaySearch(mockProfile)} type="primary">
-				Replay Search
-			</Button>
+			<div css="text-align: center">
+				<Button icon="redo" onClick={() => item.handleReplaySearch(mockProfile)} />
+			</div>
 		),
 	},
 ];
@@ -77,7 +77,7 @@ export const getTimeDuration = (time) => {
 		time: parseInt(timeInMs / 1000, 10),
 	};
 };
-export const popularFiltersCol = (plan) => {
+export const popularFiltersCol = (plan, displayReplaySearch) => {
 	const defaults = [
 		{
 			title: 'Filters',
@@ -93,18 +93,12 @@ export const popularFiltersCol = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan !== 'growth') {
+	if (!plan || (plan !== 'growth' && plan !== 'bootstrap')) {
 		return defaults;
 	}
-	return [
-		...defaults,
-		{
-			title: 'Click Rate',
-			dataIndex: 'clickrate',
-		},
-	];
+	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
-export const popularResultsCol = (plan) => {
+export const popularResultsCol = (plan, displayReplaySearch) => {
 	const defaults = [
 		{
 			title: 'Results',
@@ -115,16 +109,10 @@ export const popularResultsCol = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan !== 'growth') {
+	if (!plan || (plan !== 'growth' && plan !== 'bootstrap')) {
 		return defaults;
 	}
-	return [
-		...defaults,
-		{
-			title: 'Click Rate',
-			dataIndex: 'clickrate',
-		},
-	];
+	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
 export const defaultColumns = (plan) => {
 	const defaults = [
@@ -147,6 +135,13 @@ export const defaultColumns = (plan) => {
 			dataIndex: 'clickrate',
 		},
 	];
+};
+
+export const popularSearchesCol = (plan, displayReplaySearch) => {
+	if (plan !== 'growth' && plan !== 'bootstrap') {
+		return defaultColumns();
+	}
+	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
 };
 
 export const noResultsFull = (plan, displayReplaySearch) => {
@@ -284,7 +279,10 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 };
 export const popularFiltersFull = (plan, displayReplaySearch) => {
 	if (plan !== 'growth') {
-		return [...popularFiltersCol(plan), ...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : [])];
+		return [
+			...popularFiltersCol(plan),
+			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
+		];
 	}
 	return [
 		...popularFiltersCol('free'),
