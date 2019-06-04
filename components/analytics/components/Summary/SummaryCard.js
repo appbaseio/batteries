@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
-import Flex from '../../../shared/Flex';
 import { Tooltip, Button } from 'antd';
+import Flex from '../../../shared/Flex';
 
 const main = css`
 	height: 113px;
@@ -35,7 +35,9 @@ const countCls = css`
 	line-height: 49px;
 	text-align: center;
 `;
-const SummaryCard = ({ border, title, count, toolTipMessage }) => (
+const SummaryCard = ({
+ border, title, count, toolTipMessage,
+}) => (
 	<Flex
 		flexDirection="column"
 		justifyContent="center"
@@ -48,7 +50,7 @@ const SummaryCard = ({ border, title, count, toolTipMessage }) => (
 		<span css={countCls}>{count}</span>
 		{toolTipMessage && (
 			<Tooltip placement="rightTop" title={toolTipMessage}>
-				<Button className="tooltip" icon="question-circle"/>
+				<Button className="tooltip" icon="question-circle" />
 			</Tooltip>
 		)}
 	</Flex>
