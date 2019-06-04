@@ -22,8 +22,12 @@ class Summary extends React.Component {
 
 	render() {
 		const {
- isLoading, avgClickRate, avgConversionRate, totalSearches, toolTipMessages,
-} = this.props;
+			isLoading,
+			avgClickRate,
+			avgConversionRate,
+			totalSearches,
+			toolTipMessages,
+		} = this.props;
 		if (isLoading) {
 			return <Loader />;
 		}
@@ -42,7 +46,7 @@ class Summary extends React.Component {
 					border="#1A74FF"
 				/>
 				<SummaryCard
-					title="Conversion"
+					title="Average Conversion Rate"
 					toolTipMessage={toolTipMessages.conversion}
 					count={avgConversionRate}
 					border="#C944FF"
@@ -52,8 +56,8 @@ class Summary extends React.Component {
 	}
 }
 Summary.defaultProps = {
-	toolTipMessages: {}
-}
+	toolTipMessages: {},
+};
 Summary.propTypes = {
 	fetchAppAnalyticsSummary: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
