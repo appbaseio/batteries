@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
+import { withRouter } from 'react-router-dom';
 import Searches from './Searches';
-import { getNoResultSearches, exportCSVFile } from '../utils';
+import { getNoResultSearches, exportCSVFile, noResultsFull } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { getAppPlanByName } from '../../../modules/selectors';
+import { setSearchState } from '../../../modules/actions/app';
 
 const headers = {
 	key: 'Search Terms',
@@ -36,8 +38,21 @@ class NoResultsSearch extends React.Component {
 			});
 	}
 
+	handleReplaySearch = (searchState) => {
+		const {
+ saveState, history, appName, handleReplayClick,
+} = this.props;
+		saveState(searchState);
+		if (handleReplayClick) {
+			handleReplayClick(appName);
+		} else {
+			history.push(`/app/${appName}/search-preview`);
+		}
+	};
+
 	render() {
 		const { isFetching, noResults } = this.state;
+		const { displayReplaySearch, plan } = this.props;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -47,7 +62,11 @@ class NoResultsSearch extends React.Component {
 					scroll: { x: 700 },
 				}}
 				showViewOption={false}
-				dataSource={noResults}
+				dataSource={noResults.map(item => ({
+					...item,
+					handleReplaySearch: this.handleReplaySearch,
+				}))}
+				columns={noResultsFull(plan, displayReplaySearch)}
 				title="No Results Searches"
 				pagination={{
 					pageSize: 10,
@@ -65,9 +84,18 @@ class NoResultsSearch extends React.Component {
 		);
 	}
 }
+NoResultsSearch.defaultProps = {
+	handleReplayClick: undefined,
+	displayReplaySearch: false,
+};
+
 NoResultsSearch.propTypes = {
-	appName: PropTypes.string.isRequired,
 	plan: PropTypes.string.isRequired,
+	appName: PropTypes.string.isRequired,
+	displayReplaySearch: PropTypes.bool,
+	saveState: PropTypes.func.isRequired,
+	handleReplayClick: PropTypes.func,
+	history: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state) => {
 	const appPlan = getAppPlanByName(state);
@@ -76,4 +104,12 @@ const mapStateToProps = (state) => {
 		appName: get(state, '$getCurrentApp.name'),
 	};
 };
-export default connect(mapStateToProps)(NoResultsSearch);
+
+const mapDispatchToProps = dispatch => ({
+	saveState: state => dispatch(setSearchState(state)),
+});
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(withRouter(NoResultsSearch));

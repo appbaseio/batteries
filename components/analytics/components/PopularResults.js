@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import get from 'lodash/get';
 import Searches from './Searches';
 import { getPopularResults, popularResultsFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { getAppPlanByName } from '../../../modules/selectors';
+import { setSearchState } from '../../../modules/actions/app';
 
 const headers = {
 	key: 'Results',
@@ -41,9 +43,21 @@ class PopularResults extends React.Component {
 			});
 	}
 
+	handleReplaySearch = (searchState) => {
+		const {
+ saveState, history, appName, handleReplayClick,
+} = this.props;
+		saveState(searchState);
+		if (handleReplayClick) {
+			handleReplayClick(appName);
+		} else {
+			history.push(`/app/${appName}/search-preview`);
+		}
+	};
+
 	render() {
 		const { isFetching, popularResults } = this.state;
-		const { plan } = this.props;
+		const { plan, displayReplaySearch } = this.props;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -53,8 +67,11 @@ class PopularResults extends React.Component {
 					scroll: { x: 1000 },
 				}}
 				showViewOption={false}
-				columns={popularResultsFull(plan)}
-				dataSource={popularResults}
+				columns={popularResultsFull(plan, displayReplaySearch)}
+				dataSource={popularResults.map(item => ({
+					...item,
+					handleReplaySearch: this.handleReplaySearch,
+				}))}
 				title="Popular Results"
 				pagination={{
 					pageSize: 10,
@@ -77,9 +94,18 @@ class PopularResults extends React.Component {
 	}
 }
 
+PopularResults.defaultProps = {
+	handleReplayClick: undefined,
+	displayReplaySearch: false,
+};
+
 PopularResults.propTypes = {
 	plan: PropTypes.string.isRequired,
 	appName: PropTypes.string.isRequired,
+	displayReplaySearch: PropTypes.bool,
+	saveState: PropTypes.func.isRequired,
+	handleReplayClick: PropTypes.func,
+	history: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => {
@@ -89,4 +115,10 @@ const mapStateToProps = (state) => {
 		appName: get(state, '$getCurrentApp.name'),
 	};
 };
-export default connect(mapStateToProps)(PopularResults);
+const mapDispatchToProps = dispatch => ({
+	saveState: state => dispatch(setSearchState(state)),
+});
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(withRouter(PopularResults));
