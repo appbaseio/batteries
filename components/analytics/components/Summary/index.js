@@ -44,12 +44,14 @@ class Summary extends React.Component {
 					toolTipMessage={toolTipMessages.averageClickRate}
 					count={avgClickRate}
 					border="#1A74FF"
+					formatValue={value => `${value}%`}
 				/>
 				<SummaryCard
 					title="Average Conversion Rate"
 					toolTipMessage={toolTipMessages.conversion}
 					count={avgConversionRate}
 					border="#C944FF"
+					formatValue={value => `${value}%`}
 				/>
 			</Flex>
 		);
