@@ -129,7 +129,7 @@ export default class Header extends Component {
 			>
 				<Menu.Item key={SAVE_AS_NEW_PROFILE}>
 					<Icon type="save" />
-					&nbsp; Save as New Profile
+					&nbsp; Save as ...
 				</Menu.Item>
 				<Menu.Item key={CREATE_NEW_PROFILE}>
 					<Icon type="plus" />
