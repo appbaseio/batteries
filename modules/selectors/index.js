@@ -13,6 +13,7 @@ const appSearchLatency = state => get(state, '$getAppSearchLatency.results');
 const appGeoDistribution = state => get(state, '$getAppGeoDistribution.results');
 const appRequestDistribution = state => get(state, '$getAppRequestDistribution.results');
 const appAnalyticsSummary = state => get(state, '$getAppAnalyticsSummary.results');
+const appPublicKey = state => get(state, '$getAppPublicKey.results');
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
@@ -71,6 +72,12 @@ const getAppAnalyticsSummaryByName = createSelector(
 	appName,
 	getCollectionByKey,
 );
+
+const getAppPublicKey = createSelector(
+	appPublicKey,
+	appName,
+	getCollectionByKey,
+);
 export {
 	getRawMappingsByAppName,
 	getTraversedMappingsByAppName,
@@ -83,4 +90,5 @@ export {
 	getAppAnalyticsByName,
 	getAppPermissionsByName,
 	getAppPlanByName,
+	getAppPublicKey,
 };

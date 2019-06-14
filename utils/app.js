@@ -73,3 +73,30 @@ export const getAppMetrics = appId => new Promise((resolve, reject) => {
 			.then(data => resolve(data.body))
 			.catch(error => reject(error));
 	});
+
+export const getPublicKey = appId => new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/app/${appId}/public_key`, {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then(data => resolve(data.body))
+			.catch(error => reject(error));
+	});
+
+export const setPublicKey = (appId, key, role) => new Promise((resolve, reject) => {
+		fetch(`${ACC_API}/app/${appId}/public_key`, {
+			method: 'PUT',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ public_key: key, role_key: role }),
+		})
+			.then(res => res.json())
+			.then(data => resolve({ ...data.body, message: data.message }))
+			.catch(error => reject(error));
+	});
