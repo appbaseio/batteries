@@ -46,6 +46,7 @@ import {
 	promotionContainer,
 } from './styles';
 import ErrorModal from './ErrorModal';
+import { css } from 'emotion';
 
 const { TextArea } = Input;
 
@@ -55,6 +56,17 @@ const synonymMessage = () => (
 		offer editable synonym.
 	</div>
 );
+
+const orderedList = css`
+	padding-left: 0;
+	ol {
+		padding-left: 0;
+		margin-bottom: 15px;
+	}
+	h4,p {
+		margin-bottom: 0;
+	}
+`
 
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
@@ -533,7 +545,30 @@ class Synonyms extends Component {
 			<React.Fragment>
 				
 				<h2>Manage Synonyms</h2>
-				Add new synonyms or edit the existing ones.
+				<p>
+					Synonyms allow users to find relevant content the way they actually search for it. We support the following synonym definition formats:
+				</p>
+				<ul className={orderedList}>
+					<ol >
+						<h4>Equivalent Synonyms:</h4> 
+						<p>
+							Synonyms separated by commas that have the same meaning. Searching for any of these terms will search for all its associated synonyms as well.
+						</p>
+							<strong>Examples:</strong><br />
+							ipod, i-pod, i pod<br/>
+							foozball, foosball<br/>
+					</ol>
+					<ol >
+						<h4>Replacement Synonyms:</h4>
+						<p>
+							Search terms on the left hand side of `=>` are replaced by the terms on the right hand side.
+						</p>
+						<strong>Examples:</strong><br />
+						"u s a, united states, united states of america ⇒ usa"<br />
+						"cat, dog ⇒ pet"<br />
+					</ol>
+				</ul>
+
 				<TextArea
 					disabled={!this.state.editable}
 					name="synonyms"
