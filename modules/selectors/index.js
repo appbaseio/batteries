@@ -7,6 +7,7 @@ const traversedMappings = state => get(state, '$getAppMappings.traversedMappings
 const appPlan = state => get(state, '$getAppPlan.results');
 const appAnalytics = state => get(state, '$getAppAnalytics.results');
 const appPermission = state => get(state, '$getAppPermissions.results');
+const appTemplates = state => get(state, '$getAppTemplates.results');
 const appSearchLatency = state => get(state, '$getAppSearchLatency.results');
 const appGeoDistribution = state => get(state, '$getAppGeoDistribution.results');
 const appRequestDistribution = state => get(state, '$getAppRequestDistribution.results');
@@ -36,6 +37,11 @@ const getAppAnalyticsByName = createSelector(
 );
 const getAppPermissionsByName = createSelector(
 	appPermission,
+	appName,
+	getCollectionByKey,
+);
+const getAppTemplatesByName = createSelector(
+	appTemplates,
 	appName,
 	getCollectionByKey,
 );
@@ -69,4 +75,5 @@ export {
 	getAppAnalyticsByName,
 	getAppPermissionsByName,
 	getAppPlanByName,
+	getAppTemplatesByName,
 };

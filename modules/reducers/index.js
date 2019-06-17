@@ -59,6 +59,35 @@ export default {
 		AppConstants.ACCOUNT.UPDATE_USER_SUCCESS,
 		AppConstants.ACCOUNT.UPDATE_USER_ERROR,
 	),
+	$getAppTemplates: createRequestReducer(
+		AppConstants.APP.TEMPLATES.GET_ALL,
+		AppConstants.APP.TEMPLATES.GET_ALL_SUCCESS,
+		AppConstants.APP.TEMPLATES.GET_ALL_ERROR,
+		computeStateByAppName,
+	),
+	$getAppTemplate: createRequestReducer(
+		AppConstants.APP.TEMPLATES.GET,
+		AppConstants.APP.TEMPLATES.GET_SUCCESS,
+		AppConstants.APP.TEMPLATES.GET_ERROR,
+	),
+	$saveAppTemplate: createRequestReducer(
+		AppConstants.APP.TEMPLATES.UPDATE,
+		AppConstants.APP.TEMPLATES.UPDATE_SUCCESS,
+		AppConstants.APP.TEMPLATES.UPDATE_ERROR,
+	),
+	$deleteAppTemplate: createRequestReducer(
+		AppConstants.APP.TEMPLATES.DELETE,
+		AppConstants.APP.TEMPLATES.DELETE_SUCCESS,
+		AppConstants.APP.TEMPLATES.DELETE_ERROR,
+	),
+	$validateAppTemplate: createRequestReducer(
+		AppConstants.APP.TEMPLATES.VALIDATE,
+		AppConstants.APP.TEMPLATES.VALIDATE_SUCCESS,
+		AppConstants.APP.TEMPLATES.VALIDATE_ERROR,
+		undefined,
+		undefined,
+		AppConstants.APP.TEMPLATES.CLEAR_VALIDATE,
+	),
 	$getAppAnalytics: createRequestReducer(
 		AppConstants.APP.ANALYTICS.GET,
 		AppConstants.APP.ANALYTICS.GET_SUCCESS,

@@ -4,6 +4,7 @@
  * @param {Object} body
  * @param {Object} headers
  * @param {string} method
+ * @param {Array<Number>} allowedStatusCode
  */
 const createRequest = (
 	url,
@@ -13,6 +14,7 @@ const createRequest = (
 	},
 	method,
 	credentials = false,
+	allowedStatusCode,
 ) => new Promise((resolve, reject) => {
 		let status;
 		let authToken = null;
@@ -43,6 +45,9 @@ const createRequest = (
 				return res.json();
 			})
 			.then((data) => {
+				if (allowedStatusCode && allowedStatusCode.includes(status)) {
+					return resolve(data);
+				}
 				if (status >= 400) {
 					if (data.error) {
 						return reject(data.error);
@@ -77,7 +82,7 @@ export const doGet = (url, headers, credentials) => createRequest(url, undefined
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doPost = (url, body, headers, credentials) => createRequest(url, body, headers, 'POST', credentials);
+export const doPost = (url, body, headers, credentials, allowedStatusCode) => createRequest(url, body, headers, credentials, 'POST', allowedStatusCode);
 /**
  * To create a put request
  * @param {string} url
