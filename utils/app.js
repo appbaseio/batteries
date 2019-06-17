@@ -76,14 +76,19 @@ export const getAppMetrics = appId => new Promise((resolve, reject) => {
 
 export const getPublicKey = appId => new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appId}/public_key`, {
-			method: 'GET',
 			credentials: 'include',
+			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 		})
-			.then(res => res.json())
-			.then(data => resolve(data.body))
+			.then(async (res) => {
+				const data = await res.json();
+				if (res.status >= 400) {
+					reject(data);
+				}
+				resolve(data);
+			})
 			.catch(error => reject(error));
 	});
 
@@ -96,7 +101,12 @@ export const setPublicKey = (appId, key, role) => new Promise((resolve, reject) 
 			},
 			body: JSON.stringify({ public_key: key, role_key: role }),
 		})
-			.then(res => res.json())
-			.then(data => resolve({ ...data.body, message: data.message }))
+			.then(async (res) => {
+				const data = await res.json();
+				if (res.status >= 400) {
+					reject(data);
+				}
+				resolve({ ...data.body, message: data.message });
+			})
 			.catch(error => reject(error));
 	});

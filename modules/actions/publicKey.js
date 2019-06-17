@@ -13,11 +13,13 @@ export function getPublicKey(name) {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.PUBLIC_KEY.GET));
 		return fetchPublicKey(appName)
-			.then(res => dispatch(
+			.then((res) => {
+				dispatch(
 					createAction(AppConstants.APP.PUBLIC_KEY.GET_SUCCESS, res, null, {
 						appName,
 					}),
-				))
+				);
+			})
 			.catch(error => dispatch(createAction(AppConstants.APP.PUBLIC_KEY.GET_ERROR, null, error)));
 	};
 }
