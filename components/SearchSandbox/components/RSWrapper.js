@@ -181,10 +181,14 @@ class RSComponentRender extends Component {
 	};
 
 	renderFormItem = (item, name) => {
-		const { componentProps } = this.props;
+		const { componentProps, isShopify } = this.props;
 		let FormInput = null;
 		const value = componentProps[name] === undefined ? item.default : componentProps[name];
 		const placeholder = item.placeholder || '';
+
+		if(name === 'customSuggestions' && !isShopify) {
+			return null;
+		}
 
 		switch (item.input) {
 			case 'bool': {
