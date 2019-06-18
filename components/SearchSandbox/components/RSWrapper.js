@@ -135,7 +135,6 @@ class RSComponentRender extends Component {
 	};
 
 	setComponentProps = (newProps) => {
-		console.log(newProps)
 		const { componentProps } = this.state;
 		const newComponentProps = { ...componentProps, ...newProps };
 		this.setState({
