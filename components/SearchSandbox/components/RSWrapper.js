@@ -22,6 +22,7 @@ import {
  NumberInput, TextInput, DropdownInput, ToggleInput,
 } from '../../shared/Input';
 import { formWrapper } from '../styles';
+import HtmlEditor from '../../../../components/HtmlEditor';
 
 const componentMap = {
 	CategorySearch,
@@ -179,9 +180,14 @@ class RSComponentRender extends Component {
 	};
 
 	renderFormItem = (item, name) => {
-		const { componentProps } = this.props;
+		const { componentProps, isShopify } = this.props;
 		let FormInput = null;
 		const value = componentProps[name] === undefined ? item.default : componentProps[name];
+		const placeholder = item.placeholder || '';
+
+		if(name === 'customSuggestions' && !isShopify) {
+			return null;
+		}
 
 		switch (item.input) {
 			case 'bool': {
@@ -261,6 +267,14 @@ class RSComponentRender extends Component {
 						noOptionsMessage={noOptionsMessage}
 					/>
 				);
+				break;
+			}
+
+			case 'editor': {
+				const {componentProps: stateComponentProps} = this.state;
+				FormInput = (
+					<HtmlEditor name={name} height="250px" width="100%" value={stateComponentProps.customSuggestions || value || undefined} placeholder={placeholder} onChange={(value) => this.setComponentProps({[name]: value})} />
+				)
 				break;
 			}
 
