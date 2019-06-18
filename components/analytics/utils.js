@@ -2,7 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { Button } from 'antd';
-import mockProfile from './components/mockProfile';
+// import mockProfile from './components/mockProfile';
 import { ACC_API } from '../../utils';
 import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
@@ -33,7 +33,7 @@ const replaySearch = [
 		width: 125,
 		render: item => (
 			<div css="text-align: center">
-				<Button icon="redo" onClick={() => item.handleReplaySearch(mockProfile)} />
+				<Button disabled={!item.search_state} icon="redo" onClick={() => item.handleReplaySearch(item.search_state)} />
 			</div>
 		),
 	},
