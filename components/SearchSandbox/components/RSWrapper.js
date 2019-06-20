@@ -185,7 +185,7 @@ class RSComponentRender extends Component {
 		const value = componentProps[name] === undefined ? item.default : componentProps[name];
 		const placeholder = item.placeholder || '';
 
-		if(name === 'customSuggestions' && !isShopify) {
+		if(name === 'customSuggestions' || name === 'showDescription' && !isShopify) {
 			return null;
 		}
 
