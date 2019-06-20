@@ -22,7 +22,7 @@ import {
  NumberInput, TextInput, DropdownInput, ToggleInput,
 } from '../../shared/Input';
 import { formWrapper } from '../styles';
-import HtmlEditor from '../../../../components/HtmlEditor';
+import HtmlEditor from './HtmlEditor';
 
 const componentMap = {
 	CategorySearch,
