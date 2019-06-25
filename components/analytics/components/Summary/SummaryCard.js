@@ -14,8 +14,8 @@ const main = css`
 	position: relative;
 	.tooltip {
 		position: absolute;
-		top: 5px;
-		right: 5px;
+		top: 0;
+		right: 0;
 		font-size: 20px;
 		background: transparent;
 		border: transparent;
