@@ -34,6 +34,13 @@ export default {
 		input: 'bool',
 		default: true,
 	},
+	customSuggestions:{
+		label: 'Custom Suggestions',
+		description: 'Render Custom Suggestion in the Suggestion box.',
+		input :'editor',
+		default: '',
+		placeholder: 'Enter your Custom Suggestions'
+	},
 	size: {
 		label: 'Size',
 		description: 'Total number of suggestions to fetch (applicable if autosuggest is enabled).',

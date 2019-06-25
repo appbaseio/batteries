@@ -44,10 +44,10 @@ export default {
 		input: 'bool',
 		default: true,
 	},
-	stream: {
-		label: 'Stream',
-		description: 'Enable streaming of live result updates.',
+	showDescription: {
+		label: 'Show Product Description',
+		description: 'Show/hide product description in the card.',
 		input: 'bool',
-		default: false,
+		default: true,
 	},
 };
