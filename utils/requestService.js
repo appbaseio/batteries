@@ -5,6 +5,7 @@
  * @param {Object} headers
  * @param {string} credentials
  * @param {string} method
+ * @param {Array<Number>} allowedStatusCode
  */
 const createRequest = (
 	url,
@@ -14,6 +15,7 @@ const createRequest = (
 	},
 	credentials = 'include',
 	method,
+	allowedStatusCode,
 ) => new Promise((resolve, reject) => {
 		let status;
 		const requestOptions = JSON.parse(
@@ -35,6 +37,9 @@ const createRequest = (
 				return res.json();
 			})
 			.then((data) => {
+				if (allowedStatusCode && allowedStatusCode.includes(status)) {
+					return resolve(data);
+				}
 				if (status >= 400) {
 					return reject(data);
 				}
@@ -66,7 +71,7 @@ export const doGet = (url, headers, credentials) => createRequest(url, undefined
  * @param {Object} headers
  * @param {string} credentials
  */
-export const doPost = (url, body, headers, credentials) => createRequest(url, body, headers, credentials, 'POST');
+export const doPost = (url, body, headers, credentials, allowedStatusCode) => createRequest(url, body, headers, credentials, 'POST', allowedStatusCode);
 /**
  * To create a patch request
  * @param {string} url

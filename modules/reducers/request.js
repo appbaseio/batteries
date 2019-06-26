@@ -11,6 +11,7 @@ const createRequestReducer = (
 	errorAction,
 	extendSuccessState,
 	extendInitialState,
+	clearAction,
 ) => function request(state = initialState, action) {
 		const getExtendedState = (extendState) => {
 			if (typeof extendState === 'function') {
@@ -21,6 +22,9 @@ const createRequestReducer = (
 			}
 			return {};
 		};
+		if (clearAction && action.type === clearAction) {
+			return initialState;
+		}
 		switch (action.type) {
 			case requestAction:
 				return {
