@@ -152,5 +152,15 @@ export default {
 		AppConstants.APP.DELETE_SUBSCRIPTION_SUCCESS,
 		AppConstants.APP.DELETE_SUBSCRIPTION_ERROR,
 	),
+	$getAppPublicKey: createRequestReducer(
+		AppConstants.APP.PUBLIC_KEY.GET,
+		AppConstants.APP.PUBLIC_KEY.GET_SUCCESS,
+		AppConstants.APP.PUBLIC_KEY.GET_ERROR,
+	),
+	$updateAppPublicKey: createRequestReducer(
+		AppConstants.APP.PUBLIC_KEY.UPDATE,
+		AppConstants.APP.PUBLIC_KEY.UPDATE_SUCCESS,
+		AppConstants.APP.PUBLIC_KEY.UPDATE_ERROR,
+	),
 	$getCurrentApp: getCurrentApp,
 };
