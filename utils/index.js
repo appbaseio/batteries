@@ -1,10 +1,14 @@
 import get from 'lodash/get';
 import { doGet } from './requestService';
 
-export const ACC_API = 'https://accapi.appbase.io';
-export const SCALR_API = 'https://scalr.api.appbase.io';
-// export const ACC_API = 'https://accapi-staging.reactiveapps.io';
-// export const SCALR_API = 'https://api-staging.reactiveapps.io';
+export const isStaging = process.env.CONTEXT === 'deploy-preview';
+
+export const ACC_API = isStaging
+	? 'https://accapi-staging.reactiveapps.io'
+	: 'https://accapi.appbase.io';
+export const SCALR_API = isStaging
+	? 'https://api-staging.reactiveapps.io'
+	: 'https://scalr.api.appbase.io';
 
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
