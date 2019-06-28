@@ -14,8 +14,8 @@ const main = css`
 	position: relative;
 	.tooltip {
 		position: absolute;
-		top: 5px;
-		right: 5px;
+		top: 0;
+		right: 0;
 		font-size: 20px;
 		background: transparent;
 		border: transparent;
@@ -36,7 +36,7 @@ const countCls = css`
 	text-align: center;
 `;
 const SummaryCard = ({
- border, title, count, toolTipMessage,
+ border, title, count, toolTipMessage, formatValue,
 }) => (
 	<Flex
 		flexDirection="column"
@@ -47,7 +47,7 @@ const SummaryCard = ({
 		}}
 	>
 		<span css={titleCls}>{title}</span>
-		<span css={countCls}>{count}</span>
+		<span css={countCls}>{formatValue ? formatValue(count) : count}</span>
 		{toolTipMessage && (
 			<Tooltip placement="rightTop" title={toolTipMessage}>
 				<Button className="tooltip" icon="question-circle" />
@@ -58,9 +58,12 @@ const SummaryCard = ({
 SummaryCard.defaultProps = {
 	border: '#00f68e',
 	count: 0,
+	formatValue: undefined,
+	toolTipMessage: undefined,
 };
 SummaryCard.propTypes = {
 	border: PropTypes.string,
+	formatValue: PropTypes.func,
 	toolTipMessage: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	count: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),

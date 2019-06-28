@@ -356,6 +356,7 @@ class SearchSandbox extends Component {
 			customJoyrideSteps,
 			hideWalkthroughButtons,
 			showTutorial,
+			isShopify,
 		} = this.props;
 		const {
 			mappingsType, componentProps, filterCount, profile,
@@ -379,6 +380,7 @@ class SearchSandbox extends Component {
 			deleteComponent: this.deleteComponent,
 			showCodePreview,
 			showCustomList,
+			isShopify,
 		};
 
 		return (
@@ -433,6 +435,7 @@ SearchSandbox.propTypes = {
 	showProfileOption: PropTypes.bool,
 	showCustomList: PropTypes.bool,
 	showTutorial: PropTypes.bool,
+	isShopify: PropTypes.bool,
 };
 
 SearchSandbox.defaultProps = {
@@ -446,6 +449,7 @@ SearchSandbox.defaultProps = {
 	showCustomList: true,
 	isDashboard: false,
 	searchState: undefined,
+	isShopify: false,
 	url: SCALR_API,
 	useCategorySearch: false,
 	customJoyrideSteps: undefined,
