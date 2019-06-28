@@ -4,14 +4,9 @@ import { doGet } from './requestService';
 export const isStaging = process.env.CONTEXT === 'deploy-preview';
 
 // eslint-disable-next-line no-console
-console.log('build env values: ', process.env.CONTEXT, isStaging);
+console.log('build env values: ', process.env);
 
-export const ACC_API = isStaging
-	? 'https://accapi-staging.reactiveapps.io'
-	: 'https://accapi.appbase.io';
-export const SCALR_API = isStaging
-	? 'https://api-staging.reactiveapps.io'
-	: 'https://scalr.api.appbase.io';
+export const { ACC_API, SCALR_API } = process.env;
 
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
