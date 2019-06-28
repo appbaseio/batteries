@@ -4,7 +4,7 @@ import { doGet } from './requestService';
 export const isStaging = process.env.CONTEXT === 'deploy-preview';
 
 // eslint-disable-next-line no-console
-console.log('build env values: ', process.env.CONTEXT, isStaging);
+console.log('build env values: ', process.env, process.env.CONTEXT, isStaging);
 
 export const ACC_API = isStaging
 	? 'https://accapi-staging.reactiveapps.io'
