@@ -162,9 +162,15 @@ export function setCurrentApp(appName, appId) {
 }
 
 export function setSearchState(searchState) {
-	return createAction(AppConstants.APP.SET_SEARCH_STATE, {
-		searchState,
-	});
+	try {
+		return createAction(AppConstants.APP.SET_SEARCH_STATE, {
+			searchState: JSON.parse(searchState),
+		});
+	} catch (e) {
+		return createAction(AppConstants.APP.SET_SEARCH_STATE, {
+			searchState,
+		});
+	}
 }
 
 export function clearSearchState() {
