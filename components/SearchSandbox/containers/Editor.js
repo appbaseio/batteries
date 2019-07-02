@@ -213,7 +213,7 @@ export default class Editor extends Component {
 			</span>
 		);
 		return (
-			<ReactiveBase app={appName} credentials={credentials} url={url} analytics>
+			<ReactiveBase app={appName} credentials={credentials} url={url} analytics searchStateHeader>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
 						<Card title={title} id="video-title">
