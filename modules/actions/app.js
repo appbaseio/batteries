@@ -32,9 +32,10 @@ export function transferAppOwnership(id, info) {
  * To fetch app details
  * @param {string} appId
  */
-export function getAppInfo(appId, name) {
+export function getAppInfo(id, name) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		const appId = id || get(getState(), '$getCurrentApp.id', 'default');
 		dispatch(createAction(AppConstants.APP.GET_INFO));
 		return fetchAppInfo(appId)
 			.then(res => dispatch(
