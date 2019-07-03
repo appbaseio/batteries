@@ -1,6 +1,8 @@
 import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
+import { Button } from 'antd';
+// import mockProfile from './components/mockProfile';
 import { ACC_API } from '../../utils';
 import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
@@ -24,6 +26,18 @@ const getQueryParams = (paramObj) => {
 	});
 	return queryString;
 };
+const replaySearch = [
+	{
+		title: 'Replay Search',
+		key: 'search_state',
+		width: 125,
+		render: item => (
+			<div css="text-align: center">
+				<Button disabled={!item.search_state} icon="redo" onClick={() => item.handleReplaySearch(item.search_state)} />
+			</div>
+		),
+	},
+];
 export const getTimeDuration = (time) => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
@@ -63,7 +77,7 @@ export const getTimeDuration = (time) => {
 		time: parseInt(timeInMs / 1000, 10),
 	};
 };
-export const popularFiltersCol = (plan) => {
+export const popularFiltersCol = (plan, displayReplaySearch) => {
 	const defaults = [
 		{
 			title: 'Filters',
@@ -79,18 +93,12 @@ export const popularFiltersCol = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan !== 'growth') {
+	if (!plan || (plan !== 'growth' && plan !== 'bootstrap')) {
 		return defaults;
 	}
-	return [
-		...defaults,
-		{
-			title: 'Click Rate',
-			dataIndex: 'clickrate',
-		},
-	];
+	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
-export const popularResultsCol = (plan) => {
+export const popularResultsCol = (plan, displayReplaySearch) => {
 	const defaults = [
 		{
 			title: 'Results',
@@ -101,16 +109,10 @@ export const popularResultsCol = (plan) => {
 			dataIndex: 'count',
 		},
 	];
-	if (!plan || plan !== 'growth') {
+	if (!plan || (plan !== 'growth' && plan !== 'bootstrap')) {
 		return defaults;
 	}
-	return [
-		...defaults,
-		{
-			title: 'Click Rate',
-			dataIndex: 'clickrate',
-		},
-	];
+	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
 export const defaultColumns = (plan) => {
 	const defaults = [
@@ -134,6 +136,21 @@ export const defaultColumns = (plan) => {
 		},
 	];
 };
+
+export const popularSearchesCol = (plan, displayReplaySearch) => {
+	if (plan !== 'growth' && plan !== 'bootstrap') {
+		return defaultColumns();
+	}
+	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
+};
+
+export const noResultsFull = (plan, displayReplaySearch) => {
+	if (plan !== 'growth' && plan !== 'bootstrap') {
+		return defaultColumns();
+	}
+	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
+};
+
 export const ConvertToCSV = (objArray) => {
 	const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
 	let str = '';
@@ -183,9 +200,12 @@ export const exportCSVFile = (headers, items, fileTitle) => {
 	}
 };
 
-export const popularSearchesFull = (plan) => {
+export const popularSearchesFull = (plan, displayReplaySearch) => {
 	if (!plan || plan !== 'growth') {
-		return defaultColumns(plan);
+		return [
+			...defaultColumns(plan),
+			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
+		];
 	}
 	return [
 		...defaultColumns('free'),
@@ -205,9 +225,11 @@ export const popularSearchesFull = (plan) => {
 			title: 'Conversion Rate',
 			dataIndex: 'conversionrate',
 		},
+		...(displayReplaySearch ? replaySearch : []),
 	];
 };
-export const popularResultsFull = (plan) => {
+
+export const popularResultsFull = (plan, displayReplaySearch) => {
 	if (plan !== 'growth') {
 		return [
 			...popularResultsCol(plan),
@@ -216,8 +238,12 @@ export const popularResultsFull = (plan) => {
 				dataIndex: 'source',
 				key: 'source',
 				width: '30%',
+				style: {
+					maxWidth: 250,
+				},
 				render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
 			},
+			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
 		];
 	}
 	return [
@@ -241,6 +267,7 @@ export const popularResultsFull = (plan) => {
 			dataIndex: 'conversionrate',
 			key: 'conversionrate',
 		},
+		...(displayReplaySearch ? replaySearch : []),
 		{
 			title: 'Source',
 			dataIndex: 'source',
@@ -250,9 +277,12 @@ export const popularResultsFull = (plan) => {
 		},
 	];
 };
-export const popularFiltersFull = (plan) => {
+export const popularFiltersFull = (plan, displayReplaySearch) => {
 	if (plan !== 'growth') {
-		return popularFiltersCol(plan);
+		return [
+			...popularFiltersCol(plan),
+			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
+		];
 	}
 	return [
 		...popularFiltersCol('free'),
@@ -275,6 +305,7 @@ export const popularFiltersFull = (plan) => {
 			dataIndex: 'conversionrate',
 			key: 'conversionrate',
 		},
+		...(displayReplaySearch ? replaySearch : []),
 	];
 };
 export const requestLogs = [

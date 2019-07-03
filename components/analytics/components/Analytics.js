@@ -3,7 +3,9 @@ import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
 import Flex from '../../shared/Flex';
-import { popularFiltersCol, popularResultsCol } from '../utils';
+import {
+ popularFiltersCol, popularResultsCol, popularSearchesCol, noResultsFull,
+} from '../utils';
 import { getFilteredResults } from '../../../utils/heplers';
 import { mediaKey } from '../../../utils/media';
 import Searches from './Searches';
@@ -49,7 +51,9 @@ const Analytics = ({
 	plan,
 	loading,
 	onClickViewAll,
-	toolTipMessages
+	toolTipMessages,
+	displayReplaySearch,
+	handleReplaySearch,
 }) => {
 	if (loading) {
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
@@ -73,9 +77,12 @@ const Analytics = ({
 				<div css={searchCls}>
 					<Searches
 						href="popular-searches"
-						dataSource={getFilteredResults(popularSearches)}
+						dataSource={getFilteredResults(popularSearches).map(item => ({
+							...item,
+							handleReplaySearch,
+						}))}
+						columns={popularSearchesCol(plan, displayReplaySearch)}
 						title="Popular Searches"
-						plan={plan}
 						css="height: 100%"
 						onClickViewAll={(onClickViewAll && onClickViewAll.popularSearches) || null}
 					/>
@@ -83,7 +90,11 @@ const Analytics = ({
 				<div css={noResultsCls}>
 					<Searches
 						href="no-results-searches"
-						dataSource={getFilteredResults(noResults)}
+						dataSource={getFilteredResults(noResults).map(item => ({
+							...item,
+							handleReplaySearch,
+						}))}
+						columns={noResultsFull(plan, displayReplaySearch)}
 						title="No Result Searches"
 						css="height: 100%"
 						onClickViewAll={(onClickViewAll && onClickViewAll.noResultsSearch) || null}
@@ -95,8 +106,11 @@ const Analytics = ({
 					<Flex css={results}>
 						<div css={searchCls}>
 							<Searches
-								dataSource={getFilteredResults(popularResults)}
-								columns={popularResultsCol(plan)}
+								dataSource={getFilteredResults(popularResults).map(item => ({
+									...item,
+									handleReplaySearch,
+								}))}
+								columns={popularResultsCol(plan, displayReplaySearch)}
 								title="Popular Results"
 								href="popular-results"
 								css="height: 100%"
@@ -107,8 +121,11 @@ const Analytics = ({
 						</div>
 						<div css={noResultsCls}>
 							<Searches
-								dataSource={getFilteredResults(popularFilters)}
-								columns={popularFiltersCol(plan)}
+								dataSource={getFilteredResults(popularFilters).map(item => ({
+									...item,
+									handleReplaySearch,
+								}))}
+								columns={popularFiltersCol(plan, displayReplaySearch)}
 								title="Popular Filters"
 								href="popular-filters"
 								css="height: 100%"
@@ -140,6 +157,7 @@ Analytics.defaultProps = {
 	popularResults: [],
 	popularFilters: [],
 	onClickViewAll: null,
+	displayReplaySearch: false,
 };
 Analytics.propTypes = {
 	onClickViewAll: PropTypes.shape({
@@ -149,9 +167,11 @@ Analytics.propTypes = {
 		noResultsSearch: PropTypes.func,
 	}),
 	loading: PropTypes.bool,
+	displayReplaySearch: PropTypes.bool,
 	noResults: PropTypes.array,
 	popularSearches: PropTypes.array,
 	plan: PropTypes.string.isRequired,
+	handleReplaySearch: PropTypes.func.isRequired,
 	searchVolume: PropTypes.array,
 	popularResults: PropTypes.array,
 	popularFilters: PropTypes.array,

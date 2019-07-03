@@ -16,6 +16,7 @@ import { getAppMappings as getMappings, clearSearchState } from '../../modules/a
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import joyrideSteps from './utils/joyrideSteps';
 
+
 const wrapper = css`
 	padding: 15px;
 `;
@@ -158,11 +159,11 @@ class SearchSandbox extends Component {
 
 		if (isDashboard && (forceUpdate || !this.isUnsaved)) {
 			setPreferences(appName, this.pref)
-				.then(() => {
-					// clear saved profile after save
-					clearProfile();
-				})
-				.catch(() => this.setLocalPref(this.pref));
+			.then(() => {
+				// clear saved profile after save
+				clearProfile();
+			})
+			.catch(() => this.setLocalPref(this.pref));
 		} else {
 			this.setLocalPref(this.pref);
 		}

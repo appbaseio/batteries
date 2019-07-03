@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
+import { withRouter } from 'react-router-dom';
 import Searches from './Searches';
 import { getPopularFilters, popularFiltersFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
+import { setSearchState } from '../../../modules/actions/app';
 import { getAppPlanByName } from '../../../modules/selectors';
 
 const headers = {
@@ -40,9 +42,21 @@ class PopularFilters extends React.Component {
 			});
 	}
 
+	handleReplaySearch = (searchState) => {
+		const {
+ saveState, history, appName, handleReplayClick,
+} = this.props;
+		saveState(searchState);
+		if (handleReplayClick) {
+			handleReplayClick(appName);
+		} else {
+			history.push(`/app/${appName}/search-preview`);
+		}
+	};
+
 	render() {
 		const { isFetching, popularFilters } = this.state;
-		const { plan } = this.props;
+		const { plan, displayReplaySearch } = this.props;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -52,8 +66,11 @@ class PopularFilters extends React.Component {
 					scroll: { x: 700 },
 				}}
 				showViewOption={false}
-				columns={popularFiltersFull(plan)}
-				dataSource={popularFilters}
+				columns={popularFiltersFull(plan, displayReplaySearch)}
+				dataSource={popularFilters.map(item => ({
+					...item,
+					handleReplaySearch: this.handleReplaySearch,
+				}))}
 				title="Popular Filters"
 				pagination={{
 					pageSize: 10,
@@ -74,9 +91,19 @@ class PopularFilters extends React.Component {
 		);
 	}
 }
+
+PopularFilters.defaultProps = {
+	handleReplayClick: undefined,
+	displayReplaySearch: false,
+};
+
 PopularFilters.propTypes = {
 	plan: PropTypes.string.isRequired,
 	appName: PropTypes.string.isRequired,
+	displayReplaySearch: PropTypes.bool,
+	saveState: PropTypes.func.isRequired,
+	handleReplayClick: PropTypes.func,
+	history: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => {
@@ -86,4 +113,12 @@ const mapStateToProps = (state) => {
 		appName: get(state, '$getCurrentApp.name'),
 	};
 };
-export default connect(mapStateToProps)(PopularFilters);
+
+const mapDispatchToProps = dispatch => ({
+	saveState: state => dispatch(setSearchState(state)),
+});
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(withRouter(PopularFilters));
