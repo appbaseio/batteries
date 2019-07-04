@@ -38,6 +38,10 @@ export function getComponentCode(config) {
 				...config.customProps,
 				renderItem: '{renderItem}',
 			};
+
+			// To make sure that saved preferences dont show up stream
+			delete allProps.stream;
+
 			componentStyle = { marginTop: 20 };
 			break;
 		}
