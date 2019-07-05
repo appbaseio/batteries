@@ -38,6 +38,7 @@ export function getComponentCode(config) {
 				...config.customProps,
 				renderItem: '{renderItem}',
 			};
+			delete allProps.stream;
 			componentStyle = { marginTop: 20 };
 			break;
 		}

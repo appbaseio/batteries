@@ -44,10 +44,4 @@ export default {
 		input: 'bool',
 		default: true,
 	},
-	stream: {
-		label: 'Stream',
-		description: 'Enable streaming of live result updates.',
-		input: 'bool',
-		default: false,
-	},
 };
