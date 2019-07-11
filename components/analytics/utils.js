@@ -348,7 +348,7 @@ const getAuthToken = () => {
 	return token;
 };
 
-const getApp = (app) => {
+export const getApp = (app) => {
 	if (window.location.pathname.startsWith('/cluster/')) return '';
 	return `${app}/`;
 };

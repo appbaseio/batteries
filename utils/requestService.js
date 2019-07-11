@@ -82,7 +82,7 @@ export const doGet = (url, headers, credentials) => createRequest(url, undefined
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doPost = (url, body, headers, credentials, allowedStatusCode) => createRequest(url, body, headers, credentials, 'POST', allowedStatusCode);
+export const doPost = (url, body, headers, credentials, allowedStatusCode) => createRequest(url, body, headers, 'POST', credentials, allowedStatusCode);
 /**
  * To create a put request
  * @param {string} url
