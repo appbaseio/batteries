@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 
 import Header from './components/Header';
 import Walkthrough from '../shared/Walkthrough';
-import { getMappingsTree } from '../../utils/mappings';
+import { getMappingsTree, getESVersion } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import getSearchTemplate, { getTemplateStyles } from './template';
 import { getAppMappings as getMappings } from '../../modules/actions';
@@ -35,15 +35,16 @@ class SearchSandbox extends Component {
 			filterCount: 0,
 			componentProps: {},
 			loading: true,
+			version: null,
 		};
 	}
 
 	static getDerivedStateFromProps(props, state) {
 		const { mappings } = props;
-		if (!state.mappings && mappings) {
+		if (!state.mappings && mappings && state.version) {
 			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
 			return {
-				mappings: getMappingsTree(mappings),
+				mappings: getMappingsTree(mappings, state.version),
 				mappingsType,
 			};
 		}
@@ -51,7 +52,7 @@ class SearchSandbox extends Component {
 		return null;
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const { appName, isDashboard } = this.props;
 		const { profileList: profileListState, profile } = this.state;
 		// if (isDashboard) {
@@ -81,6 +82,10 @@ class SearchSandbox extends Component {
 		const { mappings, isFetchingMapping, url } = this.props;
 
 		const { credentials, getAppMappings } = this.props;
+		const version = await getESVersion(appName, credentials);
+		this.setState({
+			version,
+		});
 		getAppMappings(appName, credentials, url);
 	}
 

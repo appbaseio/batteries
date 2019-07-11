@@ -265,10 +265,14 @@ class Mappings extends Component {
 
 			if ((!mapping || !mapping.properties) && +esVersion >= 7) {
 				// Default Value for Version 7 Mappings
-				mapping = { properties: { } };
+				mapping = { properties: {} };
 			}
 
-			if ((!mapping || !mapping._doc || !mapping._doc.properties) && +esVersion >= 6 && +esVersion < 7) {
+			if (
+				(!mapping || !mapping._doc || !mapping._doc.properties)
+				&& +esVersion >= 6
+				&& +esVersion < 7
+			) {
 				// Default Value for Version 6 Mappings
 				mapping = { _doc: { properties: {} } };
 			}
@@ -398,7 +402,7 @@ class Mappings extends Component {
 				...newUsecase,
 			};
 		} else {
-				fields.reduce((acc, val, index) => {
+			fields.reduce((acc, val, index) => {
 				if (index === fields.length - 1) {
 					acc[val] = {
 						type,
@@ -633,7 +637,7 @@ class Mappings extends Component {
 		return (
 			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
-					{selectedOption.label || value}
+					{(selectedOption && selectedOption.label) || value}
 					<Icon type="down" />
 				</Button>
 			</Dropdown>
@@ -647,18 +651,17 @@ class Mappings extends Component {
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>{type}</span>
 						{this.state.esVersion < 6 && (
-								<a
-									type="danger"
-									size="small"
-									onClick={() => {
-										this.deletePath(address, true);
-									}}
-								>
-									<Icon type="delete" />
-									Delete
-								</a>
-							)
-						}
+							<a
+								type="danger"
+								size="small"
+								onClick={() => {
+									this.deletePath(address, true);
+								}}
+							>
+								<Icon type="delete" />
+								Delete
+							</a>
+						)}
 					</h4>
 					{Object.keys(fields).map((field) => {
 						if (fields[field].properties) {
@@ -705,7 +708,9 @@ class Mappings extends Component {
 									</span>
 									<a
 										onClick={() => {
-											const addressField = +this.state.esVersion >= 7 ? `properties.${field}` : `${address}.${field}`;
+											const addressField =												+this.state.esVersion >= 7
+													? `properties.${field}`
+													: `${address}.${field}`;
 											this.deletePath(addressField);
 										}}
 									>
@@ -945,8 +950,13 @@ class Mappings extends Component {
 								const fieldName = `${field}.properties`;
 
 								if (+this.state.esVersion >= 7) {
+									if (field !== 'properties') {
+										return null;
+									}
 									currentMappingFields = this.state.mapping[field];
-									originalMappingFields = this.originalMapping[field] ? this.originalMapping[field] : this.state.mapping[field];
+									originalMappingFields = this.originalMapping[field]
+										? this.originalMapping[field]
+										: this.state.mapping[field];
 								}
 
 								return this.renderMapping(
