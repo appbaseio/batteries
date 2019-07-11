@@ -799,6 +799,7 @@ class Mappings extends Component {
 						credentials,
 						updatedMappings[activeType[0]],
 						activeType[0],
+						this.state.esVersion,
 					).then(({ acknowledged }) => {
 						if (acknowledged) {
 							message.success('Synonyms Updated');
@@ -885,7 +886,7 @@ class Mappings extends Component {
 								<p>Add new synonyms or edit the existing ones.</p>
 							</div>
 							<Button type="primary" onClick={this.handleSynonymModal}>
-								{this.state.synonyms ? 'Edit' : 'Add'} Synonym
+								{this.state.synonyms ? 'Edit Synonym' : 'Add Synonym'}
 							</Button>
 </div>
 )}

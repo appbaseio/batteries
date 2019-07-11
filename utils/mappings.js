@@ -44,7 +44,30 @@ export function getMappings(appName, credentials, url = getURL()) {
 	});
 }
 
-export function putMapping(appName, credentials, mappings, type, url = getURL()) {
+export function putMapping(appName, credentials, mappings, type, version, url = getURL()) {
+	if (+version >= 7) {
+		return new Promise((resolve, reject) => {
+			fetch(`${url}/${appName}/_mapping`, {
+				method: 'PUT',
+				headers: {
+					...getAuthHeaders(credentials),
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					properties: {
+						...mappings,
+					},
+				}),
+			})
+				.then(res => res.json())
+				.then((data) => {
+					resolve(data);
+				})
+				.catch((e) => {
+					reject(e);
+				});
+		});
+	}
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_mapping/${type}`, {
 			method: 'PUT',
@@ -206,7 +229,7 @@ export async function getESVersion(appName, credentials) {
  * @returns Boolean
  */
 
- const checkVersion7 = (mappings = {}) => Object.keys(mappings).length === 1 && Object.keys(mappings).includes('properties');
+const checkVersion7 = (mappings = {}) => Object.keys(mappings).includes('properties');
 
 export function reIndex(
 	mappings,
@@ -459,7 +482,7 @@ function getFieldsTree(mappings = {}, prefix = null) {
 export function getMappingsTree(mappings = {}) {
 	let tree = {};
 
-	if(checkVersion7(mappings)) {
+	if (checkVersion7(mappings)) {
 		// For Elasticsearch version 7
 		if (mappings.properties) {
 			tree = {
