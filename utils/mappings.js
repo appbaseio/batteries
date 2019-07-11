@@ -186,7 +186,7 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 	if (version >= 7) {
 		delete body.type;
 		const { properties, ...rest } = mappings;
-		body.mappings = { properties: { ...properties, ...rest } };
+		body.mappings = { properties: { ...properties }, ...rest };
 	}
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${appName}/reindex`, {
@@ -358,15 +358,20 @@ export function updateMappingES7(mapping, field, type, usecase) {
  * @returns Boolean
  */
 
-const checkVersion7 = (mappings = {}) => Object.keys(mappings).length === 1 && Object.keys(mappings).includes('properties');
+const getVersion = async (appName) => {
+	const esVersion = await getESVersion(appName);
+	return +esVersion.split('.')[0];
+};
 
 /**
  * Traverse the mappings object & returns the fields (leaf)
  * @param {Object} mappings
  * @returns {{ [key: string]: Array<string> }}
  */
-export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
+export async function traverseMapping(mappings = {}, appName, returnOnlyLeafFields = false) {
 	const fieldObject = {};
+	const version = await getVersion(appName);
+
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
 		const setFields = (mp, prefix = '') => {
@@ -387,7 +392,7 @@ export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 		};
 		setFields(m);
 	};
-	if (checkVersion7(mappings)) {
+	if (version >= 7) {
 		checkIfPropertyPresent(mappings, 'properties');
 	} else {
 		Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
@@ -424,10 +429,9 @@ function getFieldsTree(mappings = {}, prefix = null) {
  * @param {Object} mappings
  * @param {String} prefix
  */
-export function getMappingsTree(mappings = {}) {
+export function getMappingsTree(mappings = {}, version) {
 	let tree = {};
-
-	if (checkVersion7(mappings)) {
+	if (version >= 7) {
 		// For Elasticsearch version 7
 		if (mappings.properties) {
 			tree = {

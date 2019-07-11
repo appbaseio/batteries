@@ -697,7 +697,7 @@ class Mappings extends Component {
 		return (
 			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
-					{selectedOption.label || value}
+					{(selectedOption && selectedOption.label) || value}
 					<Icon type="down" />
 				</Button>
 			</Dropdown>
@@ -1069,7 +1069,13 @@ class Mappings extends Component {
 									: mapping[field].properties;
 								const fieldName = `${field}.properties`;
 
+
 								if (+this.state.esVersion >= 7) {
+
+									if (field !== 'properties') {
+										return null;
+									}
+
 									currentMappingFields = mapping[field];
 									originalMappingFields = this.originalMapping[field] ? this.originalMapping[field] : mapping[field];
 								}

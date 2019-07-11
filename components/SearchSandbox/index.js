@@ -16,7 +16,6 @@ import { getAppMappings as getMappings, clearSearchState } from '../../modules/a
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import joyrideSteps from './utils/joyrideSteps';
 
-
 const wrapper = css`
 	padding: 15px;
 `;
@@ -43,10 +42,10 @@ class SearchSandbox extends Component {
 
 	static getDerivedStateFromProps(props, state) {
 		const { mappings } = props;
-		if (!state.mappings && mappings) {
+		if (!state.mappings && mappings && props.version) {
 			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
 			return {
-				mappings: getMappingsTree(mappings),
+				mappings: getMappingsTree(mappings, props.version),
 				mappingsType,
 			};
 		}
@@ -86,11 +85,13 @@ class SearchSandbox extends Component {
 			this.getLocalPref();
 		}
 
-		const { mappings, isFetchingMapping, url } = this.props;
+		const {
+			mappings, isFetchingMapping, url, version,
+		} = this.props; // prettier-ignore
 		if (mappings) {
 			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
 			this.setState({
-				mappings: getMappingsTree(mappings),
+				mappings: getMappingsTree(mappings, version),
 				mappingsType,
 			});
 		} else if (!isFetchingMapping) {
@@ -159,11 +160,11 @@ class SearchSandbox extends Component {
 
 		if (isDashboard && (forceUpdate || !this.isUnsaved)) {
 			setPreferences(appName, this.pref)
-			.then(() => {
-				// clear saved profile after save
-				clearProfile();
-			})
-			.catch(() => this.setLocalPref(this.pref));
+				.then(() => {
+					// clear saved profile after save
+					clearProfile();
+				})
+				.catch(() => this.setLocalPref(this.pref));
 		} else {
 			this.setLocalPref(this.pref);
 		}
@@ -427,6 +428,7 @@ SearchSandbox.propTypes = {
 	getAppMappings: PropTypes.func.isRequired,
 	clearProfile: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
+	version: PropTypes.string.isRequired,
 	searchState: PropTypes.object,
 	customJoyrideSteps: PropTypes.array,
 	customProps: PropTypes.object,
@@ -456,13 +458,17 @@ SearchSandbox.defaultProps = {
 	customProps: {},
 };
 
-const mapStateToProps = state => ({
-	appId: get(state, '$getCurrentApp.id'),
-	appName: get(state, '$getCurrentApp.name'),
-	mappings: getRawMappingsByAppName(state) || null,
-	isFetchingMapping: get(state, '$getAppMappings.isFetching'),
-	searchState: get(state, '$getSearchState.parsedSearchState'),
-});
+const mapStateToProps = (state) => {
+	const appName = get(state, '$getCurrentApp.name');
+	return {
+		appId: get(state, '$getCurrentApp.id'),
+		appName,
+		mappings: getRawMappingsByAppName(state) || null,
+		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
+		searchState: get(state, '$getSearchState.parsedSearchState'),
+		version: get(state, `$getAppInfo.apps[${appName}].es_version`),
+	};
+};
 
 const mapDispatchToProps = dispatch => ({
 	getAppMappings: (appName, credentials, url) => {
