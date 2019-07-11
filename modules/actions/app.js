@@ -42,7 +42,10 @@ export function getAppMappings(appName, credentials, url) {
 		dispatch(createAction(AppConstants.APP.GET_MAPPINGS));
 		return getMappings(appName, credentials, url)
 			.then(res => dispatch(
-					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, { appName }),
+					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, {
+						appName,
+						credentials,
+					}),
 				))
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_MAPPINGS_ERROR, null, error)));
 	};

@@ -44,7 +44,30 @@ export function getMappings(appName, credentials, url = getURL()) {
 	});
 }
 
-export function putMapping(appName, credentials, mappings, type, url = getURL()) {
+export function putMapping(appName, credentials, mappings, type, version, url = getURL()) {
+	if (+version >= 7) {
+		return new Promise((resolve, reject) => {
+			fetch(`${url}/${appName}/_mapping`, {
+				method: 'PUT',
+				headers: {
+					...getAuthHeaders(credentials),
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					properties: {
+						...mappings,
+					},
+				}),
+			})
+				.then(res => res.json())
+				.then((data) => {
+					resolve(data);
+				})
+				.catch((e) => {
+					reject(e);
+				});
+		});
+	}
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_mapping/${type}`, {
 			method: 'PUT',
@@ -196,17 +219,8 @@ export async function getESVersion(appName, credentials) {
 	if (response.status >= 400) {
 		throw new Error(data);
 	}
-
-	return data.version.number;
+	return data.version.number.split('.')[0];
 }
-
-/**
- *
- * @param {*} mappings
- * @returns Boolean
- */
-
- const checkVersion7 = (mappings = {}) => Object.keys(mappings).length === 1 && Object.keys(mappings).includes('properties');
 
 export function reIndex(
 	mappings,
@@ -227,7 +241,7 @@ export function reIndex(
 	if (version >= 7) {
 		delete body.type;
 		const { properties, ...rest } = mappings;
-		body.mappings = { properties: { ...properties, ...rest } };
+		body.mappings = { properties: { ...properties }, ...rest };
 	}
 
 	return new Promise((resolve, reject) => {
@@ -397,8 +411,14 @@ export function updateMappingES7(mapping, field, type, usecase) {
  * @param {Object} mappings
  * @returns {{ [key: string]: Array<string> }}
  */
-export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
+export async function traverseMapping(
+	mappings = {},
+	appName,
+	credentials,
+	returnOnlyLeafFields = false,
+) {
 	const fieldObject = {};
+	const version = await getESVersion(appName, credentials);
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
 		const setFields = (mp, prefix = '') => {
@@ -419,7 +439,7 @@ export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 		};
 		setFields(m);
 	};
-	if (checkVersion7(mappings)) {
+	if (+version >= 7) {
 		checkIfPropertyPresent(mappings, 'properties');
 	} else {
 		Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
@@ -456,10 +476,9 @@ function getFieldsTree(mappings = {}, prefix = null) {
  * @param {Object} mappings
  * @param {String} prefix
  */
-export function getMappingsTree(mappings = {}) {
+export function getMappingsTree(mappings = {}, version) {
 	let tree = {};
-
-	if(checkVersion7(mappings)) {
+	if (+version >= 7) {
 		// For Elasticsearch version 7
 		if (mappings.properties) {
 			tree = {
