@@ -358,9 +358,12 @@ export function updateMappingES7(mapping, field, type, usecase) {
  * @returns Boolean
  */
 
-const getVersion = async (appName) => {
-	const esVersion = await getESVersion(appName);
-	return +esVersion.split('.')[0];
+const getVersion = async (appName, credentials, url) => {
+	const settings = await getSettings(appName, credentials, url);
+	const fullVersion = settings[appName].settings.index.version.upgraded
+			|| settings[appName].settings.index.version.created; // prettier-ignore
+	const version = fullVersion.charAt(0);
+	return +version;
 };
 
 /**
@@ -368,10 +371,15 @@ const getVersion = async (appName) => {
  * @param {Object} mappings
  * @returns {{ [key: string]: Array<string> }}
  */
-export async function traverseMapping(mappings = {}, appName, returnOnlyLeafFields = false) {
+export async function traverseMapping(
+	mappings = {},
+	appName,
+	credentials,
+	url,
+	returnOnlyLeafFields = false,
+) {
 	const fieldObject = {};
-	const version = await getVersion(appName);
-
+	const version = await getVersion(appName, credentials, url);
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
 		const setFields = (mp, prefix = '') => {

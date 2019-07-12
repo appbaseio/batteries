@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 
 import Header from './components/Header';
 import Walkthrough from '../shared/Walkthrough';
-import { getMappingsTree } from '../../utils/mappings';
+import { getMappingsTree, getSettings } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
@@ -37,15 +37,16 @@ class SearchSandbox extends Component {
 				item => item !== 'search' && item !== 'result',
 			).length,
 			loading: true,
+			version: null,
 		};
 	}
 
 	static getDerivedStateFromProps(props, state) {
 		const { mappings } = props;
-		if (!state.mappings && mappings && props.version) {
+		if (!state.mappings && mappings && state.version) {
 			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
 			return {
-				mappings: getMappingsTree(mappings, props.version),
+				mappings: getMappingsTree(mappings, state.version),
 				mappingsType,
 			};
 		}
@@ -53,7 +54,7 @@ class SearchSandbox extends Component {
 		return null;
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const { appName, isDashboard, searchState } = this.props;
 		const { profileList: profileListState, profile } = this.state;
 		if (isDashboard) {
@@ -86,8 +87,17 @@ class SearchSandbox extends Component {
 		}
 
 		const {
-			mappings, isFetchingMapping, url, version,
+			mappings, isFetchingMapping, url, credentials,
 		} = this.props; // prettier-ignore
+
+		const settings = await getSettings(appName, credentials, url);
+		const fullVersion = settings[appName].settings.index.version.upgraded
+			|| settings[appName].settings.index.version.created; // prettier-ignore
+		const version = fullVersion.charAt(0);
+		this.setState({
+			version,
+		});
+
 		if (mappings) {
 			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
 			this.setState({
@@ -95,7 +105,7 @@ class SearchSandbox extends Component {
 				mappingsType,
 			});
 		} else if (!isFetchingMapping) {
-			const { credentials, getAppMappings } = this.props;
+			const { getAppMappings } = this.props;
 			getAppMappings(appName, credentials, url);
 		}
 	}
@@ -271,9 +281,9 @@ class SearchSandbox extends Component {
 
 	openSandbox = () => {
 		const {
-			appId, appName, url, credentials, attribution, customProps, version
+			appId, appName, url, credentials, attribution, customProps,
 		} = this.props; // prettier-ignore
-		const { componentProps, mappings } = this.state;
+		const { componentProps, mappings, version } = this.state;
 		const config = {
 			appId: appId || null,
 			appName: appName || null,
@@ -358,10 +368,9 @@ class SearchSandbox extends Component {
 			hideWalkthroughButtons,
 			showTutorial,
 			isShopify,
-			version,
 		} = this.props;
 		const {
-			mappingsType, componentProps, filterCount, profile,
+			mappingsType, componentProps, filterCount, profile, version,
 		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
@@ -430,7 +439,6 @@ SearchSandbox.propTypes = {
 	getAppMappings: PropTypes.func.isRequired,
 	clearProfile: PropTypes.func.isRequired,
 	isFetchingMapping: PropTypes.bool.isRequired,
-	version: PropTypes.string.isRequired,
 	searchState: PropTypes.object,
 	customJoyrideSteps: PropTypes.array,
 	customProps: PropTypes.object,
@@ -468,7 +476,6 @@ const mapStateToProps = (state) => {
 		mappings: getRawMappingsByAppName(state) || null,
 		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
 		searchState: get(state, '$getSearchState.parsedSearchState'),
-		version: get(state, `$getAppInfo.apps[${appName}].es_version`),
 	};
 };
 
