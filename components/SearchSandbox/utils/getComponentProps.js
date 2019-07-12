@@ -4,17 +4,32 @@ import { listLabel } from '../styles';
 import RenderResults from '../components/RenderResults';
 import { generateFieldWeights, generateDataField } from './dataField';
 
-function getDataSearchProps({ componentProps, mappings }) {
+function getDataSearchProps({ componentProps, mappings, version }) {
 	componentProps.fuzziness = componentProps.fuzziness ? Number(componentProps.fuzziness) : 0;
+	let fields = generateDataField('DataSearch', componentProps.dataField, mappings);
+	const weights = generateFieldWeights(
+		componentProps.dataField,
+		componentProps.fieldWeights,
+		mappings,
+	);
+
+	if (+version >= 7) {
+		/*
+			Query used by DataSearch component doesn’t work for a field
+			with the keyword mapping from ES 7.
+		 */
+		const keywordIndex = fields.findIndex(field => field.includes('.keyword'));
+		if (keywordIndex >= 0) {
+			weights.splice(keywordIndex, 1);
+		}
+		fields = fields.filter(field => !field.includes('.keyword'));
+	}
+
 	return {
 		fuzziness: 0,
 		...componentProps,
-		dataField: generateDataField('DataSearch', componentProps.dataField, mappings),
-		fieldWeights: generateFieldWeights(
-			componentProps.dataField,
-			componentProps.fieldWeights,
-			mappings,
-		),
+		dataField: [...new Set(fields)],
+		fieldWeights: weights,
 		highlightField: componentProps.dataField,
 	};
 }
@@ -62,11 +77,15 @@ function getReactiveListProps({ componentProps, setRenderKey, mappings }) {
 }
 
 export default function getComponentProps({
- component, componentProps, mappings, setRenderKey,
+	component,
+	componentProps,
+	mappings,
+	setRenderKey,
+	version,
 }) {
 	switch (component) {
 		case 'DataSearch':
-			return getDataSearchProps({ componentProps, mappings });
+			return getDataSearchProps({ componentProps, mappings, version });
 		case 'CategorySearch':
 			return getCategorySearchProps({ componentProps, mappings });
 		case 'ReactiveList':

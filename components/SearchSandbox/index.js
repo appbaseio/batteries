@@ -217,7 +217,7 @@ class SearchSandbox extends Component {
 		const {
 			appId, appName, url, credentials, attribution, customProps,
 		} = this.props; // prettier-ignore
-		const { componentProps, mappings } = this.state;
+		const { componentProps, mappings, version } = this.state;
 		const config = {
 			appId: appId || null,
 			appName: appName || null,
@@ -228,7 +228,7 @@ class SearchSandbox extends Component {
 			attribution: attribution || null,
 			customProps,
 		};
-		const code = getSearchTemplate(config);
+		const code = getSearchTemplate(config, version);
 		const html = '<div id="root"></div>';
 		const styles = getTemplateStyles();
 
@@ -300,7 +300,7 @@ class SearchSandbox extends Component {
 			useCategorySearch,
 		} = this.props;
 		const {
-			mappingsType, componentProps, filterCount, profile,
+			mappingsType, componentProps, filterCount, profile, version
 		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
@@ -321,6 +321,7 @@ class SearchSandbox extends Component {
 			deleteComponent: this.deleteComponent,
 			showCodePreview,
 			showCustomList,
+			version,
 		};
 
 		return (
