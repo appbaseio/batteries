@@ -160,7 +160,7 @@ class RSComponentRender extends Component {
 
 	renderComponentCode = () => {
 		const {
-			component, id, mappings, componentProps, customProps,
+			component, id, mappings, componentProps, customProps, version
 		} = this.props; // prettier-ignore
 		const customComponentProps = customProps[component];
 
@@ -171,7 +171,7 @@ class RSComponentRender extends Component {
 			componentProps,
 			customProps: customComponentProps,
 		};
-		const code = getComponentCode(config);
+		const code = getComponentCode(config, version);
 		return (
 			<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
 				<Button icon="code-o" shape="circle" size="large" style={{ marginLeft: 8 }} />
@@ -331,6 +331,7 @@ class RSComponentRender extends Component {
 			showCodePreview,
 			showCustomList,
 			setRenderKey,
+			version,
 		} = this.props;
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
@@ -393,6 +394,7 @@ class RSComponentRender extends Component {
 								componentProps,
 								mappings,
 								setRenderKey,
+								version,
 							})}
 							{...customComponentProps}
 						/>

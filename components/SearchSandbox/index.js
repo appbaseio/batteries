@@ -271,7 +271,7 @@ class SearchSandbox extends Component {
 
 	openSandbox = () => {
 		const {
-			appId, appName, url, credentials, attribution, customProps,
+			appId, appName, url, credentials, attribution, customProps, version
 		} = this.props; // prettier-ignore
 		const { componentProps, mappings } = this.state;
 		const config = {
@@ -284,7 +284,7 @@ class SearchSandbox extends Component {
 			attribution: attribution || null,
 			customProps,
 		};
-		const code = getSearchTemplate(config);
+		const code = getSearchTemplate(config, version);
 		const html = '<div id="root"></div>';
 		const styles = getTemplateStyles();
 
@@ -358,6 +358,7 @@ class SearchSandbox extends Component {
 			hideWalkthroughButtons,
 			showTutorial,
 			isShopify,
+			version,
 		} = this.props;
 		const {
 			mappingsType, componentProps, filterCount, profile,
@@ -382,6 +383,7 @@ class SearchSandbox extends Component {
 			showCodePreview,
 			showCustomList,
 			isShopify,
+			version,
 		};
 
 		return (

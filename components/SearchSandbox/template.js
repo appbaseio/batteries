@@ -13,7 +13,7 @@ const getHeader = (config) => {
 ${showTree ? renderAsTree() : renderWithOnData(config)}`;
 };
 
-export function getComponentCode(config) {
+export function getComponentCode(config, version) {
 	let allProps = config.componentProps || {};
 	const { meta, metaFields, ...otherProps } = allProps;
 	let componentStyle = {};
@@ -47,19 +47,32 @@ export function getComponentCode(config) {
 		}
 		case 'DataSearch': {
 			const { categoryField, ...restProps } = config.componentProps;
+			let fields = generateDataField(
+				'DataSearch',
+				config.componentProps.dataField,
+				config.mappings,
+			);
+			const weights = generateFieldWeights(
+				config.componentProps.dataField,
+				config.componentProps.fieldWeights,
+				config.mappings,
+			);
+
+			if (+version >= 7) {
+				/*
+					Query used by DataSearch component doesn’t work for a field
+					with the keyword mapping from ES 7.
+				*/
+				const keywordIndex = fields.findIndex(field => field.includes('.keyword'));
+				weights.splice(keywordIndex, 1);
+				fields = fields.filter(field => !field.includes('.keyword'));
+			}
+
 			allProps = {
 				componentId: config.componentId,
 				...restProps,
-				fieldWeights: generateFieldWeights(
-					config.componentProps.dataField,
-					config.componentProps.fieldWeights,
-					config.mappings,
-				),
-				dataField: generateDataField(
-					'DataSearch',
-					config.componentProps.dataField,
-					config.mappings,
-				),
+				fieldWeights: weights,
+				dataField: [...new Set(fields)],
 				highlightField: config.componentProps.dataField,
 			};
 			componentStyle = { marginBottom: 20 };
@@ -122,7 +135,7 @@ function sandboxCodeFormat(code) {
 	return code.split('\n').join('\n\t\t\t\t');
 }
 
-function getApp(config) {
+function getApp(config, version) {
 	let listCode = '';
 	let searchCode = '';
 	let resultCode = '';
@@ -145,7 +158,7 @@ function getApp(config) {
 					customProps: config.customProps,
 					componentId: item,
 				};
-				searchCode = getComponentCode(componentConfig);
+				searchCode = getComponentCode(componentConfig, version);
 				break;
 			}
 			case 'result': {
@@ -166,7 +179,7 @@ function getApp(config) {
 					componentProps: resultComponentProps,
 					componentId: 'result',
 				};
-				resultCode = getComponentCode(componentConfig);
+				resultCode = getComponentCode(componentConfig, version);
 				break;
 			}
 			default: {
@@ -181,9 +194,9 @@ function getApp(config) {
 					componentProps: listComponentProps,
 				};
 				if (listCode) {
-					listCode = `${listCode}\n${getComponentCode(componentConfig)}`;
+					listCode = `${listCode}\n${getComponentCode(componentConfig, version)}`;
 				} else {
-					listCode = getComponentCode(componentConfig);
+					listCode = getComponentCode(componentConfig, version);
 				}
 			}
 		}
@@ -245,8 +258,8 @@ ReactDOM.render(
 `;
 }
 
-export default function getSearchTemplate(config) {
-	return `${getHeader(config)}${getApp(config)}`;
+export default function getSearchTemplate(config, version) {
+	return `${getHeader(config)}${getApp(config, version)}`;
 }
 
 function getTemplateStyles() {
