@@ -17,6 +17,9 @@ const { TabPane } = Tabs;
 
 const normalizeData = data => data.map((i) => {
 		const timeDuration = getTimeDuration(get(i, 'timestamp'));
+		const timeTaken = timeDuration.time > 0
+			? `${timeDuration.time} ${timeDuration.formattedUnit} ago`
+			: 'some time ago';
 		return {
 			id: get(i, '_id'),
 			operation: {
@@ -24,7 +27,7 @@ const normalizeData = data => data.map((i) => {
 				uri: get(i, 'request.uri'),
 			},
 			classifier: get(i, 'category', '').toUpperCase(),
-			timeTaken: `${timeDuration.time} ${timeDuration.formattedUnit} ago`,
+			timeTaken,
 			status: get(i, 'response.code'),
 		};
 	});
