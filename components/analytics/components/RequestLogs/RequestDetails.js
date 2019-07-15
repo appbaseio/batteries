@@ -79,6 +79,7 @@ const RequestDetails = ({
 	);
 };
 RequestDetails.defaultProps = {
+	ip: '_',
 	show: false,
 	handleCancel: () => null,
 };
@@ -88,7 +89,7 @@ RequestDetails.propTypes = {
 	time: PropTypes.string.isRequired,
 	method: PropTypes.string.isRequired,
 	url: PropTypes.string.isRequired,
-	ip: PropTypes.string.isRequired,
+	ip: PropTypes.string,
 	status: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 	processingTime: PropTypes.string.isRequired,
 	headers: PropTypes.object.isRequired,
