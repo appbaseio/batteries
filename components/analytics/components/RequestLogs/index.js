@@ -4,12 +4,11 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 import filter from 'lodash/filter';
 import {
- Card, Tabs, Table, notification,
+ Card, Tabs, Table, notification, Button, Tooltip,
 } from 'antd';
 import PropTypes from 'prop-types';
 import Parser from 'partial-json-parser';
 import { getRequestLogs, requestLogs, getTimeDuration } from '../../utils';
-import { getAppPlanByName } from '../../../../modules/selectors';
 import RequestDetails from './RequestDetails';
 import Loader from '../../../shared/Loader/Spinner';
 
@@ -17,9 +16,9 @@ const { TabPane } = Tabs;
 
 const normalizeData = data => data.map((i) => {
 		const timeDuration = getTimeDuration(get(i, 'timestamp'));
-		const timeTaken = timeDuration.time > 0
-			? `${timeDuration.time} ${timeDuration.formattedUnit} ago`
-			: 'some time ago';
+		const timeTaken =			timeDuration.time > 0
+				? `${timeDuration.time} ${timeDuration.formattedUnit} ago`
+				: 'some time ago';
 		return {
 			id: get(i, '_id'),
 			operation: {
@@ -222,7 +221,19 @@ class RequestLogs extends React.Component {
 	render() {
 		const { activeTabKey, isFetching, showDetails } = this.state;
 		return (
-			<Card title="Latest Operations">
+			<Card
+				title="Latest Operations"
+				extra={(
+					<Tooltip placement="topLeft" title="Refresh request logs.">
+						<Button
+							onClick={() => {
+								this.fetchRequestLogs();
+							}}
+							icon="redo"
+						/>
+					</Tooltip>
+				)}
+			>
 				{isFetching ? (
 					<Loader />
 				) : (
@@ -276,11 +287,9 @@ RequestLogs.defaultProps = {
 	onTabChange: undefined, // Use this to override the default redirect logic on tab change
 	tab: 'all',
 	pageSize: 10,
-	plan: 'free',
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
-	plan: PropTypes.string,
 	onTabChange: PropTypes.func,
 	appName: PropTypes.string.isRequired,
 	changeUrlOnTabChange: PropTypes.bool,
@@ -289,6 +298,5 @@ RequestLogs.propTypes = {
 
 const mapStateToProps = state => ({
 	appName: get(state, '$getCurrentApp.name'),
-	plan: get(getAppPlanByName(state), 'plan'),
 });
 export default connect(mapStateToProps)(RequestLogs);
