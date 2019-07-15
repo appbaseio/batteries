@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 import filter from 'lodash/filter';
 import {
- Card, Tabs, Table, notification,
+ Card, Tabs, Table, notification, Button, Tooltip,
 } from 'antd';
 import PropTypes from 'prop-types';
 import Parser from 'partial-json-parser';
@@ -17,6 +17,9 @@ const { TabPane } = Tabs;
 
 const normalizeData = (data = []) => data.map((i) => {
 		const timeDuration = getTimeDuration(get(i, '_source.timestamp'));
+		const timeTaken = timeDuration.time > 0
+				? `${timeDuration.time} ${timeDuration.formattedUnit} ago`
+				: 'some time ago';
 		return {
 			id: get(i, '_id'),
 			operation: {
@@ -24,7 +27,7 @@ const normalizeData = (data = []) => data.map((i) => {
 				uri: get(i, '_source.request.uri'),
 			},
 			classifier: get(i, '_source.classifier', '').toUpperCase(),
-			timeTaken: `${timeDuration.time} ${timeDuration.formattedUnit} ago`,
+			timeTaken,
 			status: get(i, '_source.response.status'),
 		};
 	});
@@ -215,7 +218,19 @@ class RequestLogs extends React.Component {
 	render() {
 		const { activeTabKey, isFetching, showDetails } = this.state;
 		return (
-			<Card title="Latest Operations">
+			<Card
+				title="Latest Operations"
+				extra={(
+					<Tooltip placement="topLeft" title="Refresh request logs.">
+						<Button
+							onClick={() => {
+								this.fetchRequestLogs();
+							}}
+							icon="redo"
+						/>
+					</Tooltip>
+				)}
+			>
 				{isFetching ? (
 					<Loader />
 				) : (
