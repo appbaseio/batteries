@@ -653,7 +653,7 @@ class Mappings extends Component {
 
 	renderOptions = (originalFields, fields, field) => {
 		const options = [];
-		if (originalFields[field]) {
+		if (originalFields && originalFields[field]) {
 			options.push({
 				label: this.getType(originalFields[field].type),
 				value: this.getType(originalFields[field].type),
@@ -953,7 +953,7 @@ class Mappings extends Component {
 
 	render() {
 		if (this.props.loadingError) {
-			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
+			return <h3 style={{ padding: 20, color: 'tomato', textAlign: 'center' }}>{this.props.loadingError.message}</h3>;
 		}
 		if ((this.props.isFetchingMapping || this.state.isLoading) && !this.state.mapping) {
 			return <Loader show message="Fetching mappings... Please wait!" />;
