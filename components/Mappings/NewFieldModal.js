@@ -82,6 +82,13 @@ export default class NewFieldModal extends Component {
 		}
 	};
 
+	handleDropdownMenu = (e, name) => {
+		const { key } = e;
+		this.setState({
+			[name]: key,
+		});
+	};
+
 	renderDropDown = ({ name, options, value }) => {
 		const menu = (
 			<Menu onClick={e => this.handleDropdownMenu(e, name)}>
@@ -124,8 +131,6 @@ export default class NewFieldModal extends Component {
 					maxWidth: '800px',
 				}}
 			>
-				<h3>Add New Field</h3>
-
 				<section>
 					<Header>
 						{this.props.esVersion < 6 ? <span className="col">Type</span> : null}
@@ -150,8 +155,7 @@ export default class NewFieldModal extends Component {
 						<span className="col">Data Type</span>
 					</Header>
 					<div style={{ padding: '10px 0', display: 'flex' }}>
-					{
-						this.props.esVersion < 6 ? (
+						{this.props.esVersion < 6 ? (
 							<span style={{ width: 150, marginRight: 12 }}>
 								<Dropdown overlay={menu}>
 									<Input
@@ -164,8 +168,7 @@ export default class NewFieldModal extends Component {
 									/>
 								</Dropdown>
 							</span>
-						) : null
-					}
+						) : null}
 						{/* <select
 							className={dropdown}
 							style={{ textTransform: 'none', marginLeft: 0, marginRight: 12 }}
