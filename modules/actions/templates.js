@@ -1,19 +1,15 @@
-import get from 'lodash/get';
 import { createAction } from './utils';
 import AppConstants from '../constants';
 import { getURL } from '../../../constants/config';
 import { doGet, doPost, doDelete } from '../../utils/requestService';
 
-export function getAppTemplates(name) {
-	return (dispatch, getState) => {
-		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+export function getAppTemplates() {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.TEMPLATES.GET_ALL));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_templates`)
 			.then(res => dispatch(
-					createAction(AppConstants.APP.TEMPLATES.GET_ALL_SUCCESS, res, null, {
-						appName,
-					}),
+					createAction(AppConstants.APP.TEMPLATES.GET_ALL_SUCCESS, res, null),
 				))
 			.catch(error => dispatch(createAction(AppConstants.APP.TEMPLATES.GET_ALL_ERROR, null, error)));
 	};

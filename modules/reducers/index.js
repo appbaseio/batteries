@@ -63,7 +63,6 @@ export default {
 		AppConstants.APP.TEMPLATES.GET_ALL,
 		AppConstants.APP.TEMPLATES.GET_ALL_SUCCESS,
 		AppConstants.APP.TEMPLATES.GET_ALL_ERROR,
-		computeStateByAppName,
 	),
 	$getAppTemplate: createRequestReducer(
 		AppConstants.APP.TEMPLATES.GET,
