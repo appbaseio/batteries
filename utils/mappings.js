@@ -123,9 +123,14 @@ export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsAr
 	});
 }
 
-export function putMapping(appName, credentials, url = SCALR_API, mappings, type) {
+export function putMapping(appName, credentials, url = SCALR_API, mappings, type, version) {
+	let mappingURL = `${url}/${appName}/_mapping/`;
+	if (version < 7) {
+		mappingURL = `${mappingURL}/${type}`;
+	}
+
 	return new Promise((resolve, reject) => {
-		fetch(`${url}/${appName}/_mapping/${type}`, {
+		fetch(mappingURL, {
 			method: 'PUT',
 			headers: {
 				...getAuthHeaders(credentials),

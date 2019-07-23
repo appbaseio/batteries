@@ -886,20 +886,39 @@ class Mappings extends Component {
 					// If synonyms request is successful than update mapping via PUT request
 					const { activeType } = this.state;
 					const updatedMappings = this.updateField();
-					putMapping(
-						this.props.appName,
-						credentials,
-						url,
-						updatedMappings[activeType[0]],
-						activeType[0],
-					).then(({ acknowledged }) => {
-						if (acknowledged) {
-							message.success('Synonyms Updated');
-							this.setState({
-								mapping: updatedMappings,
-							});
-						}
-					});
+					if (this.state.esVersion >= 7) {
+						putMapping(
+							this.props.appName,
+							credentials,
+							url,
+							updatedMappings,
+							activeType[0],
+							this.state.esVersion,
+						).then(({ acknowledged }) => {
+							if (acknowledged) {
+								message.success('Synonyms Updated');
+								this.setState({
+									mapping: updatedMappings,
+								});
+							}
+						});
+					} else {
+						putMapping(
+							this.props.appName,
+							credentials,
+							url,
+							updatedMappings[activeType[0]],
+							activeType[0],
+							this.state.esVersion,
+						).then(({ acknowledged }) => {
+							if (acknowledged) {
+								message.success('Synonyms Updated');
+								this.setState({
+									mapping: updatedMappings,
+								});
+							}
+						});
+					}
 				}
 				this.setState({
 					showSynonymModal: false,
