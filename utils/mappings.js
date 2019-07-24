@@ -54,9 +54,7 @@ export function putMapping(appName, credentials, mappings, type, version, url = 
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					properties: {
-						...mappings,
-					},
+					...mappings,
 				}),
 			})
 				.then(res => res.json())

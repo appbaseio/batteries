@@ -738,14 +738,20 @@ class Mappings extends Component {
 
 	updateField = () => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
-		const { activeType } = this.state;
-		if (
-			mapping
-			&& activeType[0]
-			&& mapping[activeType[0]]
-			&& mapping[activeType[0]].properties
-		) {
-			const { properties } = mapping[activeType[0]];
+		const { activeType, esVersion } = this.state;
+		let isMappingsPresent = false;
+		let properties = null;
+		if (+esVersion >= 7) {
+			isMappingsPresent = mapping && mapping.properties;
+			properties = mapping.properties;
+		} else {
+			isMappingsPresent =				mapping
+				&& activeType[0]
+				&& mapping[activeType[0]]
+				&& mapping[activeType[0]].properties;
+			properties = mapping[activeType[0]].properties;
+		}
+		if (isMappingsPresent) {
 			const keys = Object.keys(properties);
 
 			keys.forEach((key) => {
@@ -797,12 +803,18 @@ class Mappings extends Component {
 			.then(() => {
 				if (synonymsUpdated) {
 					// If synonyms request is successful than update mapping via PUT request
-					const { activeType } = this.state;
+					const { activeType, esVersion } = this.state;
 					const updatedMappings = this.updateField();
+					let mappings = {};
+					if (+esVersion >= 7) {
+						mappings = updatedMappings;
+					} else {
+						mappings = updatedMappings[activeType[0]];
+					}
 					putMapping(
 						this.props.appName,
 						credentials,
-						updatedMappings[activeType[0]],
+						mappings,
 						activeType[0],
 						this.state.esVersion,
 					).then(({ acknowledged }) => {
