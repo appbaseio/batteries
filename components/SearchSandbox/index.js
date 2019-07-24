@@ -53,35 +53,35 @@ class SearchSandbox extends Component {
 	}
 
 	async componentDidMount() {
-		const { appName, isDashboard } = this.props;
+		const { appName, isDashboard, credentials } = this.props;
 		const { profileList: profileListState, profile } = this.state;
-		// if (isDashboard) {
-		// 	getPreferences(appName)
-		// 		.then((pref) => {
-		// 			this.pref = pref || {};
-		// 			const profileList = Array.from(
-		// 				new Set([...profileListState, ...Object.keys(this.pref)]),
-		// 			);
-		// 			const componentProps = this.pref[profile] || {};
-		// 			this.setState({
-		// 				componentProps,
-		// 				profileList,
-		// 				loading: false,
-		// 				filterCount: Object.keys(componentProps).filter(
-		// 					item => item !== 'search' && item !== 'result',
-		// 				).length,
-		// 			});
-		// 		})
-		// 		.catch(() => this.getLocalPref());
-		// } else {
-		// 	this.getLocalPref();
-		// }
+		if (isDashboard) {
+			getPreferences(appName, credentials)
+				.then((pref) => {
+					this.pref = pref || {};
+					const profileList = Array.from(
+						new Set([...profileListState, ...Object.keys(this.pref)]),
+					);
+					const componentProps = this.pref[profile] || {};
+					this.setState({
+						componentProps,
+						profileList,
+						loading: false,
+						filterCount: Object.keys(componentProps).filter(
+							item => item !== 'search' && item !== 'result',
+						).length,
+					});
+				})
+				.catch(() => this.getLocalPref());
+		} else {
+			this.getLocalPref();
+		}
 
 		this.getLocalPref();
 
 		const { mappings, isFetchingMapping, url } = this.props;
 
-		const { credentials, getAppMappings } = this.props;
+		const { getAppMappings } = this.props;
 		const version = await getESVersion(appName, credentials);
 		this.setState({
 			version,
@@ -125,18 +125,18 @@ class SearchSandbox extends Component {
 	};
 
 	savePreferences = () => {
-		const { isDashboard, appName } = this.props;
+		const { isDashboard, appName, credentials } = this.props;
 		const { profile, componentProps } = this.state;
 		this.pref = {
 			...this.pref,
 			[profile]: componentProps,
 		};
 
-		// if (isDashboard) {
-		// 	setPreferences(appName, this.pref).catch(() => this.setLocalPref(this.pref));
-		// } else {
-		// 	this.setLocalPref(this.pref);
-		// }
+		if (isDashboard) {
+			setPreferences(appName, credentials, this.pref).catch(() => this.setLocalPref(this.pref));
+		} else {
+			this.setLocalPref(this.pref);
+		}
 
 		this.setLocalPref(this.pref);
 	};
@@ -300,7 +300,7 @@ class SearchSandbox extends Component {
 			useCategorySearch,
 		} = this.props;
 		const {
-			mappingsType, componentProps, filterCount, profile, version
+			mappingsType, componentProps, filterCount, profile, version,
 		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
@@ -330,7 +330,7 @@ class SearchSandbox extends Component {
 					<Header
 						isDashboard={isDashboard}
 						showCodeSandbox={showCodeSandbox}
-						showProfileOption={false}
+						showProfileOption
 						profileList={profileList}
 						defaultProfile={profile}
 						setProfile={this.setProfile}
