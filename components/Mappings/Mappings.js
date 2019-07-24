@@ -296,12 +296,12 @@ class Mappings extends Component {
 	handleMapping = async (res) => {
 		if (res) {
 			const { appName } = this.props;
-			const {esVersion} = this.state;
+			const { esVersion } = this.state;
 			let mapping = res ? transformToES5(res) : res;
 
 			if (!mapping.properties && esVersion >= 7) {
 				// Default Value for Version 7 Mappings
-				mapping = { properties: { } };
+				mapping = { properties: {} };
 			}
 
 			if ((!mapping._doc || !mapping._doc.properties) && esVersion >= 6 && esVersion < 7) {
@@ -427,14 +427,17 @@ class Mappings extends Component {
 
 	updateField = () => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
-		const { activeType } = this.state;
-		if (
-			mapping
-			&& activeType[0]
-			&& mapping[activeType[0]]
-			&& mapping[activeType[0]].properties
-		) {
-			const { properties } = mapping[activeType[0]];
+		const { activeType, esVersion } = this.state;
+		let isMappingsPresent = false;
+		let properties = null;
+		if (+esVersion >= 7) {
+			isMappingsPresent = mapping && mapping.properties;
+			properties = mapping.properties;
+		} else {
+			isMappingsPresent = mapping && activeType[0] && mapping[activeType[0]] && mapping[activeType[0]].properties;
+			properties = mapping[activeType[0]].properties;
+		}
+		if (isMappingsPresent) {
 			const keys = Object.keys(properties);
 
 			keys.forEach((key) => {
@@ -769,7 +772,9 @@ class Mappings extends Component {
 									{this.state.editable ? (
 										<a
 											onClick={() => {
-												const addressField = +this.state.esVersion >= 7 ? `properties.${field}` : `${address}.${field}`
+												const addressField =													+this.state.esVersion >= 7
+														? `properties.${field}`
+														: `${address}.${field}`;
 												this.deletePath(addressField);
 											}}
 										>
@@ -950,7 +955,8 @@ class Mappings extends Component {
 		const { isBootstrapPlan, isGrowthPlan } = this.props;
 		if (isBootstrapPlan) {
 			return this.getShardValues(9);
-		} if (isGrowthPlan) {
+		}
+		if (isGrowthPlan) {
 			return this.getShardValues(21);
 		}
 		return 0;
@@ -960,7 +966,8 @@ class Mappings extends Component {
 		const { isBootstrapPlan, isGrowthPlan } = this.props;
 		if (isBootstrapPlan) {
 			return 9;
-		} if (isGrowthPlan) {
+		}
+		if (isGrowthPlan) {
 			return 21;
 		}
 		return 0;
@@ -972,7 +979,11 @@ class Mappings extends Component {
 
 	render() {
 		if (this.props.loadingError) {
-			return <h3 style={{ padding: 20, color: 'tomato', textAlign: 'center' }}>{this.props.loadingError.message}</h3>;
+			return (
+				<h3 style={{ padding: 20, color: 'tomato', textAlign: 'center' }}>
+					{this.props.loadingError.message}
+				</h3>
+			);
 		}
 		if ((this.props.isFetchingMapping || this.state.isLoading) && !this.state.mapping) {
 			return <Loader show message="Fetching mappings... Please wait!" />;
@@ -1088,15 +1099,15 @@ class Mappings extends Component {
 									: mapping[field].properties;
 								const fieldName = `${field}.properties`;
 
-
 								if (+this.state.esVersion >= 7) {
-
 									if (field !== 'properties') {
 										return null;
 									}
 
 									currentMappingFields = mapping[field];
-									originalMappingFields = this.originalMapping[field] ? this.originalMapping[field] : mapping[field];
+									originalMappingFields = this.originalMapping[field]
+										? this.originalMapping[field]
+										: mapping[field];
 								}
 
 								return this.renderMapping(
@@ -1185,7 +1196,11 @@ class Mappings extends Component {
 					>
 						<h4>
 							Move slider to change the number of shards for your app. Read more{' '}
-							<a href="https://docs.appbase.io/concepts/mappings.html#manage-shards" target="_blank" rel="noopener noreferrer">
+							<a
+								href="https://docs.appbase.io/concepts/mappings.html#manage-shards"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
 								here
 							</a>
 							.
