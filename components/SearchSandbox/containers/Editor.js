@@ -200,7 +200,7 @@ export default class Editor extends Component {
 
 	render() {
 		const {
- componentProps, appName, credentials, url,deleteComponent
+ componentProps, appName, credentials, url, deleteComponent
 } = this.props;
 		const { renderKey, showModal, showVideo } = this.state;
 
@@ -215,7 +215,7 @@ export default class Editor extends Component {
 			</span>
 		);
 		return (
-			<ReactiveBase app={appName} credentials={credentials} url={url} analytics>
+			<ReactiveBase app={appName} credentials={credentials} url={url} analytics searchStateHeader>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
 						<Card title={title} id="video-title">
