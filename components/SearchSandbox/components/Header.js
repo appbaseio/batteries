@@ -111,7 +111,7 @@ export default class Header extends Component {
 			>
 				<Menu.Item key={SAVE_AS_NEW_PROFILE}>
 					<Icon type="save" />
-					&nbsp; Save as New Profile
+					&nbsp; Save as ...
 				</Menu.Item>
 				<Menu.Item key={CREATE_NEW_PROFILE}>
 					<Icon type="plus" />
@@ -130,44 +130,43 @@ export default class Header extends Component {
 			showHeader = false;
 		}
 
-		return showHeader
-			? (
-				<div
-					style={{
-						display: 'flex',
-						flexDirection: 'row-reverse',
-						padding: '10px 20px 0',
-					}}
-				>
-					{isDashboard && showProfileOption ? (
-						<Dropdown overlay={menu} trigger={['click']}>
-							<Button size="large" style={{ marginLeft: 8 }}>
-								{`Search Profile - ${isUnsaved ? 'unsaved' : profile}`}{' '}
-								<Icon type="down" />
-							</Button>
-						</Dropdown>
-					) : null}
-					{showCodeSandbox ? (
-						<Button onClick={openSandbox} size="large" type="primary">
-							Open in Codesandbox
+		return showHeader ? (
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'row-reverse',
+					padding: '10px 20px 0',
+				}}
+			>
+				{isDashboard && showProfileOption ? (
+					<Dropdown overlay={menu} trigger={['click']}>
+						<Button size="large" style={{ marginLeft: 8 }}>
+							{`Search Profile - ${isUnsaved ? 'unsaved' : profile}`}{' '}
+							<Icon type="down" />
 						</Button>
-					) : null}
+					</Dropdown>
+				) : null}
+				{showCodeSandbox ? (
+					<Button onClick={openSandbox} size="large" type="primary">
+						Open in Codesandbox
+					</Button>
+				) : null}
 
-					<Modal
-						title="Create a new Search Profile"
-						visible={showNewProfileModal}
-						onOk={this.handleSaveProfile}
-						onCancel={this.handleCancel}
-						destroyOnClose
-					>
-						<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
-							Set search profile name
-						</div>
-						<Input type="text" ref={this.profileInput} placeholder="Search Profile Name" />
-						{modalError ? <p style={{ color: 'tomato' }}>{modalError}</p> : null}
-					</Modal>
-				</div>
-			) : null;
+				<Modal
+					title="Create a new Search Profile"
+					visible={showNewProfileModal}
+					onOk={this.handleSaveProfile}
+					onCancel={this.handleCancel}
+					destroyOnClose
+				>
+					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
+						Set search profile name
+					</div>
+					<Input type="text" ref={this.profileInput} placeholder="Search Profile Name" />
+					{modalError ? <p style={{ color: 'tomato' }}>{modalError}</p> : null}
+				</Modal>
+			</div>
+		) : null;
 	}
 }
 

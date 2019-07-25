@@ -88,8 +88,6 @@ class SearchSandbox extends Component {
 			this.getLocalPref();
 		}
 
-		this.getLocalPref();
-
 		const { getAppMappings } = this.props;
 		const version = await getESVersion(appName, credentials);
 		this.setState({
