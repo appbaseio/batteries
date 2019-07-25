@@ -141,6 +141,29 @@ class SearchSandbox extends Component {
 		this.setLocalPref(this.pref);
 	};
 
+	deleteProfile = (profile) => {
+		const { profileList } = this.state;
+		const filteredProfile = profileList.filter(item => item !== profile);
+		const componentProps = this.pref[filteredProfile[0]];
+		try {
+			delete this.pref[profile];
+			this.setState(
+				{
+					profile: filteredProfile[0],
+					profileList: filteredProfile,
+					filterCount: Object.keys(componentProps).filter(
+						item => item !== 'search' && item !== 'result',
+					).length,
+					componentProps,
+				},
+				this.savePreferences,
+			);
+			message.success(`Successfully deleted ${profile}`);
+		} catch (e) {
+			message.error('Something went wrong while deleting profile. Please try again.');
+		}
+	};
+
 	deleteComponent = (id) => {
 		const { componentProps } = this.state;
 		const { [id]: del, ...remProps } = componentProps;
@@ -335,6 +358,7 @@ class SearchSandbox extends Component {
 						defaultProfile={profile}
 						setProfile={this.setProfile}
 						onNewProfile={this.onNewProfile}
+						deleteProfile={this.deleteProfile}
 						openSandbox={this.openSandbox}
 					/>
 					<Walkthrough id="SearchPreview" joyrideSteps={joyrideSteps} />
