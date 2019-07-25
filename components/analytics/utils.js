@@ -1,6 +1,8 @@
 import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
+import { Button } from 'antd';
+import mockProfile from './components/mockProfile';
 import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 import { getURL } from '../../../constants/config';
@@ -30,6 +32,18 @@ const getQueryParams = (paramObj) => {
 	});
 	return queryString;
 };
+const replaySearch = [
+	{
+		title: 'Replay Search',
+		key: 'search_state',
+		width: '10%',
+		render: item => (
+			<Button onClick={() => item.handleReplaySearch(mockProfile)} type="primary">
+				Replay Search
+			</Button>
+		),
+	},
+];
 export const getTimeDuration = (time) => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
@@ -148,6 +162,14 @@ export const defaultColumns = (plan) => {
 		},
 	];
 };
+
+export const noResultsFull = (plan, displayReplaySearch) => {
+	if (plan !== 'growth' && plan !== 'bootstrap') {
+		return defaultColumns();
+	}
+	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
+};
+
 export const ConvertToCSV = (objArray) => {
 	const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
 	let str = '';
@@ -197,9 +219,12 @@ export const exportCSVFile = (headers, items, fileTitle) => {
 	}
 };
 
-export const popularSearchesFull = (plan) => {
+export const popularSearchesFull = (plan, displayReplaySearch) => {
 	if (!plan || plan !== 'growth') {
-		return defaultColumns(plan);
+		return [
+			...defaultColumns(plan),
+			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
+		];
 	}
 	return [
 		...defaultColumns('free'),
@@ -223,9 +248,11 @@ export const popularSearchesFull = (plan) => {
 			dataIndex: 'conversionrate',
 			key: `ps-conversionrate${updateIndex()}`,
 		},
+		...(displayReplaySearch ? replaySearch : []),
 	];
 };
-export const popularResultsFull = (plan) => {
+
+export const popularResultsFull = (plan, displayReplaySearch) => {
 	if (plan !== 'growth') {
 		return [
 			...popularResultsCol(plan),
@@ -234,8 +261,12 @@ export const popularResultsFull = (plan) => {
 				dataIndex: 'source',
 				key: `pr-source${updateIndex()}`,
 				width: '30%',
+				style: {
+					maxWidth: 250,
+				},
 				render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
 			},
+			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
 		];
 	}
 	return [
@@ -261,6 +292,7 @@ export const popularResultsFull = (plan) => {
 			dataIndex: 'conversionrate',
 			key: `pr-conversionrate${updateIndex()}`,
 		},
+		...(displayReplaySearch ? replaySearch : []),
 		{
 			title: 'Source',
 			dataIndex: 'source',
@@ -270,9 +302,9 @@ export const popularResultsFull = (plan) => {
 		},
 	];
 };
-export const popularFiltersFull = (plan) => {
+export const popularFiltersFull = (plan, displayReplaySearch) => {
 	if (plan !== 'growth') {
-		return popularFiltersCol(plan);
+		return [...popularFiltersCol(plan), ...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : [])];
 	}
 	return [
 		...popularFiltersCol('free'),
@@ -297,6 +329,7 @@ export const popularFiltersFull = (plan) => {
 			dataIndex: 'conversionrate',
 			key: `pf-conversionrate${updateIndex()}`,
 		},
+		...(displayReplaySearch ? replaySearch : []),
 	];
 };
 

@@ -1,6 +1,7 @@
 import AppConstants from '../constants';
 import getAppMappings from './getAppMappings';
 import getCurrentApp from './getCurrentApp';
+import getSearchState from './getSearchState';
 import createRequestReducer from './request';
 import {
 	computeAppPlanState,
@@ -11,6 +12,7 @@ import {
 
 export default {
 	$getAppMappings: getAppMappings,
+	$getSearchState: getSearchState,
 	$getAppPermissions: createRequestReducer(
 		AppConstants.APP.PERMISSION.GET,
 		AppConstants.APP.PERMISSION.GET_SUCCESS,

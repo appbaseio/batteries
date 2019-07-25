@@ -194,6 +194,16 @@ export function setCurrentApp(appName, appId) {
 	});
 }
 
+export function setSearchState(searchState) {
+	return createAction(AppConstants.APP.SET_SEARCH_STATE, {
+		searchState,
+	});
+}
+
+export function clearSearchState() {
+	return createAction(AppConstants.APP.CLEAR_SEARCH_STATE);
+}
+
 export function clearCurrentApp() {
 	return createAction(AppConstants.APP.CLEAR_CURRENT_APP);
 }

@@ -11,7 +11,7 @@ import Walkthrough from '../shared/Walkthrough';
 import { getMappingsTree, getESVersion } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import getSearchTemplate, { getTemplateStyles } from './template';
-import { getAppMappings as getMappings } from '../../modules/actions';
+import { getAppMappings as getMappings, clearSearchState } from '../../modules/actions';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import { getURL } from '../../../constants/config';
 import joyrideSteps from './utils/joyrideSteps';
@@ -25,15 +25,17 @@ export const SandboxContext = React.createContext();
 class SearchSandbox extends Component {
 	constructor(props) {
 		super(props);
-
 		const profile = 'default';
+		const componentProps = props.searchState || {};
 		this.state = {
 			profile,
-			profileList: ['default'],
+			profileList: [profile],
 			configs: [],
 			mappings: null,
-			filterCount: 0,
-			componentProps: {},
+			componentProps,
+			filterCount: Object.keys(componentProps).filter(
+				item => item !== 'search' && item !== 'result',
+			).length,
 			loading: true,
 			version: null,
 		};
@@ -53,7 +55,9 @@ class SearchSandbox extends Component {
 	}
 
 	async componentDidMount() {
-		const { appName, isDashboard, credentials } = this.props;
+		const {
+ appName, isDashboard, credentials, searchState, url,
+} = this.props;
 		const { profileList: profileListState, profile } = this.state;
 		if (isDashboard) {
 			getPreferences(appName, credentials)
@@ -63,14 +67,21 @@ class SearchSandbox extends Component {
 						new Set([...profileListState, ...Object.keys(this.pref)]),
 					);
 					const componentProps = this.pref[profile] || {};
-					this.setState({
-						componentProps,
-						profileList,
-						loading: false,
-						filterCount: Object.keys(componentProps).filter(
-							item => item !== 'search' && item !== 'result',
-						).length,
-					});
+					if (searchState) {
+						this.setState({
+							profileList,
+							loading: false,
+						});
+					} else {
+						this.setState({
+							componentProps,
+							profileList,
+							loading: false,
+							filterCount: Object.keys(componentProps).filter(
+								item => item !== 'search' && item !== 'result',
+							).length,
+						});
+					}
 				})
 				.catch(() => this.getLocalPref());
 		} else {
@@ -79,14 +90,17 @@ class SearchSandbox extends Component {
 
 		this.getLocalPref();
 
-		const { mappings, isFetchingMapping, url } = this.props;
-
 		const { getAppMappings } = this.props;
 		const version = await getESVersion(appName, credentials);
 		this.setState({
 			version,
 		});
 		getAppMappings(appName, credentials, url);
+	}
+
+	componentWillUnmount() {
+		const { clearProfile } = this.props;
+		clearProfile();
 	}
 
 	getLocalPref = () => {
@@ -178,8 +192,7 @@ class SearchSandbox extends Component {
 				this.savePreferences,
 			);
 		} else {
-			const { profile: currentProfile } = this.state;
-			const componentProps = this.pref[currentProfile];
+			const { componentProps } = this.state;
 
 			this.setState(
 				{
@@ -296,8 +309,8 @@ class SearchSandbox extends Component {
 			showCodeSandbox,
 			showCodePreview,
 			showCustomList,
-			showProfileOption,
 			useCategorySearch,
+			customJoyrideSteps,
 		} = this.props;
 		const {
 			mappingsType, componentProps, filterCount, profile, version,
@@ -337,7 +350,10 @@ class SearchSandbox extends Component {
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
 					/>
-					<Walkthrough id="SearchPreview" joyrideSteps={joyrideSteps} />
+					<Walkthrough
+						id="SearchPreview"
+						joyrideSteps={customJoyrideSteps || joyrideSteps}
+					/>
 					{React.Children.map(this.props.children, child => (
 						<SandboxContext.Consumer>
 							{props => React.cloneElement(child, { ...props })}
@@ -359,10 +375,11 @@ SearchSandbox.propTypes = {
 	url: PropTypes.string,
 	useCategorySearch: PropTypes.bool,
 	getAppMappings: PropTypes.func.isRequired,
-	isFetchingMapping: PropTypes.bool.isRequired,
+	clearProfile: PropTypes.func.isRequired,
+	searchState: PropTypes.object,
+	customJoyrideSteps: PropTypes.array,
 	customProps: PropTypes.object,
 	showCodePreview: PropTypes.bool,
-	showProfileOption: PropTypes.bool,
 	showCustomList: PropTypes.bool,
 };
 
@@ -371,11 +388,12 @@ SearchSandbox.defaultProps = {
 	attribution: null,
 	showCodeSandbox: true,
 	showCodePreview: true,
-	showProfileOption: true,
 	showCustomList: true,
 	isDashboard: false,
 	url: getURL(),
+	searchState: undefined,
 	useCategorySearch: false,
+	customJoyrideSteps: undefined,
 	customProps: {},
 };
 
@@ -384,12 +402,14 @@ const mapStateToProps = state => ({
 	appName: get(state, '$getCurrentApp.name'),
 	mappings: getRawMappingsByAppName(state) || null,
 	isFetchingMapping: get(state, '$getAppMappings.isFetching'),
+	searchState: get(state, '$getSearchState.parsedSearchState'),
 });
 
 const mapDispatchToProps = dispatch => ({
 	getAppMappings: (appName, credentials, url) => {
 		dispatch(getMappings(appName, credentials, url));
 	},
+	clearProfile: () => dispatch(clearSearchState()),
 });
 
 export default connect(

@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
+import { withRouter } from 'react-router-dom';
 import Searches from './Searches';
 import { getPopularSearches, popularSearchesFull, exportCSVFile } from '../utils';
+import { setSearchState } from '../../../modules/actions/app';
 import Loader from '../../shared/Loader/Spinner';
 
 const headers = {
@@ -38,9 +40,21 @@ class PopularSearches extends React.Component {
 			});
 	}
 
+	handleReplaySearch = (searchState) => {
+		const {
+			saveState, history, appName, handleReplayClick,
+		} = this.props;
+		saveState(searchState);
+		if (handleReplayClick) {
+			handleReplayClick(appName);
+		} else {
+			history.push(`/app/${appName}/search-preview`);
+		}
+	};
+
 	render() {
 		const { isFetching, popularSearches } = this.state;
-		const { plan } = this.props;
+		const { plan, displayReplaySearch } = this.props;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -50,10 +64,14 @@ class PopularSearches extends React.Component {
 					scroll: { x: 700 },
 				}}
 				showViewOption={false}
-				columns={popularSearchesFull(plan)}
-				dataSource={popularSearches}
+				columns={popularSearchesFull(plan, displayReplaySearch)}
+				dataSource={popularSearches.map(item => ({
+					...item,
+					handleReplaySearch: this.handleReplaySearch,
+				}))}
 				title="Popular Searches"
-				onClickDownload={() => exportCSVFile(
+				onClickDownload={() => {
+					exportCSVFile(
 						headers,
 						popularSearches.map(item => ({
 							key: item.key,
@@ -63,8 +81,8 @@ class PopularSearches extends React.Component {
 							conversionrate: item.conversionrate || '-',
 						})),
 						'popular_searches',
-					)
-				}
+					);
+				}}
 				pagination={{
 					pageSize: 10,
 				}}
@@ -72,13 +90,28 @@ class PopularSearches extends React.Component {
 		);
 	}
 }
+PopularSearches.defaultProps = {
+	handleReplayClick: undefined,
+	displayReplaySearch: false,
+};
 PopularSearches.propTypes = {
 	plan: PropTypes.string.isRequired,
 	appName: PropTypes.string.isRequired,
+	displayReplaySearch: PropTypes.bool,
+	saveState: PropTypes.func.isRequired,
+	handleReplayClick: PropTypes.func,
+	history: PropTypes.object.isRequired,
 };
-
 const mapStateToProps = state => ({
-	plan: 'free',
-	appName: get(state, '$getCurrentApp.name'),
+		plan: 'growth',
+		appName: get(state, '$getCurrentApp.name'),
 });
-export default connect(mapStateToProps)(PopularSearches);
+
+const mapDispatchToProps = dispatch => ({
+	saveState: state => dispatch(setSearchState(state)),
+ });
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps,
+)(withRouter(PopularSearches));
