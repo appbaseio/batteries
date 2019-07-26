@@ -91,6 +91,24 @@ export default class Header extends Component {
 		});
 	};
 
+	handleDeleteProfileModal = () => {
+		const { profile } = this.state;
+		const { deleteProfile } = this.props;
+		Modal.confirm({
+			title: 'Delete Profile',
+			content: (
+				<React.Fragment>
+					Are you sure you want to delete <strong>{profile}</strong> profile?
+				</React.Fragment>
+			),
+			okText: 'Delete',
+			cancelText: 'Cancel',
+			okType: 'danger',
+			icon: <Icon type="delete" />,
+			onOk: () => deleteProfile(profile),
+		});
+	};
+
 	render() {
 		const {
 			// prettier-ignore
@@ -138,6 +156,17 @@ export default class Header extends Component {
 					padding: '10px 20px 0',
 				}}
 			>
+				{profile !== 'default' ? (
+					<Button
+						type="danger"
+						size="large"
+						style={{ marginLeft: 8 }}
+						onClick={this.handleDeleteProfileModal}
+					>
+						Delete Profile
+						<Icon type="delete" />
+					</Button>
+				) : null}
 				{isDashboard && showProfileOption ? (
 					<Dropdown overlay={menu} trigger={['click']}>
 						<Button size="large" style={{ marginLeft: 8 }}>
