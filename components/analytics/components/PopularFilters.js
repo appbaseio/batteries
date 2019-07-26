@@ -106,7 +106,7 @@ PopularFilters.propTypes = {
 };
 
 const mapStateToProps = state => ({
-	plan: 'free',
+	plan: 'growth',
 	appName: get(state, '$getCurrentApp.name'),
 });
 
