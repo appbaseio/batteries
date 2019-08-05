@@ -74,7 +74,7 @@ export const createShare = (appId, payload) => {
 
 export const getAppPlan = () => {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/arc/instance`);
+	return doGet(`${ACC_API}/arc/instances`);
 };
 
 export const createSubscription = (token, plan) => {

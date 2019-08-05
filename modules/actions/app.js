@@ -97,7 +97,7 @@ export function getAppPlan() {
 				dispatch(
 					createAction(
 						AppConstants.APP.GET_PLAN_SUCCESS,
-						get(res, 'arc_records[0]'),
+						get(res, 'instances[0]'),
 						null,
 					),
 				);
