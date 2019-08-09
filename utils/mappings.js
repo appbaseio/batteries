@@ -407,16 +407,14 @@ export function updateMappingES7(mapping, field, type, usecase) {
 /**
  * Traverse the mappings object & returns the fields (leaf)
  * @param {Object} mappings
- * @returns {{ [key: string]: Array<string> }}
+ * @returns {{ [key: string]: Array<string> | Array<string> }}
+ * For v7 apps it'll return an array of fields instead of an object
  */
-export async function traverseMapping(
+export function traverseMapping(
 	mappings = {},
-	appName,
-	credentials,
 	returnOnlyLeafFields = false,
 ) {
 	const fieldObject = {};
-	const version = await getESVersion(appName, credentials);
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
 		const setFields = (mp, prefix = '') => {
@@ -437,12 +435,12 @@ export async function traverseMapping(
 		};
 		setFields(m);
 	};
-	if (+version >= 7) {
+	if (mappings.properties) {
 		checkIfPropertyPresent(mappings, 'properties');
 	} else {
 		Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
 	}
-	return fieldObject;
+	return fieldObject.properties ? fieldObject.properties : fieldObject;
 }
 
 function getFieldsTree(mappings = {}, prefix = null) {
