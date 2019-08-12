@@ -3,7 +3,7 @@ import { css } from 'emotion';
 import moment from 'moment';
 import { Button } from 'antd';
 // import mockProfile from './components/mockProfile';
-import { ACC_API } from '../../utils';
+import { ACC_API, getSecretHeaders } from '../../utils';
 import { doGet } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 
@@ -33,7 +33,11 @@ const replaySearch = [
 		width: 125,
 		render: item => (
 			<div css="text-align: center">
-				<Button disabled={!item.search_state} icon="redo" onClick={() => item.handleReplaySearch(item.search_state)} />
+				<Button
+					disabled={!item.search_state}
+					icon="redo"
+					onClick={() => item.handleReplaySearch(item.search_state)}
+				/>
 			</div>
 		),
 	},
@@ -377,6 +381,7 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 		})
 			// Comment out this line
@@ -403,6 +408,7 @@ export function getSearchLatency(appName, plan) {
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					...getSecretHeaders(),
 				},
 			},
 		)
@@ -429,6 +435,7 @@ export function getGeoDistribution(appName, plan) {
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 		})
 			// Comment out this line
@@ -479,6 +486,7 @@ export function getPopularSearches(appName, plan, clickanalytics = true, size = 
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					...getSecretHeaders(),
 				},
 			},
 		)
@@ -510,6 +518,7 @@ export function getNoResultSearches(appName, plan, size = 100) {
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					...getSecretHeaders(),
 				},
 			},
 		)
@@ -537,6 +546,7 @@ export function getPopularResults(appName, plan, clickanalytics = true, size = 1
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					...getSecretHeaders(),
 				},
 			},
 		)
@@ -564,6 +574,7 @@ export function getPopularFilters(appName, plan, clickanalytics = true, size = 1
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					...getSecretHeaders(),
 				},
 			},
 		)
@@ -596,6 +607,7 @@ export function getRequestLogs(appName, plan, size = 10, from = 0, filter) {
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
+					...getSecretHeaders(),
 				},
 			},
 		)

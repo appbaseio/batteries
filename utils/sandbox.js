@@ -1,10 +1,13 @@
-import { ACC_API } from './index';
+import { ACC_API, getSecretHeaders } from './index';
 
 export function getPreferences(name) {
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/app/${name}/preferences`, {
 			method: 'GET',
 			credentials: 'include',
+			headers: {
+				...getSecretHeaders(),
+			},
 		})
 			.then(res => res.json())
 			.then(res => resolve(res.message))
@@ -22,6 +25,7 @@ export function setPreferences(name, preferences) {
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 			body: JSON.stringify(preferences),
 		})

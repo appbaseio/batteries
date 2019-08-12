@@ -1,6 +1,6 @@
 import mappingUsecase from './mappingUsecase';
 import analyzerSettings from './analyzerSettings';
-import { SCALR_API, ACC_API } from './index';
+import { SCALR_API, ACC_API, getSecretHeaders } from './index';
 
 const PRESERVED_KEYS = ['meta'];
 export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
@@ -170,7 +170,12 @@ export function openIndex(appName, credentials, url = SCALR_API) {
 }
 
 export async function getESVersion(appName) {
-	const response = await fetch(`${ACC_API}/app/${appName}`, { credentials: 'include' });
+	const response = await fetch(`${ACC_API}/app/${appName}`, {
+		credentials: 'include',
+		headers: {
+			...getSecretHeaders(),
+		},
+	});
 	const data = await response.json();
 	if (response.status >= 400) {
 		throw new Error(data);
@@ -199,6 +204,7 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 			body: JSON.stringify(body),
 		})

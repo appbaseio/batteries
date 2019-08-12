@@ -1,4 +1,4 @@
-import { ACC_API } from './index';
+import { ACC_API, getSecretHeaders } from './index';
 import {
  doDelete, doPatch, doGet, doPost,
 } from './requestService';
@@ -11,6 +11,7 @@ export const getPermission = appId => new Promise((resolve, reject) => {
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 		})
 			.then(res => res.json())
@@ -28,6 +29,7 @@ export const newPermission = (appId, info) => new Promise((resolve, reject) => {
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 			body: JSON.stringify(info),
 		})
@@ -42,6 +44,7 @@ export const deletePermission = (appId, username) => new Promise((resolve, rejec
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders()
 			},
 		})
 			.then(res => res.json())
@@ -67,6 +70,7 @@ export const getAppMetrics = appId => new Promise((resolve, reject) => {
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders()
 			},
 		})
 			.then(res => res.json())
@@ -80,6 +84,7 @@ export const getPublicKey = appId => new Promise((resolve, reject) => {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders()
 			},
 		})
 			.then(async (res) => {
@@ -98,6 +103,7 @@ export const setPublicKey = (appId, key, role) => new Promise((resolve, reject) 
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 			body: JSON.stringify({ public_key: key, role_key: role }),
 		})

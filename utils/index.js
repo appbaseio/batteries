@@ -67,6 +67,7 @@ export function getCredentials(appId) {
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 		})
 			.then(res => res.json())
@@ -106,6 +107,7 @@ export const setUserInfo = userInfo =>
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
+				...getSecretHeaders(),
 			},
 			body: JSON.stringify(userInfo),
 		})
@@ -200,4 +202,18 @@ export const parseSearchState = (searchState = {}) => {
 		searchProfile[key] = state;
 	});
 	return searchProfile;
+};
+
+export const getSecretHeaders = () => {
+	const storedValue = sessionStorage.getItem('secretHeaders');
+
+	if (storedValue) {
+		const parsedValue = JSON.parse(storedValue);
+
+		return {
+			'x-app-secret': parsedValue.secret,
+			'x-secret-id': parsedValue.mail,
+		};
+	}
+	return {};
 };
