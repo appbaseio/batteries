@@ -5,6 +5,7 @@ import {
 	deleteApp as DeleteApp,
 	getShare,
 	getAppPlan as fetchAppPlan,
+	getBuildInfo as fetchBuildInfo,
 	createShare,
 	createSubscription,
 	deleteSubscription,
@@ -90,7 +91,17 @@ export function deleteAppShare(username, payload, appId) {
 }
 
 export function getAppPlan() {
-	return (dispatch) => {
+	return (dispatch, getState) => {
+		const billing = get(getState(), '$getBuildInfo.results.billing');
+		if (billing === false) {
+			return dispatch(createAction(
+				AppConstants.APP.GET_PLAN_SUCCESS,
+				{
+					tier: 'arc-basic',
+				},
+				null,
+			));
+		}
 		dispatch(createAction(AppConstants.APP.GET_PLAN));
 		return fetchAppPlan()
 			.then((res) => {
@@ -103,6 +114,23 @@ export function getAppPlan() {
 				);
 			})
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
+	};
+}
+
+export function getBuildInfo() {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.GET_BUILD_INFO));
+		return fetchBuildInfo()
+			.then((res) => {
+				dispatch(
+					createAction(
+						AppConstants.APP.GET_BUILD_INFO_SUCCESS,
+						get(res, 'buildinfo'),
+						null,
+					),
+				);
+			})
+			.catch(error => dispatch(createAction(AppConstants.APP.GET_BUILD_INFO_ERROR, null, error)));
 	};
 }
 

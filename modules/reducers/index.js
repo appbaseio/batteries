@@ -30,6 +30,11 @@ export default {
 		AppConstants.APP.GET_PLAN_ERROR,
 		computeAppPlanState,
 	),
+	$getBuildInfo: createRequestReducer(
+		AppConstants.APP.GET_BUILD_INFO,
+		AppConstants.APP.GET_BUILD_INFO_SUCCESS,
+		AppConstants.APP.GET_BUILD_INFO_ERROR,
+	),
 	$getClusterUsers: createRequestReducer(
 		AppConstants.APP.USERS.GET,
 		AppConstants.APP.USERS.GET_SUCCESS,

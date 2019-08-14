@@ -77,6 +77,11 @@ export const getAppPlan = () => {
 	return doGet(`${ACC_API}/arc/instances`);
 };
 
+export const getBuildInfo = () => {
+	const ACC_API = getURL();
+	return doGet(`${ACC_API}/_buildinfo`);
+};
+
 export const createSubscription = (token, plan) => {
 	const ACC_API = getURL();
 	return doPost(`${ACC_API}/arc/subscription`, { token, plan });
