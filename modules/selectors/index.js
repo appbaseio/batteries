@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import get from 'lodash/get';
 
-const appName = (state, name) => name || get(state, '$getCurrentApp.name');
+const appName = (state, name) => name || get(state, '$getCurrentApp.name') || 'default';
 const rawMappings = state => get(state, '$getAppMappings.rawMappings');
 const traversedMappings = state => get(state, '$getAppMappings.traversedMappings');
 const appPlan = state => get(state, '$getAppPlan.results');
@@ -15,58 +15,58 @@ const appAnalyticsSummary = state => get(state, '$getAppAnalyticsSummary.results
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
 const getRawMappingsByAppName = createSelector(
-	rawMappings,
-	appName,
-	getCollectionByKey,
+  rawMappings,
+  appName,
+  getCollectionByKey,
 );
 const getTraversedMappingsByAppName = createSelector(
-	traversedMappings,
-	appName,
-	getCollectionByKey,
+  traversedMappings,
+  appName,
+  getCollectionByKey,
 );
 const getAppPlanByName = createSelector(
-	appPlan,
-	appName,
-	collection => collection,
+  appPlan,
+  appName,
+  collection => collection,
 );
 const getAppAnalyticsByName = createSelector(
-	appAnalytics,
-	appName,
-	getCollectionByKey,
+  appAnalytics,
+  appName,
+  getCollectionByKey,
 );
 const getAppPermissionsByName = createSelector(
-	appPermission,
-	appName,
-	getCollectionByKey,
+  appPermission,
+  appName,
+  getCollectionByKey,
 );
 const getAppSearchLatencyByName = createSelector(
-	appSearchLatency,
-	appName,
-	getCollectionByKey,
+  appSearchLatency,
+  appName,
+  getCollectionByKey,
 );
 const getAppGeoDistributionByName = createSelector(
-	appGeoDistribution,
-	appName,
-	getCollectionByKey,
+  appGeoDistribution,
+  appName,
+  getCollectionByKey,
 );
 const getAppAnalyticsSummaryByName = createSelector(
-	appAnalyticsSummary,
-	appName,
-	getCollectionByKey,
+  appAnalyticsSummary,
+  appName,
+  getCollectionByKey,
 );
 const getAppRequestDistributionByName = createSelector(
-	appRequestDistribution,
-	appName,
-	getCollectionByKey,
+  appRequestDistribution,
+  appName,
+  getCollectionByKey,
 );
 export {
-	getRawMappingsByAppName,
-	getTraversedMappingsByAppName,
-	getAppSearchLatencyByName,
-	getAppGeoDistributionByName,
-	getAppRequestDistributionByName,
-	getAppAnalyticsSummaryByName,
-	getAppAnalyticsByName,
-	getAppPermissionsByName,
-	getAppPlanByName,
+  getRawMappingsByAppName,
+  getTraversedMappingsByAppName,
+  getAppSearchLatencyByName,
+  getAppGeoDistributionByName,
+  getAppRequestDistributionByName,
+  getAppAnalyticsSummaryByName,
+  getAppAnalyticsByName,
+  getAppPermissionsByName,
+  getAppPlanByName,
 };

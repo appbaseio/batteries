@@ -287,11 +287,12 @@ RequestLogs.defaultProps = {
 	onTabChange: undefined, // Use this to override the default redirect logic on tab change
 	tab: 'all',
 	pageSize: 10,
+	appName: undefined,
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
 	onTabChange: PropTypes.func,
-	appName: PropTypes.string.isRequired,
+	appName: PropTypes.string,
 	changeUrlOnTabChange: PropTypes.bool,
 	pageSize: PropTypes.number,
 };

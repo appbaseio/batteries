@@ -82,12 +82,13 @@ class Main extends React.Component {
 }
 Main.defaultProps = {
 	chartWidth: undefined,
+	appName: undefined,
 	handleReplayClick: undefined,
 	onClickViewAll: null,
 	displayReplaySearch: false,
 };
 Main.propTypes = {
-	appName: PropTypes.string.isRequired,
+	appName: PropTypes.string,
 	onClickViewAll: PropTypes.object,
 	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	plan: PropTypes.string.isRequired,
