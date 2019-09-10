@@ -91,3 +91,50 @@ export const deleteSubscription = (payload) => {
 	const ACC_API = getURL();
 	return doDelete(`${ACC_API}/arc/subscription`, undefined, undefined, payload);
 };
+
+export const getPublicKey = () => new Promise((resolve, reject) => {
+		const ACC_API = getURL();
+		const authToken = getAuthToken();
+		fetch(`${ACC_API}/_public_key`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
+			},
+		})
+			.then(async (res) => {
+				const data = await res.json();
+				if (res.status >= 400) {
+					reject(data);
+				}
+				resolve(data);
+			})
+			.catch(error => reject(error));
+	});
+
+export const setPublicKey = (name, key, role) => new Promise((resolve, reject) => {
+		const ACC_API = getURL();
+		const authToken = getAuthToken();
+		fetch(`${ACC_API}/_public_key`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Basic ${authToken}`,
+			},
+			body: JSON.stringify({ public_key: key, role_key: role }),
+		})
+			.then(async (res) => {
+				const data = await res.json();
+
+				if (data.error && data.error.code >= 400) {
+					reject(data);
+				}
+				resolve({
+					public_key: key,
+					role_key: role,
+					...data.body,
+					message: data.message,
+				});
+			})
+			.catch(error => reject(error));
+	});
