@@ -126,7 +126,7 @@ export const setPublicKey = (name, key, role) => new Promise((resolve, reject) =
 			.then(async (res) => {
 				const data = await res.json();
 
-				if (data.error && data.error.code >= 400) {
+				if (data.error && data.status >= 400) {
 					reject(data);
 				}
 				resolve({
