@@ -434,7 +434,10 @@ class Mappings extends Component {
 			isMappingsPresent = mapping && mapping.properties;
 			properties = mapping.properties;
 		} else {
-			isMappingsPresent = mapping && activeType[0] && mapping[activeType[0]] && mapping[activeType[0]].properties;
+			isMappingsPresent =				mapping
+				&& activeType[0]
+				&& mapping[activeType[0]]
+				&& mapping[activeType[0]].properties;
 			properties = mapping[activeType[0]].properties;
 		}
 		if (isMappingsPresent) {
@@ -1197,7 +1200,7 @@ class Mappings extends Component {
 						<h4>
 							Move slider to change the number of shards for your app. Read more{' '}
 							<a
-								href="https://docs.appbase.io/concepts/mappings.html#manage-shards"
+								href="https://docs.appbase.io/docs/search/Mappings/#manage-shards"
 								target="_blank"
 								rel="noopener noreferrer"
 							>

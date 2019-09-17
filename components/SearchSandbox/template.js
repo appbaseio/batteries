@@ -243,8 +243,9 @@ const App = () => (
 				${sandboxCodeFormat(searchCode)}
 
 				<SelectedFilters />
-
-				${sandboxCodeFormat(resultCode)}
+				<div id="result">
+					${sandboxCodeFormat(resultCode)}
+				</div>
 			</Col>
 			${attributionContainer}
 		</Row>
