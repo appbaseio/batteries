@@ -160,7 +160,7 @@ class RSComponentRender extends Component {
 
 	renderComponentCode = () => {
 		const {
-			component, id, mappings, componentProps, customProps, version
+			component, id, mappings, componentProps, customProps, version,
 		} = this.props; // prettier-ignore
 		const customComponentProps = customProps[component];
 
@@ -185,7 +185,7 @@ class RSComponentRender extends Component {
 		const value = componentProps[name] === undefined ? item.default : componentProps[name];
 		const placeholder = item.placeholder || '';
 
-		if(name === 'customSuggestions' || name === 'showDescription' && !isShopify) {
+		if (name === 'customSuggestions' || (name === 'showDescription' && !isShopify)) {
 			return null;
 		}
 
@@ -271,10 +271,17 @@ class RSComponentRender extends Component {
 			}
 
 			case 'editor': {
-				const {componentProps: stateComponentProps} = this.state;
+				const { componentProps: stateComponentProps } = this.state;
 				FormInput = (
-					<HtmlEditor name={name} height="250px" width="100%" value={stateComponentProps.customSuggestions || value || undefined} placeholder={placeholder} onChange={(value) => this.setComponentProps({[name]: value})} />
-				)
+					<HtmlEditor
+						name={name}
+						height="250px"
+						width="100%"
+						value={stateComponentProps.customSuggestions || value || undefined}
+						placeholder={placeholder}
+						onChange={value => this.setComponentProps({ [name]: value })}
+					/>
+				);
 				break;
 			}
 
