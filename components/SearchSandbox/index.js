@@ -156,9 +156,11 @@ class SearchSandbox extends Component {
 		return !!searchState;
 	}
 
-	toggleAnalytics = () => this.setState(prevState => ({
+	toggleAnalytics = () => {
+		this.setState(prevState => ({
 			analytics: !prevState.analytics,
 		}));
+	};
 
 	savePreferences = (forceUpdate) => {
 		const { isDashboard, appName, clearProfile } = this.props;
@@ -288,9 +290,8 @@ class SearchSandbox extends Component {
 		const {
 			appId, appName, url, credentials, attribution, customProps,
 		} = this.props; // prettier-ignore
-		const {
- componentProps, mappings, version, analytics,
-} = this.state;
+		// eslint-disable-next-line object-curly-newline
+		const { componentProps, mappings, version, analytics } = this.state;
 		const config = {
 			appId: appId || null,
 			appName: appName || null,
