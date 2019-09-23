@@ -35,7 +35,7 @@ class Summary extends React.Component {
 			<Flex flexDirection="row" css="flex-wrap:wrap">
 				<SummaryCard title="Total Searches" count={totalSearches} border="#00f68e" />
 				<SummaryCard title="Average Click Rate" count={avgClickRate} border="#1A74FF" />
-				<SummaryCard title="Conversion" count={avgClickRate} border="#C944FF" />
+				<SummaryCard title="Conversion" count={avgConversionRate} border="#C944FF" />
 			</Flex>
 		);
 	}
