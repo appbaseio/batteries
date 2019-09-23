@@ -7,6 +7,7 @@ import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';
 
 import multiListTypes from '../utils/multilist-types';
+// eslint-disable-next-line import/no-cycle
 import RSWrapper from '../components/RSWrapper';
 import { formWrapper, tagContainer } from '../styles';
 import DataFieldInput from '../components/DataFieldInput';
@@ -14,8 +15,10 @@ import { getAvailableDataField } from '../utils/dataField';
 import {
  NumberInput, TextInput, DropdownInput, ToggleInput,
 } from '../../shared/Input';
+// eslint-disable-next-line import/no-cycle
+import { AnalyticsContext } from '../../../../pages/SandboxPage/SandboxPage';
 
-export default class Editor extends Component {
+class Editor extends Component {
 	constructor(props) {
 		super(props);
 		const { mappings } = props;
@@ -200,6 +203,7 @@ export default class Editor extends Component {
 			url,
 			deleteComponent,
 			useCategorySearch,
+			enableAnalytics,
 		} = this.props;
 		const { renderKey, showModal, showVideo } = this.state;
 		const title = (
@@ -213,7 +217,13 @@ export default class Editor extends Component {
 			</span>
 		);
 		return (
-			<ReactiveBase app={appName} credentials={credentials} url={url} analytics searchStateHeader>
+			<ReactiveBase
+				app={appName}
+				credentials={credentials}
+				url={url}
+				analytics={enableAnalytics}
+				searchStateHeader
+			>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
 						<Card title={title} id="video-title">
@@ -253,13 +263,18 @@ export default class Editor extends Component {
 						<Card>
 							<SelectedFilters
 								render={(props) => {
-									const { selectedValues, setValue, clearValues, components } = props;
+									const {
+										selectedValues,
+										setValue,
+										clearValues,
+										components,
+									} = props;
 									const clearFilter = (component) => {
 										setValue(component, null);
 									};
 
 									const filters = Object.keys(selectedValues).map((component) => {
-										if(!components.includes(component)) {
+										if (!components.includes(component)) {
 											return null;
 										}
 
@@ -267,9 +282,7 @@ export default class Editor extends Component {
 											!selectedValues[component].value
 											|| selectedValues[component].value.length === 0
 										) return null;
-										const value = `${component} : ${
-											selectedValues[component].value
-										}`;
+										const value = `${component} : ${selectedValues[component].value}`;
 
 										return (
 											<SelectedTag
@@ -362,3 +375,11 @@ Editor.propTypes = {
 Editor.defaultProps = {
 	mappingsURL: '/mappings',
 };
+
+const EditorWithConsumer = props => (
+	<AnalyticsContext.Consumer>
+		{({ enableAnalytics }) => <Editor {...props} enableAnalytics={enableAnalytics} />}
+	</AnalyticsContext.Consumer>
+);
+
+export default EditorWithConsumer;

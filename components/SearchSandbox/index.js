@@ -15,6 +15,8 @@ import getSearchTemplate, { getTemplateStyles } from './template';
 import { getAppMappings as getMappings, clearSearchState } from '../../modules/actions';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import joyrideSteps from './utils/joyrideSteps';
+// eslint-disable-next-line import/no-cycle
+import { AnalyticsContext } from '../../../pages/SandboxPage/SandboxPage';
 
 const wrapper = css`
 	padding: 15px;
@@ -281,7 +283,7 @@ class SearchSandbox extends Component {
 
 	openSandbox = () => {
 		const {
-			appId, appName, url, credentials, attribution, customProps,
+			appId, appName, url, credentials, attribution, customProps, enableAnalytics,
 		} = this.props; // prettier-ignore
 		const { componentProps, mappings, version } = this.state;
 		const config = {
@@ -293,6 +295,7 @@ class SearchSandbox extends Component {
 			mappings,
 			attribution: attribution || null,
 			customProps,
+			analytics: enableAnalytics,
 		};
 		const code = getSearchTemplate(config, version);
 		const html = '<div id="root"></div>';
@@ -448,6 +451,7 @@ SearchSandbox.propTypes = {
 	showCustomList: PropTypes.bool,
 	showTutorial: PropTypes.bool,
 	isShopify: PropTypes.bool,
+	enableAnalytics: PropTypes.bool.isRequired,
 };
 
 SearchSandbox.defaultProps = {
@@ -486,7 +490,13 @@ const mapDispatchToProps = dispatch => ({
 	clearProfile: () => dispatch(clearSearchState()),
 });
 
+const SearchSandBoxWithConsumer = props => (
+	<AnalyticsContext.Consumer>
+		{({ enableAnalytics }) => <SearchSandbox {...props} enableAnalytics={enableAnalytics} />}
+	</AnalyticsContext.Consumer>
+);
+
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps,
-)(SearchSandbox);
+)(SearchSandBoxWithConsumer);

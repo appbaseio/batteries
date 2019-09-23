@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import {
- Menu, Button, Dropdown, Icon, Modal, Input, message,
+ Menu, Button, Dropdown, Icon, Modal, Input, message, Switch,
 } from 'antd';
 import {
  bool, arrayOf, string, func,
 } from 'prop-types';
+// eslint-disable-next-line import/no-cycle
+import { AnalyticsContext } from '../../../../pages/SandboxPage/SandboxPage';
 
 const CREATE_NEW_PROFILE = 'SEARCH_SANDBOX_CREATE_NEW_PROFILE_APPBASE';
 const SAVE_AS_NEW_PROFILE = 'SEARCH_SANDBOX_SAVE_AS_NEW_PROFILE_APPBASE';
 
-export default class Header extends Component {
+class Header extends Component {
 	constructor(props) {
 		super(props);
 
@@ -118,6 +120,8 @@ export default class Header extends Component {
 			profileList,
 			openSandbox,
 			isUnsaved,
+			toggleAnalytics,
+			enableAnalytics,
 		} = this.props;
 
 		const { profile, showNewProfileModal, modalError } = this.state;
@@ -180,7 +184,9 @@ export default class Header extends Component {
 						Open in Codesandbox
 					</Button>
 				) : null}
-
+				<div style={{ marginTop: 8, marginRight: 8 }}>
+					<Switch checked={enableAnalytics} onChange={toggleAnalytics} /> Enable analytics
+				</div>
 				<Modal
 					title="Create a new Search Profile"
 					visible={showNewProfileModal}
@@ -208,4 +214,20 @@ Header.propTypes = {
 	defaultProfile: string.isRequired, // eslint-disable-line
 	setProfile: func.isRequired,
 	openSandbox: func.isRequired,
+	toggleAnalytics: func.isRequired,
+	enableAnalytics: bool.isRequired,
 };
+
+const HeaderWithConsumer = props => (
+	<AnalyticsContext.Consumer>
+		{({ enableAnalytics, toggleAnalytics }) => (
+			<Header
+				{...props}
+				enableAnalytics={enableAnalytics}
+				toggleAnalytics={toggleAnalytics}
+			/>
+		)}
+	</AnalyticsContext.Consumer>
+);
+
+export default HeaderWithConsumer;
