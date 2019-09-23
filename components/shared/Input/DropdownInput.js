@@ -1,6 +1,6 @@
 import React from 'react';
 import {
- func, string, array, any,
+	func, string, array, any, object,
 } from 'prop-types';
 import { Select } from 'antd';
 
@@ -13,7 +13,7 @@ class DropdownInput extends React.Component {
 	};
 
 	render() {
-		const { options: dropdownOptions } = this.props;
+		const { options: dropdownOptions, styleProps } = this.props;
 		const {
             value, noOptionsMessage,
         } = this.props; // prettier-ignore
@@ -28,6 +28,7 @@ class DropdownInput extends React.Component {
 				value={value}
 				optionFilterProp="children"
 				onChange={this.handleDropdownChange}
+				style={styleProps}
 				filterOption={
                     (input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 } // prettier-ignore
@@ -50,11 +51,13 @@ DropdownInput.propTypes = {
 	value: string.isRequired,
 	noOptionsMessage: any,
 	options: array,
+	styleProps: object,
 };
 
 DropdownInput.defaultProps = {
 	noOptionsMessage: 'Nothing to Show',
 	options: [],
+	styleProps: {},
 };
 
 export default DropdownInput;
