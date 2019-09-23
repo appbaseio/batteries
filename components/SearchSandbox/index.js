@@ -290,8 +290,13 @@ class SearchSandbox extends Component {
 		const {
 			appId, appName, url, credentials, attribution, customProps,
 		} = this.props; // prettier-ignore
-		// eslint-disable-next-line object-curly-newline
-		const { componentProps, mappings, version, analytics } = this.state;
+		// prettier-ignore
+		const {
+			componentProps,
+			mappings,
+			version,
+			analytics,
+		} = this.state;
 		const config = {
 			appId: appId || null,
 			appName: appName || null,
