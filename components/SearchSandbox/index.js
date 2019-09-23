@@ -149,8 +149,13 @@ class SearchSandbox extends Component {
 	};
 
 	savePreferences = (forceUpdate) => {
-		// eslint-disable-next-line object-curly-newline
-		const { isDashboard, appName, clearProfile, credentials } = this.props;
+		// prettier-ignore
+		const {
+			isDashboard,
+			appName,
+			clearProfile,
+			credentials,
+		} = this.props;
 		const { profile, componentProps } = this.state;
 		const filteredProps = {};
 		Object.keys(componentProps).forEach((item) => {
@@ -279,8 +284,13 @@ class SearchSandbox extends Component {
 		const {
 			appId, appName, url, credentials, attribution, customProps,
 		} = this.props; // prettier-ignore
-		// eslint-disable-next-line object-curly-newline
-		const { componentProps, mappings, version, analytics } = this.state;
+		// prettier-ignore
+		const {
+			componentProps,
+			mappings,
+			version,
+			analytics,
+		} = this.state;
 		const config = {
 			appId: appId || null,
 			appName: appName || null,
