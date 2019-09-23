@@ -38,6 +38,7 @@ class SearchSandbox extends Component {
 			).length,
 			loading: true,
 			version: null,
+			analytics: true,
 		};
 	}
 
@@ -141,10 +142,16 @@ class SearchSandbox extends Component {
 		return !!searchState;
 	}
 
+	toggleAnalytics = () => {
+		this.setState(prevState => ({
+			analytics: !prevState.analytics,
+		}));
+	};
+
 	savePreferences = (forceUpdate) => {
 		const {
-			isDashboard, appName, clearProfile, credentials,
-		} = this.props;
+ isDashboard, appName, clearProfile, credentials,
+} = this.props;
 		const { profile, componentProps } = this.state;
 		const filteredProps = {};
 		Object.keys(componentProps).forEach((item) => {
@@ -158,11 +165,11 @@ class SearchSandbox extends Component {
 
 		if (isDashboard && (forceUpdate || !this.isUnsaved)) {
 			setPreferences(appName, credentials, this.pref)
-			.then(() => {
-				// clear saved profile after save
-				clearProfile();
-			})
-			.catch(() => this.setLocalPref(this.pref));
+				.then(() => {
+					// clear saved profile after save
+					clearProfile();
+				})
+				.catch(() => this.setLocalPref(this.pref));
 		} else {
 			this.setLocalPref(this.pref);
 		}
@@ -273,7 +280,8 @@ class SearchSandbox extends Component {
 		const {
 			appId, appName, url, credentials, attribution, customProps,
 		} = this.props; // prettier-ignore
-		const { componentProps, mappings, version } = this.state;
+		// eslint-disable-next-line object-curly-newline
+		const { componentProps, mappings, version, analytics } = this.state;
 		const config = {
 			appId: appId || null,
 			appName: appName || null,
@@ -283,6 +291,7 @@ class SearchSandbox extends Component {
 			mappings,
 			attribution: attribution || null,
 			customProps,
+			analytics,
 		};
 		const code = getSearchTemplate(config, version);
 		const html = '<div id="root"></div>';
@@ -356,7 +365,7 @@ class SearchSandbox extends Component {
 			customJoyrideSteps,
 		} = this.props;
 		const {
-			mappingsType, componentProps, filterCount, profile, version,
+			mappingsType, componentProps, filterCount, profile, version, analytics,
 		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
@@ -378,6 +387,7 @@ class SearchSandbox extends Component {
 			showCodePreview,
 			showCustomList,
 			version,
+			analytics,
 		};
 
 		return (
@@ -394,6 +404,8 @@ class SearchSandbox extends Component {
 						onNewProfile={this.onNewProfile}
 						deleteProfile={this.deleteProfile}
 						openSandbox={this.openSandbox}
+						analytics={analytics}
+						toggleAnalytics={this.toggleAnalytics}
 					/>
 					<Walkthrough
 						id="SearchPreview"
