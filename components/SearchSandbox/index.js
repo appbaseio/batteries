@@ -149,9 +149,8 @@ class SearchSandbox extends Component {
 	};
 
 	savePreferences = (forceUpdate) => {
-		const {
- isDashboard, appName, clearProfile, credentials,
-} = this.props;
+		// eslint-disable-next-line object-curly-newline
+		const { isDashboard, appName, clearProfile, credentials } = this.props;
 		const { profile, componentProps } = this.state;
 		const filteredProps = {};
 		Object.keys(componentProps).forEach((item) => {
