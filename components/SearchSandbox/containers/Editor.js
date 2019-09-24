@@ -200,6 +200,7 @@ export default class Editor extends Component {
 			url,
 			deleteComponent,
 			useCategorySearch,
+			analytics,
 		} = this.props;
 		const { renderKey, showModal, showVideo } = this.state;
 		const title = (
@@ -213,7 +214,13 @@ export default class Editor extends Component {
 			</span>
 		);
 		return (
-			<ReactiveBase app={appName} credentials={credentials} url={url} analytics searchStateHeader>
+			<ReactiveBase
+				app={appName}
+				credentials={credentials}
+				url={url}
+				analytics={analytics}
+				searchStateHeader
+			>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
 						<Card title={title} id="video-title">
@@ -253,13 +260,18 @@ export default class Editor extends Component {
 						<Card>
 							<SelectedFilters
 								render={(props) => {
-									const { selectedValues, setValue, clearValues, components } = props;
+									const {
+										selectedValues,
+										setValue,
+										clearValues,
+										components,
+									} = props;
 									const clearFilter = (component) => {
 										setValue(component, null);
 									};
 
 									const filters = Object.keys(selectedValues).map((component) => {
-										if(!components.includes(component)) {
+										if (!components.includes(component)) {
 											return null;
 										}
 
@@ -267,9 +279,7 @@ export default class Editor extends Component {
 											!selectedValues[component].value
 											|| selectedValues[component].value.length === 0
 										) return null;
-										const value = `${component} : ${
-											selectedValues[component].value
-										}`;
+										const value = `${component} : ${selectedValues[component].value}`;
 
 										return (
 											<SelectedTag
