@@ -200,8 +200,13 @@ export default class Editor extends Component {
 
 	render() {
 		const {
- componentProps, appName, credentials, url, deleteComponent
-} = this.props;
+			componentProps,
+			appName,
+			credentials,
+			url,
+			deleteComponent,
+			analytics,
+		} = this.props;
 		const { renderKey, showModal, showVideo } = this.state;
 
 		const title = (
@@ -215,7 +220,13 @@ export default class Editor extends Component {
 			</span>
 		);
 		return (
-			<ReactiveBase app={appName} credentials={credentials} url={url} analytics searchStateHeader>
+			<ReactiveBase
+				app={appName}
+				credentials={credentials}
+				url={url}
+				analytics={analytics}
+				searchStateHeader
+			>
 				<Row gutter={16} style={{ padding: 20 }}>
 					<Col span={6}>
 						<Card title={title} id="video-title">
@@ -257,19 +268,26 @@ export default class Editor extends Component {
 						<Card>
 							<SelectedFilters
 								render={(props) => {
-									const { selectedValues, setValue, clearValues } = props;
+									const {
+										selectedValues,
+										setValue,
+										clearValues,
+										components,
+									} = props;
 									const clearFilter = (component) => {
 										setValue(component, null);
 									};
 
 									const filters = Object.keys(selectedValues).map((component) => {
+										if (!components.includes(component)) {
+											return null;
+										}
+
 										if (
 											!selectedValues[component].value
 											|| selectedValues[component].value.length === 0
 										) return null;
-										const value = `${component} : ${
-											selectedValues[component].value
-											}`;
+										const value = `${component} : ${selectedValues[component].value}`;
 
 										return (
 											<SelectedTag
@@ -293,7 +311,7 @@ export default class Editor extends Component {
 													onClick={clearValues}
 												>
 													Clear All
-													</SelectedTag>
+												</SelectedTag>
 											) : null}
 										</div>
 									);

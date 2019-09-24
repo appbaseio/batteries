@@ -229,7 +229,7 @@ const App = () => (
 		app="${config.appName}"
 		credentials="${config.credentials}"
 		url="${config.url}"
-		analytics
+		analytics={${config.analytics}}
 		searchStateHeader
 	>
 		<Row gutter={16} style={{ padding: 20 }}>
