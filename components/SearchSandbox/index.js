@@ -70,6 +70,7 @@ class SearchSandbox extends Component {
 						this.setState({
 							profileList,
 							loading: false,
+							analytics: this.pref.analytics,
 						});
 					} else {
 						this.setState({
@@ -79,6 +80,7 @@ class SearchSandbox extends Component {
 							filterCount: Object.keys(componentProps).filter(
 								item => item !== 'search' && item !== 'result',
 							).length,
+							analytics: this.pref.analytics,
 						});
 					}
 				})
@@ -131,6 +133,7 @@ class SearchSandbox extends Component {
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
 			).length,
+			analytics: this.pref.analytics,
 		});
 	};
 
@@ -157,9 +160,12 @@ class SearchSandbox extends Component {
 	}
 
 	toggleAnalytics = () => {
-		this.setState(prevState => ({
-			analytics: !prevState.analytics,
-		}));
+		this.setState((prevState) => {
+			this.pref.analytics = !prevState.analytics;
+			return {
+				analytics: !prevState.analytics,
+			};
+		}, this.savePreferences);
 	};
 
 	savePreferences = (forceUpdate) => {
