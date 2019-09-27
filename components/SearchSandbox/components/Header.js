@@ -159,7 +159,7 @@ export default class Header extends Component {
 						placement="right"
 						title="Switch for whether to record analytics based on the search and click requests made from the Search Preview view. It's enabled by default."
 					>
-						<Switch checked={analytics} onChange={toggleAnalytics} /> Record analytics
+						<Switch checked={analytics} onChange={toggleAnalytics} /> Record Analytics
 					</Tooltip>
 				</div>
 				<div
