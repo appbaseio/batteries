@@ -72,6 +72,7 @@ class SearchSandbox extends Component {
 						this.setState({
 							profileList,
 							loading: false,
+							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 						});
 					} else {
 						this.setState({
@@ -81,6 +82,7 @@ class SearchSandbox extends Component {
 							filterCount: Object.keys(componentProps).filter(
 								item => item !== 'search' && item !== 'result',
 							).length,
+							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 						});
 					}
 				})
@@ -117,6 +119,7 @@ class SearchSandbox extends Component {
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
 			).length,
+			analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 		});
 	};
 
@@ -143,9 +146,12 @@ class SearchSandbox extends Component {
 	}
 
 	toggleAnalytics = () => {
-		this.setState(prevState => ({
-			analytics: !prevState.analytics,
-		}));
+		this.setState(
+			prevState => ({
+				analytics: !prevState.analytics,
+			}),
+			this.savePreferences,
+		);
 	};
 
 	savePreferences = (forceUpdate) => {
@@ -156,7 +162,7 @@ class SearchSandbox extends Component {
 			clearProfile,
 			credentials,
 		} = this.props;
-		const { profile, componentProps } = this.state;
+		const { profile, componentProps, analytics } = this.state;
 		const filteredProps = {};
 		Object.keys(componentProps).forEach((item) => {
 			const { defaultValue, value, ...state } = componentProps[item];
@@ -165,6 +171,7 @@ class SearchSandbox extends Component {
 		this.pref = {
 			...this.pref,
 			[profile]: filteredProps,
+			analytics,
 		};
 
 		if (isDashboard && (forceUpdate || !this.isUnsaved)) {

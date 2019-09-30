@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
- Menu, Button, Dropdown, Icon, Modal, Input, message, Switch,
+ Menu, Button, Dropdown, Icon, Modal, Input, message, Switch, Tooltip,
 } from 'antd';
 import {
  bool, arrayOf, string, func,
@@ -155,7 +155,12 @@ export default class Header extends Component {
 				style={{ display: 'flex', padding: '10px 20px 0', justifyContent: 'space-between' }}
 			>
 				<div style={{ marginTop: 8, marginRight: 8 }}>
-					<Switch checked={analytics} onChange={toggleAnalytics} /> Enable analytics
+					<Tooltip
+						placement="right"
+						title="Switch for whether to record analytics based on the search and click requests made from the Search Preview view. It's enabled by default."
+					>
+						<Switch checked={analytics} onChange={toggleAnalytics} /> Record Analytics
+					</Tooltip>
 				</div>
 				<div
 					style={{
