@@ -4,6 +4,7 @@ import get from 'lodash/get';
 const appName = (state, name) => name || get(state, '$getCurrentApp.name');
 const rawMappings = state => get(state, '$getAppMappings.rawMappings');
 const traversedMappings = state => get(state, '$getAppMappings.traversedMappings');
+const userPlan = state => get(state, '$getUserPlan');
 const appInfo = state => get(state, '$getAppInfo.apps');
 const appPlan = state => get(state, '$getAppPlan.results');
 const appMetrics = state => get(state, '$getAppMetrics.results');
@@ -17,6 +18,8 @@ const appAnalyticsSummary = state => get(state, '$getAppAnalyticsSummary.results
 const appPublicKey = state => get(state, '$getAppPublicKey.results');
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
+// Priority is given to the user's plan over app specific plan when trial is `true`.
+const getPlan = (collection, key, globalPlan) => (get(globalPlan, 'trial') === true ? globalPlan : getCollectionByKey(collection, key));
 
 const getRawMappingsByAppName = createSelector(
 	rawMappings,
@@ -36,7 +39,8 @@ const getAppInfoByName = createSelector(
 const getAppPlanByName = createSelector(
 	appPlan,
 	appName,
-	getCollectionByKey,
+	userPlan,
+	getPlan,
 );
 const getAppMetricsByName = createSelector(
 	appMetrics,
