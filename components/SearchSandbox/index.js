@@ -146,12 +146,12 @@ class SearchSandbox extends Component {
 	}
 
 	toggleAnalytics = () => {
-		this.setState((prevState) => {
-			this.pref.analytics = !prevState.analytics;
-			return {
+		this.setState(
+			prevState => ({
 				analytics: !prevState.analytics,
-			};
-		}, this.savePreferences);
+			}),
+			this.savePreferences,
+		);
 	};
 
 	savePreferences = (forceUpdate) => {
@@ -162,7 +162,7 @@ class SearchSandbox extends Component {
 			clearProfile,
 			credentials,
 		} = this.props;
-		const { profile, componentProps } = this.state;
+		const { profile, componentProps, analytics } = this.state;
 		const filteredProps = {};
 		Object.keys(componentProps).forEach((item) => {
 			const { defaultValue, value, ...state } = componentProps[item];
@@ -171,6 +171,7 @@ class SearchSandbox extends Component {
 		this.pref = {
 			...this.pref,
 			[profile]: filteredProps,
+			analytics,
 		};
 
 		if (isDashboard && (forceUpdate || !this.isUnsaved)) {
