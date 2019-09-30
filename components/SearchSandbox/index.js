@@ -119,7 +119,7 @@ class SearchSandbox extends Component {
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
 			).length,
-			analytics: this.pref.analytics,
+			analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 		});
 	};
 
