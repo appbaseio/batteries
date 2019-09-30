@@ -72,7 +72,7 @@ class SearchSandbox extends Component {
 						this.setState({
 							profileList,
 							loading: false,
-							analytics: this.pref.analytics,
+							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 						});
 					} else {
 						this.setState({
@@ -82,7 +82,7 @@ class SearchSandbox extends Component {
 							filterCount: Object.keys(componentProps).filter(
 								item => item !== 'search' && item !== 'result',
 							).length,
-							analytics: this.pref.analytics,
+							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 						});
 					}
 				})
