@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import get from 'lodash/get';
+import Filter from './Filter';
 import Searches from './Searches';
 import { getPopularResults, popularResultsFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
@@ -27,8 +28,19 @@ class PopularResults extends React.Component {
 	}
 
 	componentDidMount() {
-		const { appName } = this.props;
-		getPopularResults(appName)
+		this.fetchPopularResults();
+	}
+
+	componentDidUpdate(prevProps) {
+		const { filters } = this.props;
+		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+			this.fetchPopularResults();
+		}
+	}
+
+	fetchPopularResults = () => {
+		const { appName, filters } = this.props;
+		getPopularResults(appName, undefined, undefined, filters)
 			.then((res) => {
 				this.setState({
 					popularResults: res,
@@ -40,7 +52,7 @@ class PopularResults extends React.Component {
 					isFetching: false,
 				});
 			});
-	}
+	};
 
 	handleReplaySearch = (searchState) => {
 		const {
@@ -56,39 +68,42 @@ class PopularResults extends React.Component {
 
 	render() {
 		const { isFetching, popularResults } = this.state;
-		const { plan, displayReplaySearch } = this.props;
+		const { plan, displayReplaySearch, filterId } = this.props;
 		if (isFetching) {
 			return <Loader />;
 		}
 		return (
-			<Searches
-				tableProps={{
-					scroll: { x: 1000 },
-				}}
-				showViewOption={false}
-				columns={popularResultsFull(plan, displayReplaySearch)}
-				dataSource={popularResults.map(item => ({
-					...item,
-					handleReplaySearch: this.handleReplaySearch,
-				}))}
-				title="Popular Results"
-				pagination={{
-					pageSize: 10,
-				}}
-				onClickDownload={() => exportCSVFile(
-						headers,
-						popularResults.map(item => ({
-							key: item.key,
-							count: item.count,
-							source: item.source && item.source.replace(/,/g, ''),
-							clicks: item.clicks || '-',
-							clickposition: item.clickposition || '-',
-							conversionrate: item.conversionrate || '-',
-						})),
-						'popular_results',
-					)
-				}
-			/>
+			<React.Fragment>
+				{filterId && <Filter filterId={filterId} />}
+				<Searches
+					tableProps={{
+						scroll: { x: 1000 },
+					}}
+					showViewOption={false}
+					columns={popularResultsFull(plan, displayReplaySearch)}
+					dataSource={popularResults.map(item => ({
+						...item,
+						handleReplaySearch: this.handleReplaySearch,
+					}))}
+					title="Popular Results"
+					pagination={{
+						pageSize: 10,
+					}}
+					onClickDownload={() => exportCSVFile(
+							headers,
+							popularResults.map(item => ({
+								key: item.key,
+								count: item.count,
+								source: item.source && item.source.replace(/,/g, ''),
+								clicks: item.clicks || '-',
+								clickposition: item.clickposition || '-',
+								conversionrate: item.conversionrate || '-',
+							})),
+							'popular_results',
+						)
+					}
+				/>
+			</React.Fragment>
 		);
 	}
 }
@@ -96,9 +111,13 @@ class PopularResults extends React.Component {
 PopularResults.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
+	filterId: undefined,
+	filters: undefined,
 };
 
 PopularResults.propTypes = {
+	filterId: PropTypes.string,
+	filters: PropTypes.object,
 	plan: PropTypes.string.isRequired,
 	appName: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
@@ -107,10 +126,11 @@ PopularResults.propTypes = {
 	history: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-		plan: 'growth',
-		appName: get(state, '$getCurrentApp.name'),
-	});
+const mapStateToProps = (state, props) => ({
+	plan: 'growth',
+	appName: get(state, '$getCurrentApp.name'),
+	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+});
 const mapDispatchToProps = dispatch => ({
 	saveState: state => dispatch(setSearchState(state)),
 });

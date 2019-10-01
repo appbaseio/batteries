@@ -28,9 +28,20 @@ class Main extends React.Component {
 
 	componentDidMount() {
 		// Comment out the below code to test paid user
+		this.fetchAnalytics();
+	}
+
+	componentDidUpdate(previousProps) {
+		const { filters } = this.props;
+		if (filters && JSON.stringify(previousProps.filters) !== JSON.stringify(filters)) {
+			this.fetchAnalytics();
+		}
+	}
+
+	fetchAnalytics = () => {
 		const { fetchAppAnalytics } = this.props;
 		fetchAppAnalytics();
-	}
+	};
 
 	handleReplaySearch = (searchState) => {
 		const {
@@ -54,6 +65,7 @@ class Main extends React.Component {
 			popularFilters,
 			onClickViewAll,
 			displayReplaySearch,
+			filterId,
 		} = this.props;
 		const { appName, chartWidth, plan } = this.props;
 		if (isLoading) {
@@ -62,6 +74,7 @@ class Main extends React.Component {
 		return (
 			<React.Fragment>
 				<Analytics
+					filterId={filterId}
 					noResults={noResults}
 					chartWidth={chartWidth}
 					plan={plan}
@@ -86,6 +99,8 @@ Main.defaultProps = {
 	handleReplayClick: undefined,
 	onClickViewAll: null,
 	displayReplaySearch: false,
+	filterId: undefined,
+	filters: undefined,
 };
 Main.propTypes = {
 	appName: PropTypes.string,
@@ -103,8 +118,10 @@ Main.propTypes = {
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
+	filterId: PropTypes.string,
+	filters: PropTypes.object,
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
 	const analyticsArr = Array.isArray(getAppAnalyticsByName(state))
 		? getAppAnalyticsByName(state)
 		: [];
@@ -124,10 +141,11 @@ const mapStateToProps = (state) => {
 		searchVolume: get(appAnalytics, 'search_histogram', []),
 		noResults: get(appAnalytics, 'no_results_searches', []),
 		isFetching: get(state, '$getAppAnalytics.isFetching'),
+		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 	};
 };
-const mapDispatchToProps = dispatch => ({
-	fetchAppAnalytics: (appName, plan) => dispatch(getAppAnalytics(appName, plan)),
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchAppAnalytics: appName => dispatch(getAppAnalytics(appName, props.filterId)),
 	saveState: state => dispatch(setSearchState(state)),
 });
 export default connect(

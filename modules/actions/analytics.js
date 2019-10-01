@@ -14,12 +14,12 @@ import AppConstants from '../constants';
  * @param {string} plan App Plan ( Optional )
  * @param {boolean} clickanalytics Whether to return click analytics data ( Optional )
  */
-export function getAppAnalytics(name, plan, clickanalytics) {
+export function getAppAnalytics(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		const appPlan = 'growth';
+		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET));
-		return getAnalytics(appName, appPlan, clickanalytics)
+		return getAnalytics(appName, filters)
 			.then(res => dispatch(
 					createAction(AppConstants.APP.ANALYTICS.GET_SUCCESS, res, undefined, {
 						appName,
@@ -28,11 +28,12 @@ export function getAppAnalytics(name, plan, clickanalytics) {
 			.catch(error => dispatch(createAction(AppConstants.APP.ANALYTICS.GET_ERROR, null, error)));
 	};
 }
-export function getAppAnalyticsSummary(name) {
+export function getAppAnalyticsSummary(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY));
-		return getAnalyticsSummary(appName)
+		return getAnalyticsSummary(appName, filters)
 			.then(res => dispatch(
 					createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY_SUCCESS, res, undefined, {
 						appName,
