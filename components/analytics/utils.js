@@ -492,6 +492,7 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100, f
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-searches${getQueryParams({
 				size,
+				click_analytics: clickanalytics,
 				...filters,
 			})}`,
 			{
@@ -551,6 +552,7 @@ export function getPopularResults(appName, clickanalytics = true, size = 100, fi
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-results${getQueryParams({
 				size,
+				click_analytics: clickanalytics,
 				...filters,
 			})}`,
 			{
@@ -588,6 +590,7 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100, fi
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-filters${getQueryParams({
 				size,
+				click_analytics: clickanalytics,
 				...filters,
 			})}`,
 			{
