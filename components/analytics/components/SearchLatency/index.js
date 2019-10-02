@@ -8,6 +8,7 @@ import find from 'lodash/find';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
+import Filter from '../Filter';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { getAppSearchLatency } from '../../../../modules/actions';
@@ -50,8 +51,17 @@ class SearchLatency extends React.Component {
 		});
 	}
 
+	componentDidUpdate(prevProps) {
+		const { filters, fetchAppSearchLatency } = this.props;
+		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+			fetchAppSearchLatency();
+		}
+	}
+
 	render() {
-		const { searchLatency, isLoading, success } = this.props;
+		const {
+ searchLatency, isLoading, success, filterId,
+} = this.props;
 		const { width } = this.state;
 		return (
 			<div
@@ -60,6 +70,7 @@ class SearchLatency extends React.Component {
 				}}
 				css="width: 100%"
 			>
+				{filterId && <Filter filterId={filterId} />}
 				<Card title="Search Latency" css={cls}>
 					{isLoading ? (
 						<Loader />
@@ -101,23 +112,32 @@ class SearchLatency extends React.Component {
 		);
 	}
 }
+
+SearchLatency.defaultProps = {
+	filterId: undefined,
+	filters: undefined,
+};
+
 SearchLatency.propTypes = {
+	filterId: PropTypes.string,
+	filters: PropTypes.object,
 	fetchAppSearchLatency: PropTypes.func.isRequired,
 	searchLatency: PropTypes.array.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	success: PropTypes.bool.isRequired,
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
 	const searchLatency = getAppSearchLatencyByName(state);
 	return {
 		searchLatency: get(searchLatency, 'latencies', []),
 		isLoading: get(state, '$getAppSearchLatency.isFetching'),
 		success: get(state, '$getAppSearchLatency.success'),
 		isSearchLatencyPresent: !!searchLatency,
+		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 	};
 };
-const mapDispatchToProps = dispatch => ({
-	fetchAppSearchLatency: appName => dispatch(getAppSearchLatency(appName)),
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchAppSearchLatency: appName => dispatch(getAppSearchLatency(appName, props.filterId)),
 });
 export default connect(
 	mapStateToProps,

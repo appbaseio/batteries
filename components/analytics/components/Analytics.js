@@ -53,6 +53,9 @@ const Analytics = ({
 	filterId,
 }) => {
 	const summaryFilterId = `${filterId}_summary`;
+	const requestDistributionFilterId = `${filterId}_requestDistribution`;
+	const geoDistributionFilterId = `${filterId}_geoDistribution`;
+	const searchLatencyFilterId = `${filterId}_searchLatency`;
 	if (loading) {
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
@@ -128,14 +131,14 @@ const Analytics = ({
 							/>
 						</div>
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<GeoDistribution />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<GeoDistribution filterId={geoDistributionFilterId} />
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<SearchLatency />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<SearchLatency filterId={searchLatencyFilterId} />
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<RequestDistribution />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<RequestDistribution filterId={requestDistributionFilterId} />
 					</Flex>
 				</React.Fragment>
 			)}

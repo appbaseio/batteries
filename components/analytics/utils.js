@@ -23,13 +23,15 @@ const requestOpt = css`
 `;
 export const getQueryParams = (paramObj) => {
 	let queryString = '';
-	Object.keys(paramObj).forEach((o, i) => {
-		if (i === 0) {
-			queryString = `?${o}=${paramObj[o]}`;
-		} else {
-			queryString += `&${o}=${paramObj[o]}`;
-		}
-	});
+	if (paramObj) {
+		Object.keys(paramObj).forEach((o, i) => {
+			if (i === 0) {
+				queryString = `?${o}=${paramObj[o]}`;
+			} else {
+				queryString += `&${o}=${paramObj[o]}`;
+			}
+		});
+	}
 	return queryString;
 };
 const replaySearch = [
@@ -422,11 +424,11 @@ export function getAnalytics(appName, filters) {
  * Get the search latency
  * @param {string} appName
  */
-export function getSearchLatency(appName) {
+export function getSearchLatency(appName, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
-		fetch(`${ACC_API}/_analytics/${getApp(appName)}latency`, {
+		fetch(`${ACC_API}/_analytics/${getApp(appName)}latency${getQueryParams(filters)}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -448,11 +450,11 @@ export function getSearchLatency(appName) {
  * Get the geo distribution
  * @param {string} appName
  */
-export function getGeoDistribution(appName) {
+export function getGeoDistribution(appName, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
-		fetch(`${ACC_API}/_analytics/${getApp(appName)}geo-distribution`, {
+		fetch(`${ACC_API}/_analytics/${getApp(appName)}geo-distribution${getQueryParams(filters)}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -574,9 +576,9 @@ export function getPopularResults(appName, clickanalytics = true, size = 100, fi
  * Get the request distribution
  * @param {string} appName
  */
-export function getRequestDistribution(appName) {
+export function getRequestDistribution(appName, filters) {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_analytics/${getApp(appName)}request-distribution`);
+	return doGet(`${ACC_API}/_analytics/${getApp(appName)}request-distribution${getQueryParams(filters)}`);
 }
 // eslint-disable-next-line
 export function getPopularFilters(appName, clickanalytics = true, size = 100, filters) {

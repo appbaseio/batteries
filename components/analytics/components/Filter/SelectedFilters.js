@@ -6,20 +6,35 @@ import get from 'lodash/get';
 import { clearFilterValue } from '../../../../modules/actions';
 import Flex from '../../../shared/Flex';
 
-const SelectedFilters = ({ selectedFilters, clearFilterValue: onClear }) => (
-	<Flex style={{ paddingTop: 15, flexWrap: 'wrap' }}>
-		{Object.keys(selectedFilters).map(filter => (
-			<Tag color="#108ee9" key={filter} closable onClose={() => onClear(filter)}>
-				{filter} : {selectedFilters[filter]}
-			</Tag>
-		))}
-		{Object.keys(selectedFilters).length ? (
-			<Tag color="blue" closable onClose={() => onClear('')}>
-				Clear all
-			</Tag>
-		) : null}
-	</Flex>
-);
+const hiddenFilters = ['size', 'from', 'to', 'clickanalytics'];
+
+const SelectedFilters = ({ selectedFilters, clearFilterValue: onClear }) => {
+	const filteredFilters = Object.keys(selectedFilters).reduce(
+		(obj = {}, filter) => ({
+			...obj,
+			...(hiddenFilters.includes(filter)
+				? null
+				: {
+						[filter]: selectedFilters[filter],
+				  }),
+		}),
+		{},
+	);
+	return (
+		<Flex style={{ flexWrap: 'wrap' }}>
+			{Object.keys(filteredFilters).map(filter => (
+				<Tag color="#108ee9" key={filter} closable onClose={() => onClear(filter)}>
+					{filter} : {filteredFilters[filter]}
+				</Tag>
+			))}
+			{Object.keys(filteredFilters).length ? (
+				<Tag color="blue" closable onClose={() => onClear('')}>
+					Clear all
+				</Tag>
+			) : null}
+		</Flex>
+	);
+};
 
 SelectedFilters.defaultProps = {
 	selectedFilters: undefined,
