@@ -16,8 +16,12 @@ class Summary extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const { errors } = this.props;
+		const { errors, filters } = this.props;
 		displayErrors(errors, prevProps.errors);
+		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+			const { fetchAppAnalyticsSummary } = this.props;
+			fetchAppAnalyticsSummary();
+		}
 	}
 
 	render() {
@@ -28,18 +32,40 @@ class Summary extends React.Component {
 			avgConversionRate,
 			totalSearches,
 		} = this.props;
-		if (isLoading) {
-			return <Loader />;
-		}
+
 		return (
-			<Flex flexDirection="row" css="flex-wrap:wrap">
-				<SummaryCard title="Total Searches" count={totalSearches} border="#00f68e" />
-				<SummaryCard title="Average Click Rate" count={avgClickRate} border="#1A74FF" />
-				<SummaryCard title="Conversion" count={avgConversionRate} border="#C944FF" />
-			</Flex>
+			<React.Fragment>
+				{isLoading ? (
+					<Loader />
+				) : (
+					<Flex flexDirection="row" css="flex-wrap:wrap">
+						<SummaryCard
+							title="Total Searches"
+							count={totalSearches}
+							border="#00f68e"
+						/>
+						<SummaryCard
+							title="Average Click Rate"
+							count={avgClickRate}
+							border="#1A74FF"
+						/>
+						<SummaryCard
+							title="Conversion"
+							count={avgConversionRate}
+							border="#C944FF"
+						/>
+					</Flex>
+				)}
+			</React.Fragment>
 		);
 	}
 }
+
+Summary.defaultProps = {
+	filterId: undefined,
+	filters: undefined,
+};
+
 Summary.propTypes = {
 	fetchAppAnalyticsSummary: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
@@ -47,8 +73,11 @@ Summary.propTypes = {
 	avgConversionRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	totalSearches: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	errors: PropTypes.array.isRequired,
+	// eslint-disable-next-line
+	filterId: PropTypes.string,
+	filters: PropTypes.object,
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);
 	return {
 		avgClickRate: get(appSummary, 'summary.avg_click_rate', 0),
@@ -56,10 +85,11 @@ const mapStateToProps = (state) => {
 		totalSearches: get(appSummary, 'summary.total_searches', 0),
 		isLoading: get(state, '$getAppAnalyticsSummary.isFetching'),
 		errors: [get(state, '$getAppAnalyticsSummary.error')],
+		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 	};
 };
-const mapDispatchToProps = dispatch => ({
-	fetchAppAnalyticsSummary: appName => dispatch(getAppAnalyticsSummary(appName)),
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchAppAnalyticsSummary: appName => dispatch(getAppAnalyticsSummary(appName, props.filterId)),
 });
 export default connect(
 	mapStateToProps,

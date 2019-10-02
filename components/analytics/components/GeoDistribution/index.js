@@ -10,6 +10,7 @@ import {
 import ReactTooltip from 'react-tooltip';
 import { feature } from 'topojson-client';
 import { scaleLinear } from 'd3-scale';
+import Filter from '../Filter';
 import { getAppGeoDistribution } from '../../../../modules/actions';
 import { getAppGeoDistributionByName } from '../../../../modules/selectors';
 
@@ -33,9 +34,13 @@ class GeoDistribution extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const { isSuccess, geoData } = this.props;
+		const { isSuccess, geoData, filters } = this.props;
 		if (isSuccess && isSuccess !== prevProps.isSuccess && geoData) {
 			this.loadPaths();
+		}
+		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+			const { fetchAppGeoDistribution } = this.props;
+			fetchAppGeoDistribution();
 		}
 	}
 
@@ -83,96 +88,102 @@ class GeoDistribution extends React.Component {
 
 	render() {
 		const { geographyPaths, popScale } = this.state;
-		const { geoData } = this.props;
+		const { geoData, filterId } = this.props;
 		return (
-			<Card css="width: 100%" title="Geography Visualization">
-				<div style={wrapperStyles}>
-					<ComposableMap
-						projectionConfig={{
-							scale: 205,
-							rotation: [-11, 0, 0],
-						}}
-						width={980}
-						height={551}
-						style={{
-							width: '100%',
-							height: 'auto',
-						}}
-					>
-						<ZoomableGroup center={[0, 20]}>
-							<Geographies geography={geographyPaths}>
-								{(geographies, projection) => geographies.map((geography, i) => (
-										<Geography
-											// eslint-disable-next-line
-											key={i}
-											data-tip={`${geography.properties.name} (${
-												geography.properties.count
-											})`}
-											geography={geography}
-											projection={projection}
-											onClick={this.handleClick}
-											style={{
-												default: {
-													fill: popScale(geography.properties.count),
-													stroke: '#607D8B',
-													strokeWidth: 0.75,
-													outline: 'none',
-												},
-												hover: {
-													fill: '#F0F2F5',
-													stroke: '#607D8B',
-													strokeWidth: 0.75,
-													outline: 'none',
-												},
-												pressed: {
-													fill: '#263238',
-													stroke: '#607D8B',
-													strokeWidth: 0.75,
-													outline: 'none',
-												},
-											}}
-										/>
-									))
-								}
-							</Geographies>
-						</ZoomableGroup>
-					</ComposableMap>
-					<ReactTooltip />
-					<Table
-						dataSource={geoData}
-						columns={[
-							{
-								dataIndex: 'key',
-								title: 'Popular Countries',
-								key: 'key',
-							},
-							{
-								dataIndex: 'count',
-								title: 'Searches',
-								key: 'count',
-							},
-						]}
-					/>
-				</div>
-			</Card>
+			<React.Fragment>
+				{filterId && <Filter filterId={filterId} />}
+				<Card css="width: 100%" title="Geography Visualization">
+					<div style={wrapperStyles}>
+						<ComposableMap
+							projectionConfig={{
+								scale: 205,
+								rotation: [-11, 0, 0],
+							}}
+							width={980}
+							height={551}
+							style={{
+								width: '100%',
+								height: 'auto',
+							}}
+						>
+							<ZoomableGroup center={[0, 20]}>
+								<Geographies geography={geographyPaths}>
+									{(geographies, projection) => geographies.map((geography, i) => (
+											<Geography
+												// eslint-disable-next-line
+												key={i}
+												data-tip={`${geography.properties.name} (${geography.properties.count})`}
+												geography={geography}
+												projection={projection}
+												onClick={this.handleClick}
+												style={{
+													default: {
+														fill: popScale(geography.properties.count),
+														stroke: '#607D8B',
+														strokeWidth: 0.75,
+														outline: 'none',
+													},
+													hover: {
+														fill: '#F0F2F5',
+														stroke: '#607D8B',
+														strokeWidth: 0.75,
+														outline: 'none',
+													},
+													pressed: {
+														fill: '#263238',
+														stroke: '#607D8B',
+														strokeWidth: 0.75,
+														outline: 'none',
+													},
+												}}
+											/>
+										))
+									}
+								</Geographies>
+							</ZoomableGroup>
+						</ComposableMap>
+						<ReactTooltip />
+						<Table
+							dataSource={geoData}
+							columns={[
+								{
+									dataIndex: 'key',
+									title: 'Popular Countries',
+									key: 'key',
+								},
+								{
+									dataIndex: 'count',
+									title: 'Searches',
+									key: 'count',
+								},
+							]}
+						/>
+					</div>
+				</Card>
+			</React.Fragment>
 		);
 	}
 }
 GeoDistribution.defaultProps = {
 	geoData: [],
 	isSuccess: false,
+	filterId: undefined,
+	filters: undefined,
 };
 GeoDistribution.propTypes = {
+	filterId: PropTypes.string,
+	filters: PropTypes.object,
 	geoData: PropTypes.array,
 	isSuccess: PropTypes.bool,
 	fetchAppGeoDistribution: PropTypes.func.isRequired,
 };
-const mapStateToProps = state => ({
+const mapStateToProps = (state, props) => ({
 	geoData: get(getAppGeoDistributionByName(state), 'geo_distribution', []),
 	isSuccess: get(state, '$getAppGeoDistribution.success'),
+	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 });
-const mapDispatchToProps = dispatch => ({
-	fetchAppGeoDistribution: appName => dispatch(getAppGeoDistribution(appName)),
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchAppGeoDistribution: appName => dispatch(getAppGeoDistribution(appName, props.filterId)),
 });
 export default connect(
 	mapStateToProps,

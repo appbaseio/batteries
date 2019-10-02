@@ -2,6 +2,7 @@ import React from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
+import Filter from './Filter';
 import Flex from '../../shared/Flex';
 import {
  popularFiltersCol, popularResultsCol, popularSearchesCol, noResultsFull,
@@ -49,16 +50,24 @@ const Analytics = ({
 	onClickViewAll,
 	displayReplaySearch,
 	handleReplaySearch,
+	filterId,
 }) => {
+	const summaryFilterId = `${filterId}_summary`;
+	const requestDistributionFilterId = `${filterId}_requestDistribution`;
+	const geoDistributionFilterId = `${filterId}_geoDistribution`;
+	const searchLatencyFilterId = `${filterId}_searchLatency`;
 	if (loading) {
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
 	}
+
 	return (
 		<React.Fragment>
+			{filterId && <Filter filterId={summaryFilterId} />}
 			<Card css="margin-bottom: 20px" title="Summary">
-				<Summary />
+				<Summary filterId={summaryFilterId} />
 			</Card>
+			{filterId && <Filter filterId={filterId} />}
 			<SearchVolumeChart height={300} data={searchVolume} />
 			<Flex css={results}>
 				<div css={searchCls}>
@@ -122,14 +131,14 @@ const Analytics = ({
 							/>
 						</div>
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<GeoDistribution />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<GeoDistribution filterId={geoDistributionFilterId} />
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<SearchLatency />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<SearchLatency filterId={searchLatencyFilterId} />
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<RequestDistribution />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<RequestDistribution filterId={requestDistributionFilterId} />
 					</Flex>
 				</React.Fragment>
 			)}
@@ -145,6 +154,7 @@ Analytics.defaultProps = {
 	popularFilters: [],
 	onClickViewAll: null,
 	displayReplaySearch: false,
+	filterId: undefined,
 };
 Analytics.propTypes = {
 	onClickViewAll: PropTypes.shape({
@@ -153,6 +163,7 @@ Analytics.propTypes = {
 		popularSearches: PropTypes.func,
 		noResultsSearch: PropTypes.func,
 	}),
+	filterId: PropTypes.string,
 	loading: PropTypes.bool,
 	displayReplaySearch: PropTypes.bool,
 	noResults: PropTypes.array,

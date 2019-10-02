@@ -21,15 +21,17 @@ const requestOpt = css`
 	border-radius: 3px;
 	border: solid 1px #00ff88;
 `;
-const getQueryParams = (paramObj) => {
+export const getQueryParams = (paramObj) => {
 	let queryString = '';
-	Object.keys(paramObj).forEach((o, i) => {
-		if (i === 0) {
-			queryString = `?${o}=${paramObj[o]}`;
-		} else {
-			queryString += `&${o}=${paramObj[o]}`;
-		}
-	});
+	if (paramObj) {
+		Object.keys(paramObj).forEach((o, i) => {
+			if (i === 0) {
+				queryString = `?${o}=${paramObj[o]}`;
+			} else {
+				queryString += `&${o}=${paramObj[o]}`;
+			}
+		});
+	}
 	return queryString;
 };
 const replaySearch = [
@@ -387,11 +389,12 @@ export const getApp = (app) => {
  * Get the analytics
  * @param {string} appName
  */
-export function getAnalytics(appName) {
+export function getAnalytics(appName, filters) {
 	return new Promise((resolve, reject) => {
 		const ACC_API = getURL();
 		const url = `${ACC_API}/_analytics/${getApp(appName)}advanced`;
 		const queryParams = getQueryParams({
+			...filters,
 			// from: moment()
 			// 	.subtract(30, 'days')
 			// 	.format('YYYY/MM/DD'),
@@ -421,11 +424,11 @@ export function getAnalytics(appName) {
  * Get the search latency
  * @param {string} appName
  */
-export function getSearchLatency(appName) {
+export function getSearchLatency(appName, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
-		fetch(`${ACC_API}/_analytics/${getApp(appName)}latency`, {
+		fetch(`${ACC_API}/_analytics/${getApp(appName)}latency${getQueryParams(filters)}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -447,11 +450,11 @@ export function getSearchLatency(appName) {
  * Get the geo distribution
  * @param {string} appName
  */
-export function getGeoDistribution(appName) {
+export function getGeoDistribution(appName, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
-		fetch(`${ACC_API}/_analytics/${getApp(appName)}geo-distribution`, {
+		fetch(`${ACC_API}/_analytics/${getApp(appName)}geo-distribution${getQueryParams(filters)}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -473,22 +476,23 @@ export function getGeoDistribution(appName) {
  * Get the search latency
  * @param {string} appName
  */
-export function getAnalyticsSummary(appName) {
+export function getAnalyticsSummary(appName, filters) {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_analytics/${getApp(appName)}summary`);
+	return doGet(`${ACC_API}/_analytics/${getApp(appName)}summary${getQueryParams(filters)}`, filters);
 }
 /**
  * Get the popular seraches
  * @param {string} appName
  */
 // eslint-disable-next-line
-export function getPopularSearches(appName, clickanalytics = true, size = 100) {
+export function getPopularSearches(appName, clickanalytics = true, size = 100, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-searches${getQueryParams({
 				size,
+				...filters,
 			})}`,
 			{
 				method: 'GET',
@@ -514,11 +518,14 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100) {
  * Get the no results seraches
  * @param {string} appName
  */
-export function getNoResultSearches(appName, size = 100) {
+export function getNoResultSearches(appName, size = 100, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
-		fetch(`${ACC_API}/_analytics/${getApp(appName)}no-result-searches?size=${size}`, {
+		fetch(`${ACC_API}/_analytics/${getApp(appName)}no-result-searches${getQueryParams({
+			size,
+			...filters,
+		})}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -537,13 +544,14 @@ export function getNoResultSearches(appName, size = 100) {
 	});
 }
 // eslint-disable-next-line
-export function getPopularResults(appName, clickanalytics = true, size = 100) {
+export function getPopularResults(appName, clickanalytics = true, size = 100, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-results${getQueryParams({
 				size,
+				...filters,
 			})}`,
 			{
 				method: 'GET',
@@ -568,18 +576,19 @@ export function getPopularResults(appName, clickanalytics = true, size = 100) {
  * Get the request distribution
  * @param {string} appName
  */
-export function getRequestDistribution(appName) {
+export function getRequestDistribution(appName, filters) {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_analytics/${getApp(appName)}request-distribution`);
+	return doGet(`${ACC_API}/_analytics/${getApp(appName)}request-distribution${getQueryParams(filters)}`);
 }
 // eslint-disable-next-line
-export function getPopularFilters(appName, clickanalytics = true, size = 100) {
+export function getPopularFilters(appName, clickanalytics = true, size = 100, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}popular-filters${getQueryParams({
 				size,
+				...filters,
 			})}`,
 			{
 				method: 'GET',
