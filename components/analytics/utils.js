@@ -146,7 +146,7 @@ export const defaultColumns = (plan) => {
 		...defaults,
 		{
 			title: 'Click Rate',
-			dataIndex: 'clickrate',
+			dataIndex: 'click_rate',
 			key: `clickrate${updateIndex()}`,
 		},
 	];
@@ -231,17 +231,17 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 		},
 		{
 			title: 'Avg Click Position',
-			dataIndex: 'clickposition',
+			dataIndex: 'click_position',
 			key: `ps-clickposition${updateIndex()}`,
 		},
 		{
 			title: 'Click Rate',
-			dataIndex: 'clickrate',
+			dataIndex: 'click_rate',
 			key: `ps-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Conversion Rate',
-			dataIndex: 'conversionrate',
+			dataIndex: 'conversion_rate',
 			key: `ps-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -274,18 +274,18 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		},
 		{
 			title: 'Click Rate',
-			dataIndex: 'clickrate',
+			dataIndex: 'click_rate',
 			key: `pr-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Click Position',
-			dataIndex: 'clickposition',
+			dataIndex: 'click_position',
 			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
 			key: `pr-clickposition${updateIndex()}`,
 		},
 		{
 			title: 'Conversion Rate',
-			dataIndex: 'conversionrate',
+			dataIndex: 'conversion_rate',
 			key: `pr-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -314,18 +314,18 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 		},
 		{
 			title: 'Click Rate',
-			dataIndex: 'clickrate',
+			dataIndex: 'click_rate',
 			key: `pf-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Click Position',
-			dataIndex: 'clickposition',
+			dataIndex: 'click_position',
 			key: `pf-clickposition${updateIndex()}`,
 			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
 		},
 		{
 			title: 'Conversion Rate',
-			dataIndex: 'conversionrate',
+			dataIndex: 'conversion_rate',
 			key: `pf-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
