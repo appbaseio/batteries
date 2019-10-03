@@ -147,6 +147,7 @@ export const defaultColumns = (plan) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
+			render: i => i.toFixed(2),
 			key: `clickrate${updateIndex()}`,
 		},
 	];
@@ -237,6 +238,7 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
+			render: i => i.toFixed(2),
 			key: `ps-clickrate${updateIndex()}`,
 		},
 		{
@@ -275,6 +277,7 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
+			render: i => i.toFixed(2),
 			key: `pr-clickrate${updateIndex()}`,
 		},
 		{
@@ -315,6 +318,7 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
+			render: i => i.toFixed(2),
 			key: `pf-clickrate${updateIndex()}`,
 		},
 		{
