@@ -284,8 +284,7 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Position',
 			dataIndex: 'click_position',
-			render: i => i.toFixed(2),
-			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
+			render: item => <div css="overflow-y: scroll; max-height:150px;">{item.toFixed(2) || '-'}</div>,
 			key: `pr-clickposition${updateIndex()}`,
 		},
 		{
@@ -326,9 +325,8 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Position',
 			dataIndex: 'click_position',
-			render: i => i.toFixed(2),
 			key: `pf-clickposition${updateIndex()}`,
-			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
+			render: item => <div css="overflow-y: scroll; max-height:150px;">{item.toFixed(2) || '-'}</div>,
 		},
 		{
 			title: 'Conversion Rate',
