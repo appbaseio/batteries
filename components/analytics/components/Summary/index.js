@@ -11,7 +11,7 @@ import { displayErrors } from '../../../../utils/heplers';
 import Flex from '../../../shared/Flex';
 
 const cardStyle = css`
-	margin-bottom: 10px;
+	margin-bottom: 8px;
 	background: rgba(229, 230, 233, 0.21);
 	padding: 15px 0;
 	p,
@@ -21,7 +21,7 @@ const cardStyle = css`
 	}
 
 	p {
-		font-size: 1.2em;
+		font-size: 1em;
 		font-weight: bold;
 		color: #8c8c8c;
 	}
@@ -70,6 +70,7 @@ class Summary extends React.Component {
 			avgConversionRate,
 			totalSearches,
 			totalResults,
+			noResultsRate,
 			totalUsers,
 			avgSuggestionClicks,
 		} = this.props;
@@ -88,17 +89,24 @@ class Summary extends React.Component {
 								count={totalSearches}
 							/>
 						</Col>
-						<Col sm={24} xs={24} xl={12}>
+						<Col sm={24} xs={24} xl={8}>
 							<SummaryCard
 								title="Total Users"
 								style={{ background: '#f0f5ff' }}
 								count={totalUsers}
 							/>
 						</Col>
-						<Col sm={24} xs={24} xl={12}>
+						<Col sm={24} xs={24} xl={8}>
 							<SummaryCard
 								title="Impressions"
 								count={totalResults}
+								style={{ background: '#f0f5ff' }}
+							/>
+						</Col>
+						<Col sm={24} xs={24} xl={8}>
+							<SummaryCard
+								title="No Results"
+								count={noResultsRate}
 								style={{ background: '#f0f5ff' }}
 							/>
 						</Col>
@@ -136,7 +144,7 @@ class Summary extends React.Component {
 							<SummaryCard
 								icon="stock"
 								style={{ background: '#f6ffed', borderTop: '2px solid #52c41a' }}
-								title="Conversion"
+								title="Conversions"
 								count={avgConversionRate}
 							/>
 						</Col>
