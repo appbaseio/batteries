@@ -233,6 +233,7 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Avg Click Position',
 			dataIndex: 'click_position',
+			render: i => i.toFixed(2),
 			key: `ps-clickposition${updateIndex()}`,
 		},
 		{
@@ -283,6 +284,7 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Position',
 			dataIndex: 'click_position',
+			render: i => i.toFixed(2),
 			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
 			key: `pr-clickposition${updateIndex()}`,
 		},
@@ -324,6 +326,7 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Position',
 			dataIndex: 'click_position',
+			render: i => i.toFixed(2),
 			key: `pf-clickposition${updateIndex()}`,
 			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
 		},
