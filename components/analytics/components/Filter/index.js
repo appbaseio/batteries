@@ -143,7 +143,7 @@ class Filter extends React.Component {
 								optionFilterProp="children"
 								onChange={this.handleFilterLabelChange}
 								notFoundContent={
-									isLoadingFilterLabels ? <Spin size="small" /> : null
+									isLoadingFilterLabels ? <Spin size="small" /> : 'No label found'
 								}
 								filterOption={filterOption}
 							>
@@ -166,7 +166,7 @@ class Filter extends React.Component {
 								placeholder="Filter value"
 								optionFilterProp="children"
 								notFoundContent={
-									isLoadingFilterValues ? <Spin size="small" /> : null
+									isLoadingFilterValues ? <Spin size="small" /> : 'No value found'
 								}
 								onSearch={this.handleFilterValueSearch}
 								onChange={this.handleFilterValueChange}
