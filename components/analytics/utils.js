@@ -482,7 +482,7 @@ export function getGeoDistribution(appName, filters) {
  */
 export function getAnalyticsSummary(appName, filters) {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_analytics/${getApp(appName)}summary${getQueryParams(filters)}`, filters);
+	return doGet(`${ACC_API}/_analytics/${getApp(appName)}summary${getQueryParams(filters)}`);
 }
 /**
  * Get the popular seraches
