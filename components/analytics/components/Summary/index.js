@@ -36,7 +36,7 @@ const cardContainer = css`
 `;
 
 const SummaryCard = ({
- icon, title, count, style,
+ isPercent, title, count, style,
 }) => (
 	<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
 		{/* {icon && (
@@ -46,7 +46,7 @@ const SummaryCard = ({
 		)} */}
 		<div>
 			<p>{title}</p>
-			<h2>{count}</h2>
+			<h2>{`${count}${isPercent ? ' %' : ''}`}</h2>
 		</div>
 	</Flex>
 );
@@ -83,7 +83,6 @@ class Summary extends React.Component {
 					<Row gutter={8} className={cardContainer}>
 						<Col span={24}>
 							<SummaryCard
-								icon="search"
 								style={{ borderTop: '2px solid #2f54eb', background: '#f0f5ff' }}
 								title="Total Searches"
 								count={totalSearches}
@@ -116,10 +115,10 @@ class Summary extends React.Component {
 					<Row gutter={8} className={cardContainer}>
 						<Col span={24}>
 							<SummaryCard
-								icon="check"
 								title="Clicks"
 								style={{ borderTop: '2px solid #eb2f96', background: '#fff0f6' }}
 								count={avgClickRate}
+								isPercent
 							/>
 						</Col>
 						<Col sm={24} xs={24} xl={12}>
@@ -142,7 +141,6 @@ class Summary extends React.Component {
 					<Row gutter={8} className={cardContainer}>
 						<Col span={24}>
 							<SummaryCard
-								icon="stock"
 								style={{ background: '#f6ffed', borderTop: '2px solid #52c41a' }}
 								title="Conversions"
 								count={avgConversionRate}
