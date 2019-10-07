@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import { getAppAnalyticsSummaryByName } from '../../../../modules/selectors';
@@ -28,6 +28,16 @@ const cardStyle = css`
 
 	h2 {
 		color: #595959;
+		display: flex;
+		justify-content: center;
+		vertical-align: middle;
+	}
+
+	h2 span {
+		color: #8c8c8c;
+		font-weight: bold;
+		margin-left: 5px;
+		font-size: 16px;
 	}
 `;
 
@@ -36,7 +46,7 @@ const cardContainer = css`
 `;
 
 const SummaryCard = ({
- isPercent, title, count, style,
+ percent, title, count, style,
 }) => (
 	<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
 		{/* {icon && (
@@ -46,7 +56,10 @@ const SummaryCard = ({
 		)} */}
 		<div>
 			<p>{title}</p>
-			<h2>{`${count}${isPercent ? ' %' : ''}`}</h2>
+			<h2>
+				{count}
+				{percent ? <span>{`(${percent}%)`}</span> : null}
+			</h2>
 		</div>
 	</Flex>
 );
@@ -73,10 +86,16 @@ class Summary extends React.Component {
 			noResultsRate,
 			totalUsers,
 			avgSuggestionClicks,
+			totalConversions,
+			totalResultClicks,
+			totalClicks,
+			noResultSearch,
+			totalSuggestionClicks,
 		} = this.props;
 		if (isLoading) {
 			return <Loader />;
 		}
+		console.log(avgSuggestionClicks);
 		return (
 			<Row>
 				<Col xl={8} md={12}>
@@ -105,7 +124,8 @@ class Summary extends React.Component {
 						<Col sm={24} xs={24} xl={8}>
 							<SummaryCard
 								title="No Results"
-								count={noResultsRate}
+								count={noResultSearch}
+								percent={noResultsRate}
 								style={{ background: '#f0f5ff' }}
 							/>
 						</Col>
@@ -117,22 +137,23 @@ class Summary extends React.Component {
 							<SummaryCard
 								title="Clicks"
 								style={{ borderTop: '2px solid #eb2f96', background: '#fff0f6' }}
-								count={avgClickRate}
-								isPercent
+								count={totalClicks}
+								percent={avgClickRate}
 							/>
 						</Col>
 						<Col sm={24} xs={24} xl={12}>
 							<SummaryCard
 								title="Suggestion Clicks"
 								style={{ background: '#fff0f6' }}
-								count={avgSuggestionClicks}
+								count={totalSuggestionClicks}
+								percent={avgSuggestionClicks}
 							/>
 						</Col>
 						<Col sm={24} xs={24} xl={12}>
 							<SummaryCard
 								title="Result Clicks"
 								style={{ background: '#fff0f6' }}
-								count={avgClickRate - avgSuggestionClicks}
+								count={totalResultClicks}
 							/>
 						</Col>
 					</Row>
@@ -143,7 +164,8 @@ class Summary extends React.Component {
 							<SummaryCard
 								style={{ background: '#f6ffed', borderTop: '2px solid #52c41a' }}
 								title="Conversions"
-								count={avgConversionRate}
+								percent={avgConversionRate}
+								count={totalConversions}
 							/>
 						</Col>
 					</Row>
@@ -163,10 +185,15 @@ Summary.propTypes = {
 const mapStateToProps = (state) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);
 	return {
-		avgClickRate: get(appSummary, 'summary.avg_click_rate', 0),
 		avgConversionRate: get(appSummary, 'summary.avg_conversion_rate', 0),
+		totalConversions: get(appSummary, 'summary.total_conversions', 0),
+		totalClicks: get(appSummary, 'summary.total_clicks', 0),
+		totalResultClicks: get(appSummary, 'summary.total_results_clicks', 0),
+		avgClickRate: get(appSummary, 'summary.avg_click_rate', 0),
 		avgSuggestionClicks: get(appSummary, 'summary.avg_suggestions_click_rate', 0),
+		totalSuggestionClicks: get(appSummary, 'summary.total_suggestions_clicks', 0),
 		noResultsRate: get(appSummary, 'summary.no_results_rate', 0),
+		noResultSearch: get(appSummary, 'summary.total_no_results_searches', 0),
 		totalSearches: get(appSummary, 'summary.total_searches', 0),
 		totalUsers: get(appSummary, 'summary.total_users', 0),
 		totalResults: get(appSummary, 'summary.total_results_count', 0),
