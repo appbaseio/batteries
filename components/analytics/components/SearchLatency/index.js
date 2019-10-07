@@ -60,7 +60,7 @@ class SearchLatency extends React.Component {
 
 	render() {
 		const {
- searchLatency, isLoading, success, filterId,
+ searchLatency, isLoading, success, filterId, displayFilter,
 } = this.props;
 		const { width } = this.state;
 		return (
@@ -70,7 +70,7 @@ class SearchLatency extends React.Component {
 				}}
 				css="width: 100%"
 			>
-				{filterId && <Filter filterId={filterId} />}
+				{displayFilter && filterId && <Filter filterId={filterId} />}
 				<Card title="Search Latency" css={cls}>
 					{isLoading ? (
 						<Loader />
@@ -116,9 +116,11 @@ class SearchLatency extends React.Component {
 SearchLatency.defaultProps = {
 	filterId: undefined,
 	filters: undefined,
+	displayFilter: true,
 };
 
 SearchLatency.propTypes = {
+	displayFilter: PropTypes.bool,
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	fetchAppSearchLatency: PropTypes.func.isRequired,

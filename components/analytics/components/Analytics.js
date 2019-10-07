@@ -52,10 +52,6 @@ const Analytics = ({
 	handleReplaySearch,
 	filterId,
 }) => {
-	const summaryFilterId = `${filterId}_summary`;
-	const requestDistributionFilterId = `${filterId}_requestDistribution`;
-	const geoDistributionFilterId = `${filterId}_geoDistribution`;
-	const searchLatencyFilterId = `${filterId}_searchLatency`;
 	if (loading) {
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
@@ -63,11 +59,10 @@ const Analytics = ({
 
 	return (
 		<React.Fragment>
-			{filterId && <Filter filterId={summaryFilterId} />}
-			<Card css="margin-bottom: 20px" title="Summary">
-				<Summary filterId={summaryFilterId} />
-			</Card>
 			{filterId && <Filter filterId={filterId} />}
+			<Card css="margin-bottom: 20px" title="Summary">
+				<Summary filterId={filterId} />
+			</Card>
 			<SearchVolumeChart height={300} data={searchVolume} />
 			<Flex css={results}>
 				<div css={searchCls}>
@@ -132,13 +127,13 @@ const Analytics = ({
 						</div>
 					</Flex>
 					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
-						<GeoDistribution filterId={geoDistributionFilterId} />
+						<GeoDistribution filterId={filterId} displayFilter={false} />
 					</Flex>
 					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
-						<SearchLatency filterId={searchLatencyFilterId} />
+						<SearchLatency filterId={filterId} displayFilter={false} />
 					</Flex>
 					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
-						<RequestDistribution filterId={requestDistributionFilterId} />
+						<RequestDistribution filterId={filterId} displayFilter={false} />
 					</Flex>
 				</React.Fragment>
 			)}

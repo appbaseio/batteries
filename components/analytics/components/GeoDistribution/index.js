@@ -22,6 +22,7 @@ const wrapperStyles = {
 
 class GeoDistribution extends React.Component {
 	state = {
+		key: new Date().toISOString(),
 		geographyPaths: [],
 		popScale: scaleLinear()
 			.domain([0, 100, 10000])
@@ -34,8 +35,8 @@ class GeoDistribution extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const { isSuccess, geoData, filters } = this.props;
-		if (isSuccess && isSuccess !== prevProps.isSuccess && geoData) {
+		const { geoData, filters } = this.props;
+		if (JSON.stringify(prevProps.geoData) !== JSON.stringify(geoData)) {
 			this.loadPaths();
 		}
 		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
@@ -72,6 +73,7 @@ class GeoDistribution extends React.Component {
 				}));
 				this.setState(
 					{
+						key: new Date().toISOString(),
 						geographyPaths: results,
 						popScale: scaleLinear()
 							.domain([0, this.max / 2, this.max])
@@ -87,11 +89,11 @@ class GeoDistribution extends React.Component {
 	}
 
 	render() {
-		const { geographyPaths, popScale } = this.state;
-		const { geoData, filterId } = this.props;
+		const { geographyPaths, popScale, key } = this.state;
+		const { geoData, filterId, displayFilter } = this.props;
 		return (
 			<React.Fragment>
-				{filterId && <Filter filterId={filterId} />}
+				{displayFilter && filterId && <Filter filterId={filterId} />}
 				<Card css="width: 100%" title="Geography Visualization">
 					<div style={wrapperStyles}>
 						<ComposableMap
@@ -107,7 +109,10 @@ class GeoDistribution extends React.Component {
 							}}
 						>
 							<ZoomableGroup center={[0, 20]}>
-								<Geographies geography={geographyPaths}>
+								<Geographies
+									key={key}
+									geography={geographyPaths}
+								>
 									{(geographies, projection) => geographies.map((geography, i) => (
 											<Geography
 												// eslint-disable-next-line
@@ -166,20 +171,19 @@ class GeoDistribution extends React.Component {
 }
 GeoDistribution.defaultProps = {
 	geoData: [],
-	isSuccess: false,
+	displayFilter: true,
 	filterId: undefined,
 	filters: undefined,
 };
 GeoDistribution.propTypes = {
+	displayFilter: PropTypes.bool,
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	geoData: PropTypes.array,
-	isSuccess: PropTypes.bool,
 	fetchAppGeoDistribution: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state, props) => ({
 	geoData: get(getAppGeoDistributionByName(state), 'geo_distribution', []),
-	isSuccess: get(state, '$getAppGeoDistribution.success'),
 	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 });
 const mapDispatchToProps = (dispatch, props) => ({

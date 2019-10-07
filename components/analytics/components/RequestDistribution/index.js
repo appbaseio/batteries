@@ -108,7 +108,7 @@ class RequestDistribution extends React.Component {
 
 	render() {
 		const {
- isLoading, results, success, filterId,
+ isLoading, results, success, filterId, displayFilter,
 } = this.props;
 		const { width, ticks } = this.state;
 		const data = normalizedData(results);
@@ -119,7 +119,7 @@ class RequestDistribution extends React.Component {
 				}}
 				css="width: 100%"
 			>
-				{filterId && <Filter filterId={filterId} />}
+				{displayFilter && filterId && <Filter filterId={filterId} />}
 				<Card
 					title="Request Distribution"
 					style={{
@@ -200,11 +200,13 @@ class RequestDistribution extends React.Component {
 	}
 }
 RequestDistribution.defaultProps = {
+	displayFilter: true,
 	filterId: undefined,
 	filters: undefined,
 };
 
 RequestDistribution.propTypes = {
+	displayFilter: PropTypes.bool,
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	fetchAppRequestDistribution: PropTypes.func.isRequired,
