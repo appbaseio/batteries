@@ -19,7 +19,13 @@ export const computePlan = ({ payload }) => {
 		isBusinessMonthly,
 		isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
 		isGrowth: isGrowthMonthly || isGrowthAnnual || isStartupMonthly || isBusinessMonthly,
-		isPaid: isBootstrapMonthly || isBootstrapAnnual || isGrowthMonthly || isGrowthAnnual || isStartupMonthly || isBusinessMonthly,
+		isPaid:
+			isBootstrapMonthly
+			|| isBootstrapAnnual
+			|| isGrowthMonthly
+			|| isGrowthAnnual
+			|| isStartupMonthly
+			|| isBusinessMonthly,
 		plan: getPlanFromTier(payload.tier),
 		daysLeft: payload.tier_validity
 			? Math.ceil((payload.tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60))
