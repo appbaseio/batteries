@@ -95,7 +95,6 @@ class Summary extends React.Component {
 		if (isLoading) {
 			return <Loader />;
 		}
-		console.log(avgSuggestionClicks);
 		return (
 			<Row>
 				<Col xl={8} md={12}>
