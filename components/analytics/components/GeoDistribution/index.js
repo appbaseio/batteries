@@ -50,7 +50,7 @@ class GeoDistribution extends React.Component {
 		this.max = max;
 		const geoDataByKey = keyBy(geoData, 'key');
 		fetch(
-			'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/examples/basic-map/static/world-50m.json',
+			'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/0.12.1/examples/basic-map/static/world-50m.json',
 		)
 			.then(res => res.json())
 			.then((res) => {

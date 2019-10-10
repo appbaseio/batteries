@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
- Menu, Button, Dropdown, Icon, Modal, Input, message,
+ Menu, Button, Dropdown, Icon, Modal, Input, message, Switch, Tooltip,
 } from 'antd';
 import {
  bool, arrayOf, string, func,
@@ -118,6 +118,8 @@ export default class Header extends Component {
 			profileList,
 			openSandbox,
 			isUnsaved,
+			analytics,
+			toggleAnalytics,
 		} = this.props;
 
 		const { profile, showNewProfileModal, modalError } = this.state;
@@ -150,50 +152,65 @@ export default class Header extends Component {
 
 		return showHeader ? (
 			<div
-				style={{
-					display: 'flex',
-					flexDirection: 'row-reverse',
-					padding: '10px 20px 0',
-				}}
+				style={{ display: 'flex', padding: '10px 20px 0', justifyContent: 'space-between' }}
 			>
-				{profile !== 'default' ? (
-					<Button
-						type="danger"
-						size="large"
-						style={{ marginLeft: 8 }}
-						onClick={this.handleDeleteProfileModal}
+				<div style={{ marginTop: 8, marginRight: 8 }}>
+					<Tooltip
+						placement="right"
+						title="Switch for whether to record analytics based on the search and click requests made from the Search Preview view. It's enabled by default."
 					>
-						Delete Profile
-						<Icon type="delete" />
-					</Button>
-				) : null}
-				{isDashboard && showProfileOption ? (
-					<Dropdown overlay={menu} trigger={['click']}>
-						<Button size="large" style={{ marginLeft: 8 }}>
-							{`Search Profile - ${isUnsaved ? 'unsaved' : profile}`}{' '}
-							<Icon type="down" />
-						</Button>
-					</Dropdown>
-				) : null}
-				{showCodeSandbox ? (
-					<Button onClick={openSandbox} size="large" type="primary">
-						Open in Codesandbox
-					</Button>
-				) : null}
-
-				<Modal
-					title="Create a new Search Profile"
-					visible={showNewProfileModal}
-					onOk={this.handleSaveProfile}
-					onCancel={this.handleCancel}
-					destroyOnClose
+						<Switch checked={analytics} onChange={toggleAnalytics} /> Record Analytics
+					</Tooltip>
+				</div>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row-reverse',
+					}}
 				>
-					<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
-						Set search profile name
-					</div>
-					<Input type="text" ref={this.profileInput} placeholder="Search Profile Name" />
-					{modalError ? <p style={{ color: 'tomato' }}>{modalError}</p> : null}
-				</Modal>
+					{profile !== 'default' ? (
+						<Button
+							type="danger"
+							size="large"
+							style={{ marginLeft: 8 }}
+							onClick={this.handleDeleteProfileModal}
+						>
+							Delete Profile
+							<Icon type="delete" />
+						</Button>
+					) : null}
+					{isDashboard && showProfileOption ? (
+						<Dropdown overlay={menu} trigger={['click']}>
+							<Button size="large" style={{ marginLeft: 8 }}>
+								{`Search Profile - ${isUnsaved ? 'unsaved' : profile}`}{' '}
+								<Icon type="down" />
+							</Button>
+						</Dropdown>
+					) : null}
+					{showCodeSandbox ? (
+						<Button onClick={openSandbox} size="large" type="primary">
+							Open in Codesandbox
+						</Button>
+					) : null}
+
+					<Modal
+						title="Create a new Search Profile"
+						visible={showNewProfileModal}
+						onOk={this.handleSaveProfile}
+						onCancel={this.handleCancel}
+						destroyOnClose
+					>
+						<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
+							Set search profile name
+						</div>
+						<Input
+							type="text"
+							ref={this.profileInput}
+							placeholder="Search Profile Name"
+						/>
+						{modalError ? <p style={{ color: 'tomato' }}>{modalError}</p> : null}
+					</Modal>
+				</div>
 			</div>
 		) : null;
 	}
@@ -208,4 +225,6 @@ Header.propTypes = {
 	defaultProfile: string.isRequired, // eslint-disable-line
 	setProfile: func.isRequired,
 	openSandbox: func.isRequired,
+	analytics: bool.isRequired,
+	toggleAnalytics: func.isRequired,
 };

@@ -207,7 +207,7 @@ export default class NewFieldModal extends Component {
 								.filter(value => value !== 'object')
 								.map(entry => ({
 									label: entry,
-									value: entry.split('_').join(' '),
+									value: entry,
 								})),
 							value: this.state.type,
 						})}

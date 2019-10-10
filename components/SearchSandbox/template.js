@@ -230,7 +230,7 @@ const App = () => (
 		app="${config.appName}"
 		credentials="${config.credentials}"
 		url="${config.url}"
-		analytics
+		analytics={${config.analytics}}
 		searchStateHeader
 	>
 		<Row gutter={16} style={{ padding: 20 }}>
@@ -243,8 +243,9 @@ const App = () => (
 				${sandboxCodeFormat(searchCode)}
 
 				<SelectedFilters />
-
-				${sandboxCodeFormat(resultCode)}
+				<div id="result">
+					${sandboxCodeFormat(resultCode)}
+				</div>
 			</Col>
 			${attributionContainer}
 		</Row>

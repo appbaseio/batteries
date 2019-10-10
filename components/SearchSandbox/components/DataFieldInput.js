@@ -77,6 +77,7 @@ class DataFieldInput extends React.Component {
 							name={index}
 							value={selected}
 							handleChange={this.handleSearchDataFieldChange}
+							styleProps={{ minWidth: '12vw' }}
 						/>
 					);
 				},

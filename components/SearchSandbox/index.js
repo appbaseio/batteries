@@ -38,6 +38,7 @@ class SearchSandbox extends Component {
 			).length,
 			loading: true,
 			version: null,
+			analytics: true,
 		};
 	}
 
@@ -69,6 +70,7 @@ class SearchSandbox extends Component {
 						this.setState({
 							profileList,
 							loading: false,
+							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 						});
 					} else {
 						this.setState({
@@ -78,6 +80,7 @@ class SearchSandbox extends Component {
 							filterCount: Object.keys(componentProps).filter(
 								item => item !== 'search' && item !== 'result',
 							).length,
+							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 						});
 					}
 				})
@@ -130,6 +133,7 @@ class SearchSandbox extends Component {
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
 			).length,
+			analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
 		});
 	};
 
@@ -155,9 +159,18 @@ class SearchSandbox extends Component {
 		return !!searchState;
 	}
 
+	toggleAnalytics = () => {
+		this.setState(
+			prevState => ({
+				analytics: !prevState.analytics,
+			}),
+			this.savePreferences,
+		);
+	};
+
 	savePreferences = (forceUpdate) => {
 		const { isDashboard, appName, clearProfile } = this.props;
-		const { profile, componentProps } = this.state;
+		const { profile, componentProps, analytics } = this.state;
 		const filteredProps = {};
 		Object.keys(componentProps).forEach((item) => {
 			const { defaultValue, value, ...state } = componentProps[item];
@@ -166,6 +179,7 @@ class SearchSandbox extends Component {
 		this.pref = {
 			...this.pref,
 			[profile]: filteredProps,
+			analytics,
 		};
 
 		if (isDashboard && (forceUpdate || !this.isUnsaved)) {
@@ -283,7 +297,13 @@ class SearchSandbox extends Component {
 		const {
 			appId, appName, url, credentials, attribution, customProps,
 		} = this.props; // prettier-ignore
-		const { componentProps, mappings, version } = this.state;
+		// prettier-ignore
+		const {
+			componentProps,
+			mappings,
+			version,
+			analytics,
+		} = this.state;
 		const config = {
 			appId: appId || null,
 			appName: appName || null,
@@ -293,6 +313,7 @@ class SearchSandbox extends Component {
 			mappings,
 			attribution: attribution || null,
 			customProps,
+			analytics,
 		};
 		const code = getSearchTemplate(config, version);
 		const html = '<div id="root"></div>';
@@ -309,7 +330,7 @@ class SearchSandbox extends Component {
 							react: '16.8.6',
 							'react-dom': '16.8.6',
 							antd: '^3.6.6',
-							'@appbaseio/reactivesearch': '3.0.0-rc.18',
+							'@appbaseio/reactivesearch': '3.0.2',
 							'react-expand-collapse': 'latest',
 						},
 					},
@@ -370,7 +391,7 @@ class SearchSandbox extends Component {
 			isShopify,
 		} = this.props;
 		const {
-			mappingsType, componentProps, filterCount, profile, version,
+			mappingsType, componentProps, filterCount, profile, version, analytics,
 		} = this.state; // prettier-ignore
 		const contextValue = {
 			appId: appId || null,
@@ -393,6 +414,7 @@ class SearchSandbox extends Component {
 			showCustomList,
 			isShopify,
 			version,
+			analytics,
 		};
 
 		return (
@@ -409,6 +431,8 @@ class SearchSandbox extends Component {
 						deleteProfile={this.deleteProfile}
 						onNewProfile={this.onNewProfile}
 						openSandbox={this.openSandbox}
+						analytics={analytics}
+						toggleAnalytics={this.toggleAnalytics}
 					/>
 					<Walkthrough
 						id="SearchPreview"

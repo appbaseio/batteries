@@ -66,7 +66,7 @@ class PopularSearches extends React.Component {
 				}}
 				showViewOption={false}
 				columns={popularSearchesFull(plan, displayReplaySearch)}
-				dataSource={popularSearches.map(item => ({
+				dataSource={popularSearches && popularSearches.map(item => ({
 					...item,
 					handleReplaySearch: this.handleReplaySearch,
 				}))}
