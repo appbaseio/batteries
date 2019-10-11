@@ -7,6 +7,7 @@ import get from 'lodash/get';
 import Flex from '../../../shared/Flex';
 import { getFilterValues, getFilterLabels, setFilterValue } from '../../../../modules/actions';
 import SelectedFilters from './SelectedFilters';
+import { isValidPlan } from '../../../../utils';
 
 const { Option } = Select;
 
@@ -52,9 +53,11 @@ class Filter extends React.Component {
 	}
 
 	componentDidMount() {
-		const { fetchFilterLabels, isFetchedFilterLabels } = this.props;
+		const { fetchFilterLabels, isFetchedFilterLabels, tier } = this.props;
 		if (!isFetchedFilterLabels) {
-			fetchFilterLabels();
+			if (isValidPlan(tier)) {
+				fetchFilterLabels();
+			}
 		}
 	}
 
@@ -115,7 +118,11 @@ class Filter extends React.Component {
 			isLoadingFilterLabels,
 			filterValues: filterValuesByLabels,
 			filterId,
+			tier,
 		} = this.props;
+		if (!isValidPlan(tier)) {
+			return null;
+		}
 		const filterValues = get(filterValuesByLabels, `${filterKey}.filter_values`, []);
 		return (
 			<Flex flexDirection="column" style={{ paddingBottom: 15 }}>
@@ -207,6 +214,7 @@ Filter.defaultProps = {
 };
 
 Filter.propTypes = {
+	tier: PropTypes.string.isRequired,
 	filterId: PropTypes.string.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
 	fetchFilterValues: PropTypes.func.isRequired,
@@ -221,6 +229,7 @@ Filter.propTypes = {
 const mapStateToProps = state => ({
 	isLoadingFilterValues: get(state, '$getFilterValues.isFetching'),
 	filterValues: get(state, '$getFilterValues.results'),
+	tier: get(state, '$getAppPlan.results.tier'),
 	isLoadingFilterLabels: get(state, '$getFilterLabels.isFetching'),
 	isFetchedFilterLabels: get(state, '$getFilterLabels.results.success', false),
 	filterLabels: get(state, '$getFilterLabels.results.filter_labels'),
