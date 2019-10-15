@@ -3,47 +3,63 @@ import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
 import Flex from '../../../shared/Flex';
 
-const main = css`
-	height: 113px;
-	width: 220px;
-	background-color: rgba(229, 230, 233, 0.21);
-	border-top: 2px solid #00f68e;
-	margin-bottom: 20px;
-	margin-right: 20px;
+const cardStyle = css`
+	margin-bottom: 8px;
+	background: rgba(229, 230, 233, 0.21);
+	padding: 15px 0;
+	p,
+	h2 {
+		margin: 0;
+		text-align: center;
+	}
+
+	p {
+		font-size: 1em;
+		font-weight: bold;
+		color: #8c8c8c;
+	}
+
+	h2 {
+		color: #595959;
+		display: flex;
+		justify-content: center;
+		vertical-align: middle;
+	}
+
+	h2 span {
+		color: #8c8c8c;
+		font-weight: bold;
+		margin-left: 5px;
+		font-size: 16px;
+	}
 `;
-const titleCls = css`
-	height: 19px;
-	color: #232e44;
-	font-size: 14px;
-	line-height: 19px;
-	text-align: center;
-`;
-const countCls = css`
-	height: 49px;
-	color: #232e44;
-	font-size: 36px;
-	line-height: 49px;
-	text-align: center;
-`;
-const SummaryCard = ({ border, title, count }) => (
-	<Flex
-		flexDirection="column"
-		justifyContent="center"
-		css={main}
-		style={{
-			borderTop: `2px solid ${border}`,
-		}}
-	>
-		<span css={titleCls}>{title}</span>
-		<span css={countCls}>{count}</span>
+
+const SummaryCard = ({
+ percent, title, count, style,
+}) => (
+	<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
+		{/* {icon && (
+			<div>
+				<Icon type={icon} style={{ fontSize: '2.5em', marginRight: 15 }} />
+			</div>
+		)} */}
+		<div>
+			<p>{title}</p>
+			<h2>
+				{count}
+				{percent ? <span>{`(${percent}%)`}</span> : null}
+			</h2>
+		</div>
 	</Flex>
 );
 SummaryCard.defaultProps = {
-	border: '#00f68e',
+	percent: 0,
 	count: 0,
+	style: {},
 };
 SummaryCard.propTypes = {
-	border: PropTypes.string,
+	percent: PropTypes.number,
+	style: PropTypes.object,
 	title: PropTypes.string.isRequired,
 	count: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };

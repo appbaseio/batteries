@@ -8,61 +8,11 @@ import { getAppAnalyticsSummaryByName } from '../../../../modules/selectors';
 import { getAppAnalyticsSummary } from '../../../../modules/actions';
 import Loader from '../../../shared/Loader/Spinner';
 import { displayErrors } from '../../../../utils/heplers';
-import Flex from '../../../shared/Flex';
-
-const cardStyle = css`
-	margin-bottom: 8px;
-	background: rgba(229, 230, 233, 0.21);
-	padding: 15px 0;
-	p,
-	h2 {
-		margin: 0;
-		text-align: center;
-	}
-
-	p {
-		font-size: 1em;
-		font-weight: bold;
-		color: #8c8c8c;
-	}
-
-	h2 {
-		color: #595959;
-		display: flex;
-		justify-content: center;
-		vertical-align: middle;
-	}
-
-	h2 span {
-		color: #8c8c8c;
-		font-weight: bold;
-		margin-left: 5px;
-		font-size: 16px;
-	}
-`;
+import SummaryCard from './SummaryCard';
 
 const cardContainer = css`
 	padding: 10px;
 `;
-
-const SummaryCard = ({
- percent, title, count, style,
-}) => (
-	<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
-		{/* {icon && (
-			<div>
-				<Icon type={icon} style={{ fontSize: '2.5em', marginRight: 15 }} />
-			</div>
-		)} */}
-		<div>
-			<p>{title}</p>
-			<h2>
-				{count}
-				{percent ? <span>{`(${percent}%)`}</span> : null}
-			</h2>
-		</div>
-	</Flex>
-);
 
 class Summary extends React.Component {
 	componentDidMount() {
@@ -176,10 +126,19 @@ class Summary extends React.Component {
 Summary.propTypes = {
 	fetchAppAnalyticsSummary: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
-	avgClickRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	avgConversionRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalSearches: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	errors: PropTypes.array.isRequired,
+	avgConversionRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	totalConversions: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	totalClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	totalResultClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	avgClickRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	avgSuggestionClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	totalSuggestionClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	noResultsRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	noResultSearch: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	totalSearches: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	totalUsers: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	totalResults: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 };
 const mapStateToProps = (state) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);
