@@ -2,6 +2,7 @@ import AppConstants from '../constants';
 import getAppMappings from './getAppMappings';
 import getCurrentApp from './getCurrentApp';
 import getSearchState from './getSearchState';
+import getSelectedFilters from './getSelectedFilters';
 import createRequestReducer from './request';
 import {
 	computeAppPlanState,
@@ -13,6 +14,7 @@ import {
 export default {
 	$getAppMappings: getAppMappings,
 	$getSearchState: getSearchState,
+	$getSelectedFilters: getSelectedFilters,
 	$getAppPermissions: createRequestReducer(
 		AppConstants.APP.PERMISSION.GET,
 		AppConstants.APP.PERMISSION.GET_SUCCESS,
@@ -34,6 +36,17 @@ export default {
 		AppConstants.APP.GET_BUILD_INFO,
 		AppConstants.APP.GET_BUILD_INFO_SUCCESS,
 		AppConstants.APP.GET_BUILD_INFO_ERROR,
+	),
+	$getFilterLabels: createRequestReducer(
+		AppConstants.APP.FILTER.GET_LABEL,
+		AppConstants.APP.FILTER.GET_LABEL_SUCCESS,
+		AppConstants.APP.FILTER.GET_LABEL_ERROR,
+	),
+	$getFilterValues: createRequestReducer(
+		AppConstants.APP.FILTER.GET_VALUE,
+		AppConstants.APP.FILTER.GET_VALUE_SUCCESS,
+		AppConstants.APP.FILTER.GET_VALUE_ERROR,
+		computeStateByAppName,
 	),
 	$getClusterUsers: createRequestReducer(
 		AppConstants.APP.USERS.GET,

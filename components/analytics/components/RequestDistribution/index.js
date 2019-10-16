@@ -3,15 +3,16 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Card, Select } from 'antd';
+import { Card } from 'antd';
 import {
  LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend,
 } from 'recharts';
+import Filter from '../Filter';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { displayErrors } from '../../../../utils/heplers';
 import { getAppRequestDistribution } from '../../../../modules/actions';
-import { getAppRequestDistributionByName, getAppPlanByName } from '../../../../modules/selectors';
+import { getAppRequestDistributionByName } from '../../../../modules/selectors';
 
 const normalizedData = (data = []) => {
 	const dataTobeReturned = [];
@@ -45,35 +46,33 @@ class RequestDistribution extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const { errors } = this.props;
+		const { errors, filters, fetchAppRequestDistribution } = this.props;
 		displayErrors(errors, prevProps.errors);
+
+		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+			fetchAppRequestDistribution();
+			if (get(filters, 'from') && get(filters, 'to')) {
+				const a = moment(get(filters, 'from'));
+				const b = moment(get(filters, 'to'));
+				if (b.diff(a, 'days') <= 7) {
+					// eslint-disable-next-line
+					this.setState({
+						ticks: this.weeklyTicks,
+					});
+				} else {
+					// eslint-disable-next-line
+					this.setState({
+						ticks: this.monthlyTicks,
+					});
+				}
+			}
+		}
 	}
 
 	getformatedDate(date) {
 		const { ticks } = this.state;
-		return ticks.length > 9 ? moment(date).format('MM/DD')
-		: moment(date).format('Do ddd');
+		return ticks.length > 9 ? moment(date).format('MM/DD') : moment(date).format('Do ddd');
 	}
-
-	handleChange = (value) => {
-		const { fetchAppRequestDistribution } = this.props;
-		if (value === 'weekly') {
-			fetchAppRequestDistribution({
-				from: moment()
-					.subtract(7, 'days')
-					.format('YYYY/MM/DD'),
-				to: moment().format('YYYY/MM/DD'),
-			});
-			this.setState({
-				ticks: this.weeklyTicks,
-			});
-		} else {
-			fetchAppRequestDistribution();
-			this.setState({
-				ticks: this.monthlyTicks,
-			});
-		}
-	};
 
 	calculateTicks() {
 		const baseTicks = [
@@ -109,7 +108,7 @@ class RequestDistribution extends React.Component {
 
 	render() {
 		const {
- isLoading, results, success,
+ isLoading, results, success, filterId, displayFilter,
 } = this.props;
 		const { width, ticks } = this.state;
 		const data = normalizedData(results);
@@ -120,21 +119,12 @@ class RequestDistribution extends React.Component {
 				}}
 				css="width: 100%"
 			>
+				{displayFilter && filterId && <Filter filterId={filterId} />}
 				<Card
 					title="Request Distribution"
 					style={{
 						width: '100%',
 					}}
-					extra={(
-							<Select onChange={this.handleChange} defaultValue="monthly">
-								<Select.Option value="monthly" key="monthly">
-									Monthly
-								</Select.Option>
-								<Select.Option value="weekly" key="weekly">
-									weekly
-								</Select.Option>
-							</Select>
-						)}
 				>
 					{isLoading ? (
 						<Loader />
@@ -209,21 +199,31 @@ class RequestDistribution extends React.Component {
 		);
 	}
 }
+RequestDistribution.defaultProps = {
+	displayFilter: true,
+	filterId: undefined,
+	filters: undefined,
+};
+
 RequestDistribution.propTypes = {
+	displayFilter: PropTypes.bool,
+	filterId: PropTypes.string,
+	filters: PropTypes.object,
 	fetchAppRequestDistribution: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	results: PropTypes.array.isRequired,
 	success: PropTypes.bool.isRequired,
 	errors: PropTypes.array.isRequired,
 };
-const mapStateToProps = state => ({
+const mapStateToProps = (state, props) => ({
 	isLoading: get(state, '$getAppRequestDistribution.isFetching'),
 	errors: [get(state, '$getAppRequestDistribution.error')],
 	success: get(state, '$getAppRequestDistribution.success'),
 	results: get(getAppRequestDistributionByName(state), 'request_distribution', []),
+	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 });
-const mapDispatchToProps = dispatch => ({
-	fetchAppRequestDistribution: filters => dispatch(getAppRequestDistribution(null, null, filters)),
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchAppRequestDistribution: () => dispatch(getAppRequestDistribution(null, props.filterId)),
 });
 export default connect(
 	mapStateToProps,

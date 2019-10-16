@@ -196,3 +196,5 @@ export const parseSearchState = (searchState = {}) => {
 	});
 	return searchProfile;
 };
+
+export const isValidPlan = tier => tier && tier !== 'arc-basic';

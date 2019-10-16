@@ -21,8 +21,12 @@ class Summary extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const { errors } = this.props;
+		const { errors, filters } = this.props;
 		displayErrors(errors, prevProps.errors);
+		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+			const { fetchAppAnalyticsSummary } = this.props;
+			fetchAppAnalyticsSummary();
+		}
 	}
 
 	render() {
@@ -42,9 +46,11 @@ class Summary extends React.Component {
 			noResultSearch,
 			totalSuggestionClicks,
 		} = this.props;
+
 		if (isLoading) {
 			return <Loader />;
 		}
+
 		return (
 			<Row>
 				<Col xl={8} md={12}>
@@ -123,6 +129,12 @@ class Summary extends React.Component {
 		);
 	}
 }
+
+Summary.defaultProps = {
+	filterId: undefined,
+	filters: undefined,
+};
+
 Summary.propTypes = {
 	fetchAppAnalyticsSummary: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
@@ -139,8 +151,11 @@ Summary.propTypes = {
 	totalSearches: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	totalUsers: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	totalResults: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	// eslint-disable-next-line
+	filterId: PropTypes.string,
+	filters: PropTypes.object,
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);
 	return {
 		avgConversionRate: get(appSummary, 'summary.avg_conversion_rate', 0),
@@ -157,10 +172,11 @@ const mapStateToProps = (state) => {
 		totalResults: get(appSummary, 'summary.total_results_count', 0),
 		isLoading: get(state, '$getAppAnalyticsSummary.isFetching'),
 		errors: [get(state, '$getAppAnalyticsSummary.error')],
+		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 	};
 };
-const mapDispatchToProps = dispatch => ({
-	fetchAppAnalyticsSummary: appName => dispatch(getAppAnalyticsSummary(appName)),
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchAppAnalyticsSummary: appName => dispatch(getAppAnalyticsSummary(appName, props.filterId)),
 });
 export default connect(
 	mapStateToProps,

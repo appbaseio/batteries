@@ -2,6 +2,7 @@ import React from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
+import Filter from './Filter';
 import Flex from '../../shared/Flex';
 import {
  popularFiltersCol, popularResultsCol, popularSearchesCol, noResultsFull,
@@ -49,15 +50,18 @@ const Analytics = ({
 	onClickViewAll,
 	displayReplaySearch,
 	handleReplaySearch,
+	filterId,
 }) => {
 	if (loading) {
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
 	}
+
 	return (
 		<React.Fragment>
+			{filterId && <Filter filterId={filterId} />}
 			<Card css="margin-bottom: 20px" title="Summary">
-				<Summary />
+				<Summary filterId={filterId} />
 			</Card>
 			<SearchVolumeChart height={300} data={searchVolume} />
 			<Flex css={results}>
@@ -122,14 +126,14 @@ const Analytics = ({
 							/>
 						</div>
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<GeoDistribution />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<GeoDistribution filterId={filterId} displayFilter={false} />
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<SearchLatency />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<SearchLatency filterId={filterId} displayFilter={false} />
 					</Flex>
-					<Flex css="width: 100%;margin-top: 20px">
-						<RequestDistribution />
+					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
+						<RequestDistribution filterId={filterId} displayFilter={false} />
 					</Flex>
 				</React.Fragment>
 			)}
@@ -145,6 +149,7 @@ Analytics.defaultProps = {
 	popularFilters: [],
 	onClickViewAll: null,
 	displayReplaySearch: false,
+	filterId: undefined,
 };
 Analytics.propTypes = {
 	onClickViewAll: PropTypes.shape({
@@ -153,6 +158,7 @@ Analytics.propTypes = {
 		popularSearches: PropTypes.func,
 		noResultsSearch: PropTypes.func,
 	}),
+	filterId: PropTypes.string,
 	loading: PropTypes.bool,
 	displayReplaySearch: PropTypes.bool,
 	noResults: PropTypes.array,
