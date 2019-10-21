@@ -41,7 +41,11 @@ const replaySearch = [
 		width: 125,
 		render: item => (
 			<div css="text-align: center">
-				<Button disabled={!item.search_state} icon="redo" onClick={() => item.handleReplaySearch(item.search_state)} />
+				<Button
+					disabled={!item.search_state}
+					icon="redo"
+					onClick={() => item.handleReplaySearch(item.search_state)}
+				/>
 			</div>
 		),
 	},
@@ -245,6 +249,7 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
+			render: i => i.toFixed(2),
 			key: `ps-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -284,12 +289,15 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Position',
 			dataIndex: 'click_position',
-			render: item => <div css="overflow-y: scroll; max-height:150px;">{item.toFixed(2) || '-'}</div>,
+			render: item => (
+				<div css="overflow-y: scroll; max-height:150px;">{item.toFixed(2) || '-'}</div>
+			),
 			key: `pr-clickposition${updateIndex()}`,
 		},
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
+			render: i => i.toFixed(2),
 			key: `pr-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -326,11 +334,14 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 			title: 'Click Position',
 			dataIndex: 'click_position',
 			key: `pf-clickposition${updateIndex()}`,
-			render: item => <div css="overflow-y: scroll; max-height:150px;">{item.toFixed(2) || '-'}</div>,
+			render: item => (
+				<div css="overflow-y: scroll; max-height:150px;">{item.toFixed(2) || '-'}</div>
+			),
 		},
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
+			render: i => i.toFixed(2),
 			key: `pf-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -459,13 +470,16 @@ export function getGeoDistribution(appName, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
-		fetch(`${ACC_API}/_analytics/${getApp(appName)}geo-distribution${getQueryParams(filters)}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${authToken}`,
+		fetch(
+			`${ACC_API}/_analytics/${getApp(appName)}geo-distribution${getQueryParams(filters)}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
+				},
 			},
-		})
+		)
 			// Comment out this line
 			.then(res => res.json())
 			.then((res) => {
@@ -528,16 +542,19 @@ export function getNoResultSearches(appName, size = 100, filters) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
-		fetch(`${ACC_API}/_analytics/${getApp(appName)}no-result-searches${getQueryParams({
-			size,
-			...filters,
-		})}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${authToken}`,
+		fetch(
+			`${ACC_API}/_analytics/${getApp(appName)}no-result-searches${getQueryParams({
+				size,
+				...filters,
+			})}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
+				},
 			},
-		})
+		)
 			// Comment out this line
 			.then(res => res.json())
 			.then((res) => {
@@ -585,7 +602,9 @@ export function getPopularResults(appName, clickanalytics = true, size = 100, fi
  */
 export function getRequestDistribution(appName, filters) {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_analytics/${getApp(appName)}request-distribution${getQueryParams(filters)}`);
+	return doGet(
+		`${ACC_API}/_analytics/${getApp(appName)}request-distribution${getQueryParams(filters)}`,
+	);
 }
 // eslint-disable-next-line
 export function getPopularFilters(appName, clickanalytics = true, size = 100, filters) {
