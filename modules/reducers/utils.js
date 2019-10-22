@@ -30,6 +30,11 @@ export const computePlan = ({ payload }) => {
 		daysLeft: payload.tier_validity
 			? Math.ceil((payload.tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60))
 			: 0,
+		clusterDaysLeft: payload.cluster_tier_validity
+			? Math.ceil(
+				(payload.cluster_tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60),
+			)
+			: 0,
 	};
 };
 export const computeAppPlanState = ({ payload, meta }, state) => ({
