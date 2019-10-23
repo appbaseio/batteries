@@ -11,6 +11,7 @@ import {
 	deleteSubscription,
 	// getAppMetrics as GetAppMetrics,
 	transferOwnership,
+	updatePaymentMethod,
 } from '../../utils/app';
 import { getMappings, getAuthHeaders } from '../../utils/mappings';
 import {
@@ -248,4 +249,15 @@ export function clearSearchState() {
 
 export function clearCurrentApp() {
 	return createAction(AppConstants.APP.CLEAR_CURRENT_APP);
+}
+
+export function updateAppPaymentMethod(stripeToken, product) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.ACCOUNT.PAYMENT.UPDATE));
+		return updatePaymentMethod(stripeToken, product)
+			.then(res => dispatch(createAction(AppConstants.ACCOUNT.PAYMENT.UPDATE_SUCCESS, res)))
+			.catch((error) => {
+				dispatch(createAction(AppConstants.ACCOUNT.PAYMENT.UPDATE_ERROR, null, error));
+			});
+	};
 }
