@@ -202,3 +202,14 @@ export const parseSearchState = (searchState = {}) => {
 	});
 	return searchProfile;
 };
+
+export const deleteObjectFromPath = (obj, path) => {
+	const fields = path.split('.');
+	if (obj) {
+		if (fields.length === 1 && obj[fields[0]]) {
+			return delete obj[path];
+		}
+		return deleteObjectFromPath(obj[fields[0]], fields.slice(1).join('.'));
+	}
+	return false;
+};
