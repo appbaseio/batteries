@@ -186,7 +186,7 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 		exclude_fields: excludeFields,
 		type,
 		es_version: version,
-		shard_count: shards.toString(),
+		shard_count: shards && shards.toString(),
 	};
 	if (version >= 7) {
 		delete body.type;
