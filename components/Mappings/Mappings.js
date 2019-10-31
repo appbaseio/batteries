@@ -21,7 +21,7 @@ import { connect } from 'react-redux';
 
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
-import { isEqual } from '../../utils';
+import { isEqual, deleteObjectFromPath } from '../../utils';
 import {
 	updateMapping,
 	updateMappingES7,
@@ -294,37 +294,64 @@ class Mappings extends Component {
 
 	deletePath = (path, removeType = false) => {
 		let { activeType } = this.state;
-		const { deletedPaths: _deletedPaths, mapping: _mapping } = this.state;
+		const { deletedPaths: _deletedPaths, mapping: _mapping, esVersion } = this.state;
 		const mapping = JSON.parse(JSON.stringify(_mapping));
 		let deletedPaths = [..._deletedPaths];
 
-		let fields = path.split('.');
-		if (fields[fields.length - 1] === 'properties') {
-			// when deleting an object
-			fields = fields.slice(0, -1);
-		}
-
-		if (removeType) {
-			const type = fields[0];
-			// remove from active types
-			activeType = activeType.filter(field => field !== type);
-
-			// add all the fields to excludeFields
-			const deletedTypesPath = Object.keys(_mapping[type].properties).map(
-				property => `${type}.properties.${property}`,
-			);
-			deletedPaths = [...deletedPaths, ...deletedTypesPath];
-		} else {
-			deletedPaths = [..._deletedPaths, path];
-		}
-
-		fields.reduce((acc, val, index) => {
-			if (index === fields.length - 1) {
-				delete acc[val];
-				return true;
+		if (esVersion < 7) {
+			let fields = path.split('.');
+			if (fields[fields.length - 1] === 'properties') {
+				// when deleting an object
+				fields = fields.slice(0, -1);
 			}
-			return acc[val];
-		}, mapping);
+
+			if (removeType) {
+				const type = fields[0];
+				// remove from active types
+				activeType = activeType.filter(field => field !== type);
+
+				// add all the fields to excludeFields
+				const deletedTypesPath = Object.keys(_mapping[type].properties).map(
+					property => `${type}.properties.${property}`,
+				);
+				deletedPaths = [...deletedPaths, ...deletedTypesPath];
+			} else {
+				deletedPaths = [..._deletedPaths, path];
+			}
+
+			fields.reduce((acc, val, index) => {
+				if (index === fields.length - 1) {
+					delete acc[val];
+					return true;
+				}
+				return acc[val];
+			}, mapping);
+		} else if (removeType) {
+				const field = path.split('.')[2];
+
+				if (field) {
+					const deletedTypesPath =						(_mapping.properties
+							&& _mapping.properties[field]
+							&& _mapping.properties[field].properties
+							&& Object.keys(_mapping.properties[field].properties).map(
+								property => `properties.${property}`,
+							))
+						|| [];
+					deletedPaths = [...deletedPaths, ...deletedTypesPath];
+					delete mapping.properties[field];
+				} else {
+					delete mapping.properties;
+				}
+			} else {
+				deleteObjectFromPath(
+					mapping,
+					path
+						.split('.')
+						.slice(1)
+						.join('.'),
+				);
+			}
+
 
 		this.setState({
 			dirty: true,
@@ -650,18 +677,16 @@ class Mappings extends Component {
 				<section key={type} className={row}>
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>{type}</span>
-						{this.state.esVersion < 6 && (
-							<a
-								type="danger"
-								size="small"
-								onClick={() => {
-									this.deletePath(address, true);
-								}}
-							>
-								<Icon type="delete" />
-								Delete
-							</a>
-						)}
+						<a
+							type="danger"
+							size="small"
+							onClick={() => {
+								this.deletePath(address, true);
+							}}
+						>
+							<Icon type="delete" />
+							Delete
+						</a>
 					</h4>
 					{Object.keys(fields).map((field) => {
 						if (fields[field].properties) {
@@ -708,9 +733,7 @@ class Mappings extends Component {
 									</span>
 									<a
 										onClick={() => {
-											const addressField =												+this.state.esVersion >= 7
-													? `properties.${field}`
-													: `${address}.${field}`;
+											const addressField = `${address}.${field}`;
 											this.deletePath(addressField);
 										}}
 									>
