@@ -1,12 +1,10 @@
 import get from 'lodash/get';
 
 export const getPlanFromTier = (plan) => {
-	switch (plan) {
-		case 'arc-basic':
-			return 'growth';
-		default:
-			return 'free';
+	if (plan) {
+		return 'growth';
 	}
+	return 'free';
 };
 
 export const computeMetrics = (metrics) => {

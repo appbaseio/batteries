@@ -32,11 +32,6 @@ export default {
 		AppConstants.APP.GET_PLAN_ERROR,
 		computeAppPlanState,
 	),
-	$getBuildInfo: createRequestReducer(
-		AppConstants.APP.GET_BUILD_INFO,
-		AppConstants.APP.GET_BUILD_INFO_SUCCESS,
-		AppConstants.APP.GET_BUILD_INFO_ERROR,
-	),
 	$getFilterLabels: createRequestReducer(
 		AppConstants.APP.FILTER.GET_LABEL,
 		AppConstants.APP.FILTER.GET_LABEL_SUCCESS,

@@ -197,4 +197,12 @@ export const parseSearchState = (searchState = {}) => {
 	return searchProfile;
 };
 
-export const isValidPlan = tier => tier && tier !== 'arc-basic';
+export const allowedPlans = [
+	'arc-enterprise',
+	'hosted-arc-enterprise',
+	'production-1',
+	'production-2',
+	'production-3',
+];
+
+export const isValidPlan = (tier, override) => override || (tier && allowedPlans.includes(tier));

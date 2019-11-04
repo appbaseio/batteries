@@ -2,8 +2,8 @@ import { getCredentialsFromPermissions } from '../../utils';
 import { computeMetrics, getPlanFromTier, getApiCalls } from '../helpers';
 
 export const computePlan = ({ payload }) => {
-	const isBootstrapMonthly = payload.tier === 'arc-basic';
-	const isGrowthMonthly = payload.tier === 'arc-basic';
+	const isBootstrapMonthly = !!payload.tier;
+	const isGrowthMonthly = !!payload.tier;
 	return {
 		...payload,
 		isBootstrapMonthly,

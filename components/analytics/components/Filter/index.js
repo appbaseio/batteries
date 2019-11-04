@@ -53,9 +53,11 @@ class Filter extends React.Component {
 	}
 
 	componentDidMount() {
-		const { fetchFilterLabels, isFetchedFilterLabels, tier } = this.props;
+		const {
+ fetchFilterLabels, isFetchedFilterLabels, tier, featureCustomEvents,
+} = this.props;
 		if (!isFetchedFilterLabels) {
-			if (isValidPlan(tier)) {
+			if (isValidPlan(tier, featureCustomEvents)) {
 				fetchFilterLabels();
 			}
 		}
@@ -118,9 +120,10 @@ class Filter extends React.Component {
 			isLoadingFilterLabels,
 			filterValues: filterValuesByLabels,
 			filterId,
+			featureCustomEvents,
 			tier,
 		} = this.props;
-		if (!isValidPlan(tier)) {
+		if (!isValidPlan(tier, featureCustomEvents)) {
 			return null;
 		}
 		const filterValues = get(filterValuesByLabels, `${filterKey}.filter_values`, []);
@@ -222,6 +225,7 @@ Filter.propTypes = {
 	filterValues: PropTypes.object,
 	fetchFilterLabels: PropTypes.func.isRequired,
 	isLoadingFilterLabels: PropTypes.bool.isRequired,
+	featureCustomEvents: PropTypes.bool.isRequired,
 	isFetchedFilterLabels: PropTypes.bool.isRequired,
 	filterLabels: PropTypes.array,
 };
@@ -230,6 +234,7 @@ const mapStateToProps = state => ({
 	isLoadingFilterValues: get(state, '$getFilterValues.isFetching'),
 	filterValues: get(state, '$getFilterValues.results'),
 	tier: get(state, '$getAppPlan.results.tier'),
+	featureCustomEvents: get(state, '$getAppPlan.results.feature_custom_events', false),
 	isLoadingFilterLabels: get(state, '$getFilterLabels.isFetching'),
 	isFetchedFilterLabels: get(state, '$getFilterLabels.results.success', false),
 	filterLabels: get(state, '$getFilterLabels.results.filter_labels'),
