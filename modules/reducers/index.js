@@ -188,4 +188,9 @@ export default {
 		AppConstants.APP.PUBLIC_KEY.UPDATE_ERROR,
 	),
 	$getCurrentApp: getCurrentApp,
+	$updateAppPaymentMethod: createRequestReducer(
+		AppConstants.ACCOUNT.PAYMENT.UPDATE,
+		AppConstants.ACCOUNT.PAYMENT.UPDATE_SUCCESS,
+		AppConstants.ACCOUNT.PAYMENT.UPDATE_ERROR,
+	),
 };
