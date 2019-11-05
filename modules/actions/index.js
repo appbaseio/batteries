@@ -5,3 +5,4 @@ export * from './analytics';
 export * from './templates';
 export * from './publicKey';
 export * from './filter';
+export * from './suggestions';

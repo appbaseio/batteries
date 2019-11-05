@@ -26,7 +26,7 @@ export function createAction(actionId, payload, error, meta) {
 	if (payload !== undefined) {
 		action.payload = payload;
 	}
-	if (error !== undefined) {
+	if (error !== undefined && error !== null) {
 		action.error = formatError(error);
 	}
 	if (meta !== undefined) {

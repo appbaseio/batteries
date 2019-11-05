@@ -84,10 +84,18 @@ export const doGet = (url, headers, credentials) => createRequest(url, undefined
  */
 export const doPost = (url, body, headers, credentials, allowedStatusCode) => createRequest(url, body, headers, 'POST', credentials, allowedStatusCode);
 /**
- * To create a put request
+ * To create a patch request
  * @param {string} url
  * @param {Object} body
  * @param {Object} headers
  * @param {boolean} credentials
  */
 export const doPatch = (url, body, headers, credentials) => createRequest(url, body, headers, 'PATCH', credentials);
+/**
+ * To create a put request
+ * @param {string} url
+ * @param {Object} body
+ * @param {Object} headers
+ * @param {boolean} credentials
+ */
+export const doPut = (url, body, headers, credentials) => createRequest(url, body, headers, 'PUT', credentials);

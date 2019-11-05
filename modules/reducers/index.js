@@ -94,6 +94,16 @@ export default {
 		AppConstants.APP.TEMPLATES.DELETE_SUCCESS,
 		AppConstants.APP.TEMPLATES.DELETE_ERROR,
 	),
+	$getSuggestionsPreferences: createRequestReducer(
+		AppConstants.APP.SUGGESTIONS.GET_PREFERENCES,
+		AppConstants.APP.SUGGESTIONS.GET_PREFERENCES_SUCCESS,
+		AppConstants.APP.SUGGESTIONS.GET_PREFERENCES_ERROR,
+	),
+	$saveSuggestionsPreferences: createRequestReducer(
+		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES,
+		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
+		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES_ERROR,
+	),
 	$validateAppTemplate: createRequestReducer(
 		AppConstants.APP.TEMPLATES.VALIDATE,
 		AppConstants.APP.TEMPLATES.VALIDATE_SUCCESS,
