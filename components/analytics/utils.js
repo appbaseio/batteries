@@ -386,7 +386,7 @@ export const requestLogs = [
 	},
 ];
 
-const getAuthToken = () => {
+export const getAuthToken = () => {
 	let token = null;
 	try {
 		token = sessionStorage.getItem('authToken');
