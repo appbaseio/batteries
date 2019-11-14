@@ -11,6 +11,7 @@ const formatError = (error = {}) => {
 		};
 	}
 };
+
 /**
  * Function to create a redux action
  * @param {string} actionId

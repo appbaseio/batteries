@@ -160,10 +160,10 @@ export function deleteClusterUser(credentials, username) {
 // 	};
 // }
 
-export function createAppSubscription(stripeToken, plan) {
+export function createAppSubscription(stripeToken, plan, test) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION));
-		return createSubscription(stripeToken, plan)
+		return createSubscription(stripeToken, plan, test)
 			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS, res)))
 			.catch((error) => {
 				dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_ERROR, null, error));

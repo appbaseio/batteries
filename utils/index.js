@@ -197,12 +197,36 @@ export const parseSearchState = (searchState = {}) => {
 	return searchProfile;
 };
 
+export const ARC_PLANS = {
+	ARC_BASIC: 'arc-basic',
+	ARC_STANDARD: 'arc-standard',
+	ARC_ENTERPRISE: 'arc-enterprise',
+	HOSTED_ARC_BASIC: 'hosted-arc-basic',
+	HOSTED_ARC_STANDARD: 'hosted-arc-standard',
+	HOSTED_ARC_ENTERPRISE: 'hosted-arc-enterprise',
+};
+
+export const CLUSTER_PLANS = {
+	PRODUCTION_2019_1: '2019-production-1',
+	PRODUCTION_2019_2: '2019-production-2',
+	PRODUCTION_2019_3: '2019-production-3',
+};
+
+export const PRICE_BY_PLANS = {
+	[ARC_PLANS.ARC_BASIC]: 19,
+	[ARC_PLANS.ARC_STANDARD]: 59,
+	[ARC_PLANS.ARC_ENTERPRISE]: 499,
+	[ARC_PLANS.HOSTED_ARC_BASIC]: 39,
+	[ARC_PLANS.HOSTED_ARC_STANDARD]: 89,
+	[ARC_PLANS.HOSTED_ARC_ENTERPRISE]: 599,
+}
+
 export const allowedPlans = [
-	'arc-enterprise',
-	'hosted-arc-enterprise',
-	'production-1',
-	'production-2',
-	'production-3',
+	ARC_PLANS.ARC_ENTERPRISE,
+	ARC_PLANS.HOSTED_ARC_ENTERPRISE,
+	CLUSTER_PLANS.PRODUCTION_2019_1,
+	CLUSTER_PLANS.PRODUCTION_2019_2,
+	CLUSTER_PLANS.PRODUCTION_2019_3,
 ];
 
 export const isValidPlan = (tier, override) => override || (tier && allowedPlans.includes(tier));

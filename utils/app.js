@@ -77,9 +77,10 @@ export const getAppPlan = () => {
 	return doGet(`${ACC_API}/arc/plan`);
 };
 
-export const createSubscription = (token, plan) => {
+export const createSubscription = (token, plan, test) => {
 	const ACC_API = getURL();
-	return doPost(`${ACC_API}/arc/subscription`, { token, plan });
+	const URL = test ? `${ACC_API}/arc/subscription?test=true` : `${ACC_API}/arc/subscription`;
+	return doPost(URL, { token, plan });
 };
 
 export const deleteSubscription = (payload) => {
