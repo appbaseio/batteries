@@ -135,4 +135,10 @@ export const setPublicKey = (name, key, role) => new Promise((resolve, reject) =
 			.catch(error => reject(error));
 	});
 
-export const updatePaymentMethod = (token, product) => doPost(`${ACC_API}/user/payment`, { token, product });
+export const updatePaymentMethod = (token, product) => {
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/user/payment`, {
+		token,
+		product,
+	});
+};
