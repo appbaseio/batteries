@@ -6,23 +6,25 @@ import { getURL } from '../../constants/config';
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission => permission.read
-			&& permission.write
-			&& get(permission, 'referers', []).includes('*')
-			&& get(permission, 'include_fields', []).includes('*'),
+		permission => permission && permission.ops.indexOf('read') > -1
+			&& permission && permission.ops.indexOf('write') > -1
+			&& get(permission, 'referers', []).includes('*'),
 	);
 	if (!result) {
 		result = permissions.find(
-			permission => permission.read
-				&& permission.write
+			permission => permission && permission.ops.indexOf('read') > -1
+				&& permission && permission.ops.indexOf('write') > -1
 				&& get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission.read && permission.write);
+		result = permissions.find(permission => permission && permission.ops.indexOf('read') > -1 && permission && permission.ops.indexOf('write') > -1);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission.read);
+		result = permissions.find(permission => permission && permission.ops.indexOf('read') > -1);
+	}
+	if (result) {
+		result.credentials = `${result.username}:${result.password}`;
 	}
 	return result;
 }
