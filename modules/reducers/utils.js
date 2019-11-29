@@ -19,7 +19,7 @@ export const computePlan = ({ payload }) => {
 		isArcEnterprise,
 		isHostedArc,
 		isClusterBilling,
-		isPaid: !!payload.tier && payload.time_validity > 0,
+		isPaid: !payload.billing_type || (!!payload.tier && payload.time_validity > 0),
 		plan: getPlanFromTier(payload.tier),
 		daysLeft,
 	};
