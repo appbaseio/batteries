@@ -805,12 +805,13 @@ class Mappings extends Component {
 									) : null}
 								</div>
 								<div className={subItem}>
-									{this.renderUsecase(fields[field], field)}
+									{this.renderUsecase(fields[field], `${address}.${field}`)}
 									{this.state.editable ? (
 										this.renderDropDown({
 											name: `${field}-mapping`,
 											value: fields[field].type,
-											handleChange: e => this.setMapping(`${address}.${field}`, e.key),
+											handleChange: e =>
+												this.setMapping(`${address}.${field}`, e.key),
 											options: this.renderOptions(
 												originalFields,
 												fields,
