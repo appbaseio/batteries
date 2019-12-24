@@ -77,7 +77,7 @@ class DataFieldInput extends React.Component {
 							name={index}
 							value={selected}
 							handleChange={this.handleSearchDataFieldChange}
-							styleProps={{ minWidth: '12vw' }}
+							styleProps={{ minWidth: '16vw' }}
 						/>
 					);
 				},
@@ -95,6 +95,7 @@ class DataFieldInput extends React.Component {
 						handleChange={this.handleSearchWeightChange}
 					/>
 				),
+				width: 100,
 			},
 			{
 				render: this.renderDeleteButton,
@@ -114,6 +115,7 @@ class DataFieldInput extends React.Component {
 					columns={columns}
 					pagination={false}
 					rowClassName={rowStyles}
+					scroll={{ x: true }}
 				/>
 				{fields.length === componentProps.dataField.length ? null : (
 					<div style={{ paddingTop: 12, textAlign: 'right' }}>
