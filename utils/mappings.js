@@ -191,7 +191,7 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 		exclude_fields: excludeFields,
 		type,
 		es_version: version,
-		shard_count: shards.toString(),
+		shard_count: shards && shards.toString(),
 	};
 	if (version >= 7) {
 		delete body.type;
@@ -292,75 +292,52 @@ export function transformToES5(mapping) {
 	return _mapping;
 }
 
+function setNestedMapping(mapping, fields, currentPath, type, usecase) {
+	if (fields.length - 1 === currentPath) {
+		const _mapping = { ...mapping };
+		let newUsecase = {};
+		if (usecase) {
+			newUsecase = mappingUsecase[usecase];
+		}
+		_mapping[fields[currentPath]] = {
+			...newUsecase,
+			type,
+		};
+		return _mapping;
+	}
+
+	const updatedmapping = setNestedMapping(
+		mapping[fields[currentPath]],
+		fields,
+		currentPath + 1,
+		type,
+		usecase,
+	);
+	const _mapping = {
+		[fields[currentPath]]: {
+			...mapping[fields[currentPath]],
+			...updatedmapping,
+		},
+	};
+	return _mapping;
+}
+
 export function updateMapping(mapping, field, type, usecase) {
 	// eslint-disable-next-line
 	let _mapping = { ...mapping };
 
-	Object.keys(_mapping).every((key) => {
-		if (PRESERVED_KEYS.includes(key)) return false;
+	const fields = field.split('.');
 
-		if (key === field) {
-			let newUsecase = {};
-			if (usecase) {
-				newUsecase = mappingUsecase[usecase];
-			}
-			_mapping = {
-				..._mapping,
-				[key]: {
-					...newUsecase,
-					type,
-				},
-			};
-		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
-			_mapping = {
-				..._mapping,
-				[key]: {
-					..._mapping[key],
-					...updateMapping(_mapping[key], field, type, usecase),
-				},
-			};
-		}
-		return true;
-	});
-	return _mapping;
+	return setNestedMapping(_mapping, fields, 0, type, usecase);
 }
 
 export function updateMappingES7(mapping, field, type, usecase) {
 	// eslint-disable-next-line
-	let _mapping = { ...mapping };
+	const _mapping = { ...mapping };
 
-	Object.keys(_mapping).every((key) => {
-		if (PRESERVED_KEYS.includes(key)) return false;
+	const fields = field.split('.').slice(1);
 
-		if (key === field) {
-			let newUsecase = {};
-			if (usecase) {
-				newUsecase = mappingUsecase[usecase];
-			}
-			_mapping = {
-				..._mapping,
-				[key]: {
-					properties: {
-						..._mapping[key].properties,
-						[field]: {
-							...newUsecase,
-							type,
-						},
-					},
-				},
-			};
-		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
-			_mapping = {
-				..._mapping,
-				[key]: {
-					..._mapping[key],
-					...updateMapping(_mapping[key], field, type, usecase),
-				},
-			};
-		}
-		return true;
-	});
-	return _mapping;
+	return setNestedMapping(_mapping, fields, 0, type, usecase);
 }
 
 /**

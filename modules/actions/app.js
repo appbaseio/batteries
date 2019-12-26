@@ -13,7 +13,7 @@ import {
 	transferOwnership,
 	updatePaymentMethod,
 } from '../../utils/app';
-import { getMappings } from '../../utils/mappings';
+import { getMappings, traverseMapping } from '../../utils/mappings';
 import { doDelete } from '../../utils/requestService';
 import { ACC_API } from '../../utils/index';
 
@@ -59,13 +59,24 @@ export function getAppMappings(appName, credentials, url) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.GET_MAPPINGS));
 		return getMappings(appName, credentials, url)
-			.then(res => dispatch(
-					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, {
-						appName,
-						credentials,
-						url,
-					}),
-				))
+			.then((res) => {
+				traverseMapping(res, appName, credentials, url)
+					.then((traversed) => {
+						dispatch(
+							createAction(
+								AppConstants.APP.GET_MAPPINGS_SUCCESS,
+								{ raw: res, traversed },
+								null,
+								{
+									appName,
+									credentials,
+									url,
+								},
+							),
+						);
+					})
+					.catch(error => dispatch(createAction(AppConstants.APP.GET_MAPPINGS_ERROR, null, error)));
+			})
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_MAPPINGS_ERROR, null, error)));
 	};
 }

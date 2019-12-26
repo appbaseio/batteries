@@ -1,5 +1,4 @@
 import AppConstants from '../constants';
-import { traverseMapping } from '../../utils/mappings';
 
 const initialState = {
 	isFetching: false,
@@ -23,15 +22,10 @@ function getAppMappings(state = initialState, action) {
 				...state,
 				isFetching: false,
 				rawMappings: Object.assign({}, state.rawMappings, {
-					[action.meta.appName]: action.payload,
+					[action.meta.appName]: (action.payload && action.payload.raw) || [],
 				}),
 				traversedMappings: Object.assign({}, state.traversedMappings, {
-					[action.meta.appName]: traverseMapping(
-						action.payload,
-						action.meta.appName,
-						action.meta.credentials,
-						action.meta.url,
-					),
+					[action.meta.appName]: (action.payload && action.payload.traversed) || [],
 				}),
 				success: true,
 			};
