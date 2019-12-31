@@ -150,6 +150,35 @@ const tagContainer = css`
 	}
 `;
 
+const componentStyle = css`
+	display: flex;
+	align-items: center;
+
+	.search.edit {
+		margin-left: auto;
+		margin-right: 0;
+	}
+
+	.edit {
+		margin-right: auto;
+	}
+`;
+
+const cardStyle = css`
+	.show-on-hover {
+		transition: all ease 0.2s;
+		transform: scale(0);
+		opacity: 0;
+	}
+
+	&:hover {
+		.show-on-hover {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+`;
+
 export {
 	listItem,
 	title,
@@ -160,4 +189,6 @@ export {
 	label,
 	listLabel,
 	tagContainer,
+	componentStyle,
+	cardStyle,
 };

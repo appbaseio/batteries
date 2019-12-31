@@ -1,7 +1,5 @@
 import React from 'react';
-import {
- Tree, Row, Col, Button,
-} from 'antd';
+import { Tree, Row, Col, Button } from 'antd';
 import Appbase from 'appbase-js';
 import ExpandCollapse from 'react-expand-collapse';
 
@@ -45,14 +43,19 @@ class RenderResultsConsumer extends React.Component {
 				);
 				return <TreeNode title={title} key={`${key}-${index + 1}`} />;
 			}
-			const hasObject = res[item] === undefined && typeof item !== 'string';
+			const hasObject =
+				res[item] === undefined && typeof item !== 'string';
 			const node = hasObject ? item : res[item];
 			return (
 				<TreeNode
 					title={
 						typeof item !== 'string'
 							? 'Object'
-							: `${node || Array.isArray(res) ? item : `${item}: null`}`
+							: `${
+									node || Array.isArray(res)
+										? item
+										: `${item}: null`
+							  }`
 					}
 					key={`${key}-${index + 1}`}
 				>
@@ -79,6 +82,7 @@ class RenderResultsConsumer extends React.Component {
 					title: titleKey,
 					image: imageKey,
 					description: descriptionKey,
+					showRest,
 				} = metaFields;
 				const url = getNestedValue(res, urlKey);
 				const title = getNestedValue(res, titleKey);
@@ -90,22 +94,48 @@ class RenderResultsConsumer extends React.Component {
 						onClick={triggerClickAnalytics}
 						key={res._id}
 						gutter={20}
-						style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}
+						style={{
+							margin: '20px auto',
+							borderBottom: '1px solid #ededed',
+							overflow: 'hidden',
+						}}
 					>
 						<Col span={image ? 6 : 0}>
-							<img style={{ width: '100%' }} src={image} alt={title} />
+							<img
+								style={{ width: '100%' }}
+								src={image}
+								alt={title}
+							/>
 						</Col>
-						<Col span={image ? 18 : 24} style={{ padding: '2px 10px' }}>
+						<Col
+							span={image ? 18 : 24}
+							style={{ padding: '2px 10px' }}
+						>
 							<h3
 								style={{ fontWeight: '600' }}
 								dangerouslySetInnerHTML={{ __html: title }}
 							/>
 							<p
 								style={{ fontSize: '1em' }}
-								dangerouslySetInnerHTML={{ __html: description }}
+								dangerouslySetInnerHTML={{
+									__html: description,
+								}}
 							/>
 						</Col>
-						<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
+						{showRest && (
+							<Col span={24}>
+								<Tree showLine>
+									{this.renderAsTree(renderedJSON)}
+								</Tree>
+							</Col>
+						)}
+						<div
+							style={{
+								width: '100%',
+								marginBottom: '10px',
+								textAlign: 'right',
+							}}
+						>
 							{url ? (
 								<Button
 									shape="circle"
@@ -132,9 +162,20 @@ class RenderResultsConsumer extends React.Component {
 			}
 			default:
 				return (
-					<div className={listItem} key={_id} onClick={triggerClickAnalytics}>
-						<ExpandCollapse previewHeight="390px" expandText="Show more">
-							{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
+					<div
+						className={listItem}
+						key={_id}
+						onClick={triggerClickAnalytics}
+					>
+						<ExpandCollapse
+							previewHeight="390px"
+							expandText="Show more"
+						>
+							{
+								<Tree showLine>
+									{this.renderAsTree(renderedJSON)}
+								</Tree>
+							}
 						</ExpandCollapse>
 						<div style={{ marginTop: 10, textAlign: 'right' }}>
 							<EditorJSON
