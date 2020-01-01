@@ -424,7 +424,7 @@ class RSComponentRender extends Component {
 								size="large"
 								className={`${
 									id === 'search' ? 'search' : ''
-								} edit ${editTutorialClass}`}
+								} show-on-hover edit ${editTutorialClass}`}
 								onClick={this.showModal}
 							/>
 							{showPreview && showCustomList ? (
@@ -451,6 +451,23 @@ class RSComponentRender extends Component {
 							) : null}
 						</Col>
 					) : null}
+					{full ? null : (
+						<Col
+							span={2}
+							className={componentStyle}
+							style={{ textAlign: 'right' }}
+						>
+							<Button
+								icon="edit"
+								shape="circle"
+								size="large"
+								className={`${
+									id === 'search' ? 'search' : ''
+								} show-on-hover edit ${editTutorialClass}`}
+								onClick={this.showModal}
+							/>
+						</Col>
+					)}
 					<Col
 						span={full ? 24 : 20}
 						id={id}
@@ -470,19 +487,10 @@ class RSComponentRender extends Component {
 					</Col>
 					{full ? null : (
 						<Col
-							span={4}
+							span={2}
 							className={componentStyle}
 							style={{ textAlign: 'right' }}
 						>
-							<Button
-								icon="edit"
-								shape="circle"
-								size="large"
-								className={`${
-									id === 'search' ? 'search' : ''
-								} edit ${editTutorialClass}`}
-								onClick={this.showModal}
-							/>
 							{showCodePreview && this.renderComponentCode()}
 						</Col>
 					)}

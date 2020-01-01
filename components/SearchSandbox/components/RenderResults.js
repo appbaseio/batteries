@@ -5,7 +5,7 @@ import ExpandCollapse from 'react-expand-collapse';
 
 import EditorJSON from './EditorJSON';
 import DeleteJSON from './DeleteJSON';
-import { listItem } from '../styles';
+import { listItem, resultItem } from '../styles';
 import { SandboxContext } from '../index';
 import getNestedValue from '../utils';
 
@@ -94,6 +94,7 @@ class RenderResultsConsumer extends React.Component {
 						onClick={triggerClickAnalytics}
 						key={res._id}
 						gutter={20}
+						className={resultItem}
 						style={{
 							margin: '20px auto',
 							borderBottom: '1px solid #ededed',
@@ -135,6 +136,7 @@ class RenderResultsConsumer extends React.Component {
 								marginBottom: '10px',
 								textAlign: 'right',
 							}}
+							className="icon-on-hover"
 						>
 							{url ? (
 								<Button
@@ -177,7 +179,10 @@ class RenderResultsConsumer extends React.Component {
 								</Tree>
 							}
 						</ExpandCollapse>
-						<div style={{ marginTop: 10, textAlign: 'right' }}>
+						<div
+							style={{ marginTop: 10, textAlign: 'right' }}
+							className="icon-on-hover"
+						>
 							<EditorJSON
 								res={res}
 								mappingsType={mappingsType}

@@ -6,6 +6,17 @@ const listItem = css`
 	line-height: 30px;
 	border-bottom: 1px solid #eee;
 
+	.icon-on-hover {
+		transform: scale(0);
+		transition: all ease 0.2s;
+	}
+
+	&:hover {
+		.icon-on-hover {
+			transform: scale(1);
+		}
+	}
+
 	mark {
 		background-color: #f5ff00;
 	}
@@ -155,7 +166,6 @@ const componentStyle = css`
 	align-items: center;
 
 	.search.edit {
-		margin-left: auto;
 		margin-right: 0;
 	}
 
@@ -179,6 +189,19 @@ const cardStyle = css`
 	}
 `;
 
+const resultItem = css`
+	.icon-on-hover {
+		transform: scale(0);
+		transition: all ease 0.2s;
+	}
+
+	&:hover {
+		.icon-on-hover {
+			transform: scale(1);
+		}
+	}
+`;
+
 export {
 	listItem,
 	title,
@@ -191,4 +214,5 @@ export {
 	tagContainer,
 	componentStyle,
 	cardStyle,
+	resultItem,
 };

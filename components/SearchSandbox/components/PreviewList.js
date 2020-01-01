@@ -11,6 +11,7 @@ import {
 	Typography,
 	Switch,
 	Tree,
+	Tag,
 } from 'antd';
 import { ReactiveList } from '@appbaseio/reactivesearch';
 import { css } from 'emotion';
@@ -20,7 +21,8 @@ const { Paragraph } = Typography;
 const { TreeNode } = Tree;
 
 const resultStyle = css`
-	.pagination {
+	.pagination,
+	.poweredBy {
 		display: none;
 	}
 `;
@@ -53,6 +55,7 @@ class PreviewList extends React.Component {
 			};
 		}
 		this.options = ['title', 'description', 'image', 'url', 'showRest'];
+		this.optional = ['image', 'url'];
 	}
 
 	handleMenuClick = (e, name) => {
@@ -141,7 +144,10 @@ class PreviewList extends React.Component {
 
 		return (
 			<div style={{ margin: '16px 0px' }} key={name}>
-				<Paragraph strong>Select {name} field</Paragraph>
+				<Paragraph strong>
+					Select {name}{' '}
+					{this.optional.includes(name) ? <Tag>Optional</Tag> : ''}
+				</Paragraph>
 				<Dropdown overlay={menu} trigger={['click']}>
 					<Button style={style}>
 						{this.state[name] || 'Choose Option'}{' '}
@@ -186,6 +192,7 @@ class PreviewList extends React.Component {
 					<Row
 						type="flex"
 						gutter={16}
+						className={resultStyle}
 						style={{ marginBottom: 10 }}
 						key={res._id}
 					>
@@ -230,9 +237,9 @@ class PreviewList extends React.Component {
 				okText="Save"
 				width={720}
 				onCancel={this.props.handlePreviewModal}
-				title="Customize List Preview"
+				title="Set Result View"
 			>
-				<Row gutter={16}>
+				<Row gutter={16} align="middle">
 					<Col md={8} span={24}>
 						{this.options
 							.filter(i => i !== 'showRest')
@@ -247,11 +254,12 @@ class PreviewList extends React.Component {
 						<ReactiveList
 							showResultStats={false}
 							{...resultComponentProps}
-							size={2}
+							size={1}
 							pagination
 							className={resultStyle}
 							innerClass={{
 								pagination: 'pagination',
+								poweredBy: 'poweredBy',
 							}}
 							showLoader
 							componentId="preview-list"
