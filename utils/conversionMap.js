@@ -6,6 +6,7 @@ export default {
 	long: ['integer', 'text', 'float'],
 	float: ['integer', 'double', 'text'],
 	double: ['integer', 'float', 'text'],
+	keyword: ['text'],
 
 	date: ['text'],
 	geo_point: ['text'],
