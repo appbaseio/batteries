@@ -1,13 +1,11 @@
 import React from 'react';
-import {
- Tree, Row, Col, Button,
-} from 'antd';
+import { Tree, Row, Col, Button } from 'antd';
 import Appbase from 'appbase-js';
 import ExpandCollapse from 'react-expand-collapse';
 
 import EditorJSON from './EditorJSON';
 import DeleteJSON from './DeleteJSON';
-import { listItem } from '../styles';
+import { listItem, resultItem } from '../styles';
 import { SandboxContext } from '../index';
 import getNestedValue from '../utils';
 
@@ -79,6 +77,7 @@ class RenderResultsConsumer extends React.Component {
 					title: titleKey,
 					image: imageKey,
 					description: descriptionKey,
+					showRest,
 				} = metaFields;
 				const url = getNestedValue(res, urlKey);
 				const title = getNestedValue(res, titleKey);
@@ -89,6 +88,7 @@ class RenderResultsConsumer extends React.Component {
 						type="flex"
 						onClick={triggerClickAnalytics}
 						key={res._id}
+						className={resultItem}
 						style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}
 					>
 						<Col span={image ? 6 : 0}>
@@ -104,7 +104,15 @@ class RenderResultsConsumer extends React.Component {
 								dangerouslySetInnerHTML={{ __html: description }}
 							/>
 						</Col>
-						<div style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}>
+						{showRest && (
+							<Col style={{ overflow: 'hidden' }} span={24}>
+								<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>
+							</Col>
+						)}
+						<div
+							style={{ width: '100%', marginBottom: '10px', textAlign: 'right' }}
+							className="icon-on-hover"
+						>
 							{url ? (
 								<Button
 									shape="circle"
@@ -133,9 +141,12 @@ class RenderResultsConsumer extends React.Component {
 				return (
 					<div className={listItem} key={_id} onClick={triggerClickAnalytics}>
 						<ExpandCollapse previewHeight="390px" expandText="Show more">
-							{<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>}
+							<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>
 						</ExpandCollapse>
-						<div style={{ marginTop: 10, textAlign: 'right' }}>
+						<div
+							className="icon-on-hover"
+							style={{ marginTop: 10, textAlign: 'right' }}
+						>
 							<EditorJSON
 								res={res}
 								mappingsType={mappingsType}

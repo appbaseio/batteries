@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import {
- Row, Col, Card, Button, Modal, Form, message,
-} from 'antd';
+import { Row, Col, Card, Button, Modal, Form, message } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';
@@ -10,10 +8,8 @@ import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import DataFieldInput from '../components/DataFieldInput';
 import { getAvailableDataField } from '../utils/dataField';
-import {
- NumberInput, TextInput, DropdownInput, ToggleInput,
-} from '../../shared/Input';
-import { formWrapper, tagContainer } from '../styles';
+import { NumberInput, TextInput, DropdownInput, ToggleInput } from '../../shared/Input';
+import { formWrapper, tagContainer, cardStyle } from '../styles';
 
 export default class Editor extends Component {
 	constructor(props) {
@@ -93,7 +89,7 @@ export default class Editor extends Component {
 		}));
 	};
 
-	setComponentProps = (newProps) => {
+	setComponentProps = newProps => {
 		const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
@@ -103,7 +99,7 @@ export default class Editor extends Component {
 		});
 	};
 
-	setRenderKey = (newKey) => {
+	setRenderKey = newKey => {
 		this.setState({
 			renderKey: newKey,
 		});
@@ -113,7 +109,8 @@ export default class Editor extends Component {
 		let FormInput = null;
 		// always set to default value
 		const { listComponentProps } = this.state;
-		const value =			listComponentProps[name] !== undefined ? listComponentProps[name] : item.default;
+		const value =
+			listComponentProps[name] !== undefined ? listComponentProps[name] : item.default;
 
 		switch (item.input) {
 			case 'bool': {
@@ -166,10 +163,12 @@ export default class Editor extends Component {
 		const { mappingsURL, mappings } = this.props;
 		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
 		const fieldsOptions = [];
-		fields.map(field => fieldsOptions.push({
+		fields.map(field =>
+			fieldsOptions.push({
 				key: field,
 				label: field,
-			}));
+			}),
+		);
 		if (!fields.length) {
 			return (
 				<p>
@@ -188,7 +187,8 @@ export default class Editor extends Component {
 					description={multiListTypes.dataField.description}
 					setComponentProps={this.setComponentProps}
 					componentProps={listComponentProps}
-					getAvailableDataField={() => getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings })
+					getAvailableDataField={() =>
+						getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings })
 					}
 				/>
 				{Object.keys(multiListTypes)
@@ -243,7 +243,7 @@ export default class Editor extends Component {
 						{Object.keys(componentProps)
 							.filter(item => item !== 'search' && item !== 'result')
 							.map(config => (
-								<Card key={config} style={{ marginTop: 20 }}>
+								<Card className={cardStyle} key={config} style={{ marginTop: 20 }}>
 									<RSWrapper
 										id={config}
 										component="MultiList"
@@ -255,7 +255,7 @@ export default class Editor extends Component {
 							))}
 					</Col>
 					<Col span={18}>
-						<Card>
+						<Card className={cardStyle}>
 							<RSWrapper
 								id="search"
 								component={
@@ -265,28 +265,29 @@ export default class Editor extends Component {
 							/>
 						</Card>
 
-						<Card>
+						<Card className={cardStyle}>
 							<SelectedFilters
-								render={(props) => {
+								render={props => {
 									const {
 										selectedValues,
 										setValue,
 										clearValues,
 										components,
 									} = props;
-									const clearFilter = (component) => {
+									const clearFilter = component => {
 										setValue(component, null);
 									};
 
-									const filters = Object.keys(selectedValues).map((component) => {
+									const filters = Object.keys(selectedValues).map(component => {
 										if (!components.includes(component)) {
 											return null;
 										}
 
 										if (
-											!selectedValues[component].value
-											|| selectedValues[component].value.length === 0
-										) return null;
+											!selectedValues[component].value ||
+											selectedValues[component].value.length === 0
+										)
+											return null;
 										const value = `${component} : ${selectedValues[component].value}`;
 
 										return (
