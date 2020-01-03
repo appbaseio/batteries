@@ -1,5 +1,5 @@
 import {
- doDelete, doPatch, doGet, doPost,
+ doDelete, doPatch, doGet, doPost, doPut,
 } from './requestService';
 import { getURL } from '../../constants/config';
 
@@ -145,54 +145,31 @@ export const updatePaymentMethod = (token, product) => {
 
 export const getFunctions = (name) => {
 	const ACC_API = getURL();
-	const a = new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve([
-				{
-					_id: 'nodeinfo',
-					trigger: {},
-					extraRequestPayload: {},
-					enabled: true,
-					function: {
-						image: 'username/image:version',
-						invocation_count: 12,
-						envVars: {
-							additionalProp1: 'string',
-							additionalProp2: 'string',
-							additionalProp3: 'string',
-						},
-						service: 'nodeinfo',
-					},
-				},
-				{
-					_id: 'nodeinfo_1',
-					trigger: {},
-					extraRequestPayload: {},
-					enabled: false,
-					function: {
-						image: 'username/image:version',
-						invocation_count: 1212,
-						envVars: {},
-						service: 'nodeinfo_1',
-					},
-				},
-			]);
-		}, 500);
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_functions`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
-	return a;
 };
-
 
 export const updateFunctions = (name, payload) => {
 	const ACC_API = getURL();
-	const a = new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve(
-				{
-					...payload,
-				},
-			);
-		}, 1000);
+	const authToken = getAuthToken();
+	return doPut(`${ACC_API}/_function/${name}`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
-	return a;
+};
+
+export const createFunction = (name, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPost(
+		`${ACC_API}/_function`,
+		{ service: name, ...payload },
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
 };

@@ -1,6 +1,10 @@
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { getFunctions as fetchFunctions, updateFunctions as putFunctions } from '../../utils/app';
+import {
+	getFunctions as fetchFunctions,
+	updateFunctions as putFunctions,
+	createFunction as deployFunction,
+} from '../../utils/app';
 
 export function getFunctions(name = 'default') {
 	return (dispatch) => {
@@ -17,22 +21,51 @@ export function getFunctions(name = 'default') {
 	};
 }
 
-
 export function updateFunctions(name = 'default', payload, isTrigger) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.UPDATE, { name, isTrigger }));
 		return putFunctions(name, payload)
-			.then((res) => {
+			.then(() => {
 				dispatch(
-					createAction(AppConstants.APP.FUNCTIONS.UPDATE_SUCCESS, {
-						[name]: {
-							...res,
+					createAction(
+						AppConstants.APP.FUNCTIONS.UPDATE_SUCCESS,
+						{
+							[name]: {
+								...payload,
+							},
 						},
-					}, null, {
-						name,
-					}),
+						null,
+						{
+							name,
+						},
+					),
 				);
 			})
-			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.UPDATE_ERROR, null, error)));
+			.catch(error => dispatch(
+					createAction(AppConstants.APP.FUNCTIONS.UPDATE_ERROR, null, error, { name }),
+				));
+	};
+}
+
+export function createFunction(name, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE, { name, payload }));
+		return deployFunction(name, payload)
+			.then(() => {
+				dispatch(
+					createAction(
+						AppConstants.APP.FUNCTIONS.CREATE_SUCCESS,
+						{
+							service: name,
+							...payload,
+						},
+						null,
+						{
+							name,
+						},
+					),
+				);
+			})
+			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE_ERROR, null, error)));
 	};
 }
