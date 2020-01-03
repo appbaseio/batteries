@@ -14,7 +14,7 @@ export function getPreferences(name, credentials) {
 		})
 			.then(res => res.json())
 			.then(res => resolve(res))
-			.catch((e) => {
+			.catch(e => {
 				console.error(e);
 				reject(e);
 			});
@@ -23,7 +23,6 @@ export function getPreferences(name, credentials) {
 
 export function setPreferences(name, credentials, preferences) {
 	const ACC_API = getURL();
-
 	const { username, password } = sessionStorage;
 	return new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/${name}/_preferences`, {
@@ -35,7 +34,7 @@ export function setPreferences(name, credentials, preferences) {
 			body: JSON.stringify(preferences),
 		})
 			.then(() => resolve())
-			.catch((e) => {
+			.catch(e => {
 				console.error(e);
 				reject(e);
 			});

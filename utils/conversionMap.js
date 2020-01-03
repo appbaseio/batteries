@@ -7,6 +7,8 @@ export default {
 	float: ['integer', 'double', 'text'],
 	double: ['integer', 'float', 'text'],
 
+	keyword: ['text'],
+
 	date: ['text'],
 	geo_point: ['text'],
 	geo_shape: ['text'],

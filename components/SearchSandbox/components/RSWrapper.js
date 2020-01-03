@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
-import {
- Row, Col, Form, Button, Modal, Popover, message,
-} from 'antd';
+import { Row, Col, Form, Button, Modal, Popover, message, Icon } from 'antd';
 
-import {
- DataSearch, MultiList, ReactiveList, CategorySearch,
-} from '@appbaseio/reactivesearch';
+import { DataSearch, MultiList, ReactiveList, CategorySearch } from '@appbaseio/reactivesearch';
 
 import dataSearchTypes from '../utils/datasearch-types';
 import multiListTypes from '../utils/multilist-types';
@@ -18,11 +14,9 @@ import PreviewList from './PreviewList';
 import { SandboxContext } from '../index';
 import getComponentProps from '../utils/getComponentProps';
 import DataFieldInput from './DataFieldInput';
-import {
- DropdownInput, NumberInput, TextInput, ToggleInput,
-} from '../../shared/Input';
+import { DropdownInput, NumberInput, TextInput, ToggleInput } from '../../shared/Input';
 
-import { formWrapper } from '../styles';
+import { formWrapper, componentStyle } from '../styles';
 
 const componentMap = {
 	CategorySearch,
@@ -89,7 +83,7 @@ class RSComponentRender extends Component {
 			categoryField: { types },
 		} = propsMap[component];
 
-		const fields = Object.keys(mappings).filter((field) => {
+		const fields = Object.keys(mappings).filter(field => {
 			let fieldsToCheck = [mappings[field]];
 
 			if (mappings[field].originalFields) {
@@ -105,7 +99,7 @@ class RSComponentRender extends Component {
 		return fields;
 	};
 
-	setComponentProps = (newProps) => {
+	setComponentProps = newProps => {
 		const { componentProps } = this.state;
 		this.setState({
 			componentProps: {
@@ -151,7 +145,7 @@ class RSComponentRender extends Component {
 		}));
 	};
 
-	handleSavePreview = (values) => {
+	handleSavePreview = values => {
 		const { onPropChange, id } = this.props;
 		onPropChange(id, {
 			meta: true,
@@ -178,7 +172,13 @@ class RSComponentRender extends Component {
 		const code = getComponentCode(config, version);
 		return (
 			<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
-				<Button icon="code-o" shape="circle" size="large" style={{ marginLeft: 8 }} />
+				<Button
+					className="show-on-hover"
+					icon="code-o"
+					shape="circle"
+					size="large"
+					style={{ marginLeft: 8 }}
+				/>
 			</Popover>
 		);
 	};
@@ -227,10 +227,12 @@ class RSComponentRender extends Component {
 						</p>
 					);
 
-					this.getCategoryField().forEach(field => dropdownOptions.push({
+					this.getCategoryField().forEach(field =>
+						dropdownOptions.push({
 							label: field,
 							key: field,
-						}));
+						}),
+					);
 
 					if (dropdownOptions.length) {
 						if (!stateComponentProps.categoryField) {
@@ -345,23 +347,30 @@ class RSComponentRender extends Component {
 			<div>
 				<Row gutter={8}>
 					{full ? (
-						<Col span={24} style={{ textAlign: 'right', paddingBottom: 16 }}>
+						<Col
+							span={24}
+							className={componentStyle}
+							style={{ textAlign: 'right', paddingBottom: 16 }}
+						>
 							<Button
 								icon="edit"
 								shape="circle"
 								size="large"
-								className={editTutorialClass}
+								className={`${
+									id === 'search' ? 'search' : ''
+								} show-on-hover edit ${editTutorialClass}`}
 								onClick={this.showModal}
 							/>
 							{showCodePreview && this.renderComponentCode()}
 							{showPreview && showCustomList ? (
 								<Button
-									icon="eye-o"
-									shape="circle"
-									size="large"
+									className="show-on-hover"
 									style={{ marginLeft: 8 }}
 									onClick={this.handlePreviewModal}
-								/>
+								>
+									<Icon type="unordered-list" />
+									Set Result View
+								</Button>
 							) : null}
 							{showDelete ? (
 								<Button
@@ -369,12 +378,27 @@ class RSComponentRender extends Component {
 									shape="circle"
 									type="danger"
 									size="large"
+									className="show-on-hover"
 									style={{ marginLeft: 8 }}
 									onClick={() => onDelete(id)}
 								/>
 							) : null}
 						</Col>
 					) : null}
+
+					{full ? null : (
+						<Col span={2} style={{ textAlign: 'right' }} className={componentStyle}>
+							<Button
+								icon="edit"
+								shape="circle"
+								size="large"
+								className={`${
+									id === 'search' ? 'search' : ''
+								} show-on-hover edit ${editTutorialClass}`}
+								onClick={this.showModal}
+							/>
+						</Col>
+					)}
 					<Col span={full ? 24 : 20} id={id} className={tutorialClass}>
 						<RSComponent
 							componentId={id}
@@ -389,14 +413,7 @@ class RSComponentRender extends Component {
 						/>
 					</Col>
 					{full ? null : (
-						<Col span={4} style={{ textAlign: 'right' }}>
-							<Button
-								icon="edit"
-								shape="circle"
-								size="large"
-								className={editTutorialClass}
-								onClick={this.showModal}
-							/>
+						<Col span={2} className={componentStyle} style={{ textAlign: 'right' }}>
 							{showCodePreview && this.renderComponentCode()}
 						</Col>
 					)}
