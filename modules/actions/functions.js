@@ -4,6 +4,7 @@ import {
 	getFunctions as fetchFunctions,
 	updateFunctions as putFunctions,
 	createFunction as deployFunction,
+	invokeFunction as invokeFunctions,
 } from '../../utils/app';
 
 export function getFunctions(name = 'default') {
@@ -67,5 +68,25 @@ export function createFunction(name, payload) {
 				);
 			})
 			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE_ERROR, null, error)));
+	};
+}
+
+export function invokeFunction(name, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.INVOKE, { name, payload }));
+		return invokeFunctions(name, payload)
+			.then((res) => {
+				dispatch(
+					createAction(
+						AppConstants.APP.FUNCTIONS.INVOKE_SUCCESS,
+						res,
+						null,
+						{
+							name,
+						},
+					),
+				);
+			})
+			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.INVOKE_ERROR, null, error)));
 	};
 }

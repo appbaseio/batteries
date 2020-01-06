@@ -13,7 +13,7 @@ function getAppFunction(state = initialAppState, action) {
 			};
 		case AppConstants.APP.FUNCTIONS.CREATE_SUCCESS:
 			return {
-				isCreating: true,
+				isCreating: false,
 				success: true,
 				error: false,
 				results: [...(state.results || []), { enabled: true, function: action.payload }],
@@ -92,6 +92,30 @@ function getAppFunction(state = initialAppState, action) {
 
 			return { ...state, results: updatedResults };
 		}
+		case AppConstants.APP.FUNCTIONS.INVOKE:
+			return {
+				...state,
+				isInvoking: true,
+				success: false,
+				error: false,
+				invokeResults: null,
+			};
+		case AppConstants.APP.FUNCTIONS.INVOKE_SUCCESS:
+			return {
+				...state,
+				isInvoking: false,
+				success: true,
+				error: false,
+				invokeResults: action.payload,
+			};
+		case AppConstants.APP.FUNCTIONS.INVOKE_ERROR:
+			return {
+				...state,
+				isInvoking: false,
+				success: false,
+				error: action.error,
+				invokeResults: null,
+			};
 		default:
 			return state;
 	}

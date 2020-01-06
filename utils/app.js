@@ -173,3 +173,10 @@ export const createFunction = (name, payload) => {
 		},
 	);
 };
+
+export const invokeFunction = (name, payload) => {
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_function/${name}`, payload, {
+		'Content-Type': 'application/json',
+	});
+};
