@@ -141,6 +141,7 @@ const tagContainer = css`
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
+	margin-bottom: 10px;
 	.tag {
 		justify-content: end;
 		margin-right: 10px;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tree, Row, Col, Button } from 'antd';
+import { Tree, Row, Col, Button, Tag, Icon } from 'antd';
 import Appbase from 'appbase-js';
 import ExpandCollapse from 'react-expand-collapse';
 
@@ -91,6 +91,14 @@ class RenderResultsConsumer extends React.Component {
 						className={resultItem}
 						style={{ margin: '20px auto', borderBottom: '1px solid #ededed' }}
 					>
+						{res._promoted && (
+							<div>
+								<Tag color="blue">
+									<Icon type="star" style={{ marginRight: 5 }} theme="twoTone" />
+									Promoted
+								</Tag>
+							</div>
+						)}
 						<Col span={image ? 6 : 0}>
 							<img style={{ width: '100%' }} src={image} alt={title} />
 						</Col>
@@ -140,6 +148,14 @@ class RenderResultsConsumer extends React.Component {
 			default:
 				return (
 					<div className={listItem} key={_id} onClick={triggerClickAnalytics}>
+						{res._promoted && (
+							<div>
+								<Tag color="blue">
+									<Icon type="star" style={{ marginRight: 5 }} theme="twoTone" />
+									Promoted
+								</Tag>
+							</div>
+						)}
 						<ExpandCollapse previewHeight="390px" expandText="Show more">
 							<Tree showLine>{this.renderAsTree(renderedJSON)}</Tree>
 						</ExpandCollapse>

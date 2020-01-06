@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, Form, Button, Modal, Popover, message, Icon } from 'antd';
+import { Link } from 'react-router-dom';
 
 import { DataSearch, MultiList, ReactiveList, CategorySearch } from '@appbaseio/reactivesearch';
 
@@ -324,6 +325,7 @@ class RSComponentRender extends Component {
 			showCustomList,
 			setRenderKey,
 			version,
+			app,
 		} = this.props;
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
@@ -362,6 +364,13 @@ class RSComponentRender extends Component {
 								onClick={this.showModal}
 							/>
 							{showCodePreview && this.renderComponentCode()}
+							{showPreview ? (
+								<Link to={`/app/${app}/query-rules`}>
+									<Button className="show-on-hover" style={{ marginLeft: 8 }}>
+										Manage Query Rule
+									</Button>
+								</Link>
+							) : null}
 							{showPreview && showCustomList ? (
 								<Button
 									className="show-on-hover"

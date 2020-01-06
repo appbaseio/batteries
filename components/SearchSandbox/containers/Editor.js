@@ -321,6 +321,7 @@ export default class Editor extends Component {
 							<RSWrapper
 								id="result"
 								component="ReactiveList"
+								app={appName}
 								key={renderKey}
 								componentProps={
 									componentProps.result
