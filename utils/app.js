@@ -1,5 +1,5 @@
 import {
- doDelete, doPatch, doGet, doPost,
+ doDelete, doPatch, doGet, doPost, doPut,
 } from './requestService';
 import { getURL } from '../../constants/config';
 
@@ -140,5 +140,43 @@ export const updatePaymentMethod = (token, product) => {
 	return doPost(`${ACC_API}/user/payment`, {
 		token,
 		product,
+	});
+};
+
+export const getFunctions = (name) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_functions`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const updateFunctions = (name, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(`${ACC_API}/_function/${name}`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const createFunction = (name, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPost(
+		`${ACC_API}/_function`,
+		{ service: name, ...payload },
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
+};
+
+export const invokeFunction = (name, payload) => {
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_function/${name}`, payload, {
+		'Content-Type': 'application/json',
 	});
 };
