@@ -39,7 +39,6 @@ class Summary extends React.Component {
 			totalResults,
 			noResultsRate,
 			totalUsers,
-			avgSuggestionClicks,
 			totalConversions,
 			totalResultClicks,
 			totalClicks,
@@ -80,6 +79,7 @@ class Summary extends React.Component {
 							<SummaryCard
 								title="No Results"
 								count={noResultSearch}
+								showPercent
 								percent={noResultsRate}
 								style={{ background: '#f0f5ff' }}
 							/>
@@ -93,6 +93,7 @@ class Summary extends React.Component {
 								title="Clicks"
 								style={{ borderTop: '2px solid #eb2f96', background: '#fff0f6' }}
 								count={totalClicks}
+								showPercent
 								percent={avgClickRate}
 							/>
 						</Col>
@@ -101,7 +102,6 @@ class Summary extends React.Component {
 								title="Suggestion Clicks"
 								style={{ background: '#fff0f6' }}
 								count={totalSuggestionClicks}
-								percent={avgSuggestionClicks}
 							/>
 						</Col>
 						<Col sm={24} xs={24} xl={12}>
@@ -119,6 +119,7 @@ class Summary extends React.Component {
 							<SummaryCard
 								style={{ background: '#f6ffed', borderTop: '2px solid #52c41a' }}
 								title="Conversions"
+								showPercent
 								percent={avgConversionRate}
 								count={totalConversions}
 							/>
@@ -144,7 +145,7 @@ Summary.propTypes = {
 	totalClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	totalResultClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	avgClickRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	avgSuggestionClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	// avgSuggestionClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	totalSuggestionClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	noResultsRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	noResultSearch: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
@@ -178,7 +179,4 @@ const mapStateToProps = (state, props) => {
 const mapDispatchToProps = (dispatch, props) => ({
 	fetchAppAnalyticsSummary: appName => dispatch(getAppAnalyticsSummary(appName, props.filterId)),
 });
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(Summary);
+export default connect(mapStateToProps, mapDispatchToProps)(Summary);

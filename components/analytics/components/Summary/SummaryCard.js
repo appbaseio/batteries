@@ -34,9 +34,7 @@ const cardStyle = css`
 	}
 `;
 
-const SummaryCard = ({
- percent, title, count, style,
-}) => (
+const SummaryCard = ({ percent, title, count, style, showPercent }) => (
 	<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
 		{/* {icon && (
 			<div>
@@ -47,7 +45,7 @@ const SummaryCard = ({
 			<p>{title}</p>
 			<h2>
 				{count}
-				{percent ? <span>{`(${percent}%)`}</span> : null}
+				{showPercent ? <span>{`(${percent || '0.00'}%)`}</span> : null}
 			</h2>
 		</div>
 	</Flex>
@@ -56,10 +54,12 @@ SummaryCard.defaultProps = {
 	percent: 0,
 	count: 0,
 	style: {},
+	showPercent: false,
 };
 SummaryCard.propTypes = {
 	percent: PropTypes.number,
 	style: PropTypes.object,
+	showPercent: PropTypes.bool,
 	title: PropTypes.string.isRequired,
 	count: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
