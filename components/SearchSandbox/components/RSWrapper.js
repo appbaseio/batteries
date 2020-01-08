@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, Form, Button, Modal, Popover, message, Icon } from 'antd';
-import { Link } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 
 import { DataSearch, MultiList, ReactiveList, CategorySearch } from '@appbaseio/reactivesearch';
 
@@ -311,6 +311,20 @@ class RSComponentRender extends Component {
 		);
 	};
 
+	handleQueryLink = () => {
+		const { searchRef, history, app } = this.props;
+
+		const searchValue =
+			searchRef &&
+			searchRef.current &&
+			searchRef.current.state &&
+			searchRef.current.state.currentValue;
+		if (searchValue) {
+			window.location.href = `/app/${app}/query-rules?searchTerm=${searchValue}&operator=is`;
+		}
+		history.push(`/app/${app}/query-rules`);
+	};
+
 	render() {
 		const {
 			componentProps,
@@ -325,17 +339,19 @@ class RSComponentRender extends Component {
 			showCustomList,
 			setRenderKey,
 			version,
-			app,
+			searchRef,
 		} = this.props;
 		const { showModal, componentProps: stateComponentProps, previewModal } = this.state;
 		if (!componentProps.dataField) return null;
 		const RSComponent = componentMap[component];
 		let tutorialClass = '';
 		let editTutorialClass = '';
+		let ref;
 
 		if (id === 'search') {
 			tutorialClass = 'search-tutorial-1';
 			editTutorialClass = 'search-tutorial-2';
+			ref = searchRef;
 		}
 
 		if (id === 'result') {
@@ -363,13 +379,15 @@ class RSComponentRender extends Component {
 								} show-on-hover edit ${editTutorialClass}`}
 								onClick={this.showModal}
 							/>
-							{showCodePreview && this.renderComponentCode()}
+							{showDelete && this.renderComponentCode()}
 							{showPreview ? (
-								<Link to={`/app/${app}/query-rules`}>
-									<Button className="show-on-hover" style={{ marginLeft: 8 }}>
-										Manage Query Rule
-									</Button>
-								</Link>
+								<Button
+									className="show-on-hover"
+									onClick={this.handleQueryLink}
+									style={{ marginLeft: 8 }}
+								>
+									Manage Query Rule
+								</Button>
 							) : null}
 							{showPreview && showCustomList ? (
 								<Button
@@ -392,6 +410,7 @@ class RSComponentRender extends Component {
 									onClick={() => onDelete(id)}
 								/>
 							) : null}
+							{showCodePreview && showPreview && this.renderComponentCode()}
 						</Col>
 					) : null}
 
@@ -419,6 +438,7 @@ class RSComponentRender extends Component {
 								version,
 							})}
 							{...customComponentProps}
+							ref={ref}
 						/>
 					</Col>
 					{full ? null : (
@@ -459,4 +479,4 @@ RSWrapper.defaultProps = {
 	showDelete: true,
 };
 
-export default RSWrapper;
+export default withRouter(RSWrapper);

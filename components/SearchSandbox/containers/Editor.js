@@ -11,6 +11,8 @@ import { getAvailableDataField } from '../utils/dataField';
 import { NumberInput, TextInput, DropdownInput, ToggleInput } from '../../shared/Input';
 import { formWrapper, tagContainer, cardStyle } from '../styles';
 
+const searchRef = React.createRef();
+
 export default class Editor extends Component {
 	constructor(props) {
 		super(props);
@@ -261,6 +263,7 @@ export default class Editor extends Component {
 								component={
 									this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'
 								}
+								searchRef={searchRef}
 								componentProps={componentProps.search || {}}
 							/>
 						</Card>
@@ -323,6 +326,7 @@ export default class Editor extends Component {
 								component="ReactiveList"
 								app={appName}
 								key={renderKey}
+								searchRef={searchRef}
 								componentProps={
 									componentProps.result
 										? {

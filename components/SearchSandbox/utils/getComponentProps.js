@@ -1,8 +1,11 @@
 import React from 'react';
+import { Typography } from 'antd';
 
 import { listLabel } from '../styles';
 import RenderResults from '../components/RenderResults';
 import { generateFieldWeights, generateDataField } from './dataField';
+
+const { Text } = Typography;
 
 function getDataSearchProps({ componentProps, mappings, version }) {
 	componentProps.fuzziness = componentProps.fuzziness ? Number(componentProps.fuzziness) : 0;
@@ -63,6 +66,40 @@ function getReactiveListProps({ componentProps, setRenderKey, mappings }) {
 		scrollTarget: 'result',
 		...componentProps,
 		dataField: generateDataField('ReactiveList', componentProps.dataField, mappings),
+		renderResultStats: stats => {
+			if (stats.hidden && stats.promoted) {
+				return (
+					<Text>
+						Found {stats.numberOfResults} results with {stats.promoted} Promoted &{' '}
+						{stats.hidden} hidden results in {stats.time}ms
+					</Text>
+				);
+			}
+
+			if (stats.promoted) {
+				return (
+					<Text>
+						Found {stats.numberOfResults} results with {stats.promoted} Promoted results
+						in {stats.time}ms
+					</Text>
+				);
+			}
+
+			if (stats.hidden) {
+				return (
+					<Text>
+						Found {stats.numberOfResults} results with {stats.hidden} hidden results in{' '}
+						{stats.time}ms
+					</Text>
+				);
+			}
+
+			return (
+				<Text>
+					Showing {stats.numberOfResults} results in {stats.time}ms
+				</Text>
+			);
+		},
 		renderItem: (res, triggerClickAnalytics) => (
 			<RenderResults
 				key={res._id}
