@@ -107,7 +107,7 @@ export function deleteFunction(name) {
 
 export function reorderFunction(source, destination) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER, name));
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER));
 		return reorderFunctions(source, destination)
 			.then(() => {
 				dispatch(
