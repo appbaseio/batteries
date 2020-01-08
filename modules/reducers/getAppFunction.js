@@ -70,6 +70,7 @@ function getAppFunction(state = initialAppState, action) {
 						...action.payload[action.meta.name],
 						triggerUpdation: false,
 						isToggling: false,
+						error: null,
 					};
 				}
 				return item;
