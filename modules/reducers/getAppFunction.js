@@ -117,6 +117,41 @@ function getAppFunction(state = initialAppState, action) {
 				error: action.error,
 				invokeResults: null,
 			};
+		case AppConstants.APP.FUNCTIONS.DELETE: {
+			const updatedResults = state.results.map((item) => {
+				if (item.function.service === action.payload) {
+					return {
+						...item,
+						isDeleting: true,
+						error: null,
+					};
+				}
+				return item;
+			});
+
+			return { ...state, results: updatedResults };
+		}
+		case AppConstants.APP.FUNCTIONS.DELETE_SUCCESS:
+			return {
+				...state,
+				results: (state.results || []).filter(
+					item => item.function.service !== action.meta.name,
+				),
+			};
+		case AppConstants.APP.FUNCTIONS.DELETE_ERROR: {
+			const updatedResults = state.results.map((item) => {
+				if (item.function.service === action.payload) {
+					return {
+						...action.payload[action.meta.name],
+						isDeleting: false,
+						error: action.error && action.error.message,
+					};
+				}
+				return item;
+			});
+
+			return { ...state, results: updatedResults };
+		}
 		default:
 			return state;
 	}

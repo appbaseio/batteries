@@ -180,3 +180,9 @@ export const invokeFunction = (name, payload) => {
 		'Content-Type': 'application/json',
 	});
 };
+
+export const deleteFunction = (name) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doDelete(`${ACC_API}/_function/${name}`, { Authorization: `Basic ${authToken}` });
+};

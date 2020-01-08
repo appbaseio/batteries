@@ -5,6 +5,7 @@ import {
 	updateFunctions as putFunctions,
 	createFunction as deployFunction,
 	invokeFunction as invokeFunctions,
+	deleteFunction as deleteFunctions,
 } from '../../utils/app';
 
 export function getFunctions(name = 'default') {
@@ -77,16 +78,28 @@ export function invokeFunction(name, payload) {
 		return invokeFunctions(name, payload)
 			.then((res) => {
 				dispatch(
-					createAction(
-						AppConstants.APP.FUNCTIONS.INVOKE_SUCCESS,
-						res,
-						null,
-						{
-							name,
-						},
-					),
+					createAction(AppConstants.APP.FUNCTIONS.INVOKE_SUCCESS, res, null, {
+						name,
+					}),
 				);
 			})
 			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.INVOKE_ERROR, null, error)));
+	};
+}
+
+export function deleteFunction(name) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.DELETE, name));
+		return deleteFunctions(name)
+			.then((res) => {
+				dispatch(
+					createAction(AppConstants.APP.FUNCTIONS.DELETE_SUCCESS, res, null, {
+						name,
+					}),
+				);
+			})
+			.catch(error => dispatch(
+					createAction(AppConstants.APP.FUNCTIONS.DELETE_ERROR, null, error, { name }),
+				));
 	};
 }
