@@ -152,6 +152,25 @@ function getAppFunction(state = initialAppState, action) {
 
 			return { ...state, results: updatedResults };
 		}
+		case AppConstants.APP.FUNCTIONS.REORDER_SUCCESS: {
+			const updatedResults = state.results.map((item) => {
+				if (item.function.service === action.payload.source.function.service) {
+					return {
+						...item,
+						...action.payload.source,
+					};
+				}
+				if (item.function.service === action.payload.destination.function.service) {
+					return {
+						...item,
+						...action.payload.destination,
+					};
+				}
+				return item;
+			});
+
+			return { ...state, results: updatedResults };
+		}
 		default:
 			return state;
 	}

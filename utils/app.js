@@ -186,3 +186,16 @@ export const deleteFunction = (name) => {
 	const authToken = getAuthToken();
 	return doDelete(`${ACC_API}/_function/${name}`, { Authorization: `Basic ${authToken}` });
 };
+
+export const reorderFunction = async (source, destination) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	await doPut(`${ACC_API}/_function/${source.function.service}`, source, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+	return doPut(`${ACC_API}/_function/${destination.function.service}`, destination, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};

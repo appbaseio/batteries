@@ -6,6 +6,7 @@ import {
 	createFunction as deployFunction,
 	invokeFunction as invokeFunctions,
 	deleteFunction as deleteFunctions,
+	reorderFunction as reorderFunctions,
 } from '../../utils/app';
 
 export function getFunctions(name = 'default') {
@@ -101,5 +102,22 @@ export function deleteFunction(name) {
 			.catch(error => dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.DELETE_ERROR, null, error, { name }),
 				));
+	};
+}
+
+export function reorderFunction(source, destination) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER, name));
+		return reorderFunctions(source, destination)
+			.then(() => {
+				dispatch(
+					createAction(
+						AppConstants.APP.FUNCTIONS.REORDER_SUCCESS,
+						{ source, destination },
+						null,
+					),
+				);
+			})
+			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER_ERROR, null, error)));
 	};
 }
