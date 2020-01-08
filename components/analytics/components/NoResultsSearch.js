@@ -51,8 +51,8 @@ class NoResultsSearch extends React.Component {
 
 	handleReplaySearch = (searchState) => {
 		const {
- saveState, history, appName, handleReplayClick,
-} = this.props;
+			saveState, history, appName, handleReplayClick,
+		} = this.props;
 		saveState(searchState);
 		if (handleReplayClick) {
 			handleReplayClick(appName);
@@ -61,9 +61,23 @@ class NoResultsSearch extends React.Component {
 		}
 	};
 
+	handleQueryRule = (item) => {
+		const { appName } = this.props;
+		if (item.key !== '<empty_query>') {
+			window.location.href = `/app/${appName}/query-rules?searchTerm=${item.key}&operator=is`;
+		} else {
+			window.location.href = `/app/${appName}/query-rules`;
+		}
+	}
+
 	render() {
 		const { isFetching, noResults } = this.state;
-		const { displayReplaySearch, plan, filterId } = this.props;
+		const {
+			displayReplaySearch,
+			displayQueryRule,
+			plan,
+			filterId,
+		} = this.props;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -78,20 +92,21 @@ class NoResultsSearch extends React.Component {
 					dataSource={noResults.map(item => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
+						handleQueryRule: this.handleQueryRule,
 					}))}
-					columns={noResultsFull(plan, displayReplaySearch)}
+					columns={noResultsFull(plan, displayReplaySearch, displayQueryRule)}
 					title="No Results Searches"
 					pagination={{
 						pageSize: 10,
 					}}
 					onClickDownload={() => exportCSVFile(
-							headers,
-							noResults.map(item => ({
-								key: item.key,
-								count: item.count,
-							})),
-							'no_results_searches',
-						)
+						headers,
+						noResults.map(item => ({
+							key: item.key,
+							count: item.count,
+						})),
+						'no_results_searches',
+					)
 					}
 				/>
 			</React.Fragment>
@@ -101,6 +116,7 @@ class NoResultsSearch extends React.Component {
 NoResultsSearch.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
+	displayQueryRule: false,
 	filterId: undefined,
 	filters: undefined,
 };
@@ -111,6 +127,7 @@ NoResultsSearch.propTypes = {
 	filters: PropTypes.object,
 	appName: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
+	displayQueryRule: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
