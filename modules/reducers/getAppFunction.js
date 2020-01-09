@@ -16,7 +16,7 @@ function getAppFunction(state = initialAppState, action) {
 				isCreating: false,
 				success: true,
 				error: false,
-				results: [...(state.results || []), { enabled: true, function: action.payload }],
+				results: [...(state.results || []), action.payload],
 			};
 		case AppConstants.APP.FUNCTIONS.CREATE_ERROR:
 			return {

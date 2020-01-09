@@ -54,14 +54,11 @@ export function createFunction(name, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE, { name, payload }));
 		return deployFunction(name, payload)
-			.then(() => {
+			.then((res) => {
 				dispatch(
 					createAction(
 						AppConstants.APP.FUNCTIONS.CREATE_SUCCESS,
-						{
-							service: name,
-							...payload,
-						},
+						res,
 						null,
 						{
 							name,
