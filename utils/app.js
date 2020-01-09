@@ -199,3 +199,18 @@ export const reorderFunction = async (source, destination) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getPrivateRegistry = () => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_functions/registry_config`, { Authorization: `Basic ${authToken}` });
+};
+
+export const updatePrivateRegistry = (payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(`${ACC_API}/_functions/registry_config`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
