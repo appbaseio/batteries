@@ -53,6 +53,8 @@ function getAppFunction(state = initialAppState, action) {
 						...item,
 						triggerUpdation,
 						isToggling: !triggerUpdation,
+						success: false,
+						error: null,
 					};
 				}
 				return item;
@@ -70,6 +72,7 @@ function getAppFunction(state = initialAppState, action) {
 						...action.payload[action.meta.name],
 						triggerUpdation: false,
 						isToggling: false,
+						success: true,
 						error: null,
 					};
 				}
@@ -86,6 +89,7 @@ function getAppFunction(state = initialAppState, action) {
 						triggerUpdation: false,
 						isToggling: false,
 						error: action.error && action.error.message,
+						success: false,
 					};
 				}
 				return item;
