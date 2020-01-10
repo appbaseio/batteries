@@ -16,8 +16,24 @@ function getAppFunction(state = initialAppState, action) {
 				isCreating: false,
 				success: true,
 				error: false,
-				results: [...(state.results || []), action.payload],
+				results: [
+					...(state.results || []),
+					{ ...action.payload, invocationCount: 0, availableReplicas: -1 },
+				],
 			};
+		case AppConstants.APP.FUNCTIONS.SINGLE_GET_SUCCESS: {
+			const updatedResults = state.results.map((item) => {
+				if (item.function.service === action.meta.name) {
+					return action.payload;
+				}
+				return item;
+			});
+
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
 		case AppConstants.APP.FUNCTIONS.CREATE_ERROR:
 			return {
 				...state,

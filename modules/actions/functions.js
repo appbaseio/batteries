@@ -7,6 +7,7 @@ import {
 	invokeFunction as invokeFunctions,
 	deleteFunction as deleteFunctions,
 	reorderFunction as reorderFunctions,
+	getSingleFunction as getFuncInfo,
 } from '../../utils/app';
 
 export function getFunctions(name = 'default') {
@@ -21,6 +22,21 @@ export function getFunctions(name = 'default') {
 				);
 			})
 			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.GET_ERROR, null, error)));
+	};
+}
+
+export function getSingleFunction(name = 'default') {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET));
+		return getFuncInfo(name)
+			.then((res) => {
+				dispatch(
+					createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_SUCCESS, res, null, {
+						name,
+					}),
+				);
+			})
+			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_ERROR, null, error)));
 	};
 }
 

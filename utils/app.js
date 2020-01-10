@@ -152,6 +152,15 @@ export const getFunctions = (name) => {
 	});
 };
 
+export const getSingleFunction = (name) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_function/${name}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
 export const updateFunctions = (name, payload) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
