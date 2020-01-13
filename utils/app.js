@@ -152,6 +152,15 @@ export const getFunctions = (name) => {
 	});
 };
 
+export const getSingleFunction = (name) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_function/${name}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
 export const updateFunctions = (name, payload) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
@@ -178,5 +187,39 @@ export const invokeFunction = (name, payload) => {
 	const ACC_API = getURL();
 	return doPost(`${ACC_API}/_function/${name}`, payload, {
 		'Content-Type': 'application/json',
+	});
+};
+
+export const deleteFunction = (name) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doDelete(`${ACC_API}/_function/${name}`, { Authorization: `Basic ${authToken}` });
+};
+
+export const reorderFunction = async (source, destination) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	await doPut(`${ACC_API}/_function/${source.function.service}`, source, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+	return doPut(`${ACC_API}/_function/${destination.function.service}`, destination, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getPrivateRegistry = () => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_functions/registry_config`, { Authorization: `Basic ${authToken}` });
+};
+
+export const updatePrivateRegistry = (payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(`${ACC_API}/_functions/registry_config`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };

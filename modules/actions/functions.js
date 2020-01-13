@@ -5,6 +5,9 @@ import {
 	updateFunctions as putFunctions,
 	createFunction as deployFunction,
 	invokeFunction as invokeFunctions,
+	deleteFunction as deleteFunctions,
+	reorderFunction as reorderFunctions,
+	getSingleFunction as getFuncInfo,
 } from '../../utils/app';
 
 export function getFunctions(name = 'default') {
@@ -19,6 +22,21 @@ export function getFunctions(name = 'default') {
 				);
 			})
 			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.GET_ERROR, null, error)));
+	};
+}
+
+export function getSingleFunction(name = 'default') {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET));
+		return getFuncInfo(name)
+			.then((res) => {
+				dispatch(
+					createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_SUCCESS, res, null, {
+						name,
+					}),
+				);
+			})
+			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_ERROR, null, error)));
 	};
 }
 
@@ -52,14 +70,11 @@ export function createFunction(name, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE, { name, payload }));
 		return deployFunction(name, payload)
-			.then(() => {
+			.then((res) => {
 				dispatch(
 					createAction(
 						AppConstants.APP.FUNCTIONS.CREATE_SUCCESS,
-						{
-							service: name,
-							...payload,
-						},
+						res,
 						null,
 						{
 							name,
@@ -77,16 +92,45 @@ export function invokeFunction(name, payload) {
 		return invokeFunctions(name, payload)
 			.then((res) => {
 				dispatch(
-					createAction(
-						AppConstants.APP.FUNCTIONS.INVOKE_SUCCESS,
-						res,
-						null,
-						{
-							name,
-						},
-					),
+					createAction(AppConstants.APP.FUNCTIONS.INVOKE_SUCCESS, res, null, {
+						name,
+					}),
 				);
 			})
 			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.INVOKE_ERROR, null, error)));
+	};
+}
+
+export function deleteFunction(name) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.DELETE, name));
+		return deleteFunctions(name)
+			.then((res) => {
+				dispatch(
+					createAction(AppConstants.APP.FUNCTIONS.DELETE_SUCCESS, res, null, {
+						name,
+					}),
+				);
+			})
+			.catch(error => dispatch(
+					createAction(AppConstants.APP.FUNCTIONS.DELETE_ERROR, null, error, { name }),
+				));
+	};
+}
+
+export function reorderFunction(source, destination) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER));
+		return reorderFunctions(source, destination)
+			.then(() => {
+				dispatch(
+					createAction(
+						AppConstants.APP.FUNCTIONS.REORDER_SUCCESS,
+						{ source, destination },
+						null,
+					),
+				);
+			})
+			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER_ERROR, null, error)));
 	};
 }
