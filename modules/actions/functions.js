@@ -29,13 +29,11 @@ export function getSingleFunction(name = 'default') {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET));
 		return getFuncInfo(name)
-			.then((res) => {
-				dispatch(
+			.then(res => dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_SUCCESS, res, null, {
 						name,
 					}),
-				);
-			})
+				))
 			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_ERROR, null, error)));
 	};
 }
@@ -72,14 +70,9 @@ export function createFunction(name, payload) {
 		return deployFunction(name, payload)
 			.then((res) => {
 				dispatch(
-					createAction(
-						AppConstants.APP.FUNCTIONS.CREATE_SUCCESS,
-						res,
-						null,
-						{
-							name,
-						},
-					),
+					createAction(AppConstants.APP.FUNCTIONS.CREATE_SUCCESS, res, null, {
+						name,
+					}),
 				);
 			})
 			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE_ERROR, null, error)));
