@@ -6,6 +6,17 @@ const listItem = css`
 	line-height: 30px;
 	border-bottom: 1px solid #eee;
 
+	.icon-on-hover {
+		transform: scale(0);
+		transition: all ease 0.2s;
+	}
+
+	&:hover {
+		.icon-on-hover {
+			transform: scale(1);
+		}
+	}
+
 	mark {
 		background-color: #f5ff00;
 	}
@@ -150,6 +161,47 @@ const tagContainer = css`
 	}
 `;
 
+const componentStyle = css`
+	display: flex;
+	align-items: center;
+
+	.search.edit {
+		margin-right: 0;
+	}
+
+	.edit {
+		margin-right: auto;
+	}
+`;
+
+const cardStyle = css`
+	.show-on-hover {
+		transition: all ease 0.2s;
+		transform: scale(0);
+		opacity: 0;
+	}
+
+	&:hover {
+		.show-on-hover {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+`;
+
+const resultItem = css`
+	.icon-on-hover {
+		transform: scale(0);
+		transition: all ease 0.2s;
+	}
+
+	&:hover {
+		.icon-on-hover {
+			transform: scale(1);
+		}
+	}
+`;
+
 export {
 	listItem,
 	title,
@@ -160,4 +212,7 @@ export {
 	label,
 	listLabel,
 	tagContainer,
+	componentStyle,
+	cardStyle,
+	resultItem,
 };

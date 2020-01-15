@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
-import {
- Row, Col, Card, Button, Modal, Form, message,
-} from 'antd';
+import { Row, Col, Card, Button, Modal, Form, message } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
-import { formWrapper, tagContainer } from '../styles';
+import { formWrapper, tagContainer, cardStyle } from '../styles';
 import DataFieldInput from '../components/DataFieldInput';
 import { getAvailableDataField } from '../utils/dataField';
 import {
- NumberInput, TextInput, DropdownInput, ToggleInput,
+	NumberInput,
+	TextInput,
+	DropdownInput,
+	ToggleInput,
 } from '../../shared/Input';
 
 export default class Editor extends Component {
@@ -57,7 +58,11 @@ export default class Editor extends Component {
 	handleOk = () => {
 		// only set to store if dataField is valid
 		const { mappings } = this.props;
-		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
+		const fields = getAvailableDataField({
+			id: 'MultiList',
+			component: 'MultiList',
+			mappings,
+		});
 		if (fields.length) {
 			const { filterCount, setFilterCount, onPropChange } = this.props;
 			const { listComponentProps } = this.state;
@@ -92,7 +97,7 @@ export default class Editor extends Component {
 		}));
 	};
 
-	setComponentProps = (newProps) => {
+	setComponentProps = newProps => {
 		const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
@@ -111,7 +116,11 @@ export default class Editor extends Component {
 		switch (item.input) {
 			case 'bool': {
 				FormInput = (
-					<ToggleInput name={name} value={value} handleChange={this.setComponentProps} />
+					<ToggleInput
+						name={name}
+						value={value}
+						handleChange={this.setComponentProps}
+					/>
 				);
 				break;
 			}
@@ -139,7 +148,11 @@ export default class Editor extends Component {
 			}
 			default: {
 				FormInput = (
-					<TextInput name={name} value={value} handleChange={this.setComponentProps} />
+					<TextInput
+						name={name}
+						value={value}
+						handleChange={this.setComponentProps}
+					/>
 				);
 				break;
 			}
@@ -157,13 +170,18 @@ export default class Editor extends Component {
 
 	renderPropsForm = () => {
 		const { mappingsURL, mappings } = this.props;
-		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
+		const fields = getAvailableDataField({
+			id: 'MultiList',
+			component: 'MultiList',
+			mappings,
+		});
 		if (!fields.length) {
 			return (
 				<p>
-					There are no compatible fields present in your data mappings.{' '}
-					<a href={mappingsURL}>You can edit your mappings</a> to add filters
-					(agggregation components).
+					There are no compatible fields present in your data
+					mappings.{' '}
+					<a href={mappingsURL}>You can edit your mappings</a> to add
+					filters (agggregation components).
 				</p>
 			);
 		}
@@ -176,17 +194,24 @@ export default class Editor extends Component {
 					description={multiListTypes.dataField.description}
 					setComponentProps={this.setComponentProps}
 					componentProps={listComponentProps}
-					getAvailableDataField={() => getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings })
+					getAvailableDataField={() =>
+						getAvailableDataField({
+							id: 'MultiList',
+							component: 'MultiList',
+							mappings,
+						})
 					}
 				/>
 				{Object.keys(multiListTypes)
 					.filter(item => item !== 'dataField')
-					.map(item => this.renderFormItem(multiListTypes[item], item))}
+					.map(item =>
+						this.renderFormItem(multiListTypes[item], item),
+					)}
 			</Form>
 		);
 	};
 
-	setRenderKey = (newKey) => {
+	setRenderKey = newKey => {
 		this.setState({
 			renderKey: newKey,
 		});
@@ -207,7 +232,11 @@ export default class Editor extends Component {
 			<span>
 				Search Preview{' '}
 				{window.innerWidth > 1280 ? (
-					<Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
+					<Button
+						style={{ float: 'right' }}
+						onClick={this.handleVideoModal}
+						size="small"
+					>
 						Watch Video
 					</Button>
 				) : null}
@@ -235,13 +264,21 @@ export default class Editor extends Component {
 							</Button>
 						</Card>
 						{Object.keys(componentProps)
-							.filter(item => item !== 'search' && item !== 'result')
+							.filter(
+								item => item !== 'search' && item !== 'result',
+							)
 							.map(config => (
-								<Card key={config} style={{ marginTop: 20 }}>
+								<Card
+									className={cardStyle}
+									key={config}
+									style={{ marginTop: 20 }}
+								>
 									<RSWrapper
 										id={config}
 										component="MultiList"
-										componentProps={componentProps[config] || {}}
+										componentProps={
+											componentProps[config] || {}
+										}
 										onDelete={deleteComponent}
 										full
 									/>
@@ -249,45 +286,59 @@ export default class Editor extends Component {
 							))}
 					</Col>
 					<Col span={18}>
-						<Card>
+						<Card className={cardStyle}>
 							<RSWrapper
 								id="search"
-								component={useCategorySearch ? 'CategorySearch' : 'DataSearch'}
+								component={
+									useCategorySearch
+										? 'CategorySearch'
+										: 'DataSearch'
+								}
 								componentProps={componentProps.search || {}}
 							/>
 						</Card>
 
-						<Card>
+						<Card className={cardStyle}>
 							<SelectedFilters
-								render={(props) => {
+								render={props => {
 									const {
 										selectedValues,
 										setValue,
 										clearValues,
 										components,
 									} = props;
-									const clearFilter = (component) => {
+									const clearFilter = component => {
 										setValue(component, null);
 									};
 
-									const filters = Object.keys(selectedValues).map((component) => {
+									const filters = Object.keys(
+										selectedValues,
+									).map(component => {
 										if (!components.includes(component)) {
 											return null;
 										}
 
 										if (
-											!selectedValues[component].value
-											|| selectedValues[component].value.length === 0
-										) return null;
+											!selectedValues[component].value ||
+											selectedValues[component].value
+												.length === 0
+										)
+											return null;
 										const value = `${component} : ${selectedValues[component].value}`;
 
 										return (
 											<SelectedTag
 												className="tag"
-												onClick={() => clearFilter(component, null)}
+												onClick={() =>
+													clearFilter(component, null)
+												}
 												key={component}
 											>
-												<span dangerouslySetInnerHTML={{ __html: value }} />
+												<span
+													dangerouslySetInnerHTML={{
+														__html: value,
+													}}
+												/>
 												<span>&nbsp; &#x2715;</span>
 											</SelectedTag>
 										);
@@ -318,8 +369,11 @@ export default class Editor extends Component {
 										? {
 												...componentProps.result,
 												react: {
-													and: Object.keys(componentProps).filter(
-														item => item !== 'result',
+													and: Object.keys(
+														componentProps,
+													).filter(
+														item =>
+															item !== 'result',
 													),
 												},
 										  }
