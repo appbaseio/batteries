@@ -11,35 +11,41 @@ import {
 } from '../../utils/app';
 
 export function getFunctions(name = 'default') {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.GET));
 		return fetchFunctions()
-			.then((res) => {
+			.then(res => {
 				dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.GET_SUCCESS, res, null, {
 						name,
 					}),
 				);
 			})
-			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.GET_ERROR, null, error)));
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.FUNCTIONS.GET_ERROR, null, error)),
+			);
 	};
 }
 
 export function getSingleFunction(name = 'default') {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET));
 		return getFuncInfo(name)
-			.then(res => dispatch(
+			.then(res =>
+				dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_SUCCESS, res, null, {
 						name,
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_ERROR, null, error)));
+				),
+			)
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.FUNCTIONS.SINGLE_GET_ERROR, null, error)),
+			);
 	};
 }
 
 export function updateFunctions(name = 'default', payload, isTrigger) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.UPDATE, { name, isTrigger }));
 		return putFunctions(name, payload)
 			.then(() => {
@@ -58,62 +64,70 @@ export function updateFunctions(name = 'default', payload, isTrigger) {
 					),
 				);
 			})
-			.catch(error => dispatch(
+			.catch(error =>
+				dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.UPDATE_ERROR, null, error, { name }),
-				));
+				),
+			);
 	};
 }
 
 export function createFunction(name, payload) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE, { name, payload }));
 		return deployFunction(name, payload)
-			.then((res) => {
+			.then(res =>
 				dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.CREATE_SUCCESS, res, null, {
 						name,
 					}),
-				);
-			})
-			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE_ERROR, null, error)));
+				),
+			)
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.FUNCTIONS.CREATE_ERROR, null, error)),
+			);
 	};
 }
 
 export function invokeFunction(name, payload) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.INVOKE, { name, payload }));
 		return invokeFunctions(name, payload)
-			.then((res) => {
+			.then(res => {
 				dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.INVOKE_SUCCESS, res, null, {
 						name,
 					}),
 				);
 			})
-			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.INVOKE_ERROR, null, error)));
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.FUNCTIONS.INVOKE_ERROR, null, error)),
+			);
 	};
 }
 
 export function deleteFunction(name) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.FUNCTIONS.DELETE, name));
 		return deleteFunctions(name)
-			.then((res) => {
+			.then(res => {
 				dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.DELETE_SUCCESS, res, null, {
 						name,
 					}),
 				);
 			})
-			.catch(error => dispatch(
+			.catch(error =>
+				dispatch(
 					createAction(AppConstants.APP.FUNCTIONS.DELETE_ERROR, null, error, { name }),
-				));
+				),
+			);
 	};
 }
 
 export function reorderFunction(source, destination) {
-	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER));
+	return dispatch => {
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER, { source, destination }));
 		return reorderFunctions(source, destination)
 			.then(() => {
 				dispatch(
@@ -124,6 +138,14 @@ export function reorderFunction(source, destination) {
 					),
 				);
 			})
-			.catch(error => dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER_ERROR, null, error)));
+			.catch(error =>
+				dispatch(
+					createAction(
+						AppConstants.APP.FUNCTIONS.REORDER_ERROR,
+						{ source, destination },
+						error,
+					),
+				),
+			);
 	};
 }

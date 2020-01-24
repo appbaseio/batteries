@@ -22,7 +22,7 @@ function getAppFunction(state = initialAppState, action) {
 				],
 			};
 		case AppConstants.APP.FUNCTIONS.SINGLE_GET_SUCCESS: {
-			const updatedResults = state.results.map((item) => {
+			const updatedResults = state.results.map(item => {
 				if (item.function.service === action.meta.name) {
 					return action.payload;
 				}
@@ -61,7 +61,7 @@ function getAppFunction(state = initialAppState, action) {
 				error: action.payload,
 			};
 		case AppConstants.APP.FUNCTIONS.UPDATE: {
-			const updatedResults = state.results.map((item) => {
+			const updatedResults = state.results.map(item => {
 				if (item.function.service === action.payload.name) {
 					const triggerUpdation = !!action.payload.isTrigger;
 
@@ -82,9 +82,10 @@ function getAppFunction(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.FUNCTIONS.UPDATE_SUCCESS: {
-			const updatedResults = state.results.map((item) => {
+			const updatedResults = state.results.map(item => {
 				if (item.function.service === action.meta.name) {
 					return {
+						...item,
 						...action.payload[action.meta.name],
 						triggerUpdation: false,
 						isToggling: false,
@@ -98,7 +99,7 @@ function getAppFunction(state = initialAppState, action) {
 			return { ...state, results: updatedResults };
 		}
 		case AppConstants.APP.FUNCTIONS.UPDATE_ERROR: {
-			const updatedResults = state.results.map((item) => {
+			const updatedResults = state.results.map(item => {
 				if (item.function.service === action.meta.name) {
 					return {
 						...item,
@@ -138,7 +139,7 @@ function getAppFunction(state = initialAppState, action) {
 				invokeResults: null,
 			};
 		case AppConstants.APP.FUNCTIONS.DELETE: {
-			const updatedResults = state.results.map((item) => {
+			const updatedResults = state.results.map(item => {
 				if (item.function.service === action.payload) {
 					return {
 						...item,
@@ -159,7 +160,7 @@ function getAppFunction(state = initialAppState, action) {
 				),
 			};
 		case AppConstants.APP.FUNCTIONS.DELETE_ERROR: {
-			const updatedResults = state.results.map((item) => {
+			const updatedResults = state.results.map(item => {
 				if (item.function.service === action.payload) {
 					return {
 						...action.payload[action.meta.name],
@@ -172,8 +173,8 @@ function getAppFunction(state = initialAppState, action) {
 
 			return { ...state, results: updatedResults };
 		}
-		case AppConstants.APP.FUNCTIONS.REORDER_SUCCESS: {
-			const updatedResults = state.results.map((item) => {
+		case AppConstants.APP.FUNCTIONS.REORDER: {
+			const updatedResults = state.results.map(item => {
 				if (item.function.service === action.payload.source.function.service) {
 					return {
 						...item,
@@ -184,6 +185,25 @@ function getAppFunction(state = initialAppState, action) {
 					return {
 						...item,
 						...action.payload.destination,
+					};
+				}
+				return item;
+			});
+
+			return { ...state, results: updatedResults };
+		}
+		case AppConstants.APP.FUNCTIONS.REORDER_ERROR: {
+			const updatedResults = state.results.map(item => {
+				if (item.function.service === action.payload.source.function.service) {
+					return {
+						...item,
+						order: action.payload.destination.order,
+					};
+				}
+				if (item.function.service === action.payload.destination.function.service) {
+					return {
+						...item,
+						order: action.payload.source.order,
 					};
 				}
 				return item;
