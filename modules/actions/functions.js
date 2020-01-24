@@ -127,7 +127,7 @@ export function deleteFunction(name) {
 
 export function reorderFunction(source, destination) {
 	return dispatch => {
-		dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER));
+		dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER, { source, destination }));
 		return reorderFunctions(source, destination)
 			.then(() => {
 				dispatch(
@@ -139,7 +139,13 @@ export function reorderFunction(source, destination) {
 				);
 			})
 			.catch(error =>
-				dispatch(createAction(AppConstants.APP.FUNCTIONS.REORDER_ERROR, null, error)),
+				dispatch(
+					createAction(
+						AppConstants.APP.FUNCTIONS.REORDER_ERROR,
+						{ source, destination },
+						error,
+					),
+				),
 			);
 	};
 }

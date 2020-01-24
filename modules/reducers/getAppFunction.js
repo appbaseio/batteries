@@ -173,7 +173,7 @@ function getAppFunction(state = initialAppState, action) {
 
 			return { ...state, results: updatedResults };
 		}
-		case AppConstants.APP.FUNCTIONS.REORDER_SUCCESS: {
+		case AppConstants.APP.FUNCTIONS.REORDER: {
 			const updatedResults = state.results.map(item => {
 				if (item.function.service === action.payload.source.function.service) {
 					return {
@@ -185,6 +185,25 @@ function getAppFunction(state = initialAppState, action) {
 					return {
 						...item,
 						...action.payload.destination,
+					};
+				}
+				return item;
+			});
+
+			return { ...state, results: updatedResults };
+		}
+		case AppConstants.APP.FUNCTIONS.REORDER_ERROR: {
+			const updatedResults = state.results.map(item => {
+				if (item.function.service === action.payload.source.function.service) {
+					return {
+						...item,
+						order: action.payload.destination.order,
+					};
+				}
+				if (item.function.service === action.payload.destination.function.service) {
+					return {
+						...item,
+						order: action.payload.source.order,
 					};
 				}
 				return item;
