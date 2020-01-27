@@ -65,11 +65,11 @@ class PopularSearches extends React.Component {
 	};
 
 	handleQueryRule = (item) => {
-		const { appName } = this.props;
+		const { appName, history } = this.props;
 		if (item.key !== '<empty_query>') {
-			window.location.href = `/app/${appName}/query-rules?searchTerm=${item.key}&operator=is`;
+			history.push(`/app/${appName}/query-rules?searchTerm=${item.key}&operator=is`);
 		} else {
-			window.location.href = `/app/${appName}/query-rules`;
+			history.push(`/app/${appName}/query-rules`);
 		}
 	}
 
