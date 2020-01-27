@@ -43,9 +43,19 @@ const SummaryCard = ({ percent, title, count, style, showPercent }) => (
 		)} */}
 		<div>
 			<p>{title}</p>
-			<h2>
-				{count}
-				{showPercent ? <span>{`(${percent || '0.00'}%)`}</span> : null}
+			<h2
+				style={{
+					fontSize: '1.3rem',
+					display: 'flex',
+					flexDirection: count > 100 ? 'column' : 'row',
+				}}
+			>
+				{(+count).toLocaleString()}
+				{showPercent ? (
+					<span style={{ lineHeight: count > 100 ? 1 : 'inherit' }}>
+						{`(${percent || '0.00'}%)`}
+					</span>
+				) : null}
 			</h2>
 		</div>
 	</Flex>

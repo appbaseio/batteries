@@ -320,9 +320,13 @@ class RSComponentRender extends Component {
 			searchRef.current.state &&
 			searchRef.current.state.currentValue;
 		if (searchValue) {
-			window.location.href = `/app/${app}/query-rules?searchTerm=${searchValue}&operator=is`;
+			history.push({
+				pathname: `/app/${app}/query-rules/`,
+				search: `?searchTerm=${searchValue}&operator=is`,
+			});
+		} else {
+			history.push(`/app/${app}/query-rules`);
 		}
-		history.push(`/app/${app}/query-rules`);
 	};
 
 	render() {
