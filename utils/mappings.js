@@ -355,6 +355,7 @@ function setNestedMapping(mapping, fields, currentPath, type, usecase) {
 		usecase,
 	);
 	const _mapping = {
+		...mapping,
 		[fields[currentPath]]: {
 			...mapping[fields[currentPath]],
 			...updatedmapping,

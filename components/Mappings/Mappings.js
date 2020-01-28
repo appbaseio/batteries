@@ -760,37 +760,63 @@ class Mappings extends Component {
 		return null;
 	};
 
+	transformMappings = (properties) => {
+		return Object.keys(properties).reduce((agg, key) => {
+			if (properties[key].properties) {
+				return {
+					...agg,
+					[key]: { properties: this.transformMappings(properties[key].properties) },
+				};
+			}
+			const data = properties[key];
+			if (data && data.fields.english) {
+				data.fields.english.search_analyzer = 'english_synonyms_analyzer';
+				data.fields.english.analyzer = 'english_analyzer';
+			} else if (data && data.fields) {
+				data.fields.english = {
+					type: 'text',
+					index: 'true',
+					analyzer: 'english_analyzer',
+					search_analyzer: 'english_synonyms_analyzer',
+				};
+			}
+			return { ...agg, [key]: data };
+		}, {});
+	};
+
 	updateField = () => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const { activeType, esVersion } = this.state;
 		let isMappingsPresent = false;
-		let properties = null;
 		if (+esVersion >= 7) {
 			isMappingsPresent = mapping && mapping.properties;
-			properties = mapping.properties;
 		} else {
-			isMappingsPresent =				mapping
-				&& activeType[0]
-				&& mapping[activeType[0]]
-				&& mapping[activeType[0]].properties;
-			properties = mapping[activeType[0]].properties;
+			isMappingsPresent =
+				mapping && activeType[0] && mapping[activeType[0]];
 		}
 		if (isMappingsPresent) {
-			const keys = Object.keys(properties);
-
-			keys.forEach((key) => {
-				if (properties[key] && properties[key].fields && properties[key].fields.english) {
-					properties[key].fields.english.search_analyzer = 'english_synonyms_analyzer';
-					properties[key].fields.english.analyzer = 'english_analyzer';
-				} else if (properties[key] && properties[key].fields) {
-					properties[key].fields.english = {
-						type: 'text',
-						index: 'true',
-						analyzer: 'english_analyzer',
-						search_analyzer: 'english_synonyms_analyzer',
+			if (+esVersion >= 7) {
+				const updatedProperties = this.transformMappings(
+					JSON.parse(JSON.stringify(mapping.properties)),
+				);
+				mapping.properties = {
+					...mapping.properties,
+					...updatedProperties,
+				};
+			} else {
+				return activeType.reduce((agg, type) => {
+					return {
+						...agg,
+						[type]: mapping[type].properties
+							? {
+									properties: this.transformMappings(
+										mapping[type].properties,
+									),
+							  }
+							: mapping[type],
 					};
-				}
-			});
+				}, {});
+			}
 		}
 		return mapping;
 	};
