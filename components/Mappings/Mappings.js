@@ -788,27 +788,35 @@ class Mappings extends Component {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const { activeType, esVersion } = this.state;
 		let isMappingsPresent = false;
-		let properties = null;
 		if (+esVersion >= 7) {
 			isMappingsPresent = mapping && mapping.properties;
-			properties = mapping.properties;
 		} else {
 			isMappingsPresent =
-				mapping &&
-				activeType[0] &&
-				mapping[activeType[0]] &&
-				mapping[activeType[0]].properties;
-			properties = mapping[activeType[0]].properties;
+				mapping && activeType[0] && mapping[activeType[0]];
 		}
 		if (isMappingsPresent) {
-			const updatedProperties = this.transformMappings(
-				JSON.parse(JSON.stringify(properties)),
-			);
-
-			mapping.properties = {
-				...mapping.properties,
-				...updatedProperties,
-			};
+			if (+esVersion >= 7) {
+				const updatedProperties = this.transformMappings(
+					JSON.parse(JSON.stringify(mapping.properties)),
+				);
+				mapping.properties = {
+					...mapping.properties,
+					...updatedProperties,
+				};
+			} else {
+				return activeType.reduce((agg, type) => {
+					return {
+						...agg,
+						[type]: mapping[type].properties
+							? {
+									properties: this.transformMappings(
+										mapping[type].properties,
+									),
+							  }
+							: mapping[type],
+					};
+				}, {});
+			}
 		}
 		return mapping;
 	};
