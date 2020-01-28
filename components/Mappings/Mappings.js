@@ -769,7 +769,7 @@ class Mappings extends Component {
 				};
 			}
 			const data = properties[key];
-			if (data && data.fields.english) {
+			if (data && data.fields && data.fields.english) {
 				data.fields.english.search_analyzer = 'english_synonyms_analyzer';
 				data.fields.english.analyzer = 'english_analyzer';
 			} else if (data && data.fields) {
