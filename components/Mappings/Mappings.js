@@ -477,6 +477,7 @@ class Mappings extends Component {
 				return {
 					...agg,
 					[key]: {
+						...properties[key],
 						properties: this.transformMappings(
 							properties[key].properties,
 						),
