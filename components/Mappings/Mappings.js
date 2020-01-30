@@ -850,12 +850,55 @@ class Mappings extends Component {
 		);
 	};
 
-	renderMapping = (type, fields, originalFields, address = '') => {
+	renderMapping = (
+		type,
+		fields,
+		originalFields,
+		address = '',
+		mappingType,
+	) => {
+		const nestedObj = {
+			type: 'nested',
+		};
 		if (fields) {
 			return (
 				<section key={type} className={row}>
 					<h4 className={`${title} ${deleteBtn}`}>
-						<span title={type}>{type}</span>
+						<span title={type}>
+							<span title={type}>
+								{mappingType === 'nested' ? (
+									<Popover
+										content={
+											<pre>
+												{JSON.stringify(
+													nestedObj,
+													null,
+													2,
+												)}
+											</pre>
+										}
+									>
+										<div
+											css={{
+												justifyContent: 'center',
+												alignItems: 'center',
+												width: 30,
+												height: 31,
+												border: '1px solid #ddd',
+												borderRadius: '50%',
+												display: 'inline-flex',
+												marginRight: 12,
+												background: 'white',
+												color: '#595959',
+											}}
+										>
+											{this.getIcon('object')}
+										</div>
+									</Popover>
+								) : null}
+							</span>
+								{type}
+						</span>
 						{this.state.editable ? (
 							<a
 								type="danger"
@@ -878,6 +921,7 @@ class Mappings extends Component {
 								`${
 									address ? `${address}.` : ''
 								}${field}.properties`,
+								fields[field].type,
 							);
 						}
 						const properties = fields[field];
@@ -1337,6 +1381,7 @@ class Mappings extends Component {
 									currentMappingFields,
 									originalMappingFields,
 									fieldName,
+									mapping[field].type,
 								);
 							}
 							return null;
