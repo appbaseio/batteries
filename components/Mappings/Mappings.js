@@ -667,6 +667,7 @@ class Mappings extends Component {
 											marginRight: 12,
 											background: 'white',
 											color: '#595959',
+											fontWeight: 'normal',
 										}}
 									>
 										{this.getIcon('object')}
