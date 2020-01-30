@@ -576,35 +576,6 @@ class Mappings extends Component {
 
 	getConversionMap = field => conversionMap[field] || [];
 
-	getIcon = type => {
-		const iconStyle = { margin: 0, fontSize: 13 };
-		switch (type) {
-			case 'text':
-			case 'string':
-			case 'keyword':
-				return <Icon style={iconStyle} type="file-text" theme="outlined" />;
-			case 'long':
-			case 'integer':
-				return <div style={iconStyle}>#</div>;
-			case 'geo_point':
-			case 'geo_shape':
-				return <Icon style={iconStyle} type="environment" theme="outlined" />;
-			case 'date':
-				return <Icon style={iconStyle} type="calendar" theme="outlined" />;
-			case 'double':
-			case 'float':
-				return <div style={iconStyle}>π</div>;
-			case 'boolean':
-				return <Icon style={iconStyle} type="check" theme="outlined" />;
-			case 'object':
-				return <div style={iconStyle}>{'{...}'}</div>;
-			case 'image':
-				return <Icon style={iconStyle} type="file-jpg" theme="outlined" />;
-			default:
-				return <Icon style={iconStyle} type="file-unknown" theme="outlined" />;
-		}
-	};
-
 	updateShards = async () => {
 		this.handleShardsModal();
 		this.reIndex();
@@ -673,12 +644,37 @@ class Mappings extends Component {
 		);
 	};
 
-	renderMapping = (type, fields, originalFields, address = '') => {
+	renderMapping = (type, fields, originalFields, address = '', mappingType) => {
+		const nestedObj = {
+			type: 'nested',
+		};
 		if (fields) {
 			return (
 				<section key={type} className={row}>
 					<h4 className={`${title} ${deleteBtn}`}>
-						<span title={type}>{type}</span>
+						<span title={type}>
+							{mappingType === 'nested' ? (
+								<Popover content={<pre>{JSON.stringify(nestedObj, null, 2)}</pre>}>
+									<div
+										css={{
+											justifyContent: 'center',
+											alignItems: 'center',
+											width: 30,
+											height: 31,
+											border: '1px solid #ddd',
+											borderRadius: '50%',
+											display: 'inline-flex',
+											marginRight: 12,
+											background: 'white',
+											color: '#595959',
+										}}
+									>
+										{this.getIcon('object')}
+									</div>
+								</Popover>
+							) : null}
+							{type}
+						</span>
 						<a
 							type="danger"
 							size="small"
@@ -697,6 +693,7 @@ class Mappings extends Component {
 								fields[field].properties,
 								originalFields[field].properties,
 								`${address ? `${address}.` : ''}${field}.properties`,
+								fields[field].type,
 							);
 						}
 						const properties = fields[field];
@@ -1016,6 +1013,7 @@ class Mappings extends Component {
 									? this.originalMapping[field].properties
 									: this.state.mapping[field].properties;
 								const fieldName = `${field}.properties`;
+								const typeName = this.state.mapping[field].type;
 
 								if (+this.state.esVersion >= 7) {
 									if (field !== 'properties') {
@@ -1032,6 +1030,7 @@ class Mappings extends Component {
 									currentMappingFields,
 									originalMappingFields,
 									fieldName,
+									typeName,
 								);
 							}
 							return null;
