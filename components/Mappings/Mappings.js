@@ -890,6 +890,7 @@ class Mappings extends Component {
 												marginRight: 12,
 												background: 'white',
 												color: '#595959',
+												fontWeight: 'normal',
 											}}
 										>
 											{this.getIcon('object')}
@@ -897,7 +898,7 @@ class Mappings extends Component {
 									</Popover>
 								) : null}
 							</span>
-								{type}
+							{type}
 						</span>
 						{this.state.editable ? (
 							<a
