@@ -10,6 +10,8 @@ import {
 	computeStateByAppName,
 	computePlan,
 } from './utils';
+import getAppFunction from './getAppFunction';
+import privateRegistries from './getPrivateRegistry';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -192,6 +194,8 @@ export default {
 		AppConstants.APP.PUBLIC_KEY.GET_SUCCESS,
 		AppConstants.APP.PUBLIC_KEY.GET_ERROR,
 	),
+	$getAppFunctions: getAppFunction,
+	$getAppRegistries: privateRegistries,
 	$updateAppPublicKey: createRequestReducer(
 		AppConstants.APP.PUBLIC_KEY.UPDATE,
 		AppConstants.APP.PUBLIC_KEY.UPDATE_SUCCESS,

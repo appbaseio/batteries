@@ -1,6 +1,4 @@
-import {
- doDelete, doPatch, doGet, doPost,
-} from './requestService';
+import { doDelete, doPatch, doGet, doPost, doPut } from './requestService';
 import { getURL } from '../../constants/config';
 
 export const transferOwnership = (appId, info) => {
@@ -42,7 +40,8 @@ export const newPermission = (appId, info) => {
 	});
 };
 
-export const deletePermission = (appId, username) => new Promise((resolve, reject) => {
+export const deletePermission = (appId, username) =>
+	new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		fetch(`${ACC_API}/_permission/${username}`, {
@@ -57,12 +56,12 @@ export const deletePermission = (appId, username) => new Promise((resolve, rejec
 			.catch(error => reject(error));
 	});
 
-export const deleteApp = (appId) => {
+export const deleteApp = appId => {
 	const ACC_API = getURL();
 	return doDelete(`${ACC_API}/${appId}`);
 };
 
-export const getShare = (appId) => {
+export const getShare = appId => {
 	const ACC_API = getURL();
 	return doGet(`${ACC_API}/app/${appId}/share`);
 };
@@ -83,12 +82,13 @@ export const createSubscription = (token, plan, test) => {
 	return doPost(URL, { token, plan });
 };
 
-export const deleteSubscription = (payload) => {
+export const deleteSubscription = payload => {
 	const ACC_API = getURL();
 	return doDelete(`${ACC_API}/arc/subscription`, undefined, undefined, payload);
 };
 
-export const getPublicKey = () => new Promise((resolve, reject) => {
+export const getPublicKey = () =>
+	new Promise((resolve, reject) => {
 		const ACC_API = getURL();
 		const authToken = getAuthToken();
 		fetch(`${ACC_API}/_public_key`, {
@@ -98,7 +98,7 @@ export const getPublicKey = () => new Promise((resolve, reject) => {
 				Authorization: `Basic ${authToken}`,
 			},
 		})
-			.then(async (res) => {
+			.then(async res => {
 				const data = await res.json();
 				if (res.status >= 400) {
 					reject(data);
@@ -108,7 +108,8 @@ export const getPublicKey = () => new Promise((resolve, reject) => {
 			.catch(error => reject(error));
 	});
 
-export const setPublicKey = (name, key, role) => new Promise((resolve, reject) => {
+export const setPublicKey = (name, key, role) =>
+	new Promise((resolve, reject) => {
 		const ACC_API = getURL();
 		const authToken = getAuthToken();
 		fetch(`${ACC_API}/_public_key`, {
@@ -119,7 +120,7 @@ export const setPublicKey = (name, key, role) => new Promise((resolve, reject) =
 			},
 			body: JSON.stringify({ public_key: key, role_key: role }),
 		})
-			.then(async (res) => {
+			.then(async res => {
 				const data = await res.json();
 
 				if (data.error && data.status >= 400) {
@@ -140,5 +141,96 @@ export const updatePaymentMethod = (token, product) => {
 	return doPost(`${ACC_API}/user/payment`, {
 		token,
 		product,
+	});
+};
+
+export const getFunctions = () => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_functions`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getSingleFunction = name => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_function/${name}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const updateFunctions = (name, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(`${ACC_API}/_function/${name}`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const createFunction = (name, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPost(
+		`${ACC_API}/_function`,
+		{ service: name, ...payload },
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+		false,
+		null,
+		true,
+	);
+};
+
+export const invokeFunction = (name, payload) => {
+	const ACC_API = getURL();
+	return doPost(
+		`${ACC_API}/_function/${name}`,
+		payload,
+		{
+			'Content-Type': 'application/json',
+		},
+		false,
+		null,
+		true,
+	);
+};
+
+export const deleteFunction = name => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doDelete(`${ACC_API}/_function/${name}`, { Authorization: `Basic ${authToken}` });
+};
+
+export const reorderFunction = async (source, destination) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	await doPut(`${ACC_API}/_function/${source.function.service}`, source, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+	return doPut(`${ACC_API}/_function/${destination.function.service}`, destination, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getPrivateRegistry = () => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_functions/registry_config`, { Authorization: `Basic ${authToken}` });
+};
+
+export const updatePrivateRegistry = payload => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(`${ACC_API}/_functions/registry_config`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };
