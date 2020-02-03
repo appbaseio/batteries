@@ -80,7 +80,9 @@ class PopularSearches extends React.Component {
 			displayReplaySearch,
 			displayQueryRule,
 			filterId,
+			location: { pathname }
 		} = this.props;
+		const showQueryRule = pathname.includes('cluster') ? false : displayQueryRule;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -92,7 +94,7 @@ class PopularSearches extends React.Component {
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					columns={popularSearchesFull(plan, displayReplaySearch, displayQueryRule)}
+					columns={popularSearchesFull(plan, displayReplaySearch, showQueryRule)}
 					dataSource={popularSearches.map(item => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,

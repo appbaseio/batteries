@@ -77,7 +77,10 @@ class NoResultsSearch extends React.Component {
 			displayQueryRule,
 			plan,
 			filterId,
+			location: { pathname }
 		} = this.props;
+
+		const showQueryRule = pathname.includes('cluster') ? false : displayQueryRule;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -94,7 +97,7 @@ class NoResultsSearch extends React.Component {
 						handleReplaySearch: this.handleReplaySearch,
 						handleQueryRule: this.handleQueryRule,
 					}))}
-					columns={noResultsFull(plan, displayReplaySearch, displayQueryRule)}
+					columns={noResultsFull(plan, displayReplaySearch, showQueryRule)}
 					title="No Results Searches"
 					pagination={{
 						pageSize: 10,
