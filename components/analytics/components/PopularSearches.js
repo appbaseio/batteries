@@ -54,8 +54,8 @@ class PopularSearches extends React.Component {
 
 	handleReplaySearch = (searchState) => {
 		const {
- saveState, history, appName, handleReplayClick,
-} = this.props;
+			saveState, history, appName, handleReplayClick,
+		} = this.props;
 		saveState(searchState);
 		if (handleReplayClick) {
 			handleReplayClick(appName);
@@ -64,9 +64,25 @@ class PopularSearches extends React.Component {
 		}
 	};
 
+	handleQueryRule = (item) => {
+		const { appName, history } = this.props;
+		if (item.key !== '<empty_query>') {
+			history.push(`/app/${appName}/query-rules?searchTerm=${item.key}&operator=is`);
+		} else {
+			history.push(`/app/${appName}/query-rules`);
+		}
+	}
+
 	render() {
 		const { isFetching, popularSearches } = this.state;
-		const { plan, displayReplaySearch, filterId } = this.props;
+		const {
+			plan,
+			displayReplaySearch,
+			displayQueryRule,
+			filterId,
+			location: { pathname }
+		} = this.props;
+		const showQueryRule = pathname.includes('cluster') ? false : displayQueryRule;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -78,10 +94,11 @@ class PopularSearches extends React.Component {
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					columns={popularSearchesFull(plan, displayReplaySearch)}
+					columns={popularSearchesFull(plan, displayReplaySearch, showQueryRule)}
 					dataSource={popularSearches.map(item => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
+						handleQueryRule: this.handleQueryRule,
 					}))}
 					title="Popular Searches"
 					onClickDownload={() => {
@@ -108,6 +125,7 @@ class PopularSearches extends React.Component {
 PopularSearches.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
+	displayQueryRule: false,
 	filterId: undefined,
 	filters: undefined,
 };
@@ -117,6 +135,7 @@ PopularSearches.propTypes = {
 	filters: PropTypes.object,
 	appName: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
+	displayQueryRule: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,

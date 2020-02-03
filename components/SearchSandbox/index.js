@@ -57,8 +57,8 @@ class SearchSandbox extends Component {
 
 	async componentDidMount() {
 		const {
- appName, isDashboard, credentials, searchState, url,
-} = this.props;
+			appName, isDashboard, credentials, searchState, url,
+		} = this.props;
 		const { profileList: profileListState, profile } = this.state;
 		if (isDashboard) {
 			getPreferences(appName, credentials)
@@ -324,7 +324,7 @@ class SearchSandbox extends Component {
 							react: '16.3.2',
 							'react-dom': '16.3.2',
 							antd: '^3.6.6',
-							'@appbaseio/reactivesearch': '3.2.2',
+							'@appbaseio/reactivesearch': '3.2.4',
 							'react-expand-collapse': 'latest',
 						},
 					},

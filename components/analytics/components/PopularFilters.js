@@ -55,8 +55,8 @@ class PopularFilters extends React.Component {
 
 	handleReplaySearch = (searchState) => {
 		const {
- saveState, history, appName, handleReplayClick,
-} = this.props;
+			saveState, history, appName, handleReplayClick,
+		} = this.props;
 		saveState(searchState);
 		if (handleReplayClick) {
 			handleReplayClick(appName);
@@ -89,16 +89,16 @@ class PopularFilters extends React.Component {
 						pageSize: 10,
 					}}
 					onClickDownload={() => exportCSVFile(
-							headers,
-							popularFilters.map(item => ({
-								key: item.key.replace(/,/g, ''),
-								count: item.count,
-								clicks: item.clicks || '-',
-								source: item.source.replace(/,/g, '') || '-',
-								conversionrate: item.conversionrate || '-',
-							})),
-							'popular_results',
-						)
+						headers,
+						popularFilters.map(item => ({
+							key: item.key.replace(/,/g, ''),
+							count: item.count,
+							clicks: item.clicks || '-',
+							source: item.source.replace(/,/g, '') || '-',
+							conversionrate: item.conversionrate || '-',
+						})),
+						'popular_results',
+					)
 					}
 				/>
 			</React.Fragment>
