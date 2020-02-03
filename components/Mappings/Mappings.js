@@ -309,7 +309,7 @@ class Mappings extends Component {
 				activeType = activeType.filter(field => field !== type);
 
 				// add all the fields to excludeFields
-				const deletedTypesPath = Object.keys(_mapping[type].properties).map(
+				const deletedTypesPath = Object.keys(_mapping[type]).map(
 					property => `${type}.properties.${property}`,
 				);
 				deletedPaths = [...deletedPaths, ...deletedTypesPath];
@@ -325,23 +325,26 @@ class Mappings extends Component {
 				return acc[val];
 			}, mapping);
 		} else if (removeType) {
-			const field = path.split('.')[2];
+			const field = path
+				.split('.')
+				.slice(1, path.split('.').length - 1)
+				.pop();
 
 			if (field) {
-				const deletedTypesPath =
-					(_mapping.properties &&
-						_mapping.properties[field] &&
-						_mapping.properties[field].properties &&
-						Object.keys(_mapping.properties[field].properties).map(
-							property => `properties.${property}`,
-						)) ||
-					[];
-				deletedPaths = [...deletedPaths, ...deletedTypesPath];
-				delete mapping.properties[field];
+				const pathToDelete = path
+					.split('.')
+					.slice(1, path.split('.').length - 1)
+					.join('.');
+				deletedPaths = [...deletedPaths, pathToDelete];
+				deleteObjectFromPath(mapping, pathToDelete);
 			} else {
+				const pathsToDelete = Object.keys(mapping.properties);
+				deletedPaths = pathsToDelete;
 				delete mapping.properties;
 			}
 		} else {
+			const pathToDelete = path.split('.').slice(1).join('.');
+			deletedPaths = [...deletedPaths, pathToDelete];
 			deleteObjectFromPath(
 				mapping,
 				path
