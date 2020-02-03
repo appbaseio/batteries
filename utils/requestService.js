@@ -15,7 +15,9 @@ const createRequest = (
 	method,
 	credentials = false,
 	allowedStatusCode,
-) => new Promise((resolve, reject) => {
+	allowRawError = false,
+) =>
+	new Promise((resolve, reject) => {
 		let status;
 		let authToken = null;
 		try {
@@ -35,16 +37,16 @@ const createRequest = (
 			}),
 		);
 		fetch(url, requestOptions)
-			.then((res) => {
+			.then(res => {
 				({ status } = res);
-				if (status >= 500) {
+				if (status >= 500 && !allowRawError) {
 					return {
 						message: 'Something went wrong!',
 					};
 				}
 				return res.json();
 			})
-			.then((data) => {
+			.then(data => {
 				if (allowedStatusCode && allowedStatusCode.includes(status)) {
 					return resolve(data);
 				}
@@ -67,14 +69,16 @@ const createRequest = (
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doDelete = (url, headers, credentials, body) => createRequest(url, body, headers, 'DELETE', credentials);
+export const doDelete = (url, headers, credentials, body) =>
+	createRequest(url, body, headers, 'DELETE', credentials);
 /**
  * To create a get request
  * @param {string} url
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doGet = (url, headers, credentials) => createRequest(url, undefined, headers, 'GET', credentials);
+export const doGet = (url, headers, credentials) =>
+	createRequest(url, undefined, headers, 'GET', credentials);
 /**
  * To create a post request
  * @param {string} url
@@ -82,7 +86,8 @@ export const doGet = (url, headers, credentials) => createRequest(url, undefined
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doPost = (url, body, headers, credentials, allowedStatusCode) => createRequest(url, body, headers, 'POST', credentials, allowedStatusCode);
+export const doPost = (url, body, headers, credentials, allowedStatusCode, allowRawError) =>
+	createRequest(url, body, headers, 'POST', credentials, allowedStatusCode, allowRawError);
 /**
  * To create a patch request
  * @param {string} url
@@ -90,7 +95,8 @@ export const doPost = (url, body, headers, credentials, allowedStatusCode) => cr
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doPatch = (url, body, headers, credentials) => createRequest(url, body, headers, 'PATCH', credentials);
+export const doPatch = (url, body, headers, credentials) =>
+	createRequest(url, body, headers, 'PATCH', credentials);
 /**
  * To create a put request
  * @param {string} url
@@ -98,4 +104,5 @@ export const doPatch = (url, body, headers, credentials) => createRequest(url, b
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doPut = (url, body, headers, credentials) => createRequest(url, body, headers, 'PUT', credentials);
+export const doPut = (url, body, headers, credentials) =>
+	createRequest(url, body, headers, 'PUT', credentials);
