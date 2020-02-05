@@ -343,7 +343,10 @@ class Mappings extends Component {
 				delete mapping.properties;
 			}
 		} else {
-			const pathToDelete = path.split('.').slice(1).join('.');
+			const pathToDelete = path
+				.split('.')
+				.slice(1)
+				.join('.');
 			deletedPaths = [...deletedPaths, pathToDelete];
 			deleteObjectFromPath(
 				mapping,
@@ -548,7 +551,7 @@ class Mappings extends Component {
 		return null;
 	};
 
-	getIcon = (type) => {
+	getIcon = type => {
 		const iconStyle = { margin: 0, fontSize: 13 };
 		switch (type) {
 			case 'text':
@@ -763,7 +766,7 @@ class Mappings extends Component {
 		return null;
 	};
 
-	transformMappings = (properties) => {
+	transformMappings = properties => {
 		return Object.keys(properties).reduce((agg, key) => {
 			if (properties[key].properties) {
 				return {
@@ -836,8 +839,21 @@ class Mappings extends Component {
 				.map(synonym => synonym.trim())
 				.join(','),
 		);
+		const { mapping, appId } = this.props;
+		const { esVersion, activeType } = this.state;
+
+		this.setState({
+			synonymsLoading: true,
+		});
 
 		closeIndex(this.props.appName, credentials, url)
+			.then(data => {
+				if (data && data.Message && data.Message.includes('is not allowed by Amazon Elasticsearch Service.')) {
+					throw new Error('AWS');
+				} else {
+					return data;
+				}
+			})
 			.then(() => updateSynonyms(this.props.appName, credentials, url, synonyms))
 			.then(data => data.acknowledged)
 			.then(isUpdated => {
@@ -889,13 +905,59 @@ class Mappings extends Component {
 				});
 			})
 			.catch(e => {
-				console.error(e);
-				openIndex(this.props.appName, credentials, url);
-				this.setState({
-					showSynonymModal: false,
-					showError: true,
-					errorMessage: 'Unable to update Synonyms',
-				});
+				if (e.message === 'AWS') {
+					const appSettings = {
+						analysis: {
+							filter: {
+								...analyzerSettings.analysis.filter,
+								synonyms_filter: {
+									type: 'synonym',
+									synonyms,
+								},
+							},
+							analyzer: {
+								...analyzerSettings.analysis.analyzer,
+								english_synonyms_analyzer: {
+									filter: [
+										'lowercase',
+										'synonyms_filter',
+										'asciifolding',
+										'porter_stem',
+									],
+									tokenizer: 'standard',
+									type: 'custom',
+								},
+								english_analyzer: {
+									filter: ['lowercase', 'asciifolding', 'porter_stem'],
+									tokenizer: 'standard',
+									type: 'custom',
+								},
+							},
+						},
+					};
+					reIndex(mapping, appId, [], activeType, esVersion, credentials, appSettings)
+						.then(() => {
+							this.setState({
+								showFeedback: true,
+							});
+						})
+						.catch(err => {
+							this.setState({
+								isLoading: false,
+								showError: true,
+								errorLength: Array.isArray(err) && err.length,
+								errorMessage: JSON.stringify(err, null, 4),
+							});
+						});
+				} else {
+					console.error(e);
+					openIndex(this.props.appName, credentials, url);
+					this.setState({
+						showSynonymModal: false,
+						showError: true,
+						errorMessage: 'Unable to update Synonyms',
+					});
+				}
 			});
 	};
 
@@ -1090,6 +1152,7 @@ class Mappings extends Component {
 					onOk={this.updateSynonyms}
 					title="Add Synonym"
 					okText={this.state.synonyms ? 'Save Synonym' : 'Add Synonym'}
+					okButtonProps={{loading: this.state.synonymsLoading}}
 					onCancel={this.handleSynonymModal}
 				>
 					<TextArea
