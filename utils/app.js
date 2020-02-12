@@ -234,3 +234,128 @@ export const updatePrivateRegistry = payload => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getRules = () => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve([
+				{
+					id: 'random_id',
+					name: 'Rule Name',
+					description: 'This is the description for Rule Name',
+					enabled: true,
+					order: 1,
+					createdAt: 1234566,
+					updatedAt: 1234566,
+					trigger: {
+						type: 'filter',
+						expression: 'category matches "cool"',
+						timeframe: ['start_time', 'end_time'],
+					},
+					actions: [
+						{ replace_search_term: 'string' },
+						{
+							add_filter: {
+								fieldName1: 'value',
+								fieldName2: 'value2',
+							},
+						},
+						{
+							promote_result: [
+								{
+									doc: {
+										id: '1',
+									},
+									position: 1,
+								},
+
+								{
+									doc: {
+										id: '2',
+									},
+									position: 2,
+								},
+							],
+						},
+						{ hide_result: ['123', '456'] },
+						{
+							custom_data: {
+								banner: {
+									promote: 'Cool',
+								},
+							},
+						},
+
+						{ function: 'fid' },
+					],
+				},
+				{
+					id: 'random_id_1',
+					name: 'Name me RUle',
+					description: 'This is the description for Rule Name',
+					enabled: true,
+					order: 2,
+					createdAt: 1234566,
+					updatedAt: 1234566,
+					trigger: {
+						type: 'filter',
+						expression: 'category matches "cool"',
+						timeframe: ['start_time', 'end_time'],
+					},
+					actions: [
+						{ replace_search_term: 'string' },
+						{
+							add_filter: {
+								fieldName1: 'value',
+								fieldName2: 'value2',
+							},
+						},
+						{
+							promote_result: [
+								{
+									doc: {
+										id: '1',
+									},
+									position: 1,
+								},
+
+								{
+									doc: {
+										id: '2',
+									},
+									position: 2,
+								},
+							],
+						},
+						{ hide_result: ['123', '456'] },
+						{
+							custom_data: {
+								banner: {
+									promote: 'Cool',
+								},
+							},
+						},
+
+						{ function: 'fid' },
+					],
+				},
+			]);
+		}, 100);
+	});
+};
+
+export const updateRule = rule => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(rule);
+		}, 200);
+	});
+};
+
+export const deleteRule = rule => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(rule);
+		}, 100);
+	});
+};
