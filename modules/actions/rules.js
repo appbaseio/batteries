@@ -1,6 +1,11 @@
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { getRules as fetchRules, updateRule, deleteRule as removeRule } from '../../utils/app';
+import {
+	getRules as fetchRules,
+	updateRule,
+	deleteRule as removeRule,
+	createRule,
+} from '../../utils/app';
 
 export function getRules() {
 	return dispatch => {
@@ -68,6 +73,19 @@ export function toggleRuleStatus(rule) {
 				dispatch(
 					createAction(AppConstants.APP.RULES.TOGGLE_STATUS_ERROR, { ...rule }, error),
 				),
+			);
+	};
+}
+
+export function addQueryRule(rule) {
+	return dispatch => {
+		dispatch(createAction(AppConstants.APP.RULES.CREATE, { ...rule }));
+		return createRule(rule)
+			.then(data => {
+				dispatch(createAction(AppConstants.APP.RULES.CREATE_SUCCESS, { ...data }, null));
+			})
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.RULES.CREATE_ERROR, null, error)),
 			);
 	};
 }

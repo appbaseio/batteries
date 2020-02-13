@@ -159,6 +159,39 @@ function getAppRules(state = initialAppState, action) {
 				results: updatedResults,
 			};
 		}
+
+		case AppConstants.APP.RULES.CREATE: {
+			return {
+				...state,
+				create: {
+					isLoading: true,
+					error: null,
+				},
+			};
+		}
+
+		case AppConstants.APP.RULES.CREATE_SUCCESS: {
+			return {
+				...state,
+				results: [...state.results, { ...action.payload }],
+				create: {
+					isLoading: false,
+					error: null,
+				},
+			};
+		}
+
+		case AppConstants.APP.RULES.CREATE_ERROR: {
+			return {
+				...state,
+				isCreating: false,
+
+				create: {
+					isLoading: false,
+					error: action.error,
+				},
+			};
+		}
 		default:
 			return state;
 	}
