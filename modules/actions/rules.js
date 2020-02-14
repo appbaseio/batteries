@@ -89,3 +89,20 @@ export function addQueryRule(rule) {
 			);
 	};
 }
+
+export function cloneQueryRule(rule, newRule) {
+	return dispatch => {
+		dispatch(createAction(AppConstants.APP.RULES.CLONE, { ...rule }));
+		return createRule(newRule)
+			.then(data => {
+				dispatch(
+					createAction(AppConstants.APP.RULES.CLONE_SUCCESS, { ...data }, null, {
+						...rule,
+					}),
+				);
+			})
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.RULES.CLONE_ERROR, null, error)),
+			);
+	};
+}

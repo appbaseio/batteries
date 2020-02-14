@@ -192,6 +192,49 @@ function getAppRules(state = initialAppState, action) {
 				},
 			};
 		}
+		case AppConstants.APP.RULES.CLONE: {
+			const updatedResults = state.results.map(item =>
+				item.id === action.payload.id
+					? {
+							...item,
+							isCloning: true,
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.RULES.CLONE_SUCCESS: {
+			const updatedResults = state.results.map(item =>
+				item.id === action.meta.id
+					? {
+							...item,
+							isCloning: false,
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: [...updatedResults, { ...action.payload }],
+			};
+		}
+		case AppConstants.APP.RULES.CLONE_ERROR: {
+			const updatedResults = state.results.map(item =>
+				item.id === action.payload.id
+					? {
+							...item,
+							isCloning: false,
+							cloneError: action.error,
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
 		default:
 			return state;
 	}
