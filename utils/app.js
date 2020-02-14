@@ -249,7 +249,7 @@ export const getRules = () => {
 					updatedAt: 1234566,
 					trigger: {
 						type: 'filter',
-						expression: 'category matches "cool"',
+						expression: '"*" in $index and $query is "d" and $filter.acd matches "ad"',
 						timeframe: ['start_time', 'end_time'],
 					},
 					actions: [
@@ -275,11 +275,7 @@ export const getRules = () => {
 						{ type: 'hide_result', data: ['123', '456'] },
 						{
 							type: 'custom_data',
-							data: {
-								banner: {
-									promote: 'Cool',
-								},
-							},
+							data: '{"a": "b"}',
 						},
 
 						{ type: 'function', data: 'fid' },

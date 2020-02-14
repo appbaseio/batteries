@@ -160,6 +160,59 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 
+		case AppConstants.APP.RULES.UPDATE_RULE: {
+			const updatedResults = state.results.map(item =>
+				item.id === action.payload.id
+					? {
+							...item,
+							update: {
+								isLoading: true,
+								error: null,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.RULES.UPDATE_RULE_SUCCESS: {
+			const updatedResults = state.results.map(item =>
+				item.id === action.payload.id
+					? {
+							...item,
+							...action.payload,
+							update: {
+								isLoading: false,
+								error: null,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.RULES.UPDATE_RULE_ERROR: {
+			const updatedResults = state.results.map(item =>
+				item.id === action.payload.id
+					? {
+							...item,
+							update: {
+								isLoading: false,
+								error: action.error,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+
 		case AppConstants.APP.RULES.CREATE: {
 			return {
 				...state,

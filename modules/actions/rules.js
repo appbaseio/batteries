@@ -89,3 +89,19 @@ export function addQueryRule(rule) {
 			);
 	};
 }
+
+
+export function putRule(rule) {
+	return dispatch => {
+		dispatch(createAction(AppConstants.APP.RULES.UPDATE_RULE, { ...rule }));
+		return updateRule(rule)
+			.then(() => {
+				dispatch(
+					createAction(AppConstants.APP.RULES.UPDATE_RULE_SUCCESS, { ...rule }, null),
+				);
+			})
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.RULES.UPDATE_RULE_ERROR, { ...rule }, error)),
+			);
+	};
+}
