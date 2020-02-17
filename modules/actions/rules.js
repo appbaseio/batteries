@@ -81,9 +81,9 @@ export function addQueryRule(rule) {
 	return dispatch => {
 		dispatch(createAction(AppConstants.APP.RULES.CREATE, { ...rule }));
 		return createRule(rule)
-			.then(data => {
-				dispatch(createAction(AppConstants.APP.RULES.CREATE_SUCCESS, { ...data }, null));
-			})
+			.then(data =>
+				dispatch(createAction(AppConstants.APP.RULES.CREATE_SUCCESS, { ...data }, null)),
+			)
 			.catch(error =>
 				dispatch(createAction(AppConstants.APP.RULES.CREATE_ERROR, null, error)),
 			);
@@ -111,11 +111,11 @@ export function putRule(rule) {
 	return dispatch => {
 		dispatch(createAction(AppConstants.APP.RULES.UPDATE_RULE, { ...rule }));
 		return updateRule(rule)
-			.then(() => {
+			.then(() =>
 				dispatch(
 					createAction(AppConstants.APP.RULES.UPDATE_RULE_SUCCESS, { ...rule }, null),
-				);
-			})
+				),
+			)
 			.catch(error =>
 				dispatch(
 					createAction(AppConstants.APP.RULES.UPDATE_RULE_ERROR, { ...rule }, error),
