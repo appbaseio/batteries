@@ -236,76 +236,41 @@ export const updatePrivateRegistry = payload => {
 };
 
 export const getRules = () => {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve([
-				{
-					id: 'random_id',
-					name: 'Rule Name',
-					description: 'This is the description for Rule Name',
-					enabled: true,
-					order: 1,
-					createdAt: 1234566,
-					updatedAt: 1234566,
-					trigger: {
-						type: 'filter',
-						expression: '"*" in $index and $query is "d" and $filter.acd matches "ad"',
-						timeframe: ['start_time', 'end_time'],
-					},
-					actions: [
-						{ type: 'replace_search_term', data: 'string' },
-						{
-							type: 'promote_result',
-							data: [
-								{
-									doc: {
-										id: '1',
-									},
-									position: 1,
-								},
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
 
-								{
-									doc: {
-										id: '2',
-									},
-									position: 2,
-								},
-							],
-						},
-						{ type: 'hide_result', data: ['123', '456'] },
-						{
-							type: 'custom_data',
-							data: '{"a": "b"}',
-						},
-
-						{ type: 'function', data: 'fid' },
-					],
-				},
-			]);
-		}, 100);
+	return doGet(`${ACC_API}/_rules`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };
 
 export const updateRule = rule => {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve(rule);
-		}, 200);
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	const { id, ...payload } = rule;
+	return doPut(`${ACC_API}/_rule/${id}`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };
 
-export const deleteRule = rule => {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve(rule);
-		}, 100);
+export const deleteRule = ruleId => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_rule/${ruleId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };
 
 export const createRule = rule => {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve({ ...rule, id: Date.now().toString(), order: 3 });
-		}, 500);
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doPost(`${ACC_API}/_rule`, rule, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };
