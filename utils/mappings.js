@@ -24,13 +24,13 @@ export function getMappings(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				const types = Object.keys(data[appName].mappings).filter(
 					type => !REMOVED_KEYS.includes(type),
 				);
 
 				let mappings = {};
-				types.forEach((type) => {
+				types.forEach(type => {
 					mappings = {
 						...mappings,
 						[type]: data[appName].mappings[type],
@@ -38,7 +38,7 @@ export function getMappings(appName, credentials, url = getURL()) {
 				});
 				resolve(mappings);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -58,10 +58,10 @@ export function putMapping(appName, credentials, mappings, type, version, url = 
 				}),
 			})
 				.then(res => res.json())
-				.then((data) => {
+				.then(data => {
 					resolve(data);
 				})
-				.catch((e) => {
+				.catch(e => {
 					reject(e);
 				});
 		});
@@ -78,10 +78,10 @@ export function putMapping(appName, credentials, mappings, type, version, url = 
 			}),
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -97,10 +97,10 @@ export function getSettings(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -116,10 +116,10 @@ export function getNodes(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -135,10 +135,10 @@ export function closeIndex(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -178,10 +178,10 @@ export function updateSynonyms(appName, credentials, url = getURL(), synonymsArr
 			}),
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -197,10 +197,10 @@ export function openIndex(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -252,14 +252,14 @@ export function reIndex(
 			},
 			body: JSON.stringify(body),
 		})
-			.then((res) => {
+			.then(res => {
 				if (res.status === 504) {
 					resolve('~100');
 				}
 				return res;
 			})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				if (data.error) {
 					reject(data.error);
 				}
@@ -268,7 +268,7 @@ export function reIndex(
 				}
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -276,12 +276,11 @@ export function reIndex(
 
 export function hasAggs(field) {
 	if (!field) return false;
-
 	let hasAggsFlag = false;
-	Object.keys(field).forEach((subField) => {
+	Object.keys(field).forEach(subField => {
 		if (
-			field[subField].type === 'keyword'
-			|| (field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
+			field[subField].type === 'keyword' ||
+			(field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
 		) {
 			hasAggsFlag = true;
 		}
@@ -297,7 +296,7 @@ export function transformToES5(mapping) {
 	// eslint-disable-next-line
 	let _mapping = { ...mapping };
 
-	Object.keys(_mapping).every((key) => {
+	Object.keys(_mapping).every(key => {
 		if (PRESERVED_KEYS.includes(key)) return false;
 
 		if (_mapping[key].type === 'string') {
@@ -387,16 +386,13 @@ export function updateMappingES7(mapping, field, type, usecase) {
  * @returns {{ [key: string]: Array<string> | Array<string> }}
  * For v7 apps it'll return an array of fields instead of an object
  */
-export function traverseMapping(
-	mappings = {},
-	returnOnlyLeafFields = false,
-) {
+export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 	const fieldObject = {};
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
 		const setFields = (mp, prefix = '') => {
 			if (mp.properties) {
-				Object.keys(mp.properties).forEach((mpp) => {
+				Object.keys(mp.properties).forEach(mpp => {
 					if (!returnOnlyLeafFields) {
 						fieldObject[type].push(`${prefix}${mpp}`);
 					}
@@ -422,7 +418,7 @@ export function traverseMapping(
 
 function getFieldsTree(mappings = {}, prefix = null) {
 	let tree = {};
-	Object.keys(mappings).forEach((key) => {
+	Object.keys(mappings).forEach(key => {
 		if (mappings[key].properties) {
 			tree = {
 				...tree,
@@ -460,7 +456,7 @@ export function getMappingsTree(mappings = {}, version) {
 			};
 		}
 	} else {
-		Object.keys(mappings).forEach((key) => {
+		Object.keys(mappings).forEach(key => {
 			if (mappings[key].properties) {
 				tree = {
 					...tree,

@@ -234,3 +234,48 @@ export const updatePrivateRegistry = payload => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getSearchSettings = name => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve({
+				search: {
+					dataField: [
+						'original_title',
+						'original_title.autosuggest',
+						'original_title.english',
+						'original_title.search',
+					],
+					highlightField: ['original_title'],
+				},
+			});
+		}, 1000);
+	});
+};
+
+export const getAggsSettings = name => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve({
+				filter: [
+					{
+						dataField: 'genres_data.keyword',
+					},
+				],
+			});
+		}, 1000);
+	});
+};
+
+export const getResultSettings = name => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve({
+				result: {
+					dataField: '_score',
+					pagination: true,
+				},
+			});
+		}, 1000);
+	});
+};

@@ -7,3 +7,4 @@ export * from './publicKey';
 export * from './filter';
 export * from './suggestions';
 export * from './functions';
+export * from './settings';
