@@ -1,6 +1,9 @@
+import { get } from 'lodash';
+
 import mappingUsecase from './mappingUsecase';
-import analyzerSettings from './analyzerSettings';
+import analyzerSettings, { synonymsSettings } from './analyzerSettings';
 import { getURL } from '../../constants/config';
+import { deleteObjectFromPath } from '.';
 
 const PRESERVED_KEYS = ['meta'];
 export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
@@ -152,30 +155,7 @@ export function updateSynonyms(appName, credentials, url = getURL(), synonymsArr
 				...getAuthHeaders(credentials),
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({
-				analysis: {
-					filter: {
-						...analyzerSettings.analysis.filter,
-						synonyms_filter: {
-							type: 'synonym',
-							synonyms: synonymsArray,
-						},
-					},
-					analyzer: {
-						...analyzerSettings.analysis.analyzer,
-						english_synonyms_analyzer: {
-							filter: ['lowercase', 'synonyms_filter', 'asciifolding', 'porter_stem'],
-							tokenizer: 'standard',
-							type: 'custom',
-						},
-						english_analyzer: {
-							filter: ['lowercase', 'asciifolding', 'porter_stem'],
-							tokenizer: 'standard',
-							type: 'custom',
-						},
-					},
-				},
-			}),
+			body: JSON.stringify(synonymsSettings(synonymsArray)),
 		})
 			.then(res => res.json())
 			.then(data => {
@@ -468,3 +448,306 @@ export function getMappingsTree(mappings = {}, version) {
 
 	return tree;
 }
+
+export const applyFieldAnalyzers = properties => {
+	return Object.keys(properties).reduce((agg, key) => {
+		if (properties[key].properties) {
+			return {
+				...agg,
+				[key]: {
+					...properties[key],
+					properties: applyFieldAnalyzers(properties[key].properties),
+				},
+			};
+		}
+		const data = properties[key];
+		if (data && data.fields && data.fields.english) {
+			data.fields.english.search_analyzer = 'english_synonyms_analyzer';
+			data.fields.english.analyzer = 'english_analyzer';
+		} else if (data && data.fields) {
+			data.fields.english = {
+				type: 'text',
+				index: 'true',
+				analyzer: 'english_analyzer',
+				search_analyzer: 'english_synonyms_analyzer',
+			};
+		}
+		return { ...agg, [key]: data };
+	}, {});
+};
+
+export const updateMappingsProperties = ({ mapping: originalMapping, types, esVersion }) => {
+	const mapping = JSON.parse(JSON.stringify(originalMapping));
+	let isMappingsPresent = false;
+	if (+esVersion >= 7) {
+		isMappingsPresent = mapping && mapping.properties;
+	} else {
+		isMappingsPresent = mapping && types[0] && mapping[types[0]];
+	}
+	if (isMappingsPresent) {
+		if (+esVersion >= 7) {
+			const updatedProperties = applyFieldAnalyzers(
+				JSON.parse(JSON.stringify(mapping.properties)),
+			);
+			mapping.properties = {
+				...mapping.properties,
+				...updatedProperties,
+			};
+		} else {
+			return types.reduce((agg, type) => {
+				return {
+					...agg,
+					[type]: mapping[type].properties
+						? {
+								properties: applyFieldAnalyzers(mapping[type].properties),
+						  }
+						: mapping[type],
+				};
+			}, {});
+		}
+	}
+	return mapping;
+};
+
+export const getUpdatedSettings = ({ settings, shards, replicas }) => {
+	const updatedSettings = {
+		index: {
+			number_of_shards: shards,
+			number_of_replicas: replicas,
+		},
+	};
+	if (settings && settings.index && settings.index.analysis) {
+		const {
+			index: {
+				analysis: { analyzer: currentAnalyzer, filter: currentFilter },
+			},
+		} = settings;
+		const {
+			analysis: { analyzer, filter },
+		} = analyzerSettings;
+
+		Object.keys(analyzer).forEach(key => {
+			if (!currentAnalyzer[key]) {
+				currentAnalyzer[key] = analyzer[key];
+			}
+		});
+
+		Object.keys(filter).forEach(key => {
+			if (!currentFilter[key]) {
+				currentFilter[key] = filter[key];
+			}
+		});
+
+		updatedSettings.index.analysis = settings.index.analysis;
+
+		return updatedSettings;
+	}
+	updatedSettings.index.analysis = analyzerSettings.analysis;
+	return updatedSettings;
+};
+
+export const applySynonyms = async ({
+	appName,
+	credentials,
+	url,
+	synonyms,
+	mapping,
+	types,
+	esVersion,
+}) => {
+	try {
+		const closeResponse = await closeIndex(appName, credentials, url);
+		if (
+			closeResponse &&
+			closeResponse.Message &&
+			closeResponse.Message.includes('is not allowed by Amazon Elasticsearch Service.')
+		) {
+			throw new Error('AWS');
+		}
+		const synonymResponse = await updateSynonyms(appName, credentials, url, synonyms);
+
+		if (synonymResponse.acknowledged) {
+			// If synonyms request is successful than update mapping via PUT request
+			const indexResponse = await openIndex(appName, credentials, url);
+
+			if (indexResponse.acknowledged) {
+				const updatedMappings = updateMappingsProperties({
+					esVersion,
+					types,
+					mapping,
+				});
+				let mappings = {};
+				if (+esVersion >= 7) {
+					mappings = updatedMappings;
+				} else {
+					mappings = updatedMappings[types[0]];
+				}
+				const mappingResponse = await putMapping(
+					appName,
+					credentials,
+					mappings,
+					types[0],
+					esVersion,
+				);
+				if (mappingResponse.acknowledged) {
+					return 'Updated';
+				}
+			} else {
+				throw new Error('');
+			}
+		} else {
+			throw new Error('Unable to update Synonyms');
+		}
+	} catch (e) {
+		await openIndex(appName, credentials, url);
+		console.log(e);
+		throw e;
+	}
+
+	return null;
+};
+
+export const isEnglishAnalyzerPresent = settings => {
+	const analyzer = get(settings, 'index.analysis.analyzer.english_synonyms_analyzer', null);
+	return !!analyzer;
+};
+
+export const getUsecase = fields => {
+	const hasAggsFlag = hasAggs(fields);
+	let hasSearchFlag = 0;
+	if (fields.search) hasSearchFlag = 1;
+
+	if (hasAggsFlag && hasSearchFlag) return 'searchaggs';
+	if (!hasAggsFlag && hasSearchFlag) return 'search';
+	if (hasAggsFlag && !hasSearchFlag) return 'aggs';
+	return 'none';
+};
+
+export const fetchSettings = ({ appName, credentials }) => {
+	return getSettings(appName, credentials).then(data => {
+		const shards = get(data[appName], 'settings.index.number_of_shards');
+		const replicas = get(data[appName], 'settings.index.number_of_replicas');
+		const synonyms = get(
+			data[appName],
+			'settings.index.analysis.filter.synonyms_filter.synonyms',
+			[],
+		).join('\n');
+
+		return { shards, replicas, synonyms };
+	});
+};
+
+export const deleteMappingField = ({
+	esVersion,
+	removeType,
+	types,
+	_deletedPaths,
+	_mapping,
+	path,
+}) => {
+	const mapping = JSON.parse(JSON.stringify(_mapping));
+
+	let activeType = types;
+	let deletedPaths = [..._deletedPaths];
+
+	if (esVersion < 7) {
+		let fields = path.split('.');
+		if (fields[fields.length - 1] === 'properties') {
+			// when deleting an object
+			fields = fields.slice(0, -1);
+		}
+
+		if (removeType) {
+			const type = fields[0];
+			// remove from active types
+			activeType = activeType.filter(field => field !== type);
+
+			// add all the fields to excludeFields
+			const deletedTypesPath = Object.keys(_mapping[type]).map(
+				property => `${type}.properties.${property}`,
+			);
+			deletedPaths = [...deletedPaths, ...deletedTypesPath];
+		} else {
+			deletedPaths = [..._deletedPaths, path];
+		}
+
+		fields.reduce((acc, val, index) => {
+			if (index === fields.length - 1) {
+				delete acc[val];
+				return true;
+			}
+			return acc[val];
+		}, mapping);
+	} else if (removeType) {
+		const field = path
+			.split('.')
+			.slice(1, path.split('.').length - 1)
+			.pop();
+
+		if (field) {
+			const pathToDelete = path
+				.split('.')
+				.slice(1, path.split('.').length - 1)
+				.join('.');
+			deletedPaths = [...deletedPaths, pathToDelete];
+			deleteObjectFromPath(mapping, pathToDelete);
+		} else {
+			const pathsToDelete = Object.keys(mapping.properties);
+			deletedPaths = pathsToDelete;
+			delete mapping.properties;
+		}
+	} else {
+		const pathToDelete = path
+			.split('.')
+			.slice(1)
+			.join('.');
+		deletedPaths = [...deletedPaths, pathToDelete];
+		deleteObjectFromPath(
+			mapping,
+			path
+				.split('.')
+				.slice(1)
+				.join('.'),
+		);
+	}
+
+	return {
+		deletedPaths,
+		mapping,
+		activeType,
+	};
+};
+
+export const addMappingField = ({ _mapping, name, usecase, type, esVersion }) => {
+	const mapping = JSON.parse(JSON.stringify(_mapping));
+	const fields = name.split('.');
+	let newUsecase = {};
+
+	if (usecase) {
+		newUsecase = mappingUsecase[usecase];
+	}
+
+	if (+esVersion >= 7) {
+		const fieldChanged = name.split('.')[1];
+		mapping.properties[fieldChanged] = {
+			type,
+			...newUsecase,
+		};
+	} else {
+		fields.reduce((acc, val, index) => {
+			if (index === fields.length - 1) {
+				acc[val] = {
+					type,
+					...newUsecase,
+				};
+				return true;
+			}
+			if (!acc[val] || !acc[val].properties) {
+				acc[val] = { properties: {} };
+			}
+			return acc[val].properties;
+		}, mapping);
+	}
+
+	return { mapping };
+};
