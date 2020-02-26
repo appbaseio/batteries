@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { string, object, func, bool } from 'prop-types';
-import { Tooltip, Icon, Card, Button, Affix, message } from 'antd';
+import { Tooltip, Icon, Button, Affix, message } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
@@ -29,7 +29,7 @@ import conversionMap from '../../utils/conversionMap';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import { setCurrentApp, getAppMappings as getMappings, clearMappings } from '../../modules/actions';
 
-import { card, cardTitle, Header, footerStyles } from './styles';
+import { Header, footerStyles } from './styles';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 import { getURL } from '../../../constants/config';
@@ -39,6 +39,7 @@ import Shards from './components/Shards';
 import FeedbackModal from './components/FeedbackModal';
 import { synonymsSettings } from '../../utils/analyzerSettings';
 import MappingView from './components/MappingView';
+import MappingsContainer from './components/MappingsContainer';
 
 const fieldNameMessage = () => (
 	<div style={{ maxWidth: 220 }}>
@@ -162,16 +163,24 @@ class Mappings extends Component {
 
 	setMapping = (field, type, usecase) => {
 		const { mapping: currentMapping, esVersion } = this.state;
+		const { onChange } = this.props;
 		let mapping = null;
 		if (+esVersion >= 7) {
 			mapping = updateMappingES7(currentMapping, field, type, usecase);
 		} else {
 			mapping = updateMapping(currentMapping, field, type, usecase, esVersion);
 		}
-		this.setState({
-			mapping,
-			dirty: true,
-		});
+		this.setState(
+			{
+				mapping,
+				dirty: true,
+			},
+			() => {
+				if (onChange) {
+					onChange(mapping);
+				}
+			},
+		);
 	};
 
 	handleSlider = (name, value) => {
@@ -241,12 +250,20 @@ class Mappings extends Component {
 	};
 
 	cancelChanges = () => {
-		this.setState({
-			mapping: this.originalMapping,
-			dirty: false,
-			deletedPaths: [],
-			activeType: getTypesFromMapping(this.originalMapping),
-		});
+		const { onChange } = this.props;
+		this.setState(
+			{
+				mapping: this.originalMapping,
+				dirty: false,
+				deletedPaths: [],
+				activeType: getTypesFromMapping(this.originalMapping),
+			},
+			() => {
+				if (onChange) {
+					onChange(this.originalMapping);
+				}
+			},
+		);
 	};
 
 	hideErrorModal = () => {
@@ -413,6 +430,14 @@ class Mappings extends Component {
 			renderLoader,
 			renderError,
 			renderMappingError,
+			showCardWrapper,
+			hideSearchType,
+			hideAggsType,
+			hideNoType,
+			hideDataType,
+			hideDelete,
+			column,
+			renderFooter,
 		} = this.props;
 
 		const {
@@ -422,6 +447,7 @@ class Mappings extends Component {
 			showError,
 			errorLength,
 			errorMessage,
+			dirty,
 		} = this.state;
 		if (loadingError) {
 			return <p style={{ padding: 20 }}>{loadingError}</p>;
@@ -483,33 +509,16 @@ class Mappings extends Component {
 						synonymsLoading={this.state.synonymsLoading}
 					/>
 				) : null}
-				<Card
-					hoverable
-					title={
-						showMappingInfo ? (
-							<div className={cardTitle}>
-								<div>
-									<h4>Manage Mappings</h4>
-									<p>Add new fields or change the types of existing ones.</p>
-								</div>
-								<Button
-									onClick={() => this.handleModal('showModal')}
-									type="primary"
-								>
-									Add New Field
-								</Button>
-							</div>
-						) : null
-					}
-					bodyStyle={{ padding: 0 }}
-					className={card}
+				<MappingsContainer
+					showCardWrapper={showCardWrapper}
+					showMappingInfo={showMappingInfo}
 				>
-					<div style={{ padding: '5px 20px' }}>
+					<div style={{ padding: showCardWrapper ? '5px 20px' : 0 }}>
 						<Header>
 							<span>
 								Field Name
 								<Tooltip title={fieldNameMessage}>
-									<span>
+									<span style={{ marginLeft: 5 }}>
 										<Icon type="info-circle" />
 									</span>
 								</Tooltip>
@@ -518,12 +527,13 @@ class Mappings extends Component {
 								<span className="col">
 									Use case
 									<Tooltip title={usecaseMessage}>
-										<span>
+										<span style={{ marginLeft: 5 }}>
 											<Icon type="info-circle" />
 										</span>
 									</Tooltip>
 								</span>
-								<span className="col">Data Type</span>
+								{hideDataType ? null : <span className="col">Data Type</span>}
+								{column ? column.title : null}
 							</div>
 						</Header>
 						<MappingView
@@ -534,10 +544,16 @@ class Mappings extends Component {
 							esVersion={this.state.esVersion}
 							setMapping={this.setMapping}
 							usecases={this.usecases}
+							hideAggsType={hideAggsType}
+							hideDataType={hideDataType}
+							hideNoType={hideNoType}
+							columnRender={column && column.render}
+							hideDelete={hideDelete}
+							hideSearchType={hideSearchType}
 							deletePath={this.deletePath}
 						/>
 					</div>
-					{this.state.dirty ? (
+					{dirty && !renderFooter ? (
 						<Affix offsetBottom={0}>
 							<div className={footerStyles}>
 								<Button
@@ -554,7 +570,15 @@ class Mappings extends Component {
 							</div>
 						</Affix>
 					) : null}
-				</Card>
+
+					{renderFooter
+						? renderFooter({
+								cancelChanges: this.cancelChanges,
+								isDirty: dirty,
+								confirmChanges: this.reIndex,
+						  })
+						: null}
+				</MappingsContainer>
 				<NewFieldModal
 					types={Object.keys(this.state.mapping).filter(
 						type => !REMOVED_KEYS.includes(type),
@@ -565,11 +589,7 @@ class Mappings extends Component {
 					esVersion={this.state.esVersion}
 					deletedPaths={this.state.deletedPaths}
 				/>
-				{renderLoader ? (
-					renderLoader()
-				) : (
-					<Loader show={isLoading} message="Re-indexing your data... Please wait!" />
-				)}
+				<Loader show={isLoading} message="Re-indexing your data... Please wait!" />
 				{renderError ? (
 					renderError({
 						showError,
@@ -613,6 +633,14 @@ Mappings.propTypes = {
 	showSynonyms: bool,
 	showMappingInfo: bool,
 	showCardWrapper: bool,
+	hideSearchType: bool,
+	hideAggsType: bool,
+	hideNoType: bool,
+	hideDelete: bool,
+	hideDataType: bool,
+	column: object,
+	onChange: func,
+	renderFooter: func,
 };
 
 Mappings.defaultProps = {
@@ -626,6 +654,14 @@ Mappings.defaultProps = {
 	showSynonyms: true,
 	showMappingInfo: true,
 	showCardWrapper: true,
+	hideSearchType: false,
+	hideAggsType: false,
+	hideNoType: false,
+	hideDataType: false,
+	hideDelete: false,
+	column: null,
+	onChange: null,
+	renderFooter: null,
 };
 
 const mapStateToProps = state => {
@@ -649,4 +685,4 @@ const mapDispatchToProps = dispatch => ({
 	clearMappings: appName => dispatch(clearMappings(appName)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Mappings);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(Mappings);
