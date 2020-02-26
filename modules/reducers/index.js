@@ -207,4 +207,14 @@ export default {
 		AppConstants.ACCOUNT.PAYMENT.UPDATE_SUCCESS,
 		AppConstants.ACCOUNT.PAYMENT.UPDATE_ERROR,
 	),
+	$getClusterData: createRequestReducer(
+		AppConstants.APP.GET_CLUSTER_DATA,
+		AppConstants.APP.GET_CLUSTER_DATA_SUCCESS,
+		AppConstants.APP.GET_CLUSTER_DATA_ERROR,
+	),
+	$deleteClusterData: createRequestReducer(
+		AppConstants.APP.DELETE_CLUSTER,
+		AppConstants.APP.DELETE_CLUSTER_SUCCESS,
+		AppConstants.APP.DELETE_CLUSTER_ERROR,
+	),
 };
