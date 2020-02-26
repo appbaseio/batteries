@@ -13,44 +13,21 @@ const appRequestDistribution = state => get(state, '$getAppRequestDistribution.r
 const appAnalyticsSummary = state => get(state, '$getAppAnalyticsSummary.results');
 const appPublicKey = state => get(state, '$getAppPublicKey.results');
 const appFunctions = state => get(state, '$getAppFunctions.results');
+const appRules = state => get(state, '$getAppRules.results');
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
-const getRawMappingsByAppName = createSelector(
-	rawMappings,
-	appName,
-	getCollectionByKey,
-);
+const getRawMappingsByAppName = createSelector(rawMappings, appName, getCollectionByKey);
 const getTraversedMappingsByAppName = createSelector(
 	traversedMappings,
 	appName,
 	getCollectionByKey,
 );
-const getAppPlanByName = createSelector(
-	appPlan,
-	appName,
-	collection => collection,
-);
-const getAppAnalyticsByName = createSelector(
-	appAnalytics,
-	appName,
-	getCollectionByKey,
-);
-const getAppPermissionsByName = createSelector(
-	appPermission,
-	appName,
-	getCollectionByKey,
-);
-const getAppSearchLatencyByName = createSelector(
-	appSearchLatency,
-	appName,
-	getCollectionByKey,
-);
-const getAppGeoDistributionByName = createSelector(
-	appGeoDistribution,
-	appName,
-	getCollectionByKey,
-);
+const getAppPlanByName = createSelector(appPlan, appName, collection => collection);
+const getAppAnalyticsByName = createSelector(appAnalytics, appName, getCollectionByKey);
+const getAppPermissionsByName = createSelector(appPermission, appName, getCollectionByKey);
+const getAppSearchLatencyByName = createSelector(appSearchLatency, appName, getCollectionByKey);
+const getAppGeoDistributionByName = createSelector(appGeoDistribution, appName, getCollectionByKey);
 const getAppAnalyticsSummaryByName = createSelector(
 	appAnalyticsSummary,
 	appName,
@@ -61,12 +38,9 @@ const getAppRequestDistributionByName = createSelector(
 	appName,
 	getCollectionByKey,
 );
-const getAppPublicKey = createSelector(
-	appPublicKey,
-	appName,
-	getCollectionByKey,
-);
+const getAppPublicKey = createSelector(appPublicKey, appName, getCollectionByKey);
 const getAppFunctions = createSelector(appFunctions, appName, getCollectionByKey);
+const getAppRules = createSelector(appRules, appName, getCollectionByKey);
 export {
 	getRawMappingsByAppName,
 	getTraversedMappingsByAppName,
@@ -79,4 +53,5 @@ export {
 	getAppPlanByName,
 	getAppPublicKey,
 	getAppFunctions,
+	getAppRules,
 };
