@@ -235,6 +235,46 @@ export const updatePrivateRegistry = payload => {
 	});
 };
 
+export const getRules = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_rules`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const updateRule = rule => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	const { id, ...payload } = rule;
+	return doPut(`${ACC_API}/_rule/${id}`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const deleteRule = ruleId => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_rule/${ruleId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const createRule = rule => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doPost(`${ACC_API}/_rule`, rule, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
 export const getSearchSettings = name => {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
