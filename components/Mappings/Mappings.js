@@ -403,62 +403,103 @@ class Mappings extends Component {
 	};
 
 	render() {
-		if (this.props.loadingError) {
-			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
+		const {
+			loadingError,
+			isFetchingMapping,
+			showShards,
+			showReplicas,
+			showSynonyms,
+			showMappingInfo,
+			renderLoader,
+			renderError,
+			renderMappingError,
+		} = this.props;
+
+		const {
+			mapping,
+			isLoading,
+			mappingsError,
+			showError,
+			errorLength,
+			errorMessage,
+		} = this.state;
+		if (loadingError) {
+			return <p style={{ padding: 20 }}>{loadingError}</p>;
 		}
-		if ((this.props.isFetchingMapping || this.state.isLoading) && !this.state.mapping) {
+		if ((isFetchingMapping || isLoading) && !mapping) {
+			if (renderLoader) {
+				return renderLoader();
+			}
 			return <Loader show message="Fetching mappings... Please wait!" />;
 		}
-		if (this.state.mappingsError) {
+		if (mappingsError) {
+			if (renderMappingError) {
+				return renderMappingError({
+					showError,
+					error: mappingsError,
+				});
+			}
 			return (
 				<ErrorModal
-					show={this.state.showError}
+					show={showError}
 					message="Some error occured while fetching the mappings"
-					error={JSON.stringify(this.state.mappingsError, null, 2)}
+					error={JSON.stringify(mappingsError, null, 2)}
 					onClose={this.hideErrorModal}
 				/>
 			);
 		}
-		if (!this.state.mapping) return null;
+		if (!mapping) return null;
 		return (
 			<React.Fragment>
-				<Shards
-					handleSlider={this.handleSlider}
-					updateShards={this.updateShards}
-					handleModal={this.handleModal}
-					shardsModal={this.state.shardsModal}
-					shards={this.state.shards}
-					allocated_shards={this.state.allocated_shards}
-				/>
-				<Replicas
-					handleSlider={this.handleSlider}
-					updateReplicas={this.updateReplicas}
-					handleModal={this.handleModal}
-					replicasModal={this.state.replicasModal}
-					totalNodes={this.state.totalNodes}
-					replicas={this.state.replicas}
-					allocated_replicas={this.state.allocated_replicas}
-				/>
-				<Synonyms
-					synonyms={this.state.synonyms}
-					handleModal={this.handleModal}
-					showSynonymModal={this.state.showSynonymModal}
-					handleChange={this.handleChange}
-					updateSynonyms={this.updateSynonyms}
-					synonymsLoading={this.state.synonymsLoading}
-				/>
+				{showShards ? (
+					<Shards
+						handleSlider={this.handleSlider}
+						updateShards={this.updateShards}
+						handleModal={this.handleModal}
+						shardsModal={this.state.shardsModal}
+						shards={this.state.shards}
+						allocated_shards={this.state.allocated_shards}
+					/>
+				) : null}
+
+				{showReplicas ? (
+					<Replicas
+						handleSlider={this.handleSlider}
+						updateReplicas={this.updateReplicas}
+						handleModal={this.handleModal}
+						replicasModal={this.state.replicasModal}
+						totalNodes={this.state.totalNodes}
+						replicas={this.state.replicas}
+						allocated_replicas={this.state.allocated_replicas}
+					/>
+				) : null}
+				{showSynonyms ? (
+					<Synonyms
+						synonyms={this.state.synonyms}
+						handleModal={this.handleModal}
+						showSynonymModal={this.state.showSynonymModal}
+						handleChange={this.handleChange}
+						updateSynonyms={this.updateSynonyms}
+						synonymsLoading={this.state.synonymsLoading}
+					/>
+				) : null}
 				<Card
 					hoverable
 					title={
-						<div className={cardTitle}>
-							<div>
-								<h4>Manage Mappings</h4>
-								<p>Add new fields or change the types of existing ones.</p>
+						showMappingInfo ? (
+							<div className={cardTitle}>
+								<div>
+									<h4>Manage Mappings</h4>
+									<p>Add new fields or change the types of existing ones.</p>
+								</div>
+								<Button
+									onClick={() => this.handleModal('showModal')}
+									type="primary"
+								>
+									Add New Field
+								</Button>
 							</div>
-							<Button onClick={() => this.handleModal('showModal')} type="primary">
-								Add New Field
-							</Button>
-						</div>
+						) : null
 					}
 					bodyStyle={{ padding: 0 }}
 					className={card}
@@ -524,16 +565,25 @@ class Mappings extends Component {
 					esVersion={this.state.esVersion}
 					deletedPaths={this.state.deletedPaths}
 				/>
-				<Loader
-					show={this.state.isLoading}
-					message="Re-indexing your data... Please wait!"
-				/>
-				<ErrorModal
-					show={this.state.showError}
-					errorLength={this.state.errorLength}
-					error={this.state.errorMessage}
-					onClose={this.hideErrorModal}
-				/>
+				{renderLoader ? (
+					renderLoader()
+				) : (
+					<Loader show={isLoading} message="Re-indexing your data... Please wait!" />
+				)}
+				{renderError ? (
+					renderError({
+						showError,
+						error: errorMessage,
+						length: errorLength,
+					})
+				) : (
+					<ErrorModal
+						show={showError}
+						errorLength={errorLength}
+						error={errorMessage}
+						onClose={this.hideErrorModal}
+					/>
+				)}
 				<FeedbackModal
 					show={this.state.showFeedback}
 					timeTaken={this.state.timeTaken}
@@ -558,6 +608,11 @@ Mappings.propTypes = {
 	getAppMappings: func.isRequired,
 	updateCurrentApp: func.isRequired,
 	isFetchingMapping: bool.isRequired,
+	showReplicas: bool,
+	showShards: bool,
+	showSynonyms: bool,
+	showMappingInfo: bool,
+	showCardWrapper: bool,
 };
 
 Mappings.defaultProps = {
@@ -566,6 +621,11 @@ Mappings.defaultProps = {
 	url: getURL(),
 	appbaseCredentials: null,
 	mapping: null,
+	showReplicas: true,
+	showShards: true,
+	showSynonyms: true,
+	showMappingInfo: true,
+	showCardWrapper: true,
 };
 
 const mapStateToProps = state => {
