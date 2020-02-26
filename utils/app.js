@@ -276,46 +276,28 @@ export const createRule = rule => {
 };
 
 export const getSearchSettings = name => {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve({
-				search: {
-					dataField: [
-						'original_title',
-						'original_title.autosuggest',
-						'original_title.english',
-						'original_title.search',
-					],
-					highlightField: ['original_title'],
-				},
-			});
-		}, 1000);
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_searchsettings/${name}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };
 
-export const getAggsSettings = name => {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve({
-				filter: [
-					{
-						dataField: 'genres_data.keyword',
-					},
-				],
-			});
-		}, 1000);
+export const getDefaultSearchSettings = () => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_searchsettings/_default`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };
 
-export const getResultSettings = name => {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve({
-				result: {
-					dataField: '_score',
-					pagination: true,
-				},
-			});
-		}, 1000);
+export const putSearchSettings = (name, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(`${ACC_API}/_searchsettings/${name}`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
 	});
 };
