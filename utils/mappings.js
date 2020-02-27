@@ -396,6 +396,43 @@ export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 	return fieldObject.properties ? fieldObject.properties : fieldObject;
 }
 
+export function getAggsMappings(mappings = {}, returnOnlyLeafFields = false) {
+	const fieldObject = {};
+	const checkIfPropertyPresent = (m, type) => {
+		fieldObject[type] = [];
+		const setFields = (mp, prefix = '') => {
+			if (mp.properties) {
+				Object.keys(mp.properties).forEach(mpp => {
+					if (!returnOnlyLeafFields) {
+						fieldObject[type].push({
+							address: `${prefix}${mpp}`,
+							type,
+						});
+					}
+					const field = mp.properties[mpp];
+					if (field && field.properties) {
+						setFields(field, `${prefix}${mpp}.`);
+					} else if (returnOnlyLeafFields) {
+						// To return only leaf fields
+						fieldObject[type].push({
+							address: `${prefix}${mpp}`,
+							usecase: field.fields ? getUsecase(field.fields) : 'none',
+							type,
+						});
+					}
+				});
+			}
+		};
+		setFields(m);
+	};
+	if (mappings.properties) {
+		checkIfPropertyPresent(mappings, 'properties');
+	} else {
+		Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
+	}
+	return fieldObject.properties ? fieldObject.properties : fieldObject;
+}
+
 function getFieldsTree(mappings = {}, prefix = null) {
 	let tree = {};
 	Object.keys(mappings).forEach(key => {

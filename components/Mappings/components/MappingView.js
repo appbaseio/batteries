@@ -10,7 +10,6 @@ class MappingView extends React.Component {
 		const { setMapping, usecases } = this.props;
 		if (field.type === 'text') {
 			const selected = field.fields ? getUsecase(field.fields) : 'none';
-
 			return this.renderDropDown({
 				name: 'field-usecase',
 				value: selected,
@@ -86,7 +85,16 @@ class MappingView extends React.Component {
 		const nestedObj = {
 			type: 'nested',
 		};
-		const { deletePath, setMapping } = this.props;
+		const {
+			deletePath,
+			setMapping,
+			hideSearchType,
+			hideAggsType,
+			hideNoType,
+			hideDelete,
+			hideDataType,
+			columnRender,
+		} = this.props;
 
 		if (fields) {
 			return (
@@ -116,14 +124,16 @@ class MappingView extends React.Component {
 							) : null}
 							{type}
 						</span>
-						<a
-							onClick={() => {
-								deletePath(address, true);
-							}}
-						>
-							<Icon type="delete" />
-							Delete
-						</a>
+						{hideDelete ? null : (
+							<a
+								onClick={() => {
+									deletePath(address, true);
+								}}
+							>
+								<Icon type="delete" />
+								Delete
+							</a>
+						)}
 					</h4>
 					{Object.keys(fields).map(field => {
 						if (fields[field].properties) {
@@ -162,6 +172,22 @@ class MappingView extends React.Component {
 							</Popover>
 						);
 
+						const selected =
+							fields[field] && fields[field].type === 'text' && fields[field].fields
+								? getUsecase(fields[field].fields)
+								: 'none';
+
+						if (hideSearchType && selected === 'search') {
+							return null;
+						}
+
+						if (hideAggsType && selected === 'aggs') {
+							return null;
+						}
+
+						if (hideNoType && selected === 'none') {
+							return null;
+						}
 						return (
 							<div key={field} className={item}>
 								<div className={deleteBtn}>
@@ -169,24 +195,48 @@ class MappingView extends React.Component {
 										{mappingInfo}
 										{field}
 									</span>
-									<a
-										onClick={() => {
-											const addressField = `${address}.${field}`;
-											deletePath(addressField);
-										}}
-									>
-										<Icon type="delete" />
-										Delete
-									</a>
+									{hideDelete ? null : (
+										<a
+											onClick={() => {
+												const addressField = `${address}.${field}`;
+												deletePath(addressField);
+											}}
+										>
+											<Icon type="delete" />
+											Delete
+										</a>
+									)}
 								</div>
 								<div className={subItem}>
 									{this.renderUsecase(fields[field], `${address}.${field}`)}
-									{this.renderDropDown({
-										name: `${field}-mapping`,
-										value: fields[field].type,
-										handleChange: e => setMapping(`${address}.${field}`, e.key),
-										options: this.renderOptions(originalFields, fields, field),
-									})}
+									{hideDataType
+										? null
+										: this.renderDropDown({
+												name: `${field}-mapping`,
+												value: fields[field].type,
+												handleChange: e =>
+													setMapping(`${address}.${field}`, e.key),
+												options: this.renderOptions(
+													originalFields,
+													fields,
+													field,
+												),
+										  })}
+									{columnRender
+										? columnRender({
+												fields,
+												address: `${address}.${field}`.includes(
+													'properties.properties',
+												)
+													? `${address}.${field}`.replace(
+															'properties.properties',
+															'properties',
+													  )
+													: `${address}.${field}`,
+												field,
+												originalFields,
+										  })
+										: null}
 								</div>
 							</div>
 						);
