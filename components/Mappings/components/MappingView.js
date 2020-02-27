@@ -225,7 +225,7 @@ class MappingView extends React.Component {
 									{columnRender
 										? columnRender({
 												fields,
-												address: `${address}.${field}`.includes(
+												address: `${address}.${field}`.startsWith(
 													'properties.properties',
 												)
 													? `${address}.${field}`.replace(
