@@ -13,6 +13,7 @@ import {
 import getAppFunction from './getAppFunction';
 import privateRegistries from './getPrivateRegistry';
 import getAppSettings from './getAppSettings';
+import getAppRules from './getAppRules';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -196,6 +197,7 @@ export default {
 		AppConstants.APP.PUBLIC_KEY.GET_ERROR,
 	),
 	$getAppFunctions: getAppFunction,
+	$getAppRules: getAppRules,
 	$getAppRegistries: privateRegistries,
 	$updateAppPublicKey: createRequestReducer(
 		AppConstants.APP.PUBLIC_KEY.UPDATE,

@@ -8,3 +8,4 @@ export * from './filter';
 export * from './suggestions';
 export * from './functions';
 export * from './settings';
+export * from './rules';
