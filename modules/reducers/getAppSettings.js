@@ -33,19 +33,19 @@ function getAppSettings(state = initialState, action) {
 		case AppConstants.APP.SEARCH_SETTINGS.GET_DEFAULT:
 			return {
 				...state,
-				default: { success: false, error: false, isFetching: true },
+				default: { success: false, error: false, loading: true },
 			};
 		case AppConstants.APP.SEARCH_SETTINGS.GET_DEFAULT_SUCCESS:
 			return {
 				...state,
-				default: { success: true, error: false, isFetching: false },
+				default: { success: true, error: false, loading: false },
 				defaultSettings: action.payload,
 			};
 
 		case AppConstants.APP.SEARCH_SETTINGS.GET_DEFAULT_ERROR:
 			return {
 				...state,
-				default: { success: false, error: action.error, isFetching: false },
+				default: { success: false, error: action.error, loading: false },
 			};
 		case AppConstants.APP.SEARCH_SETTINGS.UPDATE:
 			return {
