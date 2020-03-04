@@ -514,7 +514,7 @@ class Mappings extends Component {
 					showMappingInfo={showMappingInfo}
 				>
 					<div style={{ padding: showCardWrapper ? '5px 20px' : 0 }}>
-						<Header>
+						<Header style={{ padding: showCardWrapper ? 0 : '5px 20px' }}>
 							<span>
 								Field Name
 								<Tooltip title={fieldNameMessage}>
