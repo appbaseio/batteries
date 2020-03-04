@@ -301,3 +301,9 @@ export const putSearchSettings = (name, payload) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const deleteSearchSettings = name => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doDelete(`${ACC_API}/_searchsettings/${name}`, { Authorization: `Basic ${authToken}` });
+};

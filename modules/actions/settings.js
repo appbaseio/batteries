@@ -1,8 +1,12 @@
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { getSearchSettings, getDefaultSearchSettings, putSearchSettings } from '../../utils/app';
+import {
+	getSearchSettings,
+	getDefaultSearchSettings,
+	putSearchSettings,
+	deleteSearchSettings,
+} from '../../utils/app';
 
-// eslint-disable-next-line import/prefer-default-export
 export function getSettings(name) {
 	return dispatch => {
 		dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.GET));
@@ -50,6 +54,27 @@ export function putSettings(name, payload) {
 			)
 			.catch(error =>
 				dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.UPDATE_ERROR, null, error)),
+			);
+	};
+}
+
+export function deleteSettings(name) {
+	return dispatch => {
+		dispatch(
+			createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE, null, null, {
+				name,
+			}),
+		);
+		return deleteSearchSettings(name)
+			.then(res =>
+				dispatch(
+					createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE_SUCCESS, res, null, {
+						name,
+					}),
+				),
+			)
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE_ERROR, null, error)),
 			);
 	};
 }

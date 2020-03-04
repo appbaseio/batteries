@@ -68,6 +68,39 @@ function getAppSettings(state = initialState, action) {
 				isUpdating: false,
 				error: action.error,
 			};
+
+		case AppConstants.APP.SEARCH_SETTINGS.DELETE:
+			return {
+				...state,
+				settings: Object.assign({}, state.settings, {
+					[action.meta.name]: {
+						...state.settings[action.meta.name],
+						isDeleting: true,
+					},
+				}),
+			};
+
+		case AppConstants.APP.SEARCH_SETTINGS.DELETE_ERROR:
+			return {
+				...state,
+				settings: Object.assign({}, state.settings, {
+					[action.meta.name]: {
+						...state.settings[action.meta.name],
+						isDeleting: false,
+						deleteError: action.error,
+					},
+				}),
+			};
+		case AppConstants.APP.SEARCH_SETTINGS.DELETE_SUCCESS:
+			return {
+				...state,
+				settings: Object.assign({}, state.settings, {
+					[action.meta.name]: {
+						...state.settings[action.meta.name],
+						isDeleting: false,
+					},
+				}),
+			};
 		default:
 			return state;
 	}

@@ -297,7 +297,7 @@ class Mappings extends Component {
 		});
 	};
 
-	reIndex = async () => {
+	reIndex = async callback => {
 		this.setState({
 			isLoading: true,
 		});
@@ -328,7 +328,10 @@ class Mappings extends Component {
 			});
 
 		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials, appSettings)
-			.then(() => {
+			.then(async () => {
+				if (callback) {
+					await callback();
+				}
 				this.setState({
 					showFeedback: true,
 				});
