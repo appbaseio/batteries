@@ -438,6 +438,7 @@ class Mappings extends Component {
 			hideDelete,
 			column,
 			renderFooter,
+			hidePropertiesType,
 		} = this.props;
 
 		const {
@@ -514,7 +515,7 @@ class Mappings extends Component {
 					showMappingInfo={showMappingInfo}
 				>
 					<div style={{ padding: showCardWrapper ? '5px 20px' : 0 }}>
-						<Header style={{ padding: showCardWrapper ? 0 : '5px 20px' }}>
+						<Header>
 							<span>
 								Field Name
 								<Tooltip title={fieldNameMessage}>
@@ -533,7 +534,7 @@ class Mappings extends Component {
 									</Tooltip>
 								</span>
 								{hideDataType ? null : <span className="col">Data Type</span>}
-								{column ? column.title : null}
+								{column ? <span className="col">{column.title}</span> : null}
 							</div>
 						</Header>
 						<MappingView
@@ -547,6 +548,7 @@ class Mappings extends Component {
 							hideAggsType={hideAggsType}
 							hideDataType={hideDataType}
 							hideNoType={hideNoType}
+							hidePropertiesType={hidePropertiesType}
 							columnRender={column && column.render}
 							hideDelete={hideDelete}
 							hideSearchType={hideSearchType}
@@ -638,6 +640,7 @@ Mappings.propTypes = {
 	hideNoType: bool,
 	hideDelete: bool,
 	hideDataType: bool,
+	hidePropertiesType: bool,
 	column: object,
 	onChange: func,
 	renderFooter: func,
@@ -659,6 +662,7 @@ Mappings.defaultProps = {
 	hideNoType: false,
 	hideDataType: false,
 	hideDelete: false,
+	hidePropertiesType: false,
 	column: null,
 	onChange: null,
 	renderFooter: null,

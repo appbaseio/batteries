@@ -94,8 +94,8 @@ class MappingView extends React.Component {
 			hideDelete,
 			hideDataType,
 			columnRender,
+			hidePropertiesType,
 		} = this.props;
-
 		if (fields) {
 			return (
 				<section key={type} className={row}>
@@ -122,7 +122,9 @@ class MappingView extends React.Component {
 									</div>
 								</Popover>
 							) : null}
-							{type}
+							{address === 'properties.properties' && hidePropertiesType
+								? null
+								: type}
 						</span>
 						{hideDelete ? null : (
 							<a
