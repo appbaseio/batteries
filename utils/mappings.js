@@ -521,7 +521,7 @@ export const updateMappingsProperties = ({
 	mapping: originalMapping,
 	types,
 	esVersion,
-	language = 'english',
+	language = 'universal',
 }) => {
 	const mapping = JSON.parse(JSON.stringify(originalMapping));
 	let isMappingsPresent = false;
