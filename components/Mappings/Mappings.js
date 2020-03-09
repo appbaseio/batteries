@@ -20,7 +20,7 @@ import {
 	updateMappingsProperties,
 	getUpdatedSettings,
 	applySynonyms,
-	isEnglishAnalyzerPresent,
+	getLanguage,
 	fetchSettings,
 	deleteMappingField,
 	addMappingField,
@@ -312,11 +312,13 @@ class Mappings extends Component {
 
 		appSettings = getUpdatedSettings({ settings: appSettings, shards, replicas });
 
-		if (isEnglishAnalyzerPresent(appSettings)) {
+		const language = getLanguage(appSettings);
+		if (language) {
 			mapping = updateMappingsProperties({
 				types: activeType,
 				esVersion,
 				mapping,
+				language,
 			});
 		}
 
