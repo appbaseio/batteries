@@ -201,15 +201,15 @@ export async function getESVersion(appName, credentials) {
 	return data.version.number.split('.')[0];
 }
 
-export function reIndex(
+export function reIndex({
 	mappings,
 	appId,
-	excludeFields,
+	excludeFields = [],
 	type,
 	version = '5',
 	credentials,
 	settings,
-) {
+}) {
 	const body = {
 		mappings,
 		settings: settings || analyzerSettings,
@@ -488,6 +488,7 @@ export function getMappingsTree(mappings = {}, version) {
 }
 
 export const applyLanguageAnalyzers = (properties = {}, language) => {
+	if (language === 'universal') return properties;
 	const lang = {
 		type: 'text',
 		analyzer: language,
