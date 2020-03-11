@@ -418,6 +418,7 @@ export function getAggsMappings(mappings = {}, returnOnlyLeafFields = false) {
 							address: `${prefix}${mpp}`,
 							usecase: field.fields ? getUsecase(field.fields) : 'none',
 							type,
+							fields: field.fields,
 						});
 					}
 				});

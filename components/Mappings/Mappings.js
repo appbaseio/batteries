@@ -329,7 +329,7 @@ class Mappings extends Component {
 
 		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials, appSettings)
 			.then(async () => {
-				if (callback) {
+				if (callback && typeof callback === 'function') {
 					await callback();
 				}
 				this.setState({
@@ -337,6 +337,7 @@ class Mappings extends Component {
 				});
 			})
 			.catch(err => {
+				console.error(err);
 				this.setState({
 					isLoading: false,
 					showError: true,
@@ -516,6 +517,7 @@ class Mappings extends Component {
 				<MappingsContainer
 					showCardWrapper={showCardWrapper}
 					showMappingInfo={showMappingInfo}
+					handleModal={this.handleModal}
 				>
 					<div style={{ padding: showCardWrapper ? '5px 20px' : 0 }}>
 						<Header>
