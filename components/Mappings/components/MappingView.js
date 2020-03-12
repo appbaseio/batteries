@@ -237,6 +237,7 @@ class MappingView extends React.Component {
 													: `${address}.${field}`,
 												field,
 												originalFields,
+												settings: fields[field],
 										  })
 										: null}
 								</div>
