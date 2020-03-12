@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { string, object, func, bool } from 'prop-types';
 import { Tooltip, Icon, Button, Affix, message } from 'antd';
 import get from 'lodash/get';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Loader from '../shared/Loader';
@@ -32,7 +33,7 @@ import { setCurrentApp, getAppMappings as getMappings, clearMappings } from '../
 import { Header, footerStyles } from './styles';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
-import { getURL } from '../../../constants/config';
+import { getURL, getVersion } from '../../../constants/config';
 import Synonyms from './components/Synonyms';
 import Replicas from './components/Replicas';
 import Shards from './components/Shards';
@@ -40,6 +41,7 @@ import FeedbackModal from './components/FeedbackModal';
 import { synonymsSettings } from '../../utils/analyzerSettings';
 import MappingView from './components/MappingView';
 import MappingsContainer from './components/MappingsContainer';
+import { getReIndexedName } from '../../../utils';
 
 const fieldNameMessage = () => (
 	<div style={{ maxWidth: 220 }}>
@@ -59,7 +61,7 @@ class Mappings extends Component {
 		mapping: null,
 		dirty: false,
 		showModal: false,
-		isLoading: true,
+		isLoading: false,
 		errorMessage: '',
 		showError: false,
 		errorLength: 0,
@@ -78,17 +80,22 @@ class Mappings extends Component {
 	originalMapping = null;
 
 	async componentDidMount() {
-		this.props.clearMappings(this.props.appName);
 		this.init();
 
-		const { appName, appbaseCredentials } = this.props;
-		const esVersion = await getESVersion(appName, appbaseCredentials);
-		const nodes = await getNodes(appName, appbaseCredentials);
+		const { appName, appbaseCredentials, showReplicas } = this.props;
+		const esVersion = getVersion() || (await getESVersion(appName, appbaseCredentials));
+		if (showReplicas) {
+			const nodes = await getNodes(appName, appbaseCredentials);
 
-		this.setState({
-			esVersion: esVersion.split('.')[0],
-			totalNodes: nodes._nodes.total,
-		});
+			this.setState({
+				esVersion: esVersion.split('.')[0],
+				totalNodes: nodes._nodes.total,
+			});
+		} else {
+			this.setState({
+				esVersion: esVersion.split('.')[0],
+			});
+		}
 	}
 
 	componentDidUpdate(prevProps) {
@@ -125,13 +132,21 @@ class Mappings extends Component {
 			updateCurrentApp,
 			getAppMappings,
 			appbaseCredentials,
+			mapping,
 			url,
 		} = this.props;
 
 		// initialise or update current app state
 		updateCurrentApp(appName, appId);
 
-		if (url) {
+		if (mapping) {
+			this.handleMapping(mapping);
+		}
+
+		if (url && !mapping) {
+			this.setState({
+				isLoading: true,
+			});
 			getAppMappings(appName, appbaseCredentials, url);
 			this.initializeSettings();
 		}
@@ -198,7 +213,7 @@ class Mappings extends Component {
 	handleMapping = async res => {
 		if (res) {
 			const { appName, appbaseCredentials } = this.props;
-			const fullVersion = await getESVersion(appName, appbaseCredentials);
+			const fullVersion = getVersion() || (await getESVersion(appName, appbaseCredentials));
 
 			const esVersion = fullVersion.split('.')[0];
 			let mapping = res ? transformToES5(res) : res;
@@ -423,6 +438,19 @@ class Mappings extends Component {
 		}
 	};
 
+	handleReindex = () => {
+		const { history, updateCurrentApp, appName } = this.props;
+
+		const updatedAppName = getReIndexedName(appName);
+		updateCurrentApp(updatedAppName);
+
+		const page =
+			get(history, 'location.pathname', '').split('/') &&
+			get(history, 'location.pathname', '').split('/')[3];
+
+		history.replace(`/app/${updatedAppName}/${page}`);
+	};
+
 	render() {
 		const {
 			loadingError,
@@ -614,9 +642,7 @@ class Mappings extends Component {
 				<FeedbackModal
 					show={this.state.showFeedback}
 					timeTaken={this.state.timeTaken}
-					onClose={() => {
-						window.location.href = window.location.origin;
-					}}
+					onClose={this.handleReindex}
 				/>
 			</React.Fragment>
 		);
@@ -694,4 +720,6 @@ const mapDispatchToProps = dispatch => ({
 	clearMappings: appName => dispatch(clearMappings(appName)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(Mappings);
+export default withRouter(
+	connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(Mappings),
+);
