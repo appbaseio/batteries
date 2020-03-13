@@ -21,7 +21,7 @@ import {
 	updateMappingsProperties,
 	getUpdatedSettings,
 	applySynonyms,
-	isEnglishAnalyzerPresent,
+	getLanguage,
 	fetchSettings,
 	deleteMappingField,
 	addMappingField,
@@ -327,11 +327,13 @@ class Mappings extends Component {
 
 		appSettings = getUpdatedSettings({ settings: appSettings, shards, replicas });
 
-		if (isEnglishAnalyzerPresent(appSettings)) {
+		const language = getLanguage(appSettings);
+		if (language) {
 			mapping = updateMappingsProperties({
 				types: activeType,
 				esVersion,
 				mapping,
+				language,
 			});
 		}
 
@@ -342,7 +344,15 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials, appSettings)
+		reIndex({
+			mappings: mapping,
+			appId,
+			excludeFields: excludedFields,
+			type: activeType,
+			version: esVersion,
+			credentials,
+			settings: appSettings,
+		})
 			.then(async () => {
 				if (callback && typeof callback === 'function') {
 					await callback();
@@ -412,7 +422,15 @@ class Mappings extends Component {
 		} catch (e) {
 			if (e.message === 'AWS') {
 				const appSettings = synonymsSettings(synonyms);
-				reIndex(mapping, appId, [], activeType, esVersion, credentials, appSettings)
+				reIndex({
+					mappings: mapping,
+					appId,
+					excludeFields: [],
+					type: activeType,
+					version: esVersion,
+					credentials,
+					settings: appSettings,
+				})
 					.then(() => {
 						this.setState({
 							showFeedback: true,
