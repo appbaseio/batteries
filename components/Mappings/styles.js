@@ -80,7 +80,7 @@ export const Header = styled('header')`
 	flex-direction: row;
 	justify-content: space-between;
 	font-weight: 600;
-	padding-top: 20px;
+	padding-top: 15px;
 
 	@media (max-width: 700px) {
 		flex-direction: column;

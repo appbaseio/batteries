@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { string, object, func, bool } from 'prop-types';
-import { Tooltip, Icon, Button, Affix, message } from 'antd';
+import { Tooltip, Icon, Button, Affix, message, Typography } from 'antd';
 import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -144,13 +144,16 @@ class Mappings extends Component {
 		}
 
 		if (url && !mapping) {
-			this.setState({
-				isLoading: true,
-			});
 			getAppMappings(appName, appbaseCredentials, url);
 			this.initializeSettings();
 		}
 	}
+
+	loadData = () => {
+		const { appName, getAppMappings, appbaseCredentials, url } = this.props;
+		getAppMappings(appName, appbaseCredentials, url);
+		this.initializeSettings();
+	};
 
 	initializeSettings = () => {
 		const { appbaseCredentials, appName } = this.props;
@@ -503,6 +506,9 @@ class Mappings extends Component {
 		if (loadingError) {
 			return <p style={{ padding: 20 }}>{loadingError}</p>;
 		}
+		if (isFetchingMapping) {
+			return <Loader show message="Fetching mappings... Please wait!" />;
+		}
 		if ((isFetchingMapping || isLoading) && !mapping) {
 			if (renderLoader) {
 				return renderLoader();
@@ -566,6 +572,19 @@ class Mappings extends Component {
 					handleModal={this.handleModal}
 				>
 					<div style={{ padding: showCardWrapper ? '5px 20px' : 0 }}>
+						<Tooltip title="Fetch latest mappings">
+							<Typography.Text
+								style={{
+									display: 'inline-block',
+									color: '#1890ff',
+									cursor: 'pointer',
+								}}
+								strong
+								onClick={this.loadData}
+							>
+								Reload Mappings
+							</Typography.Text>
+						</Tooltip>
 						<Header>
 							<span>
 								Field Name
