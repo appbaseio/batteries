@@ -4,6 +4,7 @@ import mappingUsecase from './mappingUsecase';
 import analyzerSettings, { synonymsSettings } from './analyzerSettings';
 import { getURL } from '../../constants/config';
 import { deleteObjectFromPath } from '.';
+import language from '../../constants/language';
 
 const PRESERVED_KEYS = ['meta'];
 export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
@@ -200,15 +201,15 @@ export async function getESVersion(appName, credentials) {
 	return data.version.number.split('.')[0];
 }
 
-export function reIndex(
+export function reIndex({
 	mappings,
 	appId,
-	excludeFields,
+	excludeFields = [],
 	type,
 	version = '5',
 	credentials,
 	settings,
-) {
+}) {
 	const body = {
 		mappings,
 		settings: settings || analyzerSettings,
@@ -487,34 +488,43 @@ export function getMappingsTree(mappings = {}, version) {
 	return tree;
 }
 
-export const applyFieldAnalyzers = properties => {
+export const applyLanguageAnalyzers = (properties = {}, language) => {
+	if (language === 'universal') return properties;
+	const lang = {
+		type: 'text',
+		analyzer: language,
+	};
 	return Object.keys(properties).reduce((agg, key) => {
 		if (properties[key].properties) {
 			return {
 				...agg,
 				[key]: {
 					...properties[key],
-					properties: applyFieldAnalyzers(properties[key].properties),
+					properties: applyLanguageAnalyzers(properties[key].properties),
 				},
 			};
 		}
 		const data = properties[key];
-		if (data && data.fields && data.fields.english) {
-			data.fields.english.search_analyzer = 'english_synonyms_analyzer';
-			data.fields.english.analyzer = 'english_analyzer';
-		} else if (data && data.fields) {
-			data.fields.english = {
-				type: 'text',
-				index: 'true',
-				analyzer: 'english_analyzer',
-				search_analyzer: 'english_synonyms_analyzer',
-			};
+		// eslint-disable-next-line prefer-const
+		let { type, fields } = properties[key];
+		if (type === 'text') {
+			if (fields) {
+				fields.lang = lang;
+			} else {
+				fields = { lang };
+			}
 		}
+		data.fields = fields;
 		return { ...agg, [key]: data };
 	}, {});
 };
 
-export const updateMappingsProperties = ({ mapping: originalMapping, types, esVersion }) => {
+export const updateMappingsProperties = ({
+	mapping: originalMapping,
+	types,
+	esVersion,
+	language = 'universal',
+}) => {
 	const mapping = JSON.parse(JSON.stringify(originalMapping));
 	let isMappingsPresent = false;
 	if (+esVersion >= 7) {
@@ -524,8 +534,9 @@ export const updateMappingsProperties = ({ mapping: originalMapping, types, esVe
 	}
 	if (isMappingsPresent) {
 		if (+esVersion >= 7) {
-			const updatedProperties = applyFieldAnalyzers(
+			const updatedProperties = applyLanguageAnalyzers(
 				JSON.parse(JSON.stringify(mapping.properties)),
+				language,
 			);
 			mapping.properties = {
 				...mapping.properties,
@@ -537,7 +548,10 @@ export const updateMappingsProperties = ({ mapping: originalMapping, types, esVe
 					...agg,
 					[type]: mapping[type].properties
 						? {
-								properties: applyFieldAnalyzers(mapping[type].properties),
+								properties: applyLanguageAnalyzers(
+									mapping[type].properties,
+									language,
+								),
 						  }
 						: mapping[type],
 				};
@@ -645,9 +659,11 @@ export const applySynonyms = async ({
 	return null;
 };
 
-export const isEnglishAnalyzerPresent = settings => {
-	const analyzer = get(settings, 'index.analysis.analyzer.english_synonyms_analyzer', null);
-	return !!analyzer;
+export const getLanguage = settings => {
+	return Object.keys(language).find(lang => {
+		if (get(settings, `index.analysis.analyzer.${lang}`, null)) return lang;
+		return null;
+	});
 };
 
 export const getUsecase = fields => {
