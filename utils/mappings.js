@@ -789,3 +789,26 @@ export const addMappingField = ({ _mapping, name, usecase, type, esVersion }) =>
 
 	return { mapping };
 };
+
+export const updateSettings = ({ appName, settings, credentials }) => {
+	const url = getURL();
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/${appName}/_settings`, {
+			method: 'PUT',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				settings,
+			}),
+		})
+			.then(res => res.json())
+			.then(data => {
+				resolve(data);
+			})
+			.catch(e => {
+				reject(e);
+			});
+	});
+};

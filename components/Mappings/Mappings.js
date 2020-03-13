@@ -720,6 +720,18 @@ const mapDispatchToProps = dispatch => ({
 	clearMappings: appName => dispatch(clearMappings(appName)),
 });
 
-export default withRouter(
+const withRouterRef = Wrapped => {
+	const WithRouter = withRouter(({ forwardRef, ...otherProps }) => (
+		<Wrapped ref={forwardRef} {...otherProps} />
+	));
+	const withRouterAndRef = React.forwardRef((props, ref) => (
+		<WithRouter {...props} forwardRef={ref} />
+	));
+	const name = Wrapped.displayName || Wrapped.name;
+	withRouterAndRef.displayName = `withRouterRef(${name})`;
+	return withRouterAndRef;
+};
+
+export default withRouterRef(
 	connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(Mappings),
 );
