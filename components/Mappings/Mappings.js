@@ -43,6 +43,7 @@ import MappingView from './components/MappingView';
 import MappingsContainer from './components/MappingsContainer';
 import { getReIndexedName } from '../../../utils';
 import { appendApp } from '../../../actions';
+import SearchPreviewModal from '../../../components/SearchPreviewModal';
 
 const fieldNameMessage = () => (
 	<div style={{ maxWidth: 220 }}>
@@ -494,6 +495,7 @@ class Mappings extends Component {
 			column,
 			renderFooter,
 			hidePropertiesType,
+			appName,
 		} = this.props;
 
 		const {
@@ -605,7 +607,16 @@ class Mappings extends Component {
 										</span>
 									</Tooltip>
 								</span>
-								{hideDataType ? null : <span className="col">Data Type</span>}
+								{hideDataType ? null : (
+									<span className="col">
+										Data Type
+										<Tooltip title="Type of data in the corresponding field.">
+											<span style={{ marginLeft: 5 }}>
+												<Icon type="info-circle" />
+											</span>
+										</Tooltip>
+									</span>
+								)}
 								{column ? <span className="col">{column.title}</span> : null}
 							</div>
 						</Header>
@@ -627,20 +638,23 @@ class Mappings extends Component {
 							deletePath={this.deletePath}
 						/>
 					</div>
-					{dirty && !renderFooter ? (
+					{!renderFooter ? (
 						<Affix offsetBottom={0}>
 							<div className={footerStyles}>
-								<Button
-									type="primary"
-									size="large"
-									style={{ margin: '0 10px' }}
-									onClick={this.reIndex}
-								>
-									Confirm Mapping Changes
-								</Button>
-								<Button size="large" onClick={this.cancelChanges}>
-									Cancel
-								</Button>
+								<SearchPreviewModal app={appName} />
+								<div>
+									<Button
+										type="primary"
+										size="large"
+										style={{ margin: '0 10px' }}
+										onClick={this.reIndex}
+									>
+										Confirm Mapping Changes
+									</Button>
+									<Button size="large" onClick={this.cancelChanges}>
+										Cancel
+									</Button>
+								</div>
 							</div>
 						</Affix>
 					) : null}

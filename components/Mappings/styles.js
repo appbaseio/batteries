@@ -6,9 +6,8 @@ const grey = '#efefef';
 const greyHover = '#fafafa';
 
 export const card = css`
-	width: 100%;
-	max-width: 980px;
-	margin: 25px auto;
+	width: calc(100% - 100px);
+	margin: 25px 50px;
 	background-color: #fff;
 	border-radius: 3px;
 	box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.05);
@@ -180,10 +179,13 @@ export const subItem = css`
 `;
 
 export const footerStyles = css`
-	padding: 15px 10px;
+	padding: 15px;
 	background: white;
 	box-shadow: 0 -2px 5px 0 rgba(0, 0, 0, 0.15);
 	text-align: right;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 `;
 
 export const Button = styled('a')`
