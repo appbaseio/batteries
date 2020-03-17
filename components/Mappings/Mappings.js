@@ -42,7 +42,7 @@ import { synonymsSettings } from '../../utils/analyzerSettings';
 import MappingView from './components/MappingView';
 import MappingsContainer from './components/MappingsContainer';
 import { getReIndexedName } from '../../../utils';
-import { appendApp } from '../../../actions';
+import { appendApp, removeAppData } from '../../../actions';
 import SearchPreviewModal from '../../../components/SearchPreviewModal';
 
 const fieldNameMessage = () => (
@@ -462,10 +462,11 @@ class Mappings extends Component {
 	};
 
 	handleReindex = () => {
-		const { history, updateCurrentApp, appName, addApp } = this.props;
+		const { history, updateCurrentApp, appName, addApp, deleteApp } = this.props;
 
 		const updatedAppName = getReIndexedName(appName);
 		addApp({ [updatedAppName]: {} });
+		deleteApp(appName);
 		updateCurrentApp(updatedAppName);
 
 		const page =
@@ -803,6 +804,7 @@ const mapDispatchToProps = dispatch => ({
 	},
 	clearMappings: appName => dispatch(clearMappings(appName)),
 	addApp: appName => dispatch(appendApp(appName)),
+	deleteApp: appName => dispatch(removeAppData(appName)),
 });
 
 const withRouterRef = Wrapped => {

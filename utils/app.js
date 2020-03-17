@@ -278,7 +278,7 @@ export const createRule = rule => {
 export const getSearchSettings = name => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
-	return doGet(`${ACC_API}/_searchsettings/${name}`, {
+	return doGet(`${ACC_API}/_searchrelevancy/${name}`, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
 	});
@@ -287,7 +287,7 @@ export const getSearchSettings = name => {
 export const getDefaultSearchSettings = () => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
-	return doGet(`${ACC_API}/_searchsettings/_default`, {
+	return doGet(`${ACC_API}/_searchrelevancy/_default`, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
 	});
@@ -296,7 +296,7 @@ export const getDefaultSearchSettings = () => {
 export const putSearchSettings = (name, payload) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
-	return doPut(`${ACC_API}/_searchsettings/${name}`, payload, {
+	return doPut(`${ACC_API}/_searchrelevancy/${name}`, payload, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
 	});
@@ -305,5 +305,5 @@ export const putSearchSettings = (name, payload) => {
 export const deleteSearchSettings = name => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
-	return doDelete(`${ACC_API}/_searchsettings/${name}`, { Authorization: `Basic ${authToken}` });
+	return doDelete(`${ACC_API}/_searchrelevancy/${name}`, { Authorization: `Basic ${authToken}` });
 };
