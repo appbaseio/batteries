@@ -30,7 +30,7 @@ import conversionMap from '../../utils/conversionMap';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import { setCurrentApp, getAppMappings as getMappings, clearMappings } from '../../modules/actions';
 
-import { Header, footerStyles } from './styles';
+import { Header, footerStyles, item, row } from './styles';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 import { getURL, getVersion } from '../../../constants/config';
@@ -141,11 +141,11 @@ class Mappings extends Component {
 		// initialise or update current app state
 		updateCurrentApp(appName, appId);
 
-		if (mapping) {
+		if (mapping && Object.keys(mapping).length > 0) {
 			this.handleMapping(mapping);
 		}
 
-		if (url && !mapping) {
+		if (url && (!mapping || Object.keys(mapping).length === 0)) {
 			getAppMappings(appName, appbaseCredentials, url);
 			this.initializeSettings();
 		}
@@ -506,6 +506,7 @@ class Mappings extends Component {
 			errorLength,
 			errorMessage,
 			dirty,
+			esVersion,
 		} = this.state;
 		if (loadingError) {
 			return <p style={{ padding: 20 }}>{loadingError}</p>;
@@ -536,6 +537,24 @@ class Mappings extends Component {
 			);
 		}
 		if (!mapping) return null;
+		let hasMappings = true;
+
+		if (+esVersion >= 7 && JSON.stringify(mapping) === JSON.stringify({ properties: {} })) {
+			hasMappings = false;
+		}
+
+		if (
+			+esVersion >= 6 &&
+			+esVersion < 7 &&
+			JSON.stringify(mapping) === JSON.stringify({ _doc: { properties: {} } })
+		) {
+			hasMappings = false;
+		}
+
+		if (+esVersion < 6 && Object.keys(mapping).length === 0) {
+			hasMappings = false;
+		}
+
 		return (
 			<React.Fragment>
 				{showShards ? (
@@ -620,23 +639,35 @@ class Mappings extends Component {
 								{column ? <span className="col">{column.title}</span> : null}
 							</div>
 						</Header>
-						<MappingView
-							getType={this.getType}
-							getConversionMap={this.getConversionMap}
-							mapping={this.state.mapping}
-							originalMapping={this.originalMapping}
-							esVersion={this.state.esVersion}
-							setMapping={this.setMapping}
-							usecases={this.usecases}
-							hideAggsType={hideAggsType}
-							hideDataType={hideDataType}
-							hideNoType={hideNoType}
-							hidePropertiesType={hidePropertiesType}
-							columnRender={column && column.render}
-							hideDelete={hideDelete}
-							hideSearchType={hideSearchType}
-							deletePath={this.deletePath}
-						/>
+						{hasMappings ? (
+							<MappingView
+								getType={this.getType}
+								getConversionMap={this.getConversionMap}
+								mapping={this.state.mapping}
+								originalMapping={this.originalMapping}
+								esVersion={this.state.esVersion}
+								setMapping={this.setMapping}
+								usecases={this.usecases}
+								hideAggsType={hideAggsType}
+								hideDataType={hideDataType}
+								hideNoType={hideNoType}
+								hidePropertiesType={hidePropertiesType}
+								columnRender={column && column.render}
+								hideDelete={hideDelete}
+								hideSearchType={hideSearchType}
+								deletePath={this.deletePath}
+							/>
+						) : (
+							<p className={row}>
+								No mappings present.{' '}
+								<span
+									style={{ color: 'rgb(24, 144, 255)', cursor: 'pointer' }}
+									onClick={() => this.handleModal('showModal')}
+								>
+									Add Field.
+								</span>
+							</p>
+						)}
 					</div>
 					{!renderFooter ? (
 						<Affix offsetBottom={0}>
