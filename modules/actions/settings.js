@@ -18,9 +18,12 @@ export function getSettings(name) {
 					}),
 				),
 			)
-			.catch(error =>
-				dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.GET_ERROR, null, error)),
-			);
+			.catch(error => {
+				if (error && error.code === 404) {
+					dispatch(getDefaultSettings());
+				}
+				dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.GET_ERROR, null, error));
+			});
 	};
 }
 
