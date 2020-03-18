@@ -95,10 +95,13 @@ class MappingView extends React.Component {
 			hideDataType,
 			columnRender,
 			hidePropertiesType,
+			renderMappingInfo,
+			dirty,
 		} = this.props;
 		if (fields) {
 			return (
 				<section key={type} className={row}>
+					{renderMappingInfo ? renderMappingInfo({ dirty }) : null}
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>
 							{mappingType === 'nested' ? (
@@ -251,9 +254,9 @@ class MappingView extends React.Component {
 	};
 
 	render() {
-		const { mapping, originalMapping, esVersion } = this.props;
+		const { mapping, originalMapping, esVersion, hasMappings } = this.props;
 
-		if (!mapping || !Object.keys(mapping).length) {
+		if (!hasMappings || !mapping || !Object.keys(mapping).length) {
 			return (
 				<p style={{ padding: '40px 0', color: '#999', textAlign: 'center' }}>
 					No data or mappings found

@@ -60,7 +60,7 @@ const usecaseMessage = () => (
 
 class Mappings extends Component {
 	state = {
-		mapping: null,
+		mapping: {},
 		dirty: false,
 		showModal: false,
 		isLoading: false,
@@ -302,12 +302,26 @@ class Mappings extends Component {
 
 	addField = ({ name, type, usecase }) => {
 		const { mapping: _mapping, esVersion } = this.state;
+		let currentMappings = _mapping;
+		if ((!currentMappings || !currentMappings.properties) && +esVersion >= 7) {
+			// Default Value for Version 7 Mappings
+			currentMappings = { properties: {} };
+		}
+
+		if (
+			(!currentMappings || !currentMappings._doc || !currentMappings._doc.properties) &&
+			+esVersion >= 6 &&
+			+esVersion < 7
+		) {
+			// Default Value for Version 6 Mappings
+			currentMappings = { _doc: { properties: {} } };
+		}
 
 		const updatedValues = addMappingField({
 			name,
 			type,
 			usecase,
-			_mapping,
+			_mapping: currentMappings,
 			esVersion,
 		});
 
@@ -497,6 +511,7 @@ class Mappings extends Component {
 			renderFooter,
 			hidePropertiesType,
 			appName,
+			renderMappingInfo,
 		} = this.props;
 
 		const {
@@ -640,35 +655,26 @@ class Mappings extends Component {
 								{column ? <span className="col">{column.title}</span> : null}
 							</div>
 						</Header>
-						{hasMappings ? (
-							<MappingView
-								getType={this.getType}
-								getConversionMap={this.getConversionMap}
-								mapping={this.state.mapping}
-								originalMapping={this.originalMapping}
-								esVersion={this.state.esVersion}
-								setMapping={this.setMapping}
-								usecases={this.usecases}
-								hideAggsType={hideAggsType}
-								hideDataType={hideDataType}
-								hideNoType={hideNoType}
-								hidePropertiesType={hidePropertiesType}
-								columnRender={column && column.render}
-								hideDelete={hideDelete}
-								hideSearchType={hideSearchType}
-								deletePath={this.deletePath}
-							/>
-						) : (
-							<p className={row}>
-								No mappings present.{' '}
-								<span
-									style={{ color: 'rgb(24, 144, 255)', cursor: 'pointer' }}
-									onClick={() => this.handleModal('showModal')}
-								>
-									Add Field.
-								</span>
-							</p>
-						)}
+						<MappingView
+							getType={this.getType}
+							getConversionMap={this.getConversionMap}
+							mapping={this.state.mapping}
+							originalMapping={this.originalMapping}
+							esVersion={this.state.esVersion}
+							setMapping={this.setMapping}
+							dirty={dirty}
+							usecases={this.usecases}
+							hideAggsType={hideAggsType}
+							hasMappings={hasMappings}
+							renderMappingInfo={renderMappingInfo}
+							hideDataType={hideDataType}
+							hideNoType={hideNoType}
+							hidePropertiesType={hidePropertiesType}
+							columnRender={column && column.render}
+							hideDelete={hideDelete}
+							hideSearchType={hideSearchType}
+							deletePath={this.deletePath}
+						/>
 					</div>
 					{!renderFooter ? (
 						<Affix offsetBottom={0}>
@@ -680,6 +686,7 @@ class Mappings extends Component {
 										size="large"
 										style={{ margin: '0 10px' }}
 										onClick={this.reIndex}
+										disabled={!dirty}
 									>
 										Confirm Mapping Changes
 									</Button>
@@ -760,6 +767,7 @@ Mappings.propTypes = {
 	column: object,
 	onChange: func,
 	renderFooter: func,
+	renderMappingInfo: func,
 };
 
 Mappings.defaultProps = {
@@ -782,6 +790,7 @@ Mappings.defaultProps = {
 	column: null,
 	onChange: null,
 	renderFooter: null,
+	renderMappingInfo: null,
 };
 
 const mapStateToProps = state => {
