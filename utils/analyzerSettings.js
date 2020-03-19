@@ -11,11 +11,6 @@ const analyzerSettings = {
 				tokenizer: 'standard',
 				type: 'custom',
 			},
-			english_analyzer: {
-				filter: ['lowercase', 'asciifolding', 'porter_stem'],
-				tokenizer: 'standard',
-				type: 'custom',
-			},
 		},
 		filter: {
 			autosuggest_filter: {
@@ -47,11 +42,6 @@ export const synonymsSettings = synonyms => ({
 			...analyzerSettings.analysis.analyzer,
 			english_synonyms_analyzer: {
 				filter: ['lowercase', 'synonyms_filter', 'asciifolding', 'porter_stem'],
-				tokenizer: 'standard',
-				type: 'custom',
-			},
-			english_analyzer: {
-				filter: ['lowercase', 'asciifolding', 'porter_stem'],
 				tokenizer: 'standard',
 				type: 'custom',
 			},

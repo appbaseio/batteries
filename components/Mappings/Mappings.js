@@ -619,10 +619,12 @@ class Mappings extends Component {
 									display: 'inline-block',
 									color: '#1890ff',
 									cursor: 'pointer',
+									padding: '10px 0',
 								}}
 								strong
 								onClick={this.loadData}
 							>
+								<Icon type="reload" style={{ margin: 0, marginRight: 5 }} />
 								Reload Mappings
 							</Typography.Text>
 						</Tooltip>
