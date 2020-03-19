@@ -81,7 +81,7 @@ class MappingView extends React.Component {
 		);
 	};
 
-	renderMapping = (type, fields, originalFields, address = '', mappingType) => {
+	renderMapping = (type, fields, originalFields, address = '', mappingType, initialRender) => {
 		const nestedObj = {
 			type: 'nested',
 		};
@@ -91,17 +91,19 @@ class MappingView extends React.Component {
 			hideSearchType,
 			hideAggsType,
 			hideNoType,
+			hideNoneTextType,
 			hideDelete,
 			hideDataType,
 			columnRender,
 			hidePropertiesType,
 			renderMappingInfo,
+			onDeleteField,
 			dirty,
 		} = this.props;
 		if (fields) {
 			return (
 				<section key={type} className={row}>
-					{renderMappingInfo ? renderMappingInfo({ dirty }) : null}
+					{renderMappingInfo && initialRender ? renderMappingInfo({ dirty }) : null}
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>
 							{mappingType === 'nested' ? (
@@ -193,6 +195,15 @@ class MappingView extends React.Component {
 						if (hideNoType && selected === 'none') {
 							return null;
 						}
+						if (
+							hideNoneTextType &&
+							fields &&
+							fields[field] &&
+							fields[field].type === 'text' &&
+							selected === 'none'
+						) {
+							return null;
+						}
 						return (
 							<div key={field} className={item}>
 								<div className={deleteBtn}>
@@ -200,17 +211,23 @@ class MappingView extends React.Component {
 										{mappingInfo}
 										{field}
 									</span>
-									{hideDelete ? null : (
-										<a
-											onClick={() => {
-												const addressField = `${address}.${field}`;
+
+									<a
+										onClick={() => {
+											const addressField = `${address}.${field}`;
+											if (onDeleteField) {
+												onDeleteField({
+													address: addressField,
+													type: fields[field].type,
+												});
+											} else {
 												deletePath(addressField);
-											}}
-										>
-											<Icon type="delete" />
-											Delete
-										</a>
-									)}
+											}
+										}}
+									>
+										<Icon type="delete" />
+										Delete
+									</a>
 								</div>
 								<div className={subItem}>
 									{this.renderUsecase(fields[field], `${address}.${field}`)}
@@ -290,6 +307,7 @@ class MappingView extends React.Component {
 							originalMappingFields,
 							fieldAddress,
 							typeName,
+							true,
 						);
 					}
 					return null;

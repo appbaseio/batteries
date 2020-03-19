@@ -420,6 +420,7 @@ export function getAggsMappings(mappings = {}, returnOnlyLeafFields = false) {
 							usecase: field.fields ? getUsecase(field.fields) : 'none',
 							type,
 							fields: field.fields,
+							fieldType: field.type,
 						});
 					}
 				});

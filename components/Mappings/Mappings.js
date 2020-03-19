@@ -512,6 +512,8 @@ class Mappings extends Component {
 			hidePropertiesType,
 			appName,
 			renderMappingInfo,
+			onDeleteField,
+			hideNoneTextType,
 		} = this.props;
 
 		const {
@@ -663,6 +665,8 @@ class Mappings extends Component {
 							esVersion={this.state.esVersion}
 							setMapping={this.setMapping}
 							dirty={dirty}
+							onDeleteField={onDeleteField}
+							hideNoneTextType={hideNoneTextType}
 							usecases={this.usecases}
 							hideAggsType={hideAggsType}
 							hasMappings={hasMappings}
@@ -764,10 +768,12 @@ Mappings.propTypes = {
 	hideDelete: bool,
 	hideDataType: bool,
 	hidePropertiesType: bool,
+	hideNoneTextType: bool,
 	column: object,
 	onChange: func,
 	renderFooter: func,
 	renderMappingInfo: func,
+	onDeleteField: func,
 };
 
 Mappings.defaultProps = {
@@ -782,6 +788,7 @@ Mappings.defaultProps = {
 	showMappingInfo: true,
 	showCardWrapper: true,
 	hideSearchType: false,
+	hideNoneTextType: false,
 	hideAggsType: false,
 	hideNoType: false,
 	hideDataType: false,
@@ -790,6 +797,7 @@ Mappings.defaultProps = {
 	column: null,
 	onChange: null,
 	renderFooter: null,
+	onDeleteField: null,
 	renderMappingInfo: null,
 };
 
