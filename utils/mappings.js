@@ -489,7 +489,6 @@ export function getMappingsTree(mappings = {}, version) {
 }
 
 export const applyLanguageAnalyzers = (properties = {}, language) => {
-	if (language === 'universal') return properties;
 	const lang = {
 		type: 'text',
 		analyzer: language,
