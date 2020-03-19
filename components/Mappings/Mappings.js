@@ -183,7 +183,7 @@ class Mappings extends Component {
 
 	setMapping = (field, type, usecase) => {
 		const { mapping: currentMapping, esVersion } = this.state;
-		const { onChange } = this.props;
+		const { onChange, onUsecaseChange } = this.props;
 		let mapping = null;
 		if (+esVersion >= 7) {
 			mapping = updateMappingES7(currentMapping, field, type, usecase);
@@ -198,6 +198,7 @@ class Mappings extends Component {
 			() => {
 				if (onChange) {
 					onChange(mapping);
+					onUsecaseChange(field, type, usecase);
 				}
 			},
 		);
@@ -775,6 +776,7 @@ Mappings.propTypes = {
 	onChange: func,
 	renderFooter: func,
 	renderMappingInfo: func,
+	onUsecaseChange: func,
 	onDeleteField: func,
 };
 
@@ -801,6 +803,7 @@ Mappings.defaultProps = {
 	renderFooter: null,
 	onDeleteField: null,
 	renderMappingInfo: null,
+	onUsecaseChange: null,
 };
 
 const mapStateToProps = state => {
