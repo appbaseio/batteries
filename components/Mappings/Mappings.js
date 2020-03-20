@@ -30,7 +30,7 @@ import conversionMap from '../../utils/conversionMap';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import { setCurrentApp, getAppMappings as getMappings, clearMappings } from '../../modules/actions';
 
-import { Header, footerStyles, item, row } from './styles';
+import { Header, footerStyles } from './styles';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
 import { getURL, getVersion } from '../../../constants/config';
@@ -41,7 +41,6 @@ import FeedbackModal from './components/FeedbackModal';
 import { synonymsSettings } from '../../utils/analyzerSettings';
 import MappingView from './components/MappingView';
 import MappingsContainer from './components/MappingsContainer';
-import { getReIndexedName } from '../../../utils';
 import { appendApp, removeAppData } from '../../../actions';
 import SearchPreviewModal from '../../../components/SearchPreviewModal';
 
@@ -198,7 +197,9 @@ class Mappings extends Component {
 			() => {
 				if (onChange) {
 					onChange(mapping);
-					onUsecaseChange(field, type, usecase);
+					if (onUsecaseChange) {
+						onUsecaseChange(field, type, usecase);
+					}
 				}
 			},
 		);
@@ -477,18 +478,12 @@ class Mappings extends Component {
 	};
 
 	handleReindex = () => {
-		const { history, updateCurrentApp, appName, addApp, deleteApp } = this.props;
-
-		const updatedAppName = getReIndexedName(appName);
-		addApp({ [updatedAppName]: {} });
-		deleteApp(appName);
-		updateCurrentApp(updatedAppName);
-
-		const page =
-			get(history, 'location.pathname', '').split('/') &&
-			get(history, 'location.pathname', '').split('/')[3];
-
-		history.replace(`/app/${updatedAppName}/${page}`);
+		this.setState({
+			showFeedback: false,
+			isLoading: false,
+			dirty: false,
+		});
+		this.loadData();
 	};
 
 	render() {
@@ -515,6 +510,7 @@ class Mappings extends Component {
 			renderMappingInfo,
 			onDeleteField,
 			hideNoneTextType,
+			hideGeoType,
 		} = this.props;
 
 		const {
@@ -528,7 +524,7 @@ class Mappings extends Component {
 			esVersion,
 		} = this.state;
 		if (loadingError) {
-			return <p style={{ padding: 20 }}>{loadingError}</p>;
+			return <p style={{ padding: 20 }}>{JSON.stringify(loadingError)}</p>;
 		}
 		if (isFetchingMapping) {
 			return <Loader show message="Fetching mappings... Please wait!" />;
@@ -666,6 +662,7 @@ class Mappings extends Component {
 							mapping={this.state.mapping}
 							originalMapping={this.originalMapping}
 							esVersion={this.state.esVersion}
+							hideGeoType={hideGeoType}
 							setMapping={this.setMapping}
 							dirty={dirty}
 							onDeleteField={onDeleteField}
@@ -772,6 +769,7 @@ Mappings.propTypes = {
 	hideDataType: bool,
 	hidePropertiesType: bool,
 	hideNoneTextType: bool,
+	hideGeoType: bool,
 	column: object,
 	onChange: func,
 	renderFooter: func,
@@ -795,6 +793,7 @@ Mappings.defaultProps = {
 	hideNoneTextType: false,
 	hideAggsType: false,
 	hideNoType: false,
+	hideGeoType: false,
 	hideDataType: false,
 	hideDelete: false,
 	hidePropertiesType: false,
@@ -808,8 +807,9 @@ Mappings.defaultProps = {
 
 const mapStateToProps = state => {
 	const { username, password } = get(state, 'user.data', {});
+	const appName = get(state, '$getCurrentApp.name');
 	return {
-		appName: get(state, '$getCurrentApp.name'),
+		appName,
 		appId: get(state, '$getCurrentApp.name'),
 		mapping: getRawMappingsByAppName(state) || null,
 		isFetchingMapping: get(state, '$getAppMappings.isFetching'),

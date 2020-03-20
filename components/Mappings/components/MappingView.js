@@ -97,6 +97,7 @@ class MappingView extends React.Component {
 			columnRender,
 			hidePropertiesType,
 			renderMappingInfo,
+			hideGeoType,
 			onDeleteField,
 			dirty,
 		} = this.props;
@@ -193,6 +194,13 @@ class MappingView extends React.Component {
 						}
 
 						if (hideNoType && selected === 'none') {
+							return null;
+						}
+
+						if (
+							(hideGeoType && fields[field] && fields[field].type === 'geo_point') ||
+							fields[field].type === 'geo_shape'
+						) {
 							return null;
 						}
 						if (
