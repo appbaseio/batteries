@@ -494,6 +494,10 @@ export const applyLanguageAnalyzers = (properties = {}, language) => {
 		type: 'text',
 		analyzer: language,
 	};
+	const synonyms = {
+		analyzer: 'synonyms',
+		type: 'text',
+	};
 	return Object.keys(properties).reduce((agg, key) => {
 		if (properties[key].properties) {
 			return {
@@ -510,8 +514,9 @@ export const applyLanguageAnalyzers = (properties = {}, language) => {
 		if (type === 'text') {
 			if (fields) {
 				fields.lang = lang;
+				fields.synonyms = synonyms;
 			} else {
-				fields = { lang };
+				fields = { lang, synonyms };
 			}
 		}
 		data.fields = fields;
