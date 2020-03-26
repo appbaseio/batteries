@@ -365,6 +365,8 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
+		const currentTime = Date.now();
+
 		reIndex({
 			mappings: mapping,
 			appId,
@@ -381,13 +383,19 @@ class Mappings extends Component {
 				this.handleReindex();
 			})
 			.catch(err => {
-				console.error(err);
-				this.setState({
-					isLoading: false,
-					showError: true,
-					errorLength: Array.isArray(err) && err.length,
-					errorMessage: JSON.stringify(err, null, 4),
-				});
+				const failedTime = Date.now();
+				if (failedTime - currentTime >= 60000) {
+					this.setState({
+						showFeedback: true,
+					});
+				} else {
+					this.setState({
+						isLoading: false,
+						showError: true,
+						errorLength: Array.isArray(err) && err.length,
+						errorMessage: JSON.stringify(err, null, 4),
+					});
+				}
 			});
 	};
 
@@ -454,6 +462,7 @@ class Mappings extends Component {
 						this.handleReindex();
 					})
 					.catch(err => {
+						console.log(err);
 						this.setState({
 							isLoading: false,
 							showError: true,
@@ -480,6 +489,10 @@ class Mappings extends Component {
 			dirty: false,
 		});
 		this.loadData();
+	};
+
+	handleTimeout = () => {
+		this.handleReindex();
 	};
 
 	render() {
@@ -738,7 +751,7 @@ class Mappings extends Component {
 				<FeedbackModal
 					show={this.state.showFeedback}
 					timeTaken={this.state.timeTaken}
-					onClose={this.handleReindex}
+					onClose={this.handleTimeout}
 				/>
 			</React.Fragment>
 		);
