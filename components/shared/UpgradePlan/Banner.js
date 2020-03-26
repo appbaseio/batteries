@@ -42,8 +42,8 @@ const Banner = ({
 						size="large"
 						type="primary"
 						{...!onClick && { href }}
-						// target="_blank"
-						// rel="noopener noreferrer"
+						target="_blank"
+						rel="noopener noreferrer"
 						onClick={onClick}
 						icon={icon}
 					>
