@@ -378,9 +378,7 @@ class Mappings extends Component {
 				if (callback && typeof callback === 'function') {
 					await callback();
 				}
-				this.setState({
-					showFeedback: true,
-				});
+				this.handleReindex();
 			})
 			.catch(err => {
 				console.error(err);
@@ -453,9 +451,7 @@ class Mappings extends Component {
 					settings: appSettings,
 				})
 					.then(() => {
-						this.setState({
-							showFeedback: true,
-						});
+						this.handleReindex();
 					})
 					.catch(err => {
 						this.setState({
@@ -694,7 +690,11 @@ class Mappings extends Component {
 									>
 										Confirm Mapping Changes
 									</Button>
-									<Button size="large" onClick={this.cancelChanges}>
+									<Button
+										size="large"
+										disabled={!dirty}
+										onClick={this.cancelChanges}
+									>
 										Cancel
 									</Button>
 								</div>
