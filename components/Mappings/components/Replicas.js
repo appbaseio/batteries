@@ -18,7 +18,7 @@ const Replicas = ({
 				<div className={cardTitle}>
 					<div>
 						<h4>Manage Replicas</h4>
-						<p>Configure the number of replicas for your app.</p>
+						<p>Configure the number of replicas for your index.</p>
 					</div>
 					<Button onClick={() => handleModal('replicasModal')} type="primary">
 						Change Replicas
@@ -39,7 +39,7 @@ const Replicas = ({
 			}}
 			onCancel={() => handleModal('replicasModal')}
 		>
-			<h4>Move slider to change the number of replicas for your app.</h4>
+			<h4>Move slider to change the number of replicas for your index.</h4>
 			<Slider
 				step={null}
 				marks={{ 0: '0', 1: '1', 2: '2' }}

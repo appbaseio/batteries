@@ -17,7 +17,7 @@ const Shards = ({
 				<div className={cardTitle}>
 					<div>
 						<h4>Manage Shards</h4>
-						<p>Configure the number of shards for your app.</p>
+						<p>Configure the number of shards for your index.</p>
 					</div>
 					<Button onClick={() => handleModal('shardsModal')} type="primary">
 						Change Shards
@@ -36,8 +36,8 @@ const Shards = ({
 			onCancel={() => handleModal('shardsModal')}
 		>
 			<h4>
-				Move slider to change the number of shards for your app. Read more{' '}
-				<a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">here</a>.
+				Move slider to change the number of shards for your index. Read more{' '}
+				<a href="https://docs.appbase.io/docs/search/Mappings/#manage-shards">here</a>.
 			</h4>
 			<Slider
 				step={1}
