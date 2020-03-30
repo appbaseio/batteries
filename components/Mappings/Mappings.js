@@ -799,7 +799,7 @@ Mappings.defaultProps = {
 	mapping: null,
 	showReplicas: false,
 	showShards: false,
-	showSynonyms: true,
+	showSynonyms: false,
 	showMappingInfo: true,
 	showCardWrapper: true,
 	hideSearchType: false,
