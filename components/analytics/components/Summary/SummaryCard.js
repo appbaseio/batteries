@@ -50,7 +50,7 @@ const SummaryCard = ({ percent, title, count, style, showPercent }) => (
 					flexDirection: count > 100 ? 'column' : 'row',
 				}}
 			>
-				{(+count).toLocaleString()}
+				{typeof count === 'string' ? count : (+count).toLocaleString()}
 				{showPercent ? (
 					<span style={{ lineHeight: count > 100 ? 1 : 'inherit' }}>
 						{`(${percent || '0.00'}%)`}
