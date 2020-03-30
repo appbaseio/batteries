@@ -50,6 +50,7 @@ class Summary extends React.Component {
 			avgSessionDuration,
 			bounceRate,
 			tier,
+			featureCustomEvents,
 		} = this.props;
 
 		if (isLoading) {
@@ -59,7 +60,7 @@ class Summary extends React.Component {
 
 		return (
 			<React.Fragment>
-				{isValidPlan(tier, false) ? (
+				{isValidPlan(tier, featureCustomEvents) ? (
 					<Row gutter={8}>
 						<Col sm={24} xs={24} xl={6}>
 							<SummaryCard
@@ -210,6 +211,7 @@ Summary.propTypes = {
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	tier: PropTypes.string.isRequired,
+	featureCustomEvents: PropTypes.bool.isRequired,
 };
 const mapStateToProps = (state, props) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);
@@ -233,6 +235,7 @@ const mapStateToProps = (state, props) => {
 		tier: get(state, '$getAppPlan.results.tier'),
 		errors: [get(state, '$getAppAnalyticsSummary.error')],
 		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+		featureCustomEvents: get(state, '$getAppPlan.results.feature_custom_events', false),
 	};
 };
 const mapDispatchToProps = (dispatch, props) => ({
