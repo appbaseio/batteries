@@ -1,4 +1,4 @@
-export default {
+const analyzerSettings = {
 	analysis: {
 		analyzer: {
 			autosuggest_analyzer: {
@@ -8,11 +8,6 @@ export default {
 			},
 			ngram_analyzer: {
 				filter: ['lowercase', 'asciifolding', 'ngram_filter'],
-				tokenizer: 'standard',
-				type: 'custom',
-			},
-			english_analyzer: {
-				filter: ['lowercase', 'asciifolding', 'porter_stem'],
 				tokenizer: 'standard',
 				type: 'custom',
 			},
@@ -33,3 +28,25 @@ export default {
 		},
 	},
 };
+
+export const synonymsSettings = synonyms => ({
+	analysis: {
+		filter: {
+			...analyzerSettings.analysis.filter,
+			synonyms_filter: {
+				type: 'synonym',
+				synonyms,
+			},
+		},
+		analyzer: {
+			...analyzerSettings.analysis.analyzer,
+			english_synonyms_analyzer: {
+				filter: ['lowercase', 'synonyms_filter', 'asciifolding', 'porter_stem'],
+				tokenizer: 'standard',
+				type: 'custom',
+			},
+		},
+	},
+});
+
+export default analyzerSettings;

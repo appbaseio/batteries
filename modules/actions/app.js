@@ -13,9 +13,7 @@ import {
 	updatePaymentMethod,
 } from '../../utils/app';
 import { getMappings, getAuthHeaders } from '../../utils/mappings';
-import {
- doDelete, doGet, doPost, doPatch,
-} from '../../utils/requestService';
+import { doDelete, doGet, doPost, doPatch } from '../../utils/requestService';
 import { getURL } from '../../../constants/config';
 
 /**
@@ -27,7 +25,9 @@ export function transferAppOwnership(id, info) {
 		dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP));
 		return transferOwnership(appId, info)
 			.then(res => dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP_ERROR, null, error)));
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.TRANSFER_OWNERSHIP_ERROR, null, error)),
+			);
 	};
 }
 
@@ -39,21 +39,25 @@ export function clearMappings(appName) {
 }
 
 export function getAppMappings(appName, credentials, url) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.GET_MAPPINGS));
 		return getMappings(appName, credentials, url)
-			.then(res => dispatch(
+			.then(res =>
+				dispatch(
 					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, {
 						appName,
 						credentials,
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.GET_MAPPINGS_ERROR, null, error)));
+				),
+			)
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.GET_MAPPINGS_ERROR, null, error)),
+			);
 	};
 }
 
 export function deleteApp(appName) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.DELETE_APP));
 		return DeleteApp(appName)
 			.then(res => dispatch(createAction(AppConstants.APP.DELETE_APP_SUCCESS, res)))
@@ -62,7 +66,7 @@ export function deleteApp(appName) {
 }
 
 export function getSharedApp(appId) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.GET_SHARE));
 		return getShare(appId)
 			.then(res => dispatch(createAction(AppConstants.APP.GET_SHARE_SUCCESS, res)))
@@ -71,11 +75,13 @@ export function getSharedApp(appId) {
 }
 
 export function createAppShare(appId, payload) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.CREATE_SHARE));
 		return createShare(appId, payload)
 			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SHARE_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.CREATE_SHARE_ERROR, null, error)));
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.CREATE_SHARE_ERROR, null, error)),
+			);
 	};
 }
 
@@ -86,15 +92,17 @@ export function deleteAppShare(username, payload, appId) {
 		const ACC_API = getURL();
 		return doDelete(`${ACC_API}/app/${appIdCalc}/share/${username}`, payload)
 			.then(res => dispatch(createAction(AppConstants.APP.DELETE_SHARE_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.DELETE_SHARE_ERROR, null, error)));
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.DELETE_SHARE_ERROR, null, error)),
+			);
 	};
 }
 
 export function getAppPlan() {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.GET_PLAN));
 		return fetchAppPlan()
-			.then((res) => {
+			.then(res => {
 				dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res, null));
 			})
 			.catch(error => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
@@ -102,7 +110,7 @@ export function getAppPlan() {
 }
 
 export function getClusterUsers(credentials) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.USERS.GET));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_users`, getAuthHeaders(credentials))
@@ -112,32 +120,38 @@ export function getClusterUsers(credentials) {
 }
 
 export function createClusterUser(credentials, payload) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.USERS.CREATE_USER));
 		const ACC_API = getURL();
 		return doPost(`${ACC_API}/_user`, payload, getAuthHeaders(credentials))
 			.then(res => dispatch(createAction(AppConstants.APP.USERS.CREATE_USER_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.USERS.CREATE_USER_SUCCESS, null, error)));
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.USERS.CREATE_USER_SUCCESS, null, error)),
+			);
 	};
 }
 
 export function updateClusterUser(credentials, username, payload) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.USERS.EDIT_USER));
 		const ACC_API = getURL();
 		return doPatch(`${ACC_API}/_user/${username}`, payload, getAuthHeaders(credentials))
 			.then(res => dispatch(createAction(AppConstants.APP.USERS.EDIT_USER_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.USERS.EDIT_USER_ERROR, null, error)));
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.USERS.EDIT_USER_ERROR, null, error)),
+			);
 	};
 }
 
 export function deleteClusterUser(credentials, username) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.USERS.DELETE_USER));
 		const ACC_API = getURL();
 		return doDelete(`${ACC_API}/_user/${username}`, getAuthHeaders(credentials))
 			.then(res => dispatch(createAction(AppConstants.APP.USERS.DELETE_USER_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.USERS.DELETE_USER_ERROR, null, error)));
+			.catch(error =>
+				dispatch(createAction(AppConstants.APP.USERS.DELETE_USER_ERROR, null, error)),
+			);
 	};
 }
 /**
@@ -161,22 +175,22 @@ export function deleteClusterUser(credentials, username) {
 // }
 
 export function createAppSubscription(stripeToken, plan, test) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION));
 		return createSubscription(stripeToken, plan, test)
 			.then(res => dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_SUCCESS, res)))
-			.catch((error) => {
+			.catch(error => {
 				dispatch(createAction(AppConstants.APP.CREATE_SUBSCRIPTION_ERROR, null, error));
 			});
 	};
 }
 
 export function deleteAppSubscription(payload) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION));
 		return deleteSubscription(payload)
 			.then(res => dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION_SUCCESS, res)))
-			.catch((error) => {
+			.catch(error => {
 				dispatch(createAction(AppConstants.APP.DELETE_SUBSCRIPTION_ERROR, null, error));
 			});
 	};
@@ -210,11 +224,11 @@ export function clearCurrentApp() {
 }
 
 export function updateAppPaymentMethod(stripeToken, product) {
-	return (dispatch) => {
+	return dispatch => {
 		dispatch(createAction(AppConstants.ACCOUNT.PAYMENT.UPDATE));
 		return updatePaymentMethod(stripeToken, product)
 			.then(res => dispatch(createAction(AppConstants.ACCOUNT.PAYMENT.UPDATE_SUCCESS, res)))
-			.catch((error) => {
+			.catch(error => {
 				dispatch(createAction(AppConstants.ACCOUNT.PAYMENT.UPDATE_ERROR, null, error));
 			});
 	};

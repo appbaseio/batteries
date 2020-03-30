@@ -274,3 +274,36 @@ export const createRule = rule => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getSearchSettings = name => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_searchrelevancy/${name}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getDefaultSearchSettings = () => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doGet(`${ACC_API}/_searchrelevancy/_default`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const putSearchSettings = (name, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(`${ACC_API}/_searchrelevancy/${name}`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const deleteSearchSettings = name => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doDelete(`${ACC_API}/_searchrelevancy/${name}`, { Authorization: `Basic ${authToken}` });
+};

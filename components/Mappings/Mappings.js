@@ -1,64 +1,48 @@
 import React, { Component } from 'react';
 import { string, object, func, bool } from 'prop-types';
-import {
-	Tooltip,
-	Icon,
-	Input,
-	Popover,
-	Card,
-	Button,
-	Modal,
-	Dropdown,
-	Menu,
-	Affix,
-	Slider,
-	message,
-} from 'antd';
+import { Tooltip, Icon, Button, Affix, message, Typography } from 'antd';
 import get from 'lodash/get';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
-import { isEqual, deleteObjectFromPath } from '../../utils';
+import { isEqual } from '../../utils';
 import {
 	updateMapping,
 	updateMappingES7,
 	transformToES5,
-	hasAggs,
 	reIndex,
-	closeIndex,
-	openIndex,
 	getSettings,
-	updateSynonyms,
 	REMOVED_KEYS,
 	getTypesFromMapping,
 	getESVersion,
-	putMapping,
 	getNodes,
+	updateMappingsProperties,
+	getUpdatedSettings,
+	applySynonyms,
+	getLanguage,
+	fetchSettings,
+	deleteMappingField,
+	addMappingField,
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
-import mappingUsecase from '../../utils/mappingUsecase';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import { setCurrentApp, getAppMappings as getMappings, clearMappings } from '../../modules/actions';
 
-import {
-	card,
-	cardTitle,
-	Header,
-	row,
-	title,
-	dropdown,
-	item,
-	subItem,
-	footerStyles,
-	deleteBtn,
-} from './styles';
+import { Header, footerStyles } from './styles';
 import NewFieldModal from './NewFieldModal';
 import ErrorModal from './ErrorModal';
-import { getURL } from '../../../constants/config';
-import analyzerSettings from '../../utils/analyzerSettings';
-
-const { TextArea } = Input;
+import { getURL, getVersion } from '../../../constants/config';
+import Synonyms from './components/Synonyms';
+import Replicas from './components/Replicas';
+import Shards from './components/Shards';
+import FeedbackModal from './components/FeedbackModal';
+import { synonymsSettings } from '../../utils/analyzerSettings';
+import MappingView from './components/MappingView';
+import MappingsContainer from './components/MappingsContainer';
+import { appendApp, removeAppData } from '../../../actions';
+import SearchPreviewModal from '../../../components/SearchPreviewModal';
 
 const fieldNameMessage = () => (
 	<div style={{ maxWidth: 220 }}>
@@ -73,59 +57,46 @@ const usecaseMessage = () => (
 	</div>
 );
 
-// eslint-disable-next-line
-const FeedbackModal = ({ show, onClose, timeTaken }) => (
-	<Modal
-		visible={show}
-		title="Re-index successful"
-		onOk={onClose}
-		closable={false}
-		onCancel={onClose}
-		okText="Done"
-	>
-		<p>The mappings have been updated and the data has been successfully re-indexed.</p>
-	</Modal>
-);
-
 class Mappings extends Component {
-	constructor(props) {
-		super(props);
+	state = {
+		mapping: {},
+		dirty: false,
+		showModal: false,
+		isLoading: false,
+		errorMessage: '',
+		showError: false,
+		errorLength: 0,
+		deletedPaths: [],
+		showFeedback: false,
+		timeTaken: '0',
+		synonyms: [],
+		credentials: '',
+		esVersion: '5',
+		shardsModal: false,
+		replicasModal: false,
+	};
 
-		this.state = {
-			mapping: null,
-			dirty: false,
-			showModal: false,
-			isLoading: true,
-			errorMessage: '',
-			showError: false,
-			errorLength: 0,
-			deletedPaths: [],
-			showFeedback: false,
-			timeTaken: '0',
-			synonyms: [],
-			credentials: '',
-			showSynonymModal: false,
-			esVersion: '5',
-			shardsModal: false,
-			replicasModal: false,
-		};
+	usecases = textUsecases;
 
-		this.usecases = textUsecases;
-		this.originalMapping = null;
-	}
+	originalMapping = null;
 
 	async componentDidMount() {
-		this.props.clearMappings(this.props.appName);
 		this.init();
 
-		const { appName, appbaseCredentials } = this.props;
-		const esVersion = await getESVersion(appName, appbaseCredentials);
-		const nodes = await getNodes(appName, appbaseCredentials);
+		const { appName, appbaseCredentials, showReplicas } = this.props;
+		const esVersion = getVersion() || (await getESVersion(appName, appbaseCredentials));
+		if (showReplicas) {
+			const nodes = await getNodes(appName, appbaseCredentials);
 
-		this.setState({
-			esVersion: esVersion.split('.')[0],
-			totalNodes: nodes._nodes.total,
-		});
+			this.setState({
+				esVersion: esVersion.split('.')[0],
+				totalNodes: nodes._nodes.total,
+			});
+		} else {
+			this.setState({
+				esVersion: esVersion.split('.')[0],
+			});
+		}
 	}
 
 	componentDidUpdate(prevProps) {
@@ -149,8 +120,7 @@ class Mappings extends Component {
 			// handle mappings + synonyms if credentials have changed
 			if (!isFetchingMapping) {
 				getAppMappings(appName, appbaseCredentials);
-				this.initializeShards();
-				this.initializeSynonymsData();
+				this.initializeSettings();
 			}
 		}
 	}
@@ -163,40 +133,43 @@ class Mappings extends Component {
 			updateCurrentApp,
 			getAppMappings,
 			appbaseCredentials,
+			mapping,
 			url,
 		} = this.props;
 
 		// initialise or update current app state
 		updateCurrentApp(appName, appId);
 
-		if (url) {
+		if (mapping && Object.keys(mapping).length > 0) {
+			this.handleMapping(mapping);
+		}
+
+		if (url && (!mapping || Object.keys(mapping).length === 0)) {
 			getAppMappings(appName, appbaseCredentials, url);
-			this.initializeShards();
-			this.initializeSynonymsData();
+			this.initializeSettings();
 		}
 	}
 
-	initializeSynonymsData = () => {
-		const { appbaseCredentials } = this.props;
-
-		this.fetchSynonyms(appbaseCredentials).then(synonyms => {
-			this.setState({
-				synonyms,
-			});
-		});
+	loadData = () => {
+		const { appName, getAppMappings, appbaseCredentials, url } = this.props;
+		getAppMappings(appName, appbaseCredentials, url);
+		this.initializeSettings();
 	};
 
-	initializeShards = () => {
-		const { appbaseCredentials } = this.props;
+	initializeSettings = () => {
+		const { appbaseCredentials, appName } = this.props;
 
-		this.fetchSettings(appbaseCredentials).then(({ shards, replicas }) => {
-			this.setState({
-				shards,
-				allocated_shards: shards,
-				replicas,
-				allocated_replicas: replicas,
-			});
-		});
+		fetchSettings({ appName, credentials: appbaseCredentials }).then(
+			({ shards, replicas, synonyms }) => {
+				this.setState({
+					shards,
+					allocated_shards: shards,
+					replicas,
+					allocated_replicas: replicas,
+					synonyms,
+				});
+			},
+		);
 	};
 
 	/**
@@ -207,44 +180,29 @@ class Mappings extends Component {
 		return type;
 	};
 
-	/**
-	 * used for rendering usecase in mappings view
-	 */
-	getUsecase = fields => {
-		const hasAggsFlag = hasAggs(fields);
-		let hasSearchFlag = 0;
-		if (fields.search) hasSearchFlag = 1;
-
-		if (hasAggsFlag && hasSearchFlag) return 'searchaggs';
-		if (!hasAggsFlag && hasSearchFlag) return 'search';
-		if (hasAggsFlag && !hasSearchFlag) return 'aggs';
-		return 'none';
-	};
-
 	setMapping = (field, type, usecase) => {
 		const { mapping: currentMapping, esVersion } = this.state;
+		const { onChange, onUsecaseChange } = this.props;
 		let mapping = null;
 		if (+esVersion >= 7) {
 			mapping = updateMappingES7(currentMapping, field, type, usecase);
 		} else {
 			mapping = updateMapping(currentMapping, field, type, usecase, esVersion);
 		}
-		this.setState({
-			mapping,
-			dirty: true,
-		});
-	};
-
-	handleShardsModal = () => {
-		this.setState(prevState => ({
-			shardsModal: !prevState.shardsModal,
-		}));
-	};
-
-	handleReplicasModal = () => {
-		this.setState(prevState => ({
-			replicasModal: !prevState.replicasModal,
-		}));
+		this.setState(
+			{
+				mapping,
+				dirty: true,
+			},
+			() => {
+				if (onChange) {
+					onChange(mapping);
+					if (onUsecaseChange) {
+						onUsecaseChange(field, type, usecase);
+					}
+				}
+			},
+		);
 	};
 
 	handleSlider = (name, value) => {
@@ -253,10 +211,16 @@ class Mappings extends Component {
 		});
 	};
 
+	handleModal = name => {
+		this.setState(prevState => ({
+			[name]: !prevState[name],
+		}));
+	};
+
 	handleMapping = async res => {
 		if (res) {
 			const { appName, appbaseCredentials } = this.props;
-			const fullVersion = await getESVersion(appName, appbaseCredentials);
+			const fullVersion = getVersion() || (await getESVersion(appName, appbaseCredentials));
 
 			const esVersion = fullVersion.split('.')[0];
 			let mapping = res ? transformToES5(res) : res;
@@ -284,100 +248,44 @@ class Mappings extends Component {
 		}
 	};
 
-	handleSynonymModal = () => {
-		this.setState({
-			showSynonymModal: !this.state.showSynonymModal,
-		});
-	};
-
 	deletePath = (path, removeType = false) => {
-		let { activeType } = this.state;
-		const { deletedPaths: _deletedPaths, mapping: _mapping, esVersion } = this.state;
-		const mapping = JSON.parse(JSON.stringify(_mapping));
-		let deletedPaths = [..._deletedPaths];
+		const {
+			deletedPaths: _deletedPaths,
+			mapping: _mapping,
+			esVersion,
+			activeType,
+		} = this.state;
 
-		if (esVersion < 7) {
-			let fields = path.split('.');
-			if (fields[fields.length - 1] === 'properties') {
-				// when deleting an object
-				fields = fields.slice(0, -1);
-			}
-
-			if (removeType) {
-				const type = fields[0];
-				// remove from active types
-				activeType = activeType.filter(field => field !== type);
-
-				// add all the fields to excludeFields
-				const deletedTypesPath = Object.keys(_mapping[type]).map(
-					property => `${type}.properties.${property}`,
-				);
-				deletedPaths = [...deletedPaths, ...deletedTypesPath];
-			} else {
-				deletedPaths = [..._deletedPaths, path];
-			}
-
-			fields.reduce((acc, val, index) => {
-				if (index === fields.length - 1) {
-					delete acc[val];
-					return true;
-				}
-				return acc[val];
-			}, mapping);
-		} else if (removeType) {
-			const field = path
-				.split('.')
-				.slice(1, path.split('.').length - 1)
-				.pop();
-
-			if (field) {
-				const pathToDelete = path
-					.split('.')
-					.slice(1, path.split('.').length - 1)
-					.join('.');
-				deletedPaths = [...deletedPaths, pathToDelete];
-				deleteObjectFromPath(mapping, pathToDelete);
-			} else {
-				const pathsToDelete = Object.keys(mapping.properties);
-				deletedPaths = pathsToDelete;
-				delete mapping.properties;
-			}
-		} else {
-			const pathToDelete = path
-				.split('.')
-				.slice(1)
-				.join('.');
-			deletedPaths = [...deletedPaths, pathToDelete];
-			deleteObjectFromPath(
-				mapping,
-				path
-					.split('.')
-					.slice(1)
-					.join('.'),
-			);
-		}
+		const updatedValues = deleteMappingField({
+			_deletedPaths,
+			_mapping,
+			types: activeType,
+			esVersion,
+			removeType,
+			path,
+		});
 
 		this.setState({
 			dirty: true,
-			mapping,
-			deletedPaths,
-			activeType,
+			...updatedValues,
 		});
 	};
 
 	cancelChanges = () => {
-		this.setState({
-			mapping: this.originalMapping,
-			dirty: false,
-			deletedPaths: [],
-			activeType: getTypesFromMapping(this.originalMapping),
-		});
-	};
-
-	toggleModal = () => {
-		this.setState({
-			showModal: !this.state.showModal,
-		});
+		const { onChange } = this.props;
+		this.setState(
+			{
+				mapping: this.originalMapping,
+				dirty: false,
+				deletedPaths: [],
+				activeType: getTypesFromMapping(this.originalMapping),
+			},
+			() => {
+				if (onChange) {
+					onChange(this.originalMapping);
+				}
+			},
+		);
 	};
 
 	hideErrorModal = () => {
@@ -394,110 +302,43 @@ class Mappings extends Component {
 		});
 	};
 
-	fetchSynonyms = credentials => {
-		const { url, appName } = this.props;
-		return getSettings(appName, credentials, url).then(data => {
-			if (get(data[appName], 'settings.index')) {
-				const { index } = data[appName].settings;
-				return index.analysis && index.analysis.filter.synonyms_filter
-					? index.analysis.filter.synonyms_filter.synonyms.join('\n')
-					: '';
-			}
-			return '';
-		});
-	};
-
-	fetchSettings = credentials => {
-		const { appName } = this.props;
-		return getSettings(appName, credentials).then(data => {
-			const shards = get(data[appName], 'settings.index.number_of_shards');
-			const replicas = get(data[appName], 'settings.index.number_of_replicas');
-
-			return { shards, replicas };
-		});
-	};
-
 	addField = ({ name, type, usecase }) => {
-		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
-		const fields = name.split('.');
-		let newUsecase = {};
-
-		if (usecase) {
-			newUsecase = mappingUsecase[usecase];
+		const { mapping: _mapping, esVersion } = this.state;
+		let currentMappings = _mapping;
+		if ((!currentMappings || !currentMappings.properties) && +esVersion >= 7) {
+			// Default Value for Version 7 Mappings
+			currentMappings = { properties: {} };
 		}
 
-		if (+this.state.esVersion >= 7) {
-			const fieldChanged = name.split('.')[1];
-			mapping.properties[fieldChanged] = {
-				type,
-				...newUsecase,
-			};
-		} else {
-			fields.reduce((acc, val, index) => {
-				if (index === fields.length - 1) {
-					acc[val] = {
-						type,
-						...newUsecase,
-					};
-					return true;
-				}
-				if (!acc[val] || !acc[val].properties) {
-					acc[val] = { properties: {} };
-				}
-				return acc[val].properties;
-			}, mapping);
+		if (
+			(!currentMappings || !currentMappings._doc || !currentMappings._doc.properties) &&
+			+esVersion >= 6 &&
+			+esVersion < 7
+		) {
+			// Default Value for Version 6 Mappings
+			currentMappings = { _doc: { properties: {} } };
 		}
+
+		const updatedValues = addMappingField({
+			name,
+			type,
+			usecase,
+			_mapping: currentMappings,
+			esVersion,
+		});
 
 		this.setState({
 			dirty: true,
-			mapping,
+			...updatedValues,
 		});
 	};
 
-	getUpdatedSettings = settings => {
-		const { shards, replicas } = this.state;
-		const updatedSettings = {
-			index: {
-				number_of_shards: shards,
-				number_of_replicas: replicas,
-			},
-		};
-		if (settings && settings.index && settings.index.analysis) {
-			const {
-				index: {
-					analysis: { analyzer: currentAnalyzer, filter: currentFilter },
-				},
-			} = settings;
-			const {
-				analysis: { analyzer, filter },
-			} = analyzerSettings;
-
-			Object.keys(analyzer).forEach(key => {
-				if (!currentAnalyzer[key]) {
-					currentAnalyzer[key] = analyzer[key];
-				}
-			});
-
-			Object.keys(filter).forEach(key => {
-				if (!currentFilter[key]) {
-					currentFilter[key] = filter[key];
-				}
-			});
-
-			updatedSettings.index.analysis = settings.index.analysis;
-
-			return updatedSettings;
-		}
-		updatedSettings.index.analysis = analyzerSettings.analysis;
-		return updatedSettings;
-	};
-
-	reIndex = async () => {
+	reIndex = async callback => {
 		this.setState({
 			isLoading: true,
 		});
 
-		const { deletedPaths, activeType, esVersion } = this.state;
+		const { deletedPaths, activeType, esVersion, shards, replicas } = this.state;
 
 		const { appId, credentials } = this.props;
 
@@ -505,10 +346,16 @@ class Mappings extends Component {
 
 		let appSettings = await getSettings(appId, credentials).then(data => data[appId].settings);
 
-		appSettings = this.getUpdatedSettings(appSettings);
+		appSettings = getUpdatedSettings({ settings: appSettings, shards, replicas });
 
-		if (get(appSettings, 'index.analysis.analyzer.english_synonyms_analyzer')) {
-			mapping = this.updateField();
+		const language = getLanguage(appSettings);
+		if (language) {
+			mapping = updateMappingsProperties({
+				types: activeType,
+				esVersion,
+				mapping,
+				language,
+			});
 		}
 
 		const excludedFields = deletedPaths
@@ -518,320 +365,55 @@ class Mappings extends Component {
 				return path.substring(i);
 			});
 
-		reIndex(mapping, appId, excludedFields, activeType, esVersion, credentials, appSettings)
-			.then(() => {
-				this.setState({
-					showFeedback: true,
-				});
+		const currentTime = Date.now();
+
+		reIndex({
+			mappings: mapping,
+			appId,
+			excludeFields: excludedFields,
+			type: activeType,
+			version: esVersion,
+			credentials,
+			settings: appSettings,
+		})
+			.then(async () => {
+				if (callback && typeof callback === 'function') {
+					await callback();
+				}
+				this.handleReindex();
 			})
 			.catch(err => {
-				this.setState({
-					isLoading: false,
-					showError: true,
-					errorLength: Array.isArray(err) && err.length,
-					errorMessage: JSON.stringify(err, null, 4),
-				});
+				const failedTime = Date.now();
+				if (failedTime - currentTime >= 60000) {
+					this.setState({
+						showFeedback: true,
+					});
+				} else {
+					this.setState({
+						isLoading: false,
+						showError: true,
+						errorLength: Array.isArray(err) && err.length,
+						errorMessage: JSON.stringify(err, null, 4),
+					});
+				}
 			});
-	};
-
-	renderUsecase = (field, fieldname) => {
-		if (field.type === 'text') {
-			const selected = field.fields ? this.getUsecase(field.fields, this.usecases) : 'none';
-
-			return this.renderDropDown({
-				name: 'field-usecase',
-				value: selected,
-				handleChange: e => this.setMapping(fieldname, 'text', e.key),
-				options: Object.entries(this.usecases).map(entry => ({
-					value: entry[0],
-					label: entry[1],
-				})),
-			});
-		}
-		return null;
-	};
-
-	getIcon = type => {
-		const iconStyle = { margin: 0, fontSize: 13 };
-		switch (type) {
-			case 'text':
-			case 'string':
-			case 'keyword':
-				return <Icon style={iconStyle} type="file-text" theme="outlined" />;
-			case 'long':
-			case 'integer':
-				return <div style={iconStyle}>#</div>;
-			case 'geo_point':
-			case 'geo_shape':
-				return <Icon style={iconStyle} type="environment" theme="outlined" />;
-			case 'date':
-				return <Icon style={iconStyle} type="calendar" theme="outlined" />;
-			case 'double':
-			case 'float':
-				return <div style={iconStyle}>π</div>;
-			case 'boolean':
-				return <Icon style={iconStyle} type="check" theme="outlined" />;
-			case 'object':
-				return <div style={iconStyle}>{'{...}'}</div>;
-			case 'image':
-				return <Icon style={iconStyle} type="file-jpg" theme="outlined" />;
-			default:
-				return <Icon style={iconStyle} type="file-unknown" theme="outlined" />;
-		}
 	};
 
 	getConversionMap = field => conversionMap[field] || [];
 
-	updateShards = async () => {
-		this.handleShardsModal();
+	updateShards = () => {
+		this.handleModal('shardsModal');
 		this.reIndex();
 	};
 
-	updateReplicas = async () => {
-		this.handleReplicasModal();
+	updateReplicas = () => {
+		this.handleModal('replicasModal');
 		this.reIndex();
 	};
 
-	renderOptions = (originalFields, fields, field) => {
-		const options = [];
-
-		if (originalFields[field]) {
-			options.push({
-				label: this.getType(originalFields[field].type),
-				value: this.getType(originalFields[field].type),
-			});
-			this.getConversionMap(this.getType(originalFields[field].type)).map(itemType =>
-				options.push({
-					label: this.getType(itemType)
-						.split('_')
-						.join(' '),
-					value: this.getType(itemType),
-				}),
-			);
-			return options;
-		}
-		options.push({
-			label: this.getType(fields[field].type),
-			value: this.getType(fields[field].type),
-		});
-
-		this.getConversionMap(this.getType(fields[field].type)).map(itemType =>
-			options.push({
-				label: this.getType(itemType)
-					.split('_')
-					.join(' '),
-				value: this.getType(itemType),
-			}),
-		);
-		return options;
-	};
-
-	renderDropDown = ({
-		name,
-		options,
-		value,
-		handleChange // prettier-ignore
-	}) => {
-		const menu = (
-			<Menu onClick={e => handleChange(e)}>
-				{options.map(option => (
-					<Menu.Item key={option.value}>{option.label}</Menu.Item>
-				))}
-			</Menu>
-		);
-		const selectedOption = options.find(option => option.value === value);
-		return (
-			<Dropdown overlay={menu}>
-				<Button className={dropdown}>
-					{(selectedOption && selectedOption.label) || value}
-					<Icon type="down" />
-				</Button>
-			</Dropdown>
-		);
-	};
-
-	renderMapping = (type, fields, originalFields, address = '', mappingType) => {
-		const nestedObj = {
-			type: 'nested',
-		};
-		if (fields) {
-			return (
-				<section key={type} className={row}>
-					<h4 className={`${title} ${deleteBtn}`}>
-						<span title={type}>
-							{mappingType === 'nested' ? (
-								<Popover content={<pre>{JSON.stringify(nestedObj, null, 2)}</pre>}>
-									<div
-										css={{
-											justifyContent: 'center',
-											alignItems: 'center',
-											width: 30,
-											height: 31,
-											border: '1px solid #ddd',
-											borderRadius: '50%',
-											display: 'inline-flex',
-											marginRight: 12,
-											background: 'white',
-											color: '#595959',
-											fontWeight: 'normal',
-										}}
-									>
-										{this.getIcon('object')}
-									</div>
-								</Popover>
-							) : null}
-							{type}
-						</span>
-						<a
-							type="danger"
-							size="small"
-							onClick={() => {
-								this.deletePath(address, true);
-							}}
-						>
-							<Icon type="delete" />
-							Delete
-						</a>
-					</h4>
-					{Object.keys(fields).map(field => {
-						if (fields[field].properties) {
-							return this.renderMapping(
-								field,
-								fields[field].properties,
-								originalFields[field].properties,
-								`${address ? `${address}.` : ''}${field}.properties`,
-								fields[field].type,
-							);
-						}
-						const properties = fields[field];
-						const propertyType = properties.type ? properties.type : 'default';
-						const flex = {
-							display: 'flex',
-							flexDirection: 'row',
-							alignItems: 'center',
-						};
-
-						const mappingInfo = (
-							<Popover content={<pre>{JSON.stringify(properties, null, 2)}</pre>}>
-								<div
-									css={{
-										...flex,
-										justifyContent: 'center',
-										width: 30,
-										height: 30,
-										border: '1px solid #ddd',
-										borderRadius: '50%',
-										display: 'inline-flex',
-										marginRight: 12,
-									}}
-								>
-									{this.getIcon(propertyType)}
-								</div>
-							</Popover>
-						);
-
-						return (
-							<div key={field} className={item}>
-								<div className={deleteBtn}>
-									<span title={field} css={flex}>
-										{mappingInfo}
-										{field}
-									</span>
-									<a
-										onClick={() => {
-											const addressField = `${address}.${field}`;
-											this.deletePath(addressField);
-										}}
-									>
-										<Icon type="delete" />
-										Delete
-									</a>
-								</div>
-								<div className={subItem}>
-									{this.renderUsecase(fields[field], `${address}.${field}`)}
-									{this.renderDropDown({
-										name: `${field}-mapping`,
-										value: fields[field].type,
-										handleChange: e =>
-											this.setMapping(`${address}.${field}`, e.key),
-										options: this.renderOptions(originalFields, fields, field),
-									})}
-								</div>
-							</div>
-						);
-					})}
-				</section>
-			);
-		}
-		return null;
-	};
-
-	transformMappings = properties => {
-		return Object.keys(properties).reduce((agg, key) => {
-			if (properties[key].properties) {
-				return {
-					...agg,
-					[key]: {
-						...properties[key],
-						properties: this.transformMappings(properties[key].properties),
-					},
-				};
-			}
-			const data = properties[key];
-			if (data && data.fields && data.fields.english) {
-				data.fields.english.search_analyzer = 'english_synonyms_analyzer';
-				data.fields.english.analyzer = 'english_analyzer';
-			} else if (data && data.fields) {
-				data.fields.english = {
-					type: 'text',
-					index: 'true',
-					analyzer: 'english_analyzer',
-					search_analyzer: 'english_synonyms_analyzer',
-				};
-			}
-			return { ...agg, [key]: data };
-		}, {});
-	};
-
-	updateField = () => {
-		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
-		const { activeType, esVersion } = this.state;
-		let isMappingsPresent = false;
-		if (+esVersion >= 7) {
-			isMappingsPresent = mapping && mapping.properties;
-		} else {
-			isMappingsPresent = mapping && activeType[0] && mapping[activeType[0]];
-		}
-		if (isMappingsPresent) {
-			if (+esVersion >= 7) {
-				const updatedProperties = this.transformMappings(
-					JSON.parse(JSON.stringify(mapping.properties)),
-				);
-				mapping.properties = {
-					...mapping.properties,
-					...updatedProperties,
-				};
-			} else {
-				return activeType.reduce((agg, type) => {
-					return {
-						...agg,
-						[type]: mapping[type].properties
-							? {
-									properties: this.transformMappings(mapping[type].properties),
-							  }
-							: mapping[type],
-					};
-				}, {});
-			}
-		}
-		return mapping;
-	};
-
-	updateSynonyms = () => {
+	updateSynonyms = async () => {
 		const credentials = this.props.credentials || this.state.credentials;
-		const { url } = this.props;
-
-		let synonymsUpdated = false;
+		const { url, appName, mapping, appId } = this.props;
 
 		const synonyms = this.state.synonyms.split('\n').map(pair =>
 			pair
@@ -839,218 +421,224 @@ class Mappings extends Component {
 				.map(synonym => synonym.trim())
 				.join(','),
 		);
-		const { mapping, appId } = this.props;
+
 		const { esVersion, activeType } = this.state;
 
 		this.setState({
 			synonymsLoading: true,
 		});
 
-		closeIndex(this.props.appName, credentials, url)
-			.then(data => {
-				if (data && data.Message && data.Message.includes('is not allowed by Amazon Elasticsearch Service.')) {
-					throw new Error('AWS');
-				} else {
-					return data;
-				}
-			})
-			.then(() => updateSynonyms(this.props.appName, credentials, url, synonyms))
-			.then(data => data.acknowledged)
-			.then(isUpdated => {
-				if (isUpdated) {
-					this.fetchSynonyms(credentials).then(newSynonyms =>
-						this.setState({
-							synonyms: newSynonyms,
-						}),
-					);
-					synonymsUpdated = true;
-				} else {
-					this.setState({
-						showSynonymModal: false,
-						showError: true,
-						errorMessage: 'Unable to update Synonyms',
-					});
-				}
-			})
-			.then(() => openIndex(this.props.appName, credentials, url))
-			.then(() => {
-				if (synonymsUpdated) {
-					// If synonyms request is successful than update mapping via PUT request
-					const { activeType, esVersion } = this.state;
-					const updatedMappings = this.updateField();
-					let mappings = {};
-					if (+esVersion >= 7) {
-						mappings = updatedMappings;
-					} else {
-						mappings = updatedMappings[activeType[0]];
-					}
-					putMapping(
-						this.props.appName,
-						credentials,
-						mappings,
-						activeType[0],
-						this.state.esVersion,
-					).then(({ acknowledged }) => {
-						if (acknowledged) {
-							message.success('Synonyms Updated');
-							this.setState({
-								mapping: updatedMappings,
-							});
-						}
-					});
-				}
-				this.setState({
-					showSynonymModal: false,
-					synonymsLoading: false,
-				});
-			})
-			.catch(e => {
-				if (e.message === 'AWS') {
-					const appSettings = {
-						analysis: {
-							filter: {
-								...analyzerSettings.analysis.filter,
-								synonyms_filter: {
-									type: 'synonym',
-									synonyms,
-								},
-							},
-							analyzer: {
-								...analyzerSettings.analysis.analyzer,
-								english_synonyms_analyzer: {
-									filter: [
-										'lowercase',
-										'synonyms_filter',
-										'asciifolding',
-										'porter_stem',
-									],
-									tokenizer: 'standard',
-									type: 'custom',
-								},
-								english_analyzer: {
-									filter: ['lowercase', 'asciifolding', 'porter_stem'],
-									tokenizer: 'standard',
-									type: 'custom',
-								},
-							},
-						},
-					};
-					reIndex(mapping, appId, [], activeType, esVersion, credentials, appSettings)
-						.then(() => {
-							this.setState({
-								showFeedback: true,
-							});
-						})
-						.catch(err => {
-							this.setState({
-								isLoading: false,
-								showError: true,
-								errorLength: Array.isArray(err) && err.length,
-								errorMessage: JSON.stringify(err, null, 4),
-							});
-						});
-				} else {
-					console.error(e);
-					openIndex(this.props.appName, credentials, url);
-					this.setState({
-						showSynonymModal: false,
-						showError: true,
-						errorMessage: 'Unable to update Synonyms',
-					});
-				}
+		try {
+			const response = await applySynonyms({
+				appName,
+				credentials,
+				url,
+				synonyms,
+				types: activeType,
+				esVersion,
+				appId,
+				mapping,
 			});
+			if (response) {
+				message.success('Synonyms Updated');
+			}
+			this.setState({
+				synonymsLoading: false,
+				showSynonymModal: false,
+			});
+		} catch (e) {
+			if (e.message === 'AWS') {
+				const appSettings = synonymsSettings(synonyms);
+				reIndex({
+					mappings: mapping,
+					appId,
+					excludeFields: [],
+					type: activeType,
+					version: esVersion,
+					credentials,
+					settings: appSettings,
+				})
+					.then(() => {
+						this.handleReindex();
+					})
+					.catch(err => {
+						console.log(err);
+						this.setState({
+							isLoading: false,
+							showError: true,
+							errorLength: Array.isArray(err) && err.length,
+							errorMessage: JSON.stringify(err, null, 4),
+						});
+					});
+			} else {
+				this.setState({
+					synonymsLoading: false,
+					showSynonymModal: false,
+					showError: true,
+					errorMessage: 'Unable to update Synonyms',
+				});
+				console.error(e);
+			}
+		}
+	};
+
+	handleReindex = () => {
+		this.setState({
+			showFeedback: false,
+			isLoading: false,
+			dirty: false,
+		});
+		this.loadData();
+	};
+
+	handleTimeout = () => {
+		this.handleReindex();
 	};
 
 	render() {
-		if (this.props.loadingError) {
-			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
+		const {
+			loadingError,
+			isFetchingMapping,
+			showShards,
+			showReplicas,
+			showSynonyms,
+			showMappingInfo,
+			renderLoader,
+			renderError,
+			renderMappingError,
+			showCardWrapper,
+			hideSearchType,
+			hideAggsType,
+			hideNoType,
+			hideDataType,
+			hideDelete,
+			column,
+			renderFooter,
+			hidePropertiesType,
+			appName,
+			renderMappingInfo,
+			onDeleteField,
+			hideNoneTextType,
+			hideGeoType,
+		} = this.props;
+
+		const {
+			mapping,
+			isLoading,
+			mappingsError,
+			showError,
+			errorLength,
+			errorMessage,
+			dirty,
+			esVersion,
+		} = this.state;
+		if (loadingError) {
+			return <p style={{ padding: 20 }}>{JSON.stringify(loadingError)}</p>;
 		}
-		if ((this.props.isFetchingMapping || this.state.isLoading) && !this.state.mapping) {
+		if (isFetchingMapping) {
 			return <Loader show message="Fetching mappings... Please wait!" />;
 		}
-		if (this.state.mappingsError) {
+		if ((isFetchingMapping || isLoading) && !mapping) {
+			if (renderLoader) {
+				return renderLoader();
+			}
+			return <Loader show message="Fetching mappings... Please wait!" />;
+		}
+		if (mappingsError) {
+			if (renderMappingError) {
+				return renderMappingError({
+					showError,
+					error: mappingsError,
+				});
+			}
 			return (
 				<ErrorModal
-					show={this.state.showError}
+					show={showError}
 					message="Some error occured while fetching the mappings"
-					error={JSON.stringify(this.state.mappingsError, null, 2)}
+					error={JSON.stringify(mappingsError, null, 2)}
 					onClose={this.hideErrorModal}
 				/>
 			);
 		}
-		if (!this.state.mapping) return null;
+		if (!mapping) return null;
+		let hasMappings = true;
+
+		if (+esVersion >= 7 && JSON.stringify(mapping) === JSON.stringify({ properties: {} })) {
+			hasMappings = false;
+		}
+
+		if (
+			+esVersion >= 6 &&
+			+esVersion < 7 &&
+			JSON.stringify(mapping) === JSON.stringify({ _doc: { properties: {} } })
+		) {
+			hasMappings = false;
+		}
+
+		if (+esVersion < 6 && Object.keys(mapping).length === 0) {
+			hasMappings = false;
+		}
+
 		return (
 			<React.Fragment>
-				<Card
-					hoverable
-					title={
-						<div className={cardTitle}>
-							<div>
-								<h4>Manage Shards</h4>
-								<p>Configure the number of shards for your app.</p>
-							</div>
-							<Button onClick={this.handleShardsModal} type="primary">
-								Change Shards
-							</Button>
-						</div>
-					}
-					bodyStyle={{ padding: 0 }}
-					className={card}
-				/>
-				<Card
-					hoverable
-					title={
-						<div className={cardTitle}>
-							<div>
-								<h4>Manage Replicas</h4>
-								<p>Configure the number of replicas for your app.</p>
-							</div>
-							<Button onClick={this.handleReplicasModal} type="primary">
-								Change Replicas
-							</Button>
-						</div>
-					}
-					bodyStyle={{ padding: 0 }}
-					className={card}
-				/>
-				<Card
-					hoverable
-					title={
-						<div className={cardTitle}>
-							<div>
-								<h4>Manage Synonyms</h4>
-								<p>Add new synonyms or edit the existing ones.</p>
-							</div>
-							<Button type="primary" onClick={this.handleSynonymModal}>
-								{this.state.synonyms ? 'Edit Synonym' : 'Add Synonym'}
-							</Button>
-						</div>
-					}
-					bodyStyle={{ padding: 0 }}
-					className={card}
-				/>
-				<Card
-					hoverable
-					title={
-						<div className={cardTitle}>
-							<div>
-								<h4>Manage Mappings</h4>
-								<p>Add new fields or change the types of existing ones.</p>
-							</div>
-							<Button onClick={this.toggleModal} type="primary">
-								Add New Field
-							</Button>
-						</div>
-					}
-					bodyStyle={{ padding: 0 }}
-					className={card}
+				{showShards ? (
+					<Shards
+						handleSlider={this.handleSlider}
+						updateShards={this.updateShards}
+						handleModal={this.handleModal}
+						shardsModal={this.state.shardsModal}
+						shards={this.state.shards}
+						allocated_shards={this.state.allocated_shards}
+					/>
+				) : null}
+
+				{showReplicas ? (
+					<Replicas
+						handleSlider={this.handleSlider}
+						updateReplicas={this.updateReplicas}
+						handleModal={this.handleModal}
+						replicasModal={this.state.replicasModal}
+						totalNodes={this.state.totalNodes}
+						replicas={this.state.replicas}
+						allocated_replicas={this.state.allocated_replicas}
+					/>
+				) : null}
+				{showSynonyms ? (
+					<Synonyms
+						synonyms={this.state.synonyms}
+						handleModal={this.handleModal}
+						showSynonymModal={this.state.showSynonymModal}
+						handleChange={this.handleChange}
+						updateSynonyms={this.updateSynonyms}
+						synonymsLoading={this.state.synonymsLoading}
+					/>
+				) : null}
+				<MappingsContainer
+					showCardWrapper={showCardWrapper}
+					showMappingInfo={showMappingInfo}
+					handleModal={this.handleModal}
 				>
-					<div style={{ padding: '5px 20px' }}>
+					<div style={{ padding: showCardWrapper ? '5px 20px' : 0 }}>
+						<Tooltip title="Fetch latest mappings">
+							<Typography.Text
+								style={{
+									display: 'inline-block',
+									color: '#1890ff',
+									cursor: 'pointer',
+									padding: '10px 0',
+								}}
+								strong
+								onClick={this.loadData}
+							>
+								<Icon type="reload" style={{ margin: 0, marginRight: 5 }} />
+								Reload Mappings
+							</Typography.Text>
+						</Tooltip>
 						<Header>
 							<span>
 								Field Name
 								<Tooltip title={fieldNameMessage}>
-									<span>
+									<span style={{ marginLeft: 5 }}>
 										<Icon type="info-circle" />
 									</span>
 								</Tooltip>
@@ -1059,153 +647,112 @@ class Mappings extends Component {
 								<span className="col">
 									Use case
 									<Tooltip title={usecaseMessage}>
-										<span>
+										<span style={{ marginLeft: 5 }}>
 											<Icon type="info-circle" />
 										</span>
 									</Tooltip>
 								</span>
-								<span className="col">Data Type</span>
+								{hideDataType ? null : (
+									<span className="col">
+										Data Type
+										<Tooltip title="Type of data in the corresponding field.">
+											<span style={{ marginLeft: 5 }}>
+												<Icon type="info-circle" />
+											</span>
+										</Tooltip>
+									</span>
+								)}
+								{column ? <span className="col">{column.title}</span> : null}
 							</div>
 						</Header>
-						{!this.state.mapping || !Object.keys(this.state.mapping).length ? (
-							<p style={{ padding: '40px 0', color: '#999', textAlign: 'center' }}>
-								No data or mappings found
-							</p>
-						) : null}
-						{Object.keys(this.state.mapping).map(field => {
-							if (this.state.mapping[field]) {
-								let currentMappingFields = this.state.mapping[field].properties;
-								let originalMappingFields = this.originalMapping[field]
-									? this.originalMapping[field].properties
-									: this.state.mapping[field].properties;
-								const fieldName = `${field}.properties`;
-								const typeName = this.state.mapping[field].type;
-
-								if (+this.state.esVersion >= 7) {
-									if (field !== 'properties') {
-										return null;
-									}
-									currentMappingFields = this.state.mapping[field];
-									originalMappingFields = this.originalMapping[field]
-										? this.originalMapping[field]
-										: this.state.mapping[field];
-								}
-
-								return this.renderMapping(
-									field,
-									currentMappingFields,
-									originalMappingFields,
-									fieldName,
-									typeName,
-								);
-							}
-							return null;
-						})}
+						<MappingView
+							getType={this.getType}
+							getConversionMap={this.getConversionMap}
+							mapping={this.state.mapping}
+							originalMapping={this.originalMapping}
+							esVersion={this.state.esVersion}
+							hideGeoType={hideGeoType}
+							setMapping={this.setMapping}
+							dirty={dirty}
+							onDeleteField={onDeleteField}
+							hideNoneTextType={hideNoneTextType}
+							usecases={this.usecases}
+							hideAggsType={hideAggsType}
+							hasMappings={hasMappings}
+							renderMappingInfo={renderMappingInfo}
+							hideDataType={hideDataType}
+							hideNoType={hideNoType}
+							hidePropertiesType={hidePropertiesType}
+							columnRender={column && column.render}
+							hideDelete={hideDelete}
+							hideSearchType={hideSearchType}
+							deletePath={this.deletePath}
+						/>
 					</div>
-					{this.state.dirty ? (
+					{!renderFooter ? (
 						<Affix offsetBottom={0}>
 							<div className={footerStyles}>
-								<Button
-									type="primary"
-									size="large"
-									style={{ margin: '0 10px' }}
-									onClick={this.reIndex}
-								>
-									Confirm Mapping Changes
-								</Button>
-								<Button size="large" onClick={this.cancelChanges}>
-									Cancel
-								</Button>
+								<SearchPreviewModal app={appName} />
+								<div>
+									<Button
+										type="primary"
+										size="large"
+										style={{ margin: '0 10px' }}
+										onClick={this.reIndex}
+										disabled={!dirty}
+									>
+										Confirm Mapping Changes
+									</Button>
+									<Button
+										size="large"
+										disabled={!dirty}
+										onClick={this.cancelChanges}
+									>
+										Cancel
+									</Button>
+								</div>
 							</div>
 						</Affix>
 					) : null}
-				</Card>
+
+					{renderFooter
+						? renderFooter({
+								cancelChanges: this.cancelChanges,
+								isDirty: dirty,
+								confirmChanges: this.reIndex,
+						  })
+						: null}
+				</MappingsContainer>
 				<NewFieldModal
 					types={Object.keys(this.state.mapping).filter(
 						type => !REMOVED_KEYS.includes(type),
 					)}
 					show={this.state.showModal}
 					addField={this.addField}
-					onClose={this.toggleModal}
+					onClose={() => this.handleModal('showModal')}
 					esVersion={this.state.esVersion}
 					deletedPaths={this.state.deletedPaths}
 				/>
-				<Loader
-					show={this.state.isLoading}
-					message="Re-indexing your data... Please wait!"
-				/>
-				<ErrorModal
-					show={this.state.showError}
-					errorLength={this.state.errorLength}
-					error={this.state.errorMessage}
-					onClose={this.hideErrorModal}
-				/>
+				<Loader show={isLoading} message="Re-indexing your data... Please wait!" />
+				{renderError ? (
+					renderError({
+						showError,
+						error: errorMessage,
+						length: errorLength,
+					})
+				) : (
+					<ErrorModal
+						show={showError}
+						errorLength={errorLength}
+						error={errorMessage}
+						onClose={this.hideErrorModal}
+					/>
+				)}
 				<FeedbackModal
 					show={this.state.showFeedback}
 					timeTaken={this.state.timeTaken}
-					onClose={() => {
-						window.location.href = window.location.origin;
-					}}
+					onClose={this.handleTimeout}
 				/>
-				<Modal
-					visible={this.state.showSynonymModal}
-					onOk={this.updateSynonyms}
-					title="Add Synonym"
-					okText={this.state.synonyms ? 'Save Synonym' : 'Add Synonym'}
-					okButtonProps={{loading: this.state.synonymsLoading}}
-					onCancel={this.handleSynonymModal}
-				>
-					<TextArea
-						name="synonyms"
-						value={this.state.synonyms}
-						onChange={this.handleChange}
-						placeholder={
-							'Enter comma separated synonym pairs. Enter additional synonym pairs separated by new lines, e.g.\nbritish, english\nqueen, monarch'
-						}
-						autosize={{ minRows: 2, maxRows: 10 }}
-					/>
-				</Modal>
-				<Modal
-					visible={this.state.shardsModal}
-					onOk={this.updateShards}
-					title="Configure Shards"
-					okText="Update"
-					okButtonProps={{ disabled: this.state.allocated_shards == this.state.shards }}
-					onCancel={this.handleShardsModal}
-				>
-					<h4>
-						Move slider to change the number of shards for your app. Read more{' '}
-						<a href="https://docs.appbase.io/concepts/mappings.html#manage-shards">
-							here
-						</a>
-						.
-					</h4>
-					<Slider
-						step={1}
-						max={100}
-						value={+this.state.shards}
-						onChange={value => this.handleSlider('shards', value)}
-					/>
-				</Modal>
-				<Modal
-					visible={this.state.replicasModal}
-					onOk={this.updateReplicas}
-					title="Configure Replicas"
-					okText="Update"
-					okButtonProps={{
-						disabled: this.state.allocated_replicas == this.state.replicas,
-					}}
-					onCancel={this.handleReplicasModal}
-				>
-					<h4>Move slider to change the number of replicas for your app.</h4>
-					<Slider
-						step={null}
-						marks={{ 0: '0', 1: '1', 2: '2' }}
-						max={this.state.totalNodes - 1}
-						value={+this.state.replicas}
-						onChange={value => this.handleSlider('replicas', value)}
-					/>
-				</Modal>
 			</React.Fragment>
 		);
 	}
@@ -1223,6 +770,25 @@ Mappings.propTypes = {
 	getAppMappings: func.isRequired,
 	updateCurrentApp: func.isRequired,
 	isFetchingMapping: bool.isRequired,
+	showReplicas: bool,
+	showShards: bool,
+	showSynonyms: bool,
+	showMappingInfo: bool,
+	showCardWrapper: bool,
+	hideSearchType: bool,
+	hideAggsType: bool,
+	hideNoType: bool,
+	hideDelete: bool,
+	hideDataType: bool,
+	hidePropertiesType: bool,
+	hideNoneTextType: bool,
+	hideGeoType: bool,
+	column: object,
+	onChange: func,
+	renderFooter: func,
+	renderMappingInfo: func,
+	onUsecaseChange: func,
+	onDeleteField: func,
 };
 
 Mappings.defaultProps = {
@@ -1231,12 +797,32 @@ Mappings.defaultProps = {
 	url: getURL(),
 	appbaseCredentials: null,
 	mapping: null,
+	showReplicas: false,
+	showShards: false,
+	showSynonyms: true,
+	showMappingInfo: true,
+	showCardWrapper: true,
+	hideSearchType: false,
+	hideNoneTextType: false,
+	hideAggsType: false,
+	hideNoType: false,
+	hideGeoType: false,
+	hideDataType: false,
+	hideDelete: false,
+	hidePropertiesType: false,
+	column: null,
+	onChange: null,
+	renderFooter: null,
+	onDeleteField: null,
+	renderMappingInfo: null,
+	onUsecaseChange: null,
 };
 
 const mapStateToProps = state => {
 	const { username, password } = get(state, 'user.data', {});
+	const appName = get(state, '$getCurrentApp.name');
 	return {
-		appName: get(state, '$getCurrentApp.name'),
+		appName,
 		appId: get(state, '$getCurrentApp.name'),
 		mapping: getRawMappingsByAppName(state) || null,
 		isFetchingMapping: get(state, '$getAppMappings.isFetching'),
@@ -1252,6 +838,22 @@ const mapDispatchToProps = dispatch => ({
 		dispatch(getMappings(appName, credentials, url));
 	},
 	clearMappings: appName => dispatch(clearMappings(appName)),
+	addApp: appName => dispatch(appendApp(appName)),
+	deleteApp: appName => dispatch(removeAppData(appName)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Mappings);
+const withRouterRef = Wrapped => {
+	const WithRouter = withRouter(({ forwardRef, ...otherProps }) => (
+		<Wrapped ref={forwardRef} {...otherProps} />
+	));
+	const withRouterAndRef = React.forwardRef((props, ref) => (
+		<WithRouter {...props} forwardRef={ref} />
+	));
+	const name = Wrapped.displayName || Wrapped.name;
+	withRouterAndRef.displayName = `withRouterRef(${name})`;
+	return withRouterAndRef;
+};
+
+export default withRouterRef(
+	connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(Mappings),
+);

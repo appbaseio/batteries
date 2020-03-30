@@ -56,13 +56,11 @@ class SearchSandbox extends Component {
 	}
 
 	async componentDidMount() {
-		const {
-			appName, isDashboard, credentials, searchState, url,
-		} = this.props;
+		const { appName, isDashboard, credentials, searchState, url } = this.props;
 		const { profileList: profileListState, profile } = this.state;
 		if (isDashboard) {
 			getPreferences(appName, credentials)
-				.then((pref) => {
+				.then(pref => {
 					this.pref = pref || {};
 					const profileList = Array.from(
 						new Set([...profileListState, ...Object.keys(this.pref)]),
@@ -72,7 +70,8 @@ class SearchSandbox extends Component {
 						this.setState({
 							profileList,
 							loading: false,
-							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
+							analytics:
+								this.pref.analytics === undefined ? true : this.pref.analytics,
 						});
 					} else {
 						this.setState({
@@ -82,7 +81,8 @@ class SearchSandbox extends Component {
 							filterCount: Object.keys(componentProps).filter(
 								item => item !== 'search' && item !== 'result',
 							).length,
-							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
+							analytics:
+								this.pref.analytics === undefined ? true : this.pref.analytics,
 						});
 					}
 				})
@@ -134,7 +134,7 @@ class SearchSandbox extends Component {
 		return configs.find(config => config.profile === profile);
 	};
 
-	setFilterCount = (filterCount) => {
+	setFilterCount = filterCount => {
 		this.setState({
 			filterCount,
 		});
@@ -154,7 +154,7 @@ class SearchSandbox extends Component {
 		);
 	};
 
-	savePreferences = (forceUpdate) => {
+	savePreferences = forceUpdate => {
 		// prettier-ignore
 		const {
 			isDashboard,
@@ -164,7 +164,7 @@ class SearchSandbox extends Component {
 		} = this.props;
 		const { profile, componentProps, analytics } = this.state;
 		const filteredProps = {};
-		Object.keys(componentProps).forEach((item) => {
+		Object.keys(componentProps).forEach(item => {
 			const { defaultValue, value, ...state } = componentProps[item];
 			filteredProps[item] = state;
 		});
@@ -188,7 +188,7 @@ class SearchSandbox extends Component {
 		this.setLocalPref(this.pref);
 	};
 
-	deleteProfile = (profile) => {
+	deleteProfile = profile => {
 		const { profileList } = this.state;
 		const filteredProfile = profileList.filter(item => item !== profile);
 		const componentProps = this.pref[filteredProfile[0]];
@@ -211,7 +211,7 @@ class SearchSandbox extends Component {
 		}
 	};
 
-	deleteComponent = (id) => {
+	deleteComponent = id => {
 		const { componentProps } = this.state;
 		const { [id]: del, ...remProps } = componentProps;
 		this.setState(
@@ -223,7 +223,7 @@ class SearchSandbox extends Component {
 		message.error('Filter Deleted');
 	};
 
-	setProfile = (profile) => {
+	setProfile = profile => {
 		const { clearProfile } = this.props;
 		// clear the saved profile when profile changes
 		clearProfile();
@@ -485,7 +485,4 @@ const mapDispatchToProps = dispatch => ({
 	clearProfile: () => dispatch(clearSearchState()),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(SearchSandbox);
+export default connect(mapStateToProps, mapDispatchToProps)(SearchSandbox);

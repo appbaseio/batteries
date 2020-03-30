@@ -34,9 +34,7 @@ class BaseContainer extends Component {
 
 	componentDidMount() {
 		// Fetch some common api calls
-		const {
- appName, fetchAppPlan, shouldFetchAppPlan, isAppPlanFetched,
-} = this.props;
+		const { appName, fetchAppPlan, shouldFetchAppPlan, isAppPlanFetched } = this.props;
 		if (shouldFetchAppPlan && !isAppPlanFetched) {
 			fetchAppPlan(appName);
 		} else {
@@ -100,7 +98,4 @@ const mapDispatchToProps = dispatch => ({
 	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(BaseContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(BaseContainer);

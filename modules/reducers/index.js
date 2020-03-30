@@ -12,6 +12,7 @@ import {
 } from './utils';
 import getAppFunction from './getAppFunction';
 import privateRegistries from './getPrivateRegistry';
+import getAppSettings from './getAppSettings';
 import getAppRules from './getAppRules';
 
 export default {
@@ -209,4 +210,5 @@ export default {
 		AppConstants.ACCOUNT.PAYMENT.UPDATE_SUCCESS,
 		AppConstants.ACCOUNT.PAYMENT.UPDATE_ERROR,
 	),
+	$getAppSettings: getAppSettings,
 };

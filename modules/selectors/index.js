@@ -13,6 +13,7 @@ const appRequestDistribution = state => get(state, '$getAppRequestDistribution.r
 const appAnalyticsSummary = state => get(state, '$getAppAnalyticsSummary.results');
 const appPublicKey = state => get(state, '$getAppPublicKey.results');
 const appFunctions = state => get(state, '$getAppFunctions.results');
+const appSearchSettings = state => get(state, '$getAppSettings.results');
 const appRules = state => get(state, '$getAppRules.results');
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
@@ -40,6 +41,7 @@ const getAppRequestDistributionByName = createSelector(
 );
 const getAppPublicKey = createSelector(appPublicKey, appName, getCollectionByKey);
 const getAppFunctions = createSelector(appFunctions, appName, getCollectionByKey);
+const getAppSettings = createSelector(appSearchSettings, appName, getCollectionByKey);
 const getAppRules = createSelector(appRules, appName, getCollectionByKey);
 export {
 	getRawMappingsByAppName,
@@ -53,5 +55,6 @@ export {
 	getAppPlanByName,
 	getAppPublicKey,
 	getAppFunctions,
+	getAppSettings,
 	getAppRules,
 };

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import {
- Tooltip, Icon, Menu, Dropdown, Modal, Input, Button,
-} from 'antd';
+import { Tooltip, Icon, Menu, Dropdown, Modal, Input, Button } from 'antd';
 
 import { Header, inputStyles, dropdown } from './styles';
 import conversionMap from '../../utils/conversionMap';
@@ -42,11 +40,11 @@ export default class NewFieldModal extends Component {
 		error: '',
 	});
 
-	handleEsTypeChange = (label) => {
+	handleEsTypeChange = label => {
 		this.setState({ esType: label, fieldType: label });
 	};
 
-	handleNewFieldChange = (e) => {
+	handleNewFieldChange = e => {
 		const { name, value } = e.target;
 		this.setState({
 			...this.state.new,
@@ -55,10 +53,10 @@ export default class NewFieldModal extends Component {
 	};
 
 	addField = () => {
-		const {
- esType, fieldType, name, usecase, type,
-} = this.state;
-		const deletedPaths = this.props.deletedPaths.map(item => item.split('.properties.').join('.'));
+		const { esType, fieldType, name, usecase, type } = this.state;
+		const deletedPaths = this.props.deletedPaths.map(item =>
+			item.split('.properties.').join('.'),
+		);
 		const fieldName = `${fieldType || esType}.${name}`;
 
 		if (name && deletedPaths.includes(fieldName)) {
@@ -186,6 +184,7 @@ export default class NewFieldModal extends Component {
 							ref={this.input}
 							type="text"
 							name="name"
+							autoComplete="off"
 							placeholder="Enter field name"
 							value={this.state.name}
 							className={inputStyles}

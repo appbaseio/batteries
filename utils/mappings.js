@@ -1,6 +1,10 @@
+import { get } from 'lodash';
+
 import mappingUsecase from './mappingUsecase';
-import analyzerSettings from './analyzerSettings';
+import analyzerSettings, { synonymsSettings } from './analyzerSettings';
 import { getURL } from '../../constants/config';
+import { deleteObjectFromPath } from '.';
+import language from '../../constants/language';
 
 const PRESERVED_KEYS = ['meta'];
 export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
@@ -24,13 +28,13 @@ export function getMappings(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				const types = Object.keys(data[appName].mappings).filter(
 					type => !REMOVED_KEYS.includes(type),
 				);
 
 				let mappings = {};
-				types.forEach((type) => {
+				types.forEach(type => {
 					mappings = {
 						...mappings,
 						[type]: data[appName].mappings[type],
@@ -38,7 +42,7 @@ export function getMappings(appName, credentials, url = getURL()) {
 				});
 				resolve(mappings);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -58,10 +62,10 @@ export function putMapping(appName, credentials, mappings, type, version, url = 
 				}),
 			})
 				.then(res => res.json())
-				.then((data) => {
+				.then(data => {
 					resolve(data);
 				})
-				.catch((e) => {
+				.catch(e => {
 					reject(e);
 				});
 		});
@@ -78,10 +82,10 @@ export function putMapping(appName, credentials, mappings, type, version, url = 
 			}),
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -97,10 +101,10 @@ export function getSettings(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -116,10 +120,10 @@ export function getNodes(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -135,10 +139,10 @@ export function closeIndex(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -152,36 +156,13 @@ export function updateSynonyms(appName, credentials, url = getURL(), synonymsArr
 				...getAuthHeaders(credentials),
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({
-				analysis: {
-					filter: {
-						...analyzerSettings.analysis.filter,
-						synonyms_filter: {
-							type: 'synonym',
-							synonyms: synonymsArray,
-						},
-					},
-					analyzer: {
-						...analyzerSettings.analysis.analyzer,
-						english_synonyms_analyzer: {
-							filter: ['lowercase', 'synonyms_filter', 'asciifolding', 'porter_stem'],
-							tokenizer: 'standard',
-							type: 'custom',
-						},
-						english_analyzer: {
-							filter: ['lowercase', 'asciifolding', 'porter_stem'],
-							tokenizer: 'standard',
-							type: 'custom',
-						},
-					},
-				},
-			}),
+			body: JSON.stringify(synonymsSettings(synonymsArray)),
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -197,10 +178,10 @@ export function openIndex(appName, credentials, url = getURL()) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -220,15 +201,15 @@ export async function getESVersion(appName, credentials) {
 	return data.version.number.split('.')[0];
 }
 
-export function reIndex(
+export function reIndex({
 	mappings,
 	appId,
-	excludeFields,
+	excludeFields = [],
 	type,
 	version = '5',
 	credentials,
 	settings,
-) {
+}) {
 	const body = {
 		mappings,
 		settings: settings || analyzerSettings,
@@ -252,14 +233,14 @@ export function reIndex(
 			},
 			body: JSON.stringify(body),
 		})
-			.then((res) => {
+			.then(res => {
 				if (res.status === 504) {
 					resolve('~100');
 				}
 				return res;
 			})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				if (data.error) {
 					reject(data.error);
 				}
@@ -268,7 +249,7 @@ export function reIndex(
 				}
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -276,12 +257,11 @@ export function reIndex(
 
 export function hasAggs(field) {
 	if (!field) return false;
-
 	let hasAggsFlag = false;
-	Object.keys(field).forEach((subField) => {
+	Object.keys(field).forEach(subField => {
 		if (
-			field[subField].type === 'keyword'
-			|| (field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
+			field[subField].type === 'keyword' ||
+			(field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
 		) {
 			hasAggsFlag = true;
 		}
@@ -297,7 +277,7 @@ export function transformToES5(mapping) {
 	// eslint-disable-next-line
 	let _mapping = { ...mapping };
 
-	Object.keys(_mapping).every((key) => {
+	Object.keys(_mapping).every(key => {
 		if (PRESERVED_KEYS.includes(key)) return false;
 
 		if (_mapping[key].type === 'string') {
@@ -387,16 +367,13 @@ export function updateMappingES7(mapping, field, type, usecase) {
  * @returns {{ [key: string]: Array<string> | Array<string> }}
  * For v7 apps it'll return an array of fields instead of an object
  */
-export function traverseMapping(
-	mappings = {},
-	returnOnlyLeafFields = false,
-) {
+export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 	const fieldObject = {};
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
 		const setFields = (mp, prefix = '') => {
 			if (mp.properties) {
-				Object.keys(mp.properties).forEach((mpp) => {
+				Object.keys(mp.properties).forEach(mpp => {
 					if (!returnOnlyLeafFields) {
 						fieldObject[type].push(`${prefix}${mpp}`);
 					}
@@ -420,9 +397,48 @@ export function traverseMapping(
 	return fieldObject.properties ? fieldObject.properties : fieldObject;
 }
 
+export function getAggsMappings(mappings = {}, returnOnlyLeafFields = false) {
+	const fieldObject = {};
+	const checkIfPropertyPresent = (m, type) => {
+		fieldObject[type] = [];
+		const setFields = (mp, prefix = '') => {
+			if (mp.properties) {
+				Object.keys(mp.properties).forEach(mpp => {
+					if (!returnOnlyLeafFields) {
+						fieldObject[type].push({
+							address: `${prefix}${mpp}`,
+							type,
+						});
+					}
+					const field = mp.properties[mpp];
+					if (field && field.properties) {
+						setFields(field, `${prefix}${mpp}.`);
+					} else if (returnOnlyLeafFields) {
+						// To return only leaf fields
+						fieldObject[type].push({
+							address: `${prefix}${mpp}`,
+							usecase: field.fields ? getUsecase(field.fields) : 'none',
+							type,
+							fields: field.fields,
+							fieldType: field.type,
+						});
+					}
+				});
+			}
+		};
+		setFields(m);
+	};
+	if (mappings.properties) {
+		checkIfPropertyPresent(mappings, 'properties');
+	} else {
+		Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
+	}
+	return fieldObject.properties ? fieldObject.properties : fieldObject;
+}
+
 function getFieldsTree(mappings = {}, prefix = null) {
 	let tree = {};
-	Object.keys(mappings).forEach((key) => {
+	Object.keys(mappings).forEach(key => {
 		if (mappings[key].properties) {
 			tree = {
 				...tree,
@@ -460,7 +476,7 @@ export function getMappingsTree(mappings = {}, version) {
 			};
 		}
 	} else {
-		Object.keys(mappings).forEach((key) => {
+		Object.keys(mappings).forEach(key => {
 			if (mappings[key].properties) {
 				tree = {
 					...tree,
@@ -472,3 +488,348 @@ export function getMappingsTree(mappings = {}, version) {
 
 	return tree;
 }
+
+export const applyLanguageAnalyzers = (properties = {}, language) => {
+	const lang = {
+		type: 'text',
+		analyzer: language,
+	};
+	const synonyms = {
+		analyzer: 'synonyms',
+		type: 'text',
+	};
+	return Object.keys(properties).reduce((agg, key) => {
+		if (properties[key].properties) {
+			return {
+				...agg,
+				[key]: {
+					...properties[key],
+					properties: applyLanguageAnalyzers(properties[key].properties),
+				},
+			};
+		}
+		const data = properties[key];
+		// eslint-disable-next-line prefer-const
+		let { type, fields } = properties[key];
+		if (type === 'text') {
+			if (fields) {
+				fields.lang = lang;
+				fields.synonyms = synonyms;
+			} else {
+				fields = { lang, synonyms };
+			}
+		}
+		data.fields = fields;
+		return { ...agg, [key]: data };
+	}, {});
+};
+
+export const updateMappingsProperties = ({
+	mapping: originalMapping,
+	types,
+	esVersion,
+	language = 'universal',
+}) => {
+	const mapping = JSON.parse(JSON.stringify(originalMapping));
+	let isMappingsPresent = false;
+	if (+esVersion >= 7) {
+		isMappingsPresent = mapping && mapping.properties;
+	} else {
+		isMappingsPresent = mapping && types[0] && mapping[types[0]];
+	}
+	if (isMappingsPresent) {
+		if (+esVersion >= 7) {
+			const updatedProperties = applyLanguageAnalyzers(
+				JSON.parse(JSON.stringify(mapping.properties)),
+				language,
+			);
+			mapping.properties = {
+				...mapping.properties,
+				...updatedProperties,
+			};
+		} else {
+			return types.reduce((agg, type) => {
+				return {
+					...agg,
+					[type]: mapping[type].properties
+						? {
+								properties: applyLanguageAnalyzers(
+									mapping[type].properties,
+									language,
+								),
+						  }
+						: mapping[type],
+				};
+			}, {});
+		}
+	}
+	return mapping;
+};
+
+export const getUpdatedSettings = ({ settings, shards, replicas }) => {
+	const updatedSettings = {
+		index: {
+			number_of_shards: shards,
+			number_of_replicas: replicas,
+		},
+	};
+	if (settings && settings.index && settings.index.analysis) {
+		const {
+			index: {
+				analysis: { analyzer: currentAnalyzer, filter: currentFilter },
+			},
+		} = settings;
+		const {
+			analysis: { analyzer, filter },
+		} = analyzerSettings;
+
+		Object.keys(analyzer).forEach(key => {
+			if (!currentAnalyzer[key]) {
+				currentAnalyzer[key] = analyzer[key];
+			}
+		});
+
+		Object.keys(filter).forEach(key => {
+			if (!currentFilter[key]) {
+				currentFilter[key] = filter[key];
+			}
+		});
+
+		updatedSettings.index.analysis = settings.index.analysis;
+
+		return updatedSettings;
+	}
+	updatedSettings.index.analysis = analyzerSettings.analysis;
+	return updatedSettings;
+};
+
+export const applySynonyms = async ({
+	appName,
+	credentials,
+	url,
+	synonyms,
+	mapping,
+	types,
+	esVersion,
+}) => {
+	try {
+		const closeResponse = await closeIndex(appName, credentials, url);
+		if (
+			closeResponse &&
+			closeResponse.Message &&
+			closeResponse.Message.includes('is not allowed by Amazon Elasticsearch Service.')
+		) {
+			throw new Error('AWS');
+		}
+		const synonymResponse = await updateSynonyms(appName, credentials, url, synonyms);
+
+		if (synonymResponse.acknowledged) {
+			// If synonyms request is successful than update mapping via PUT request
+			const indexResponse = await openIndex(appName, credentials, url);
+
+			if (indexResponse.acknowledged) {
+				const updatedMappings = updateMappingsProperties({
+					esVersion,
+					types,
+					mapping,
+				});
+				let mappings = {};
+				if (+esVersion >= 7) {
+					mappings = updatedMappings;
+				} else {
+					mappings = updatedMappings[types[0]];
+				}
+				const mappingResponse = await putMapping(
+					appName,
+					credentials,
+					mappings,
+					types[0],
+					esVersion,
+				);
+				if (mappingResponse.acknowledged) {
+					return 'Updated';
+				}
+			} else {
+				throw new Error('');
+			}
+		} else {
+			throw new Error('Unable to update Synonyms');
+		}
+	} catch (e) {
+		await openIndex(appName, credentials, url);
+		console.log(e);
+		throw e;
+	}
+
+	return null;
+};
+
+export const getLanguage = settings => {
+	return Object.keys(language).find(lang => {
+		if (get(settings, `index.analysis.analyzer.${lang}`, null)) return lang;
+		return null;
+	});
+};
+
+export const getUsecase = fields => {
+	const hasAggsFlag = hasAggs(fields);
+	let hasSearchFlag = 0;
+	if (fields.search) hasSearchFlag = 1;
+
+	if (hasAggsFlag && hasSearchFlag) return 'searchaggs';
+	if (!hasAggsFlag && hasSearchFlag) return 'search';
+	if (hasAggsFlag && !hasSearchFlag) return 'aggs';
+	return 'none';
+};
+
+export const fetchSettings = ({ appName, credentials }) => {
+	return getSettings(appName, credentials).then(data => {
+		const shards = get(data[appName], 'settings.index.number_of_shards');
+		const replicas = get(data[appName], 'settings.index.number_of_replicas');
+		const synonyms = get(
+			data[appName],
+			'settings.index.analysis.filter.synonyms_filter.synonyms',
+			[],
+		).join('\n');
+
+		return { shards, replicas, synonyms };
+	});
+};
+
+export const deleteMappingField = ({
+	esVersion,
+	removeType,
+	types,
+	_deletedPaths,
+	_mapping,
+	path,
+}) => {
+	const mapping = JSON.parse(JSON.stringify(_mapping));
+
+	let activeType = types;
+	let deletedPaths = [..._deletedPaths];
+
+	if (esVersion < 7) {
+		let fields = path.split('.');
+		if (fields[fields.length - 1] === 'properties') {
+			// when deleting an object
+			fields = fields.slice(0, -1);
+		}
+
+		if (removeType) {
+			const type = fields[0];
+			// remove from active types
+			activeType = activeType.filter(field => field !== type);
+
+			// add all the fields to excludeFields
+			const deletedTypesPath = Object.keys(_mapping[type]).map(
+				property => `${type}.properties.${property}`,
+			);
+			deletedPaths = [...deletedPaths, ...deletedTypesPath];
+		} else {
+			deletedPaths = [..._deletedPaths, path];
+		}
+
+		fields.reduce((acc, val, index) => {
+			if (index === fields.length - 1) {
+				delete acc[val];
+				return true;
+			}
+			return acc[val];
+		}, mapping);
+	} else if (removeType) {
+		const field = path
+			.split('.')
+			.slice(1, path.split('.').length - 1)
+			.pop();
+
+		if (field) {
+			const pathToDelete = path
+				.split('.')
+				.slice(1, path.split('.').length - 1)
+				.join('.');
+			deletedPaths = [...deletedPaths, pathToDelete];
+			deleteObjectFromPath(mapping, pathToDelete);
+		} else {
+			const pathsToDelete = Object.keys(mapping.properties);
+			deletedPaths = pathsToDelete;
+			delete mapping.properties;
+		}
+	} else {
+		const pathToDelete = path
+			.split('.')
+			.slice(1)
+			.join('.');
+		deletedPaths = [...deletedPaths, pathToDelete];
+		deleteObjectFromPath(
+			mapping,
+			path
+				.split('.')
+				.slice(1)
+				.join('.'),
+		);
+	}
+
+	return {
+		deletedPaths,
+		mapping,
+		activeType,
+	};
+};
+
+export const addMappingField = ({ _mapping, name, usecase, type, esVersion }) => {
+	const mapping = JSON.parse(JSON.stringify(_mapping));
+	const fields = name.split('.');
+	let newUsecase = {};
+
+	if (usecase) {
+		newUsecase = mappingUsecase[usecase];
+	}
+
+	if (+esVersion >= 7) {
+		const fieldChanged = name.split('.')[1];
+		mapping.properties[fieldChanged] = {
+			type,
+			...newUsecase,
+		};
+	} else {
+		fields.reduce((acc, val, index) => {
+			if (index === fields.length - 1) {
+				acc[val] = {
+					type,
+					...newUsecase,
+				};
+				return true;
+			}
+			if (!acc[val] || !acc[val].properties) {
+				acc[val] = { properties: {} };
+			}
+			return acc[val].properties;
+		}, mapping);
+	}
+
+	return { mapping };
+};
+
+export const updateSettings = ({ appName, settings, credentials }) => {
+	const url = getURL();
+	return new Promise((resolve, reject) => {
+		fetch(`${url}/${appName}/_settings`, {
+			method: 'PUT',
+			headers: {
+				...getAuthHeaders(credentials),
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				settings,
+			}),
+		})
+			.then(res => res.json())
+			.then(data => {
+				resolve(data);
+			})
+			.catch(e => {
+				reject(e);
+			});
+	});
+};
