@@ -1,7 +1,6 @@
 import React from 'react';
 import { injectGlobal } from 'emotion';
-import Joyride from 'react-joyride';
-import { ACTIONS, EVENTS } from 'react-joyride/lib/constants';
+import Joyride, { ACTIONS, EVENTS } from 'react-joyride';
 import { message, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -26,10 +25,10 @@ class Walkthrough extends React.Component {
 
 	componentDidUpdate(prevProps) {
 		const { showTutorial } = this.props;
-		if(showTutorial !==  prevProps.showTutorial) {
+		if (showTutorial !== prevProps.showTutorial) {
 			this.setState({
 				showTutorial,
-			})
+			});
 		}
 	}
 
@@ -43,7 +42,10 @@ class Walkthrough extends React.Component {
 			});
 			this.setTutorialStatus();
 			message.success('Congrats! You have completed the Walkthrough.');
-		} else if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
+		} else if (
+			type === EVENTS.STEP_AFTER ||
+			type === EVENTS.TARGET_NOT_FOUND
+		) {
 			this.setState({
 				stepIndex: index + (action === ACTIONS.PREV ? -1 : 1),
 			});
@@ -63,7 +65,10 @@ class Walkthrough extends React.Component {
 			tutorialData = JSON.parse(tutorialData);
 			if (!tutorialData[id]) {
 				tutorialData[id] = false;
-				localStorage.setItem('tutorialData', JSON.stringify(tutorialData));
+				localStorage.setItem(
+					'tutorialData',
+					JSON.stringify(tutorialData),
+				);
 			}
 		} else {
 			tutorialData = { [id]: false };
@@ -78,7 +83,10 @@ class Walkthrough extends React.Component {
 		if (tutorialData) {
 			const parsedTutorialData = JSON.parse(tutorialData);
 			parsedTutorialData[id] = true;
-			localStorage.setItem('tutorialData', JSON.stringify(parsedTutorialData));
+			localStorage.setItem(
+				'tutorialData',
+				JSON.stringify(parsedTutorialData),
+			);
 		}
 	};
 
@@ -88,29 +96,42 @@ class Walkthrough extends React.Component {
 		const { showWalkthrough, joyrideSteps, hideButtons } = this.props;
 		return showWalkthrough ? (
 			<React.Fragment>
-				{!hideButtons && <div
-					style={{
-						position: 'fixed',
-						bottom: '15px',
-						right: '65px',
-						display: 'inline',
-						zIndex: 2,
-					}}
-				>
-					<Tooltip
-						placement="leftTop"
-						title={tutorialCompleted ? 'Walkthrough Completed' : 'Start Walkthrough'}
+				{!hideButtons && (
+					<div
+						style={{
+							position: 'fixed',
+							bottom: '15px',
+							right: '65px',
+							display: 'inline',
+							zIndex: 2,
+						}}
 					>
-						<Button
-							onClick={this.toggleTutorial}
-							shape="circle"
-							type="primary"
-							size="large"
-							style={{ background: '#40a9ff', color: 'white' }}
-							icon={tutorialCompleted ? 'check-circle' : 'play-circle'}
-						/>
-					</Tooltip>
-				</div>}
+						<Tooltip
+							placement="leftTop"
+							title={
+								tutorialCompleted
+									? 'Walkthrough Completed'
+									: 'Start Walkthrough'
+							}
+						>
+							<Button
+								onClick={this.toggleTutorial}
+								shape="circle"
+								type="primary"
+								size="large"
+								style={{
+									background: '#40a9ff',
+									color: 'white',
+								}}
+								icon={
+									tutorialCompleted
+										? 'check-circle'
+										: 'play-circle'
+								}
+							/>
+						</Tooltip>
+					</div>
+				)}
 				<Joyride
 					run={showTutorial}
 					steps={joyrideSteps}

@@ -12,7 +12,10 @@ import { getMappingsTree, getSettings } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
-import { getAppMappings as getMappings, clearSearchState } from '../../modules/actions';
+import {
+	getAppMappings as getMappings,
+	clearSearchState,
+} from '../../modules/actions';
 import { getRawMappingsByAppName } from '../../modules/selectors';
 import joyrideSteps from './utils/joyrideSteps';
 
@@ -45,7 +48,10 @@ class SearchSandbox extends Component {
 	static getDerivedStateFromProps(props, state) {
 		const { mappings } = props;
 		if (!state.mappings && mappings && state.version) {
-			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
+			const mappingsType =
+				Object.keys(mappings).length > 0
+					? Object.keys(mappings)[0]
+					: '';
 			return {
 				mappings: getMappingsTree(mappings, state.version),
 				mappingsType,
@@ -60,17 +66,23 @@ class SearchSandbox extends Component {
 		const { profileList: profileListState, profile } = this.state;
 		if (isDashboard) {
 			getPreferences(appName)
-				.then((pref) => {
+				.then(pref => {
 					this.pref = pref || {};
 					const profileList = Array.from(
-						new Set([...profileListState, ...Object.keys(this.pref)]),
+						new Set([
+							...profileListState,
+							...Object.keys(this.pref),
+						]),
 					);
 					const componentProps = this.pref[profile] || {};
 					if (searchState) {
 						this.setState({
 							profileList,
 							loading: false,
-							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
+							analytics:
+								this.pref.analytics === undefined
+									? true
+									: this.pref.analytics,
 						});
 					} else {
 						this.setState({
@@ -80,7 +92,10 @@ class SearchSandbox extends Component {
 							filterCount: Object.keys(componentProps).filter(
 								item => item !== 'search' && item !== 'result',
 							).length,
-							analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
+							analytics:
+								this.pref.analytics === undefined
+									? true
+									: this.pref.analytics,
 						});
 					}
 				})
@@ -102,7 +117,10 @@ class SearchSandbox extends Component {
 		});
 
 		if (mappings) {
-			const mappingsType = Object.keys(mappings).length > 0 ? Object.keys(mappings)[0] : '';
+			const mappingsType =
+				Object.keys(mappings).length > 0
+					? Object.keys(mappings)[0]
+					: '';
 			this.setState({
 				mappings: getMappingsTree(mappings, version),
 				mappingsType,
@@ -124,7 +142,9 @@ class SearchSandbox extends Component {
 		let pref = localStorage.getItem(appName);
 		if (pref) pref = JSON.parse(pref);
 		this.pref = pref || {};
-		const profileList = Array.from(new Set([...profileListState, ...Object.keys(this.pref)]));
+		const profileList = Array.from(
+			new Set([...profileListState, ...Object.keys(this.pref)]),
+		);
 		const componentProps = this.pref[profile] || {};
 		this.setState({
 			componentProps,
@@ -133,7 +153,8 @@ class SearchSandbox extends Component {
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
 			).length,
-			analytics: this.pref.analytics === undefined ? true : this.pref.analytics,
+			analytics:
+				this.pref.analytics === undefined ? true : this.pref.analytics,
 		});
 	};
 
@@ -148,7 +169,7 @@ class SearchSandbox extends Component {
 		return configs.find(config => config.profile === profile);
 	};
 
-	setFilterCount = (filterCount) => {
+	setFilterCount = filterCount => {
 		this.setState({
 			filterCount,
 		});
@@ -168,11 +189,11 @@ class SearchSandbox extends Component {
 		);
 	};
 
-	savePreferences = (forceUpdate) => {
+	savePreferences = forceUpdate => {
 		const { isDashboard, appName, clearProfile } = this.props;
 		const { profile, componentProps, analytics } = this.state;
 		const filteredProps = {};
-		Object.keys(componentProps).forEach((item) => {
+		Object.keys(componentProps).forEach(item => {
 			const { defaultValue, value, ...state } = componentProps[item];
 			filteredProps[item] = state;
 		});
@@ -194,7 +215,7 @@ class SearchSandbox extends Component {
 		}
 	};
 
-	deleteComponent = (id) => {
+	deleteComponent = id => {
 		const { componentProps } = this.state;
 		const { [id]: del, ...remProps } = componentProps;
 		this.setState(
@@ -206,7 +227,7 @@ class SearchSandbox extends Component {
 		message.error('Filter Deleted');
 	};
 
-	setProfile = (profile) => {
+	setProfile = profile => {
 		const { clearProfile } = this.props;
 		// clear the saved profile when profile changes
 		clearProfile();
@@ -252,7 +273,7 @@ class SearchSandbox extends Component {
 		}
 	};
 
-	deleteProfile = (profile) => {
+	deleteProfile = profile => {
 		const { profileList } = this.state;
 		const filteredProfile = profileList.filter(item => item !== profile);
 		const componentProps = this.pref[filteredProfile[0]];
@@ -271,7 +292,9 @@ class SearchSandbox extends Component {
 			);
 			message.success(`Successfully deleted ${profile}`);
 		} catch (e) {
-			message.error('Something went wrong while deleting profile. Please try again.');
+			message.error(
+				'Something went wrong while deleting profile. Please try again.',
+			);
 		}
 	};
 
@@ -330,7 +353,7 @@ class SearchSandbox extends Component {
 							react: '16.8.6',
 							'react-dom': '16.8.6',
 							antd: '^3.6.6',
-							'@appbaseio/reactivesearch': '3.0.2',
+							'@appbaseio/reactivesearch': '3.2.2',
 							'react-expand-collapse': 'latest',
 						},
 					},
@@ -370,7 +393,11 @@ class SearchSandbox extends Component {
 			return <div style={vcenter}>Fetching search preferences...</div>;
 		}
 		if (!Object.keys(mappings).length) {
-			return <div style={vcenter}>No data found. Please insert data to use this feature</div>;
+			return (
+				<div style={vcenter}>
+					No data found. Please insert data to use this feature
+				</div>
+			);
 		}
 
 		const {
@@ -492,7 +519,7 @@ SearchSandbox.defaultProps = {
 	customProps: {},
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	const appName = get(state, '$getCurrentApp.name');
 	return {
 		appId: get(state, '$getCurrentApp.id'),
@@ -510,7 +537,4 @@ const mapDispatchToProps = dispatch => ({
 	clearProfile: () => dispatch(clearSearchState()),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(SearchSandbox);
+export default connect(mapStateToProps, mapDispatchToProps)(SearchSandbox);

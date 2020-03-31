@@ -3,7 +3,13 @@ import analyzerSettings from './analyzerSettings';
 import { SCALR_API, ACC_API, getSecretHeaders } from './index';
 
 const PRESERVED_KEYS = ['meta'];
-export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
+export const REMOVED_KEYS = [
+	'~logs',
+	'~percolator',
+	'.logs',
+	'.percolator',
+	'_default_',
+];
 
 function getAuthHeaders(credentials) {
 	if (credentials) {
@@ -24,13 +30,13 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				const types = Object.keys(data[appName].mappings).filter(
 					type => !REMOVED_KEYS.includes(type),
 				);
 
 				let mappings = {};
-				types.forEach((type) => {
+				types.forEach(type => {
 					mappings = {
 						...mappings,
 						[type]: data[appName].mappings[type],
@@ -38,7 +44,7 @@ export function getMappings(appName, credentials, url = SCALR_API) {
 				});
 				resolve(mappings);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -54,10 +60,10 @@ export function getSettings(appName, credentials, url = SCALR_API) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -73,16 +79,21 @@ export function closeIndex(appName, credentials, url = SCALR_API) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
 }
 
-export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsArray) {
+export function updateSynonyms(
+	appName,
+	credentials,
+	url = SCALR_API,
+	synonymsArray,
+) {
 	return new Promise((resolve, reject) => {
 		fetch(`${url}/${appName}/_settings`, {
 			method: 'PUT',
@@ -100,12 +111,21 @@ export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsAr
 					},
 					analyzer: {
 						english_synonyms_analyzer: {
-							filter: ['lowercase', 'synonyms_filter', 'asciifolding', 'porter_stem'],
+							filter: [
+								'lowercase',
+								'synonyms_filter',
+								'asciifolding',
+								'porter_stem',
+							],
 							tokenizer: 'standard',
 							type: 'custom',
 						},
 						english_analyzer: {
-							filter: ['lowercase', 'asciifolding', 'porter_stem'],
+							filter: [
+								'lowercase',
+								'asciifolding',
+								'porter_stem',
+							],
 							tokenizer: 'standard',
 							type: 'custom',
 						},
@@ -114,16 +134,23 @@ export function updateSynonyms(appName, credentials, url = SCALR_API, synonymsAr
 			}),
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
 }
 
-export function putMapping(appName, credentials, url = SCALR_API, mappings, type, version) {
+export function putMapping(
+	appName,
+	credentials,
+	url = SCALR_API,
+	mappings,
+	type,
+	version,
+) {
 	let mappingURL = `${url}/${appName}/_mapping/`;
 	if (version < 7) {
 		mappingURL = `${mappingURL}/${type}`;
@@ -141,10 +168,10 @@ export function putMapping(appName, credentials, url = SCALR_API, mappings, type
 			}),
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -160,10 +187,10 @@ export function openIndex(appName, credentials, url = SCALR_API) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(data);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -184,7 +211,15 @@ export async function getESVersion(appName) {
 	return data.body.es_version;
 }
 
-export function reIndex(mappings, appName, excludeFields, type, version = '5', shards, settings) {
+export function reIndex(
+	mappings,
+	appName,
+	excludeFields,
+	type,
+	version = '5',
+	shards,
+	settings,
+) {
 	const body = {
 		mappings,
 		settings: { analysis: settings || analyzerSettings },
@@ -208,14 +243,14 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 			},
 			body: JSON.stringify(body),
 		})
-			.then((res) => {
+			.then(res => {
 				if (res.status === 504) {
 					resolve('~100');
 				}
 				return res;
 			})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				if (data.error) {
 					reject(data.error);
 				}
@@ -227,7 +262,7 @@ export function reIndex(mappings, appName, excludeFields, type, version = '5', s
 				}
 				resolve(data.body.response_info.took);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -237,10 +272,11 @@ export function hasAggs(field) {
 	if (!field) return false;
 
 	let hasAggsFlag = false;
-	Object.keys(field).forEach((subField) => {
+	Object.keys(field).forEach(subField => {
 		if (
-			field[subField].type === 'keyword'
-			|| (field[subField].type === 'string' && field[subField].index === 'not_analyzed') // for ES2
+			field[subField].type === 'keyword' ||
+			(field[subField].type === 'string' &&
+				field[subField].index === 'not_analyzed') // for ES2
 		) {
 			hasAggsFlag = true;
 		}
@@ -256,7 +292,7 @@ export function transformToES5(mapping) {
 	// eslint-disable-next-line
 	let _mapping = { ...mapping };
 
-	Object.keys(_mapping).every((key) => {
+	Object.keys(_mapping).every(key => {
 		if (PRESERVED_KEYS.includes(key)) return false;
 
 		if (_mapping[key].type === 'string') {
@@ -278,7 +314,10 @@ export function transformToES5(mapping) {
 					type: 'text',
 				},
 			};
-		} else if (typeof _mapping[key] === 'object' && !Array.isArray(_mapping[key])) {
+		} else if (
+			typeof _mapping[key] === 'object' &&
+			!Array.isArray(_mapping[key])
+		) {
 			_mapping = {
 				..._mapping,
 				[key]: {
@@ -314,6 +353,7 @@ function setNestedMapping(mapping, fields, currentPath, type, usecase) {
 		usecase,
 	);
 	const _mapping = {
+		...mapping,
 		[fields[currentPath]]: {
 			...mapping[fields[currentPath]],
 			...updatedmapping,
@@ -372,7 +412,7 @@ export async function traverseMapping(
 		fieldObject[type] = [];
 		const setFields = (mp, prefix = '') => {
 			if (mp.properties) {
-				Object.keys(mp.properties).forEach((mpp) => {
+				Object.keys(mp.properties).forEach(mpp => {
 					if (!returnOnlyLeafFields) {
 						fieldObject[type].push(`${prefix}${mpp}`);
 					}
@@ -391,18 +431,23 @@ export async function traverseMapping(
 	if (version >= 7) {
 		checkIfPropertyPresent(mappings, 'properties');
 	} else {
-		Object.keys(mappings).forEach(k => checkIfPropertyPresent(mappings[k], k));
+		Object.keys(mappings).forEach(k =>
+			checkIfPropertyPresent(mappings[k], k),
+		);
 	}
 	return fieldObject;
 }
 
 function getFieldsTree(mappings = {}, prefix = null) {
 	let tree = {};
-	Object.keys(mappings).forEach((key) => {
+	Object.keys(mappings).forEach(key => {
 		if (mappings[key].properties) {
 			tree = {
 				...tree,
-				...getFieldsTree(mappings[key].properties, `${prefix ? `${prefix}.` : ''}${key}`),
+				...getFieldsTree(
+					mappings[key].properties,
+					`${prefix ? `${prefix}.` : ''}${key}`,
+				),
 			};
 		} else {
 			const originalFields = mappings[key].fields;
@@ -410,7 +455,9 @@ function getFieldsTree(mappings = {}, prefix = null) {
 				...tree,
 				[`${prefix ? `${prefix}.` : ''}${key}`]: {
 					type: mappings[key].type,
-					fields: mappings[key].fields ? Object.keys(mappings[key].fields) : [],
+					fields: mappings[key].fields
+						? Object.keys(mappings[key].fields)
+						: [],
 					originalFields: originalFields || {},
 				},
 			};
@@ -437,7 +484,7 @@ export function getMappingsTree(mappings = {}, version) {
 		}
 	} else {
 		// For Elasticsearch version below 7 for backward compatibility
-		Object.keys(mappings).forEach((key) => {
+		Object.keys(mappings).forEach(key => {
 			if (mappings[key].properties) {
 				tree = {
 					...tree,
