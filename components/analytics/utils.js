@@ -21,7 +21,7 @@ const requestOpt = css`
 	border-radius: 3px;
 	border: solid 1px #00ff88;
 `;
-export const getQueryParams = (paramObj) => {
+export const getQueryParams = paramObj => {
 	let queryString = '';
 	if (paramObj) {
 		Object.keys(paramObj).forEach((o, i) => {
@@ -58,15 +58,12 @@ const queryRule = [
 		width: 90,
 		render: item => (
 			<div css="text-align: center">
-				<Button
-					icon="star"
-					onClick={() => item.handleQueryRule(item)}
-				/>
+				<Button icon="star" onClick={() => item.handleQueryRule(item)} />
 			</div>
 		),
 	},
 ];
-export const getTimeDuration = (time) => {
+export const getTimeDuration = time => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
 		const timeD = parseInt(timeInMs / (24 * 60 * 60 * 1000), 10);
@@ -105,6 +102,47 @@ export const getTimeDuration = (time) => {
 		time: parseInt(timeInMs / 1000, 10),
 	};
 };
+
+export const parseTimeDuration = time => {
+	const timeInMs = time * 1000;
+	if (timeInMs >= 24 * 60 * 60 * 1000) {
+		const timeD = parseInt(timeInMs / (24 * 60 * 60 * 1000), 10);
+		return {
+			unit: 'day',
+			time: timeD,
+			formattedUnit: timeD > 1 ? 'days' : 'day',
+		};
+	}
+	if (timeInMs >= 60 * 60 * 1000) {
+		const timeH = parseInt(timeInMs / (60 * 60 * 1000), 10);
+		return {
+			unit: 'hr',
+			time: timeH,
+			formattedUnit: timeH > 1 ? 'hrs' : 'hr',
+		};
+	}
+	if (timeInMs >= 60 * 1000) {
+		const timeM = parseInt(timeInMs / (60 * 1000), 10);
+		return {
+			unit: 'min',
+			time: timeM,
+			formattedUnit: timeM > 1 ? 'mins' : 'min',
+		};
+	}
+	if (timeInMs >= 1000) {
+		const timeS = parseInt(timeInMs / 1000, 10);
+		return {
+			unit: 'sec',
+			time: timeS,
+			formattedUnit: timeS > 1 ? 'secs' : 'sec',
+		};
+	}
+	return {
+		unit: 'ms',
+		time: parseInt(timeInMs / 1000, 10),
+	};
+};
+
 export const popularFiltersCol = (plan, displayReplaySearch) => {
 	const defaults = [
 		{
@@ -146,7 +184,7 @@ export const popularResultsCol = (plan, displayReplaySearch) => {
 	}
 	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
-export const defaultColumns = (plan) => {
+export const defaultColumns = plan => {
 	const defaults = [
 		{
 			title: 'Search Terms',
@@ -191,7 +229,7 @@ export const noResultsFull = (plan, displayReplaySearch, displayQueryRule) => {
 	];
 };
 
-export const ConvertToCSV = (objArray) => {
+export const ConvertToCSV = objArray => {
 	const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
 	let str = '';
 
@@ -418,7 +456,7 @@ export const getAuthToken = () => {
 	return token;
 };
 
-export const getApp = (app) => {
+export const getApp = app => {
 	if (window.location.pathname.startsWith('/cluster/')) return '';
 	return `${app}/`;
 };
@@ -449,11 +487,11 @@ export function getAnalytics(appName, filters) {
 		})
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -475,11 +513,11 @@ export function getSearchLatency(appName, filters) {
 		})
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -504,11 +542,11 @@ export function getGeoDistribution(appName, filters) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -546,12 +584,12 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100, f
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popular_searches);
 				// resolve(data.body.popularSearches);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -579,11 +617,11 @@ export function getNoResultSearches(appName, size = 100, filters) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.no_results_searches);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -609,11 +647,11 @@ export function getPopularResults(appName, clickanalytics = true, size = 100, fi
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popular_results);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -649,11 +687,11 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100, fi
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popular_filters);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -668,8 +706,8 @@ export function getRequestLogs(appName, size = 10, from = 0, filter) {
 			`${ACC_API}/${getApp(appName)}_logs${getQueryParams({
 				size,
 				from,
-				...(filter
-					&& validFilters.includes(filter) && {
+				...(filter &&
+					validFilters.includes(filter) && {
 						filter,
 					}),
 			})}`,
@@ -683,11 +721,11 @@ export function getRequestLogs(appName, size = 10, from = 0, filter) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -725,9 +763,9 @@ export const tabMappings = {
 	requestLogs: 'request-logs',
 	analytics: 'analytics',
 };
-export const getActiveKeyByRoutes = (tab) => {
+export const getActiveKeyByRoutes = tab => {
 	let activeKey = '';
-	Object.keys(tabMappings).every((k) => {
+	Object.keys(tabMappings).every(k => {
 		if (tabMappings[k] === tab) {
 			activeKey = k;
 			return false;

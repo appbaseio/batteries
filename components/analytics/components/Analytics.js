@@ -4,9 +4,7 @@ import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
 import Filter from './Filter';
 import Flex from '../../shared/Flex';
-import {
- popularFiltersCol, popularResultsCol, popularSearchesCol, noResultsFull,
-} from '../utils';
+import { popularFiltersCol, popularResultsCol, popularSearchesCol, noResultsFull } from '../utils';
 import { getFilteredResults } from '../../../utils/heplers';
 import { mediaKey } from '../../../utils/media';
 import Searches from './Searches';
@@ -60,7 +58,15 @@ const Analytics = ({
 	return (
 		<React.Fragment>
 			{filterId && <Filter filterId={filterId} />}
-			<Card css="margin-bottom: 20px" title="Summary">
+			<Card
+				extra={
+					<a href="https://docs.appbase.io/docs/analytics/Overview/">
+						Read More about these stats
+					</a>
+				}
+				css="margin-bottom: 20px"
+				title="Summary"
+			>
 				<Summary filterId={filterId} />
 			</Card>
 			<SearchVolumeChart height={300} data={searchVolume} />
