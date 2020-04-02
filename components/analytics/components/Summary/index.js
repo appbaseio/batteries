@@ -86,7 +86,7 @@ class Summary extends React.Component {
 									borderTop: '2px solid #000',
 								}}
 								title="Bounce Rate"
-								count={bounceRate}
+								count={`${bounceRate}%`}
 							/>
 						</Col>
 						<Col sm={24} xs={24} xl={6}>
