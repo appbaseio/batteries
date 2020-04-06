@@ -95,7 +95,7 @@ class Summary extends React.Component {
 									borderTop: '2px solid #000',
 								}}
 								title="Session Duration"
-								count={`${formattedTime.time} ${formattedTime.formattedUnit}`}
+								count={`${formattedTime.time} ${formattedTime.formattedUnit || ''}`}
 							/>
 						</Col>
 					</Row>
