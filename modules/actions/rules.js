@@ -102,7 +102,7 @@ export function cloneQueryRule(rule, newRule) {
 				);
 			})
 			.catch(error =>
-				dispatch(createAction(AppConstants.APP.RULES.CLONE_ERROR, null, error)),
+				dispatch(createAction(AppConstants.APP.RULES.CLONE_ERROR, { ...rule }, error)),
 			);
 	};
 }
