@@ -61,7 +61,7 @@ class Summary extends React.Component {
 		return (
 			<React.Fragment>
 				{isValidPlan(tier, featureCustomEvents) ? (
-					<Row gutter={8}>
+					<Row gutter={8} className={cardContainer}>
 						<Col sm={24} xs={24} xl={6}>
 							<SummaryCard
 								style={{
@@ -94,7 +94,7 @@ class Summary extends React.Component {
 								style={{
 									borderTop: '2px solid #000',
 								}}
-								title="Session Duration"
+								title="Avg Session Duration"
 								count={`${formattedTime.time} ${formattedTime.formattedUnit || ''}`}
 							/>
 						</Col>
