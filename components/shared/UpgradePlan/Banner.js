@@ -14,6 +14,7 @@ const Banner = ({
 	goBackText,
 	onClickGoBack,
 	icon,
+	renderButtons,
 }) => (
 	<Header compact>
 		<Row type="flex" justify="space-between" gutter={16}>
@@ -41,7 +42,7 @@ const Banner = ({
 					<Button
 						size="large"
 						type="primary"
-						{...!onClick && { href }}
+						{...(!onClick && { href })}
 						target="_blank"
 						rel="noopener noreferrer"
 						onClick={onClick}
@@ -50,6 +51,7 @@ const Banner = ({
 						{buttonText}
 					</Button>
 				)}
+				{renderButtons && renderButtons()}
 			</Col>
 		</Row>
 	</Header>
@@ -64,6 +66,7 @@ Banner.defaultProps = {
 	showGoBack: false,
 	goBackText: 'Go Back',
 	onClickGoBack: undefined,
+	renderButtons: undefined,
 };
 
 Banner.propTypes = {
@@ -77,6 +80,7 @@ Banner.propTypes = {
 	showGoBack: PropTypes.bool,
 	goBackText: PropTypes.string,
 	onClickGoBack: PropTypes.func,
+	renderButtons: PropTypes.func,
 };
 
 export default Banner;
