@@ -6,19 +6,31 @@ import { getURL } from '../../constants/config';
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission => permission && permission.ops.indexOf('read') > -1
-			&& permission && permission.ops.indexOf('write') > -1
-			&& get(permission, 'referers', []).includes('*'),
+		permission =>
+			permission &&
+			permission.ops.indexOf('read') > -1 &&
+			permission &&
+			permission.ops.indexOf('write') > -1 &&
+			get(permission, 'referers', []).includes('*'),
 	);
 	if (!result) {
 		result = permissions.find(
-			permission => permission && permission.ops.indexOf('read') > -1
-				&& permission && permission.ops.indexOf('write') > -1
-				&& get(permission, 'referers', []).includes('*'),
+			permission =>
+				permission &&
+				permission.ops.indexOf('read') > -1 &&
+				permission &&
+				permission.ops.indexOf('write') > -1 &&
+				get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission && permission.ops.indexOf('read') > -1 && permission && permission.ops.indexOf('write') > -1);
+		result = permissions.find(
+			permission =>
+				permission &&
+				permission.ops.indexOf('read') > -1 &&
+				permission &&
+				permission.ops.indexOf('write') > -1,
+		);
 	}
 	if (!result) {
 		result = permissions.find(permission => permission && permission.ops.indexOf('read') > -1);
@@ -31,16 +43,18 @@ export function getCredentialsFromPermissions(permissions = []) {
 
 export function getReadCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission => permission.read
-			&& !permission.write
-			&& get(permission, 'referers', []).includes('*')
-			&& get(permission, 'include_fields', []).includes('*'),
+		permission =>
+			permission.read &&
+			!permission.write &&
+			get(permission, 'referers', []).includes('*') &&
+			get(permission, 'include_fields', []).includes('*'),
 	);
 	if (!result) {
 		result = permissions.find(
-			permission => permission.read
-				&& !permission.write
-				&& get(permission, 'referers', []).includes('*'),
+			permission =>
+				permission.read &&
+				!permission.write &&
+				get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
@@ -71,10 +85,10 @@ export function getCredentials(appId) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(getCredentialsFromPermissions(data.body));
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -256,7 +270,27 @@ export const allowedPlans = [
 	CLUSTER_PLANS.PRODUCTION_2019_3,
 ];
 
-export const isValidPlan = (tier, override) => override || (tier && allowedPlans.includes(tier));
+export const features = {
+	FUNCTIONS: 'FUNCTIONS',
+	SEARCH_RELEVANCY: 'SEARCH_RELEVANCY',
+	QUERY_RULES: 'QUERY_RULES',
+	ANALYTICS: 'ANALYTICS',
+}
+
+
+export const isValidPlan = (tier, override, feature) => {
+	if (override) {
+		return true;
+	}
+
+	switch (feature) {
+		case feature.FUNCTIONS:
+			const functionPlans = allowedPlans.filter(plan => plan !== CLUSTER_PLANS.PRODUCTION_2019_1)
+			return tier && functionPlans.includes(tier)
+		default:
+			return tier && allowedPlans.includes(tier);
+	}
+}
 
 export const deleteObjectFromPath = (obj, path) => {
 	const fields = path.split('.');
