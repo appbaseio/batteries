@@ -284,7 +284,7 @@ export const isValidPlan = (tier, override, feature) => {
 	}
 
 	switch (feature) {
-		case feature.FUNCTIONS:
+		case features.FUNCTIONS:
 			const functionPlans = allowedPlans.filter(plan => plan !== CLUSTER_PLANS.PRODUCTION_2019_1)
 			return tier && functionPlans.includes(tier)
 		default:
