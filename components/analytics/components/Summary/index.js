@@ -117,7 +117,7 @@ class Summary extends React.Component {
 								}}
 								title="Avg Session Duration"
 								label={`${formattedTime.time} ${formattedTime.formattedUnit || ''}`}
-								value={bounceRate}
+								value={avgSessionDuration}
 								comparisonValue={compAvgSessionDuration}
 								showComparisonStats={isEnterpriseUser}
 							/>
