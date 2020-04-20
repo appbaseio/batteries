@@ -75,6 +75,7 @@ function getAppSettings(state = initialState, action) {
 				settings: Object.assign({}, state.settings, {
 					[action.meta.name]: {
 						...state.settings[action.meta.name],
+						deleteError: null,
 						isDeleting: true,
 					},
 				}),
