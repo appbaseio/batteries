@@ -13,8 +13,8 @@ class MappingView extends React.Component {
 			return this.renderDropDown({
 				name: 'field-usecase',
 				value: selected,
-				handleChange: e => setMapping(fieldname, 'text', e.key),
-				options: Object.entries(usecases).map(entry => ({
+				handleChange: (e) => setMapping(fieldname, 'text', e.key),
+				options: Object.entries(usecases).map((entry) => ({
 					value: entry[0],
 					label: entry[1],
 				})),
@@ -32,11 +32,9 @@ class MappingView extends React.Component {
 				label: getType(originalFields[field].type),
 				value: getType(originalFields[field].type),
 			});
-			getConversionMap(getType(originalFields[field].type)).map(itemType =>
+			getConversionMap(getType(originalFields[field].type)).map((itemType) =>
 				options.push({
-					label: getType(itemType)
-						.split('_')
-						.join(' '),
+					label: getType(itemType).split('_').join(' '),
 					value: getType(itemType),
 				}),
 			);
@@ -47,11 +45,9 @@ class MappingView extends React.Component {
 			value: getType(fields[field].type),
 		});
 
-		getConversionMap(getType(fields[field].type)).map(itemType =>
+		getConversionMap(getType(fields[field].type)).map((itemType) =>
 			options.push({
-				label: getType(itemType)
-					.split('_')
-					.join(' '),
+				label: getType(itemType).split('_').join(' '),
 				value: getType(itemType),
 			}),
 		);
@@ -64,13 +60,13 @@ class MappingView extends React.Component {
 		handleChange // prettier-ignore
 	}) => {
 		const menu = (
-			<Menu onClick={e => handleChange(e)}>
-				{options.map(option => (
+			<Menu onClick={(e) => handleChange(e)}>
+				{options.map((option) => (
 					<Menu.Item key={option.value}>{option.label}</Menu.Item>
 				))}
 			</Menu>
 		);
-		const selectedOption = options.find(option => option.value === value);
+		const selectedOption = options.find((option) => option.value === value);
 		return (
 			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
@@ -81,7 +77,15 @@ class MappingView extends React.Component {
 		);
 	};
 
-	renderMapping = (type, fields, originalFields, address = '', mappingType, initialRender) => {
+	renderMapping = (
+		type,
+		fields,
+		originalFields,
+		address = '',
+		mappingType,
+		initialRender,
+		topLevelField,
+	) => {
 		const nestedObj = {
 			type: 'nested',
 		};
@@ -143,7 +147,7 @@ class MappingView extends React.Component {
 							</a>
 						)}
 					</h4>
-					{Object.keys(fields).map(field => {
+					{Object.keys(fields).map((field) => {
 						if (fields[field].properties) {
 							return this.renderMapping(
 								field,
@@ -151,6 +155,8 @@ class MappingView extends React.Component {
 								originalFields[field].properties,
 								`${address ? `${address}.` : ''}${field}.properties`,
 								fields[field].type,
+								false,
+								topLevelField,
 							);
 						}
 						const properties = fields[field];
@@ -244,7 +250,7 @@ class MappingView extends React.Component {
 										: this.renderDropDown({
 												name: `${field}-mapping`,
 												value: fields[field].type,
-												handleChange: e =>
+												handleChange: (e) =>
 													setMapping(`${address}.${field}`, e.key),
 												options: this.renderOptions(
 													originalFields,
@@ -256,10 +262,10 @@ class MappingView extends React.Component {
 										? columnRender({
 												fields,
 												address: `${address}.${field}`.startsWith(
-													'properties.properties',
+													`${topLevelField}.properties`,
 												)
 													? `${address}.${field}`.replace(
-															'properties.properties',
+															`${topLevelField}.properties`,
 															'properties',
 													  )
 													: `${address}.${field}`,
@@ -290,7 +296,7 @@ class MappingView extends React.Component {
 		}
 		return (
 			<React.Fragment>
-				{Object.keys(mapping).map(field => {
+				{Object.keys(mapping).map((field) => {
 					if (mapping[field]) {
 						let currentMappingFields = mapping[field].properties;
 						let originalMappingFields = originalMapping[field]
@@ -316,6 +322,7 @@ class MappingView extends React.Component {
 							fieldAddress,
 							typeName,
 							true,
+							field,
 						);
 					}
 					return null;
