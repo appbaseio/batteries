@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
+import { Statistic, Icon } from 'antd';
 import Flex from '../../../shared/Flex';
 
 const cardStyle = css`
@@ -32,46 +33,113 @@ const cardStyle = css`
 		margin-left: 5px;
 		font-size: 16px;
 	}
+	.stats {
+		align-items: center;
+		justify-content: center;
+	}
+	.prev-stats {
+		margin-left: 10px;
+		font-size: 12px;
+	}
+	.ant-statistic-content-value-decimal {
+		font-size: 14px;
+	}
 `;
 
-const SummaryCard = ({ percent, title, count, style, showPercent }) => (
-	<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
-		{/* {icon && (
-			<div>
-				<Icon type={icon} style={{ fontSize: '2.5em', marginRight: 15 }} />
-			</div>
-		)} */}
-		<div>
-			<p>{title}</p>
-			<h2
-				style={{
-					fontSize: '1.3rem',
-					display: 'flex',
-					flexDirection: count > 100 ? 'column' : 'row',
-				}}
-			>
-				{typeof count === 'string' ? count : (+count).toLocaleString()}
-				{showPercent ? (
-					<span style={{ lineHeight: count > 100 ? 1 : 'inherit' }}>
-						{`(${percent || '0.00'}%)`}
-					</span>
+const getComparisonValue = (value, prevValue) => {
+	if (value === undefined || value === null || prevValue === undefined || prevValue === null) {
+		return null;
+	}
+	if (prevValue === 0) {
+		// divide by zero exception
+		return value;
+	}
+	return ((value - prevValue) / prevValue) * 100;
+};
+
+const SummaryCard = ({
+	percent,
+	title,
+	label,
+	comparisonValue,
+	value,
+	style,
+	showPercent,
+	showComparisonStats,
+	hidePrevStats,
+}) => {
+	const comparison = getComparisonValue(value, comparisonValue);
+	return (
+		<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
+			{/* {icon && (
+				<div>
+					<Icon type={icon} style={{ fontSize: '2.5em', marginRight: 15 }} />
+				</div>
+			)} */}
+			<div style={{ height: 96 }}>
+				<p>{title}</p>
+				<h2
+					style={{
+						fontSize: '1.3rem',
+						display: 'flex',
+						flexDirection: label > 1000 ? 'column' : 'row',
+					}}
+				>
+					{typeof label === 'string' ? label : (+label).toLocaleString()}
+					{showPercent ? (
+						<span style={{ lineHeight: label > 1000 ? 1 : 'inherit' }}>
+							{`(${percent || '0.00'}%)`}
+						</span>
+					) : null}
+				</h2>
+				{showComparisonStats && comparison ? (
+					<Flex className="stats">
+						<Statistic
+							value={Math.abs(comparison)}
+							precision={2}
+							valueStyle={{
+								...(comparison > 0 ? { color: '#3f8600' } : { color: '#cf1322' }),
+								fontSize: 18,
+							}}
+							prefix={
+								comparison > 0 ? (
+									<Icon type="arrow-up" />
+								) : (
+									<Icon type="arrow-down" />
+								)
+							}
+							formatter={comparisonValue === 0 ? () => 'n/a' : undefined}
+							suffix={comparisonValue !== 0 ? '%' : ''}
+						/>
+						{!hidePrevStats && (
+							<span className="prev-stats">Previously: {comparisonValue}</span>
+						)}
+					</Flex>
 				) : null}
-			</h2>
-		</div>
-	</Flex>
-);
+			</div>
+		</Flex>
+	);
+};
 SummaryCard.defaultProps = {
 	percent: 0,
-	count: 0,
+	label: 0,
 	style: {},
 	showPercent: false,
+	showComparisonStats: false,
+	hidePrevStats: false,
+	comparisonValue: undefined,
+	value: 0,
 };
 SummaryCard.propTypes = {
 	percent: PropTypes.number,
 	style: PropTypes.object,
 	showPercent: PropTypes.bool,
+	showComparisonStats: PropTypes.bool,
+	hidePrevStats: PropTypes.bool,
 	title: PropTypes.string.isRequired,
-	count: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	label: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	comparisonValue: PropTypes.number,
+	value: PropTypes.number,
 };
 
 export default SummaryCard;

@@ -38,17 +38,28 @@ class Summary extends React.Component {
 			avgClickRate,
 			avgConversionRate,
 			totalSearches,
+			compTotalSearches,
 			totalResults,
+			compTotalResults,
 			noResultsRate,
 			totalUsers,
+			compTotalUsers,
 			totalConversions,
+			compTotalConversions,
 			totalResultClicks,
+			compTotalResultClicks,
 			totalClicks,
+			compTotalClicks,
 			noResultSearch,
+			compNoResultSearch,
 			totalSuggestionClicks,
+			compTotalSuggestionClicks,
 			totalUserSessions,
+			compTotalUserSessions,
 			avgSessionDuration,
+			compAvgSessionDuration,
 			bounceRate,
+			compBounceRate,
 			tier,
 			featureCustomEvents,
 		} = this.props;
@@ -57,10 +68,11 @@ class Summary extends React.Component {
 			return <Loader />;
 		}
 		const formattedTime = parseTimeDuration(avgSessionDuration);
+		const isEnterpriseUser = isValidPlan(tier, featureCustomEvents);
 
 		return (
 			<React.Fragment>
-				{isValidPlan(tier, featureCustomEvents) ? (
+				{isEnterpriseUser ? (
 					<Row gutter={8} className={cardContainer}>
 						<Col sm={24} xs={24} xl={6}>
 							<SummaryCard
@@ -68,7 +80,10 @@ class Summary extends React.Component {
 									borderTop: '2px solid #000',
 								}}
 								title="Total Users"
-								count={totalUsers}
+								label={totalUsers}
+								value={totalUsers}
+								comparisonValue={compTotalUsers}
+								showComparisonStats={isEnterpriseUser}
 							/>
 						</Col>
 						<Col sm={24} xs={24} xl={6}>
@@ -77,7 +92,10 @@ class Summary extends React.Component {
 									borderTop: '2px solid #000',
 								}}
 								title="Total Sessions"
-								count={totalUserSessions}
+								label={totalUserSessions}
+								value={totalUserSessions}
+								comparisonValue={compTotalUserSessions}
+								showComparisonStats={isEnterpriseUser}
 							/>
 						</Col>
 						<Col sm={24} xs={24} xl={6}>
@@ -86,7 +104,10 @@ class Summary extends React.Component {
 									borderTop: '2px solid #000',
 								}}
 								title="Bounce Rate"
-								count={`${bounceRate}%`}
+								label={`${bounceRate}%`}
+								value={bounceRate}
+								comparisonValue={compBounceRate}
+								showComparisonStats={isEnterpriseUser}
 							/>
 						</Col>
 						<Col sm={24} xs={24} xl={6}>
@@ -95,7 +116,10 @@ class Summary extends React.Component {
 									borderTop: '2px solid #000',
 								}}
 								title="Avg Session Duration"
-								count={`${formattedTime.time} ${formattedTime.formattedUnit || ''}`}
+								label={`${formattedTime.time} ${formattedTime.formattedUnit || ''}`}
+								value={avgSessionDuration}
+								comparisonValue={compAvgSessionDuration}
+								showComparisonStats={isEnterpriseUser}
 							/>
 						</Col>
 					</Row>
@@ -110,23 +134,34 @@ class Summary extends React.Component {
 										background: '#f0f5ff',
 									}}
 									title="Total Searches"
-									count={totalSearches}
+									label={totalSearches}
+									value={totalSearches}
+									comparisonValue={compTotalSearches}
+									showComparisonStats={isEnterpriseUser}
 								/>
 							</Col>
 							<Col sm={24} xs={24} xl={12}>
 								<SummaryCard
 									title="Impressions"
-									count={totalResults}
+									label={totalResults}
+									value={totalResults}
+									comparisonValue={compTotalResults}
 									style={{ background: '#f0f5ff' }}
+									showComparisonStats={isEnterpriseUser}
+									hidePrevStats
 								/>
 							</Col>
 							<Col sm={24} xs={24} xl={12}>
 								<SummaryCard
 									title="No Results"
-									count={noResultSearch}
+									label={noResultSearch}
+									value={noResultSearch}
+									comparisonValue={compNoResultSearch}
 									showPercent
 									percent={noResultsRate}
 									style={{ background: '#f0f5ff' }}
+									showComparisonStats={isEnterpriseUser}
+									hidePrevStats
 								/>
 							</Col>
 						</Row>
@@ -140,23 +175,34 @@ class Summary extends React.Component {
 										borderTop: '2px solid #eb2f96',
 										background: '#fff0f6',
 									}}
-									count={totalClicks}
+									label={totalClicks}
+									value={totalClicks}
+									comparisonValue={compTotalClicks}
 									showPercent
 									percent={avgClickRate}
+									showComparisonStats={isEnterpriseUser}
 								/>
 							</Col>
 							<Col sm={24} xs={24} xl={12}>
 								<SummaryCard
 									title="Suggestion Clicks"
 									style={{ background: '#fff0f6' }}
-									count={totalSuggestionClicks}
+									label={totalSuggestionClicks}
+									showComparisonStats={isEnterpriseUser}
+									value={totalSuggestionClicks}
+									comparisonValue={compTotalSuggestionClicks}
+									hidePrevStats
 								/>
 							</Col>
 							<Col sm={24} xs={24} xl={12}>
 								<SummaryCard
 									title="Result Clicks"
 									style={{ background: '#fff0f6' }}
-									count={totalResultClicks}
+									label={totalResultClicks}
+									showComparisonStats={isEnterpriseUser}
+									value={totalResultClicks}
+									comparisonValue={compTotalResultClicks}
+									hidePrevStats
 								/>
 							</Col>
 						</Row>
@@ -172,7 +218,10 @@ class Summary extends React.Component {
 									title="Conversions"
 									showPercent
 									percent={avgConversionRate}
-									count={totalConversions}
+									label={totalConversions}
+									showComparisonStats={isEnterpriseUser}
+									value={totalConversions}
+									comparisonValue={compTotalConversions}
 								/>
 							</Col>
 						</Row>
@@ -186,27 +235,50 @@ class Summary extends React.Component {
 Summary.defaultProps = {
 	filterId: undefined,
 	filters: undefined,
+	compTotalConversions: 0,
+	compTotalClicks: 0,
+	compTotalResultClicks: 0,
+	compTotalSuggestionClicks: 0,
+	compNoResultSearch: 0,
+	compTotalSearches: 0,
+	compTotalUsers: 0,
+	compTotalResults: 0,
+	compTotalUserSessions: 0,
+	compBounceRate: 0,
+	compAvgSessionDuration: 0,
 };
 
 Summary.propTypes = {
 	fetchAppAnalyticsSummary: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	errors: PropTypes.array.isRequired,
-	avgConversionRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalConversions: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalResultClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	avgClickRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	// avgSuggestionClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalSuggestionClicks: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	noResultsRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	noResultSearch: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalSearches: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalUsers: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalResults: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	totalUserSessions: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	bounceRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-	avgSessionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+	avgConversionRate: PropTypes.string.isRequired,
+	totalConversions: PropTypes.string.isRequired,
+	totalClicks: PropTypes.string.isRequired,
+	totalResultClicks: PropTypes.string.isRequired,
+	avgClickRate: PropTypes.string.isRequired,
+	// avgSuggestionClicks: PropTypes.string.isRequired,
+	totalSuggestionClicks: PropTypes.string.isRequired,
+	noResultsRate: PropTypes.string.isRequired,
+	noResultSearch: PropTypes.string.isRequired,
+	totalSearches: PropTypes.string.isRequired,
+	totalUsers: PropTypes.string.isRequired,
+	totalResults: PropTypes.string.isRequired,
+	totalUserSessions: PropTypes.string.isRequired,
+	bounceRate: PropTypes.string.isRequired,
+	avgSessionDuration: PropTypes.string.isRequired,
+	// comparison
+	compTotalConversions: PropTypes.string,
+	compTotalClicks: PropTypes.string,
+	compTotalResultClicks: PropTypes.string,
+	compTotalSuggestionClicks: PropTypes.string,
+	compNoResultSearch: PropTypes.string,
+	compTotalSearches: PropTypes.string,
+	compTotalUsers: PropTypes.string,
+	compTotalResults: PropTypes.string,
+	compTotalUserSessions: PropTypes.string,
+	compBounceRate: PropTypes.string,
+	compAvgSessionDuration: PropTypes.string,
 	// eslint-disable-next-line
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
@@ -218,19 +290,31 @@ const mapStateToProps = (state, props) => {
 	return {
 		avgConversionRate: get(appSummary, 'summary.avg_conversion_rate', 0),
 		totalConversions: get(appSummary, 'summary.total_conversions', 0),
+		compTotalConversions: get(appSummary, 'compare_timeframe.total_conversions', 0),
 		totalClicks: get(appSummary, 'summary.total_clicks', 0),
+		compTotalClicks: get(appSummary, 'compare_timeframe.total_clicks', 0),
 		totalResultClicks: get(appSummary, 'summary.total_results_clicks', 0),
+		compTotalResultClicks: get(appSummary, 'compare_timeframe.total_results_clicks', 0),
 		avgClickRate: get(appSummary, 'summary.avg_click_rate', 0),
 		avgSuggestionClicks: get(appSummary, 'summary.avg_suggestions_click_rate', 0),
+		compAvgSuggestionClicks: get(appSummary, 'compare_timeframe.avg_suggestions_click_rate', 0),
 		totalSuggestionClicks: get(appSummary, 'summary.total_suggestions_clicks', 0),
+		compTotalSuggestionClicks: get(appSummary, 'compare_timeframe.total_suggestions_clicks', 0),
 		noResultsRate: get(appSummary, 'summary.no_results_rate', 0),
 		noResultSearch: get(appSummary, 'summary.total_no_results_searches', 0),
+		compNoResultSearch: get(appSummary, 'compare_timeframe.total_no_results_searches', 0),
 		totalSearches: get(appSummary, 'summary.total_searches', 0),
+		compTotalSearches: get(appSummary, 'compare_timeframe.total_searches', 0),
 		totalUsers: get(appSummary, 'summary.total_users', 0),
+		compTotalUsers: get(appSummary, 'compare_timeframe.total_users', 0),
 		totalUserSessions: get(appSummary, 'summary.total_user_sessions', 0),
+		compTotalUserSessions: get(appSummary, 'compare_timeframe.total_user_sessions', 0),
 		bounceRate: get(appSummary, 'summary.avg_bounce_rate', 0),
+		compBounceRate: get(appSummary, 'compare_timeframe.avg_bounce_rate', 0),
 		avgSessionDuration: get(appSummary, 'summary.avg_user_session_duration', 0),
+		compAvgSessionDuration: get(appSummary, 'compare_timeframe.avg_user_session_duration', 0),
 		totalResults: get(appSummary, 'summary.total_results_count', 0),
+		compTotalResults: get(appSummary, 'compare_timeframe.total_results_count', 0),
 		isLoading: get(state, '$getAppAnalyticsSummary.isFetching'),
 		tier: get(state, '$getAppPlan.results.tier'),
 		errors: [get(state, '$getAppAnalyticsSummary.error')],
