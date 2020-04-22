@@ -77,7 +77,9 @@ export function deleteSettings(name) {
 				),
 			)
 			.catch(error =>
-				dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE_ERROR, null, error)),
+				dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE_ERROR, null, error, {
+					name,
+				})),
 			);
 	};
 }
