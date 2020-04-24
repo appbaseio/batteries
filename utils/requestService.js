@@ -16,6 +16,7 @@ const createRequest = (
 	credentials = false,
 	allowedStatusCode,
 	allowRawError = false,
+	allowRawResponse = false,
 ) =>
 	new Promise((resolve, reject) => {
 		let status;
@@ -37,7 +38,12 @@ const createRequest = (
 			}),
 		);
 		fetch(url, requestOptions)
-			.then(res => {
+			.then((res) => {
+				if (allowRawResponse) {
+					return {
+						res: res.clone(),
+					};
+				}
 				({ status } = res);
 				if (status >= 500 && !allowRawError) {
 					return {
@@ -46,7 +52,7 @@ const createRequest = (
 				}
 				return res.json();
 			})
-			.then(data => {
+			.then((data) => {
 				if (allowedStatusCode && allowedStatusCode.includes(status)) {
 					return resolve(data);
 				}
@@ -61,7 +67,7 @@ const createRequest = (
 				}
 				return resolve(data);
 			})
-			.catch(error => reject(error));
+			.catch((error) => reject(error));
 	});
 /**
  * To create a delete request
@@ -77,8 +83,24 @@ export const doDelete = (url, headers, credentials, body) =>
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doGet = (url, headers, credentials) =>
-	createRequest(url, undefined, headers, 'GET', credentials);
+export const doGet = (
+	url,
+	headers,
+	credentials,
+	allowedStatusCode,
+	allowRawError,
+	allowRawResponse,
+) =>
+	createRequest(
+		url,
+		undefined,
+		headers,
+		'GET',
+		credentials,
+		allowedStatusCode,
+		allowRawError,
+		allowRawResponse,
+	);
 /**
  * To create a post request
  * @param {string} url
@@ -86,8 +108,25 @@ export const doGet = (url, headers, credentials) =>
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doPost = (url, body, headers, credentials, allowedStatusCode, allowRawError) =>
-	createRequest(url, body, headers, 'POST', credentials, allowedStatusCode, allowRawError);
+export const doPost = (
+	url,
+	body,
+	headers,
+	credentials,
+	allowedStatusCode,
+	allowRawError,
+	allowRawResponse,
+) =>
+	createRequest(
+		url,
+		body,
+		headers,
+		'POST',
+		credentials,
+		allowedStatusCode,
+		allowRawError,
+		allowRawResponse,
+	);
 /**
  * To create a patch request
  * @param {string} url
