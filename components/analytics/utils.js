@@ -21,7 +21,7 @@ const requestOpt = css`
 	border-radius: 3px;
 	border: solid 1px #00ff88;
 `;
-export const getQueryParams = paramObj => {
+export const getQueryParams = (paramObj) => {
 	let queryString = '';
 	if (paramObj) {
 		Object.keys(paramObj).forEach((o, i) => {
@@ -39,7 +39,7 @@ const replaySearch = [
 		title: 'Replay Search',
 		key: 'search_state',
 		width: 125,
-		render: item => (
+		render: (item) => (
 			<div css="text-align: center">
 				<Button
 					disabled={!item.search_state}
@@ -56,14 +56,14 @@ const queryRule = [
 		title: 'Manage',
 		key: 'query_rule',
 		width: 90,
-		render: item => (
+		render: (item) => (
 			<div css="text-align: center">
 				<Button icon="star" onClick={() => item.handleQueryRule(item)} />
 			</div>
 		),
 	},
 ];
-export const getTimeDuration = time => {
+export const getTimeDuration = (time) => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
 		const timeD = parseInt(timeInMs / (24 * 60 * 60 * 1000), 10);
@@ -103,7 +103,7 @@ export const getTimeDuration = time => {
 	};
 };
 
-export const parseTimeDuration = time => {
+export const parseTimeDuration = (time) => {
 	const timeInMs = time * 1000;
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
 		const timeD = parseInt(timeInMs / (24 * 60 * 60 * 1000), 10);
@@ -147,7 +147,7 @@ export const popularFiltersCol = (plan, displayReplaySearch) => {
 	const defaults = [
 		{
 			title: 'Filters',
-			render: item => (
+			render: (item) => (
 				<React.Fragment>
 					<strong>{item.key}</strong>
 					{` ${item.value}`}
@@ -184,7 +184,7 @@ export const popularResultsCol = (plan, displayReplaySearch) => {
 	}
 	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
-export const defaultColumns = plan => {
+export const defaultColumns = (plan) => {
 	const defaults = [
 		{
 			title: 'Search Terms',
@@ -205,7 +205,7 @@ export const defaultColumns = plan => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
-			render: i => i.toFixed(2),
+			render: (i) => i.toFixed(2),
 			key: `clickrate${updateIndex()}`,
 		},
 	];
@@ -229,7 +229,7 @@ export const noResultsFull = (plan, displayReplaySearch, displayQueryRule) => {
 	];
 };
 
-export const ConvertToCSV = objArray => {
+export const ConvertToCSV = (objArray) => {
 	const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
 	let str = '';
 
@@ -296,19 +296,19 @@ export const popularSearchesFull = (plan, displayReplaySearch, displayQueryRule)
 		{
 			title: 'Avg Click Position',
 			dataIndex: 'click_position',
-			render: i => i.toFixed(2),
+			render: (i) => i.toFixed(2),
 			key: `ps-clickposition${updateIndex()}`,
 		},
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
-			render: i => i.toFixed(2),
+			render: (i) => i.toFixed(2),
 			key: `ps-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
-			render: i => i.toFixed(2),
+			render: (i) => i.toFixed(2),
 			key: `ps-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -328,7 +328,7 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 				style: {
 					maxWidth: 250,
 				},
-				render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+				render: (item) => <div css="overflow-y: scroll; height:150px;">{item}</div>,
 			},
 			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
 		];
@@ -343,13 +343,13 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
-			render: i => i.toFixed(2),
+			render: (i) => i.toFixed(2),
 			key: `pr-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Click Position',
 			dataIndex: 'click_position',
-			render: item => (
+			render: (item) => (
 				<div css="overflow-y: scroll; max-height:150px;">{item.toFixed(2) || '-'}</div>
 			),
 			key: `pr-clickposition${updateIndex()}`,
@@ -357,7 +357,7 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
-			render: i => i.toFixed(2),
+			render: (i) => i.toFixed(2),
 			key: `pr-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -366,7 +366,7 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 			dataIndex: 'source',
 			key: `pr-source${updateIndex()}`,
 			width: '30%',
-			render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+			render: (item) => <div css="overflow-y: scroll; height:150px;">{item}</div>,
 		},
 	];
 };
@@ -387,21 +387,21 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
-			render: i => i.toFixed(2),
+			render: (i) => i.toFixed(2),
 			key: `pf-clickrate${updateIndex()}`,
 		},
 		{
 			title: 'Click Position',
 			dataIndex: 'click_position',
 			key: `pf-clickposition${updateIndex()}`,
-			render: item => (
+			render: (item) => (
 				<div css="overflow-y: scroll; max-height:150px;">{item.toFixed(2) || '-'}</div>
 			),
 		},
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
-			render: i => i.toFixed(2),
+			render: (i) => i.toFixed(2),
 			key: `pf-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -412,7 +412,7 @@ export const requestLogs = [
 	{
 		title: 'Operation',
 		dataIndex: 'operation',
-		render: operation => (
+		render: (operation) => (
 			<div>
 				<Flex>
 					<div css="width: 100px;margin-top: 5px;word-break: keep-all;">
@@ -456,7 +456,7 @@ export const getAuthToken = () => {
 	return token;
 };
 
-export const getApp = app => {
+export const getApp = (app) => {
 	if (window.location.pathname.startsWith('/cluster/')) return '';
 	return `${app}/`;
 };
@@ -486,12 +486,12 @@ export function getAnalytics(appName, filters) {
 			},
 		})
 			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
+			.then((res) => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -512,12 +512,12 @@ export function getSearchLatency(appName, filters) {
 			},
 		})
 			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
+			.then((res) => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -541,12 +541,12 @@ export function getGeoDistribution(appName, filters) {
 			},
 		)
 			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
+			.then((res) => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -583,13 +583,13 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100, f
 			},
 		)
 			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
+			.then((res) => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res.popular_searches);
 				// resolve(data.body.popularSearches);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -616,12 +616,12 @@ export function getNoResultSearches(appName, size = 100, filters) {
 			},
 		)
 			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
+			.then((res) => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res.no_results_searches);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -646,12 +646,12 @@ export function getPopularResults(appName, clickanalytics = true, size = 100, fi
 			},
 		)
 			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
+			.then((res) => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res.popular_results);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -686,12 +686,12 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100, fi
 			},
 		)
 			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
+			.then((res) => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res.popular_filters);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -720,12 +720,12 @@ export function getRequestLogs(appName, size = 10, from = 0, filter) {
 			},
 		)
 			// Comment out this line
-			.then(res => res.json())
-			.then(res => {
+			.then((res) => res.json())
+			.then((res) => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -763,9 +763,9 @@ export const tabMappings = {
 	requestLogs: 'request-logs',
 	analytics: 'analytics',
 };
-export const getActiveKeyByRoutes = tab => {
+export const getActiveKeyByRoutes = (tab) => {
 	let activeKey = '';
-	Object.keys(tabMappings).every(k => {
+	Object.keys(tabMappings).every((k) => {
 		if (tabMappings[k] === tab) {
 			activeKey = k;
 			return false;

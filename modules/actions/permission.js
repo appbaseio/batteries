@@ -18,13 +18,17 @@ export function getPermission(name) {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		// const username = get(getState(), 'user.data.username', '');
 		dispatch(createAction(AppConstants.APP.PERMISSION.GET));
-		return fetchPermission()
-			.then(res => dispatch(
+		return fetchPermission(appName)
+			.then((res) =>
+				dispatch(
 					createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res, null, {
 						appName,
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)));
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)),
+			);
 	};
 }
 /**
@@ -36,8 +40,10 @@ export function createPermission(appName, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PERMISSION.CREATE));
 		return newPermission(appName, payload)
-			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.CREATE_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.CREATE_ERROR, null, error)));
+			.then((res) => dispatch(createAction(AppConstants.APP.PERMISSION.CREATE_SUCCESS, res)))
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PERMISSION.CREATE_ERROR, null, error)),
+			);
 	};
 }
 
@@ -51,8 +57,10 @@ export function updatePermission(appName, username, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PERMISSION.UPDATE));
 		return UpdatePermission(appName, username, payload)
-			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.UPDATE_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.UPDATE_ERROR, null, error)));
+			.then((res) => dispatch(createAction(AppConstants.APP.PERMISSION.UPDATE_SUCCESS, res)))
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PERMISSION.UPDATE_ERROR, null, error)),
+			);
 	};
 }
 /**
@@ -64,7 +72,9 @@ export function deletePermission(appName, username) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PERMISSION.DELETE));
 		return DeletePermission(appName, username)
-			.then(res => dispatch(createAction(AppConstants.APP.PERMISSION.DELETE_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.DELETE_ERROR, null, error)));
+			.then((res) => dispatch(createAction(AppConstants.APP.PERMISSION.DELETE_SUCCESS, res)))
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PERMISSION.DELETE_ERROR, null, error)),
+			);
 	};
 }

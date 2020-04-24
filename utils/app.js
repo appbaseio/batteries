@@ -1,4 +1,5 @@
 import { doDelete, doPatch, doGet, doPost, doPut } from './requestService';
+import { getApp } from '../components/analytics/utils';
 import { getURL } from '../../constants/config';
 
 export const transferOwnership = (appId, info) => {
@@ -16,11 +17,11 @@ const getAuthToken = () => {
 	return token;
 };
 
-export const getPermission = () => {
+export const getPermission = (appName = '') => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 
-	return doGet(`${ACC_API}/_permissions`, {
+	return doGet(`${ACC_API}/${getApp(appName)}_permissions`, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
 	});
@@ -51,17 +52,17 @@ export const deletePermission = (appId, username) =>
 				Authorization: `Basic ${authToken}`,
 			},
 		})
-			.then(res => res.json())
-			.then(data => resolve(data))
-			.catch(error => reject(error));
+			.then((res) => res.json())
+			.then((data) => resolve(data))
+			.catch((error) => reject(error));
 	});
 
-export const deleteApp = appId => {
+export const deleteApp = (appId) => {
 	const ACC_API = getURL();
 	return doDelete(`${ACC_API}/${appId}`);
 };
 
-export const getShare = appId => {
+export const getShare = (appId) => {
 	const ACC_API = getURL();
 	return doGet(`${ACC_API}/app/${appId}/share`);
 };
@@ -82,7 +83,7 @@ export const createSubscription = (token, plan, test) => {
 	return doPost(URL, { token, plan });
 };
 
-export const deleteSubscription = payload => {
+export const deleteSubscription = (payload) => {
 	const ACC_API = getURL();
 	return doDelete(`${ACC_API}/arc/subscription`, undefined, undefined, payload);
 };
@@ -98,14 +99,14 @@ export const getPublicKey = () =>
 				Authorization: `Basic ${authToken}`,
 			},
 		})
-			.then(async res => {
+			.then(async (res) => {
 				const data = await res.json();
 				if (res.status >= 400) {
 					reject(data);
 				}
 				resolve(data);
 			})
-			.catch(error => reject(error));
+			.catch((error) => reject(error));
 	});
 
 export const setPublicKey = (name, key, role) =>
@@ -120,7 +121,7 @@ export const setPublicKey = (name, key, role) =>
 			},
 			body: JSON.stringify({ public_key: key, role_key: role }),
 		})
-			.then(async res => {
+			.then(async (res) => {
 				const data = await res.json();
 
 				if (data.error && data.status >= 400) {
@@ -133,7 +134,7 @@ export const setPublicKey = (name, key, role) =>
 					message: data.message,
 				});
 			})
-			.catch(error => reject(error));
+			.catch((error) => reject(error));
 	});
 
 export const updatePaymentMethod = (token, product) => {
@@ -153,7 +154,7 @@ export const getFunctions = () => {
 	});
 };
 
-export const getSingleFunction = name => {
+export const getSingleFunction = (name) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
 	return doGet(`${ACC_API}/_function/${name}`, {
@@ -201,7 +202,7 @@ export const invokeFunction = (name, payload) => {
 	);
 };
 
-export const deleteFunction = name => {
+export const deleteFunction = (name) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
 	return doDelete(`${ACC_API}/_function/${name}`, { Authorization: `Basic ${authToken}` });
@@ -226,7 +227,7 @@ export const getPrivateRegistry = () => {
 	return doGet(`${ACC_API}/_functions/registry_config`, { Authorization: `Basic ${authToken}` });
 };
 
-export const updatePrivateRegistry = payload => {
+export const updatePrivateRegistry = (payload) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
 	return doPut(`${ACC_API}/_functions/registry_config`, payload, {
@@ -245,7 +246,7 @@ export const getRules = () => {
 	});
 };
 
-export const updateRule = rule => {
+export const updateRule = (rule) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 	const { id, ...payload } = rule;
@@ -255,7 +256,7 @@ export const updateRule = rule => {
 	});
 };
 
-export const deleteRule = ruleId => {
+export const deleteRule = (ruleId) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 
@@ -265,7 +266,7 @@ export const deleteRule = ruleId => {
 	});
 };
 
-export const createRule = rule => {
+export const createRule = (rule) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 
@@ -275,7 +276,7 @@ export const createRule = rule => {
 	});
 };
 
-export const getSearchSettings = name => {
+export const getSearchSettings = (name) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
 	return doGet(`${ACC_API}/_searchrelevancy/${name}`, {
@@ -302,7 +303,7 @@ export const putSearchSettings = (name, payload) => {
 	});
 };
 
-export const deleteSearchSettings = name => {
+export const deleteSearchSettings = (name) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
 	return doDelete(`${ACC_API}/_searchrelevancy/${name}`, { Authorization: `Basic ${authToken}` });
