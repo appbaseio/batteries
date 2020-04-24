@@ -1,3 +1,4 @@
+import get from 'lodash/get';
 import { doDelete, doPatch, doGet, doPost, doPut } from './requestService';
 import { getApp } from '../components/analytics/utils';
 import { getURL } from '../../constants/config';
@@ -20,11 +21,56 @@ const getAuthToken = () => {
 export const getPermission = (appName = '') => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
-
-	return doGet(`${ACC_API}/${getApp(appName)}_permissions`, {
-		'Content-Type': 'application/json',
-		Authorization: `Basic ${authToken}`,
-	});
+	let status;
+	return doGet(
+		`${ACC_API}/${getApp(appName)}_permissions`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+		undefined,
+		undefined,
+		undefined,
+		true,
+	)
+		.then((res) => {
+			status = get(res, 'res.status');
+			if (status === 405) {
+				// Re-fetch permission without index for backward compatibility
+				return doGet(`${ACC_API}/_permissions`, {
+					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
+				});
+			}
+			if (status >= 500) {
+				// eslint-disable-next-line
+				return Promise.reject({
+					message: 'Something went wrong!',
+				});
+			}
+			if (res && res.res) {
+				return res.res
+					.json()
+					.then((data) => {
+						if (status >= 400) {
+							if (data.error) {
+								return Promise.reject(data.error);
+							}
+							return Promise.reject(data);
+						}
+						if (data.body) {
+							return Promise.resolve(data.body);
+						}
+						return Promise.resolve(data);
+					})
+					.catch((err) => Promise.reject(err));
+			}
+			// eslint-disable-next-line
+				return Promise.reject({
+				message: 'Something went wrong!',
+			});
+		})
+		.catch((err) => Promise.reject(err));
 };
 
 export const updatePermission = (appId, username, info) => {
