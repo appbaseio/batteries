@@ -130,87 +130,69 @@ export const setUserInfo = userInfo => {
  * Generates a search state compatible with SearchSandbox
  */
 export const parseSearchState = (searchState = {}) => {
-	const searchProfile = {};
-	let listCounter = 1;
-	const componentIds = {};
-	// Filter out the components
-	Object.keys(searchState).forEach(key => {
-		const { value, dataField, URLParams, ...state } = searchState[key];
-		// Change value to defaultValue
-		// Don't set URL params
-		state.defaultValue = value;
-		if (Array.isArray(dataField)) {
-			state.dataField = dataField.filter(i => !i.split('.')[1]);
-		} else if (typeof dataField === 'string') {
-			state.dataField = dataField.split('.')[0];
-		}
-		switch (state.componentType) {
-			case componentTypes.dataSearch:
-				searchProfile.search = state;
-				componentIds[key] = 'search';
-				break;
-			case componentTypes.reactiveList:
-				searchProfile.result = state;
-				componentIds[key] = 'result';
-				break;
-			case componentTypes.multiDataList:
-			case componentTypes.singleDataList:
-			case componentTypes.multiDropdownList:
-			case componentTypes.singleDropdownList:
-			case componentTypes.singleList:
-			case componentTypes.multiList:
-				componentIds[key] = `list-${listCounter}`;
-				searchProfile[`list-${listCounter}`] = state;
-				listCounter += 1;
-				break;
-			default:
-				break;
-		}
-	});
-	const filterReactProp = (react, queryFormat = 'and') => {
-		if (typeof react[queryFormat] === 'string') {
-			if (componentIds[react[queryFormat]]) {
-				return componentIds[react[queryFormat]];
-			}
-			return undefined;
-		}
-		const newReact = [];
-		if (react[queryFormat] instanceof Array) {
-			react[queryFormat].forEach(reactKey => {
-				if (componentIds[reactKey]) {
-					newReact.push(componentIds[reactKey]);
-				}
-			});
-		}
-		return newReact.length ? newReact : undefined;
+	const allComponentsQueries = get(searchState, 'query', []);
+
+	// Filter all internal Components
+	const componentsQueries = allComponentsQueries.filter(
+		(component) => !component.id.endsWith('__internal'),
+	);
+
+	// Filter term queries this will be part of MultiList
+	const filterQueries = allComponentsQueries.filter((component) => component.type === 'term');
+
+	// Search query will contain either type = search or no type but will for sure have value key.
+	const searchQuery = allComponentsQueries.find(
+		(component) =>
+			(component.type === 'search' || !component.type) && component.hasOwnProperty('value'),
+	) || {};
+
+	// Result query won't have any type or value key in the object.
+	const resultQuery = allComponentsQueries.find(
+		(component) => !component.type && !component.hasOwnProperty('value'),
+	) || {};
+
+	const parsedState = {};
+
+	const aggregations = filterQueries.reduce((agg, item, index) => {
+		const { type: listType, react: listReact, execute: listExecute,value: listValue, id: listId, ...extraListProps } = item;
+		return [
+			...agg,
+			{
+				id: `list-${index}`,
+				defaultValue: listValue,
+				...extraListProps,
+			},
+		];
+	}, []);
+
+	const {
+		type: searchType,
+		execute:searchExecute,
+		react: searchReact,
+		value: searchValue,
+		...extraSearchProps
+	} = searchQuery;
+
+	const search = {
+		id: 'search',
+		defaultValue: searchValue,
+		...extraSearchProps,
 	};
-	// Update the react props
-	Object.keys(searchProfile).forEach(key => {
-		const { react, ...state } = searchProfile[key];
-		const newReact = {};
-		if (react) {
-			if (react.or) {
-				const orFormat = filterReactProp(react, 'or');
-				if (orFormat) {
-					newReact.or = orFormat;
-				}
-			}
-			if (react.and) {
-				const andFormat = filterReactProp(react);
-				if (andFormat) {
-					newReact.and = andFormat;
-				}
-			}
-		}
-		if (Object.keys(newReact).length) {
-			searchProfile[key] = {
-				...state,
-				react: newReact,
-			};
-		}
-		searchProfile[key] = state;
-	});
-	return searchProfile;
+
+	const { type: resultType, execute: resultExecute, ...extraResultProps } = resultQuery;
+
+	const result = {
+		id: 'result',
+		react: { and: ['search', ...filterQueries.map((filter) => filter.id)] },
+		dataField: '_score',
+		...extraResultProps,
+	};
+
+	return [
+		...aggregations,
+		result,
+		search,
+	];
 };
 
 export const ARC_PLANS = {
