@@ -13,6 +13,7 @@ import SearchLatency from './SearchLatency';
 import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
 import RequestDistribution from './RequestDistribution';
+import AnalyticsInsights from './AnalyticsInsights';
 
 const results = css`
 	width: 100%;
@@ -57,6 +58,7 @@ const Analytics = ({
 
 	return (
 		<React.Fragment>
+			<AnalyticsInsights />
 			{filterId && <Filter filterId={filterId} />}
 			<Card
 				extra={
