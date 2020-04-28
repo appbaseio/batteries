@@ -108,7 +108,7 @@ const SummaryCard = ({
 									<Icon type="arrow-down" />
 								)
 							}
-							formatter={comparisonValue === 0 ? () => 'n/a' : undefined}
+							formatter={comparisonValue === 0 ? () => '' : undefined}
 							suffix={comparisonValue !== 0 ? '%' : ''}
 						/>
 						{!hidePrevStats && (
