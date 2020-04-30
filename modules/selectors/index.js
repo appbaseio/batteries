@@ -15,6 +15,7 @@ const appPublicKey = state => get(state, '$getAppPublicKey.results');
 const appFunctions = state => get(state, '$getAppFunctions.results');
 const appSearchSettings = state => get(state, '$getAppSettings.results');
 const appRules = state => get(state, '$getAppRules.results');
+const appAnalyticsInsights = (state) => get(state, '$getAppAnalyticsInsights.results', {});
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
@@ -29,6 +30,11 @@ const getAppAnalyticsByName = createSelector(appAnalytics, appName, getCollectio
 const getAppPermissionsByName = createSelector(appPermission, appName, getCollectionByKey);
 const getAppSearchLatencyByName = createSelector(appSearchLatency, appName, getCollectionByKey);
 const getAppGeoDistributionByName = createSelector(appGeoDistribution, appName, getCollectionByKey);
+const getAppAnalyticsInsightsByName = createSelector(
+	appAnalyticsInsights,
+	appName,
+	getCollectionByKey,
+);
 const getAppAnalyticsSummaryByName = createSelector(
 	appAnalyticsSummary,
 	appName,
@@ -39,6 +45,7 @@ const getAppRequestDistributionByName = createSelector(
 	appName,
 	getCollectionByKey,
 );
+
 const getAppPublicKey = createSelector(appPublicKey, appName, getCollectionByKey);
 const getAppFunctions = createSelector(appFunctions, appName, getCollectionByKey);
 const getAppSettings = createSelector(appSearchSettings, appName, getCollectionByKey);
@@ -57,4 +64,5 @@ export {
 	getAppFunctions,
 	getAppSettings,
 	getAppRules,
+	getAppAnalyticsInsightsByName,
 };

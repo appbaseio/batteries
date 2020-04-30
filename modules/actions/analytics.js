@@ -5,6 +5,7 @@ import {
 	getSearchLatency,
 	getAnalyticsSummary,
 	getRequestDistribution,
+	getAnalyticsInsights,
 } from '../../components/analytics/utils';
 import { createAction } from './utils';
 import AppConstants from '../constants';
@@ -107,5 +108,34 @@ export function getAppGeoDistribution(name, filterId) {
 						error,
 					),
 				));
+	};
+}
+
+export function getAppAnalyticsInsights(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_INSIGHTS));
+		return getAnalyticsInsights(appName)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_INSIGHTS_SUCCESS,
+						res,
+						undefined,
+						{
+							appName,
+						},
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_INSIGHTS_ERROR,
+						null,
+						error,
+					),
+				),
+			);
 	};
 }

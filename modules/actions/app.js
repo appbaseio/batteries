@@ -233,3 +233,7 @@ export function updateAppPaymentMethod(stripeToken, product) {
 			});
 	};
 }
+
+export function toggleInsightsSidebar() {
+	return createAction(AppConstants.APP.INSIGHTS_SIDEBAR);
+}

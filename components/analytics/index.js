@@ -44,9 +44,7 @@ class Main extends React.Component {
 	};
 
 	handleReplaySearch = (searchState) => {
-		const {
- saveState, history, appName, handleReplayClick,
-} = this.props;
+		const { saveState, history, appName, handleReplayClick } = this.props;
 		saveState(searchState);
 		if (handleReplayClick) {
 			handleReplayClick(appName);
@@ -145,10 +143,7 @@ const mapStateToProps = (state, props) => {
 	};
 };
 const mapDispatchToProps = (dispatch, props) => ({
-	fetchAppAnalytics: appName => dispatch(getAppAnalytics(appName, props.filterId)),
-	saveState: state => dispatch(setSearchState(state)),
+	fetchAppAnalytics: (appName) => dispatch(getAppAnalytics(appName, props.filterId)),
+	saveState: (state) => dispatch(setSearchState(state)),
 });
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(withRouter(Main));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Main));
