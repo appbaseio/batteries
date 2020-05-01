@@ -104,6 +104,7 @@ class MappingView extends React.Component {
 			hideGeoType,
 			onDeleteField,
 			dirty,
+			deleteLabel,
 		} = this.props;
 		if (fields) {
 			return (
@@ -143,7 +144,7 @@ class MappingView extends React.Component {
 								}}
 							>
 								<Icon type="delete" />
-								Delete
+								{deleteLabel || 'Delete'}
 							</a>
 						)}
 					</h4>
@@ -240,7 +241,7 @@ class MappingView extends React.Component {
 										}}
 									>
 										<Icon type="delete" />
-										Delete
+										{deleteLabel || 'Delete'}
 									</a>
 								</div>
 								<div className={subItem}>
