@@ -21,12 +21,16 @@ export function getAppAnalytics(name, filterId) {
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET));
 		return getAnalytics(appName, filters)
-			.then(res => dispatch(
+			.then((res) =>
+				dispatch(
 					createAction(AppConstants.APP.ANALYTICS.GET_SUCCESS, res, undefined, {
 						appName,
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.ANALYTICS.GET_ERROR, null, error)));
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.ANALYTICS.GET_ERROR, null, error)),
+			);
 	};
 }
 export function getAppAnalyticsSummary(name, filterId) {
@@ -35,12 +39,16 @@ export function getAppAnalyticsSummary(name, filterId) {
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY));
 		return getAnalyticsSummary(appName, filters)
-			.then(res => dispatch(
+			.then((res) =>
+				dispatch(
 					createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY_SUCCESS, res, undefined, {
 						appName,
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY_ERROR, null, error)));
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY_ERROR, null, error)),
+			);
 	};
 }
 
@@ -50,12 +58,16 @@ export function getAppSearchLatency(name, filterId) {
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_LATENCY));
 		return getSearchLatency(appName, filters)
-			.then(res => dispatch(
+			.then((res) =>
+				dispatch(
 					createAction(AppConstants.APP.ANALYTICS.GET_LATENCY_SUCCESS, res, undefined, {
 						appName,
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.ANALYTICS.GET_LATENCY_ERROR, null, error)));
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.ANALYTICS.GET_LATENCY_ERROR, null, error)),
+			);
 	};
 }
 
@@ -65,61 +77,10 @@ export function getAppRequestDistribution(name, filterId) {
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION));
 		return getRequestDistribution(appName, filters)
-			.then(res => dispatch(
-					createAction(
-						AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_SUCCESS,
-						res,
-						undefined,
-						{
-							appName,
-						},
-					),
-				))
-			.catch(error => dispatch(
-					createAction(
-						AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_ERROR,
-						null,
-						error,
-					),
-				));
-	};
-}
-
-export function getAppGeoDistribution(name, filterId) {
-	return (dispatch, getState) => {
-		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
-		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION));
-		return getGeoDistribution(appName, filters)
-			.then(res => dispatch(
-					createAction(
-						AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_SUCCESS,
-						res,
-						undefined,
-						{
-							appName,
-						},
-					),
-				))
-			.catch(error => dispatch(
-					createAction(
-						AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_ERROR,
-						null,
-						error,
-					),
-				));
-	};
-}
-
-export function getAppAnalyticsInsights(name) {
-	return (dispatch, getState) => {
-		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_INSIGHTS));
-		return getAnalyticsInsights(appName)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.ANALYTICS.GET_INSIGHTS_SUCCESS,
+						AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_SUCCESS,
 						res,
 						undefined,
 						{
@@ -131,9 +92,90 @@ export function getAppAnalyticsInsights(name) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.ANALYTICS.GET_INSIGHTS_ERROR,
+						AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_ERROR,
 						null,
 						error,
+					),
+				),
+			);
+	};
+}
+
+export function getAppGeoDistribution(name, filterId) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION));
+		return getGeoDistribution(appName, filters)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_SUCCESS,
+						res,
+						undefined,
+						{
+							appName,
+						},
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function getAppAnalyticsInsights(name) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_INSIGHTS));
+		return getAnalyticsInsights(appName)
+			.then((res) =>
+				dispatch(
+					createAction(AppConstants.APP.ANALYTICS.GET_INSIGHTS_SUCCESS, res, undefined, {
+						appName,
+					}),
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.ANALYTICS.GET_INSIGHTS_ERROR, null, error)),
+			);
+	};
+}
+
+export function updateInsightStatus({ id, status }) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		dispatch(createAction(AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS));
+		return getAnalyticsInsights(appName)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS_SUCCESS,
+						res,
+						undefined,
+						{
+							appName,
+						},
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS_ERROR,
+						null,
+						error,
+						{
+							appName,
+							id,
+						},
 					),
 				),
 			);

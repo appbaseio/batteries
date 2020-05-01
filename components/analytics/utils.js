@@ -731,7 +731,6 @@ export function getRequestLogs(appName, size = 10, from = 0, filter) {
 	});
 }
 
-
 export const sampleData = {
 	insights: [
 		{
@@ -1162,18 +1161,30 @@ export const sampleData = {
 	],
 };
 
-
 /**
  * Get the analytics insights
  * @param {string} appName
  */
 export function getAnalyticsInsights(appName) {
 	const ACC_API = getURL();
-	return new Promise((resolve,reject) => {
+	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			resolve(sampleData);
 		}, 1050);
-	})
+	});
+}
+
+/**
+ * Update the analytics insights status
+ * @param {string} appName
+ */
+export function updateAnalyticsInsights({ appName, status, id }) {
+	const ACC_API = getURL();
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve({ status, id });
+		}, 1500);
+	});
 }
 
 // Banner messages
