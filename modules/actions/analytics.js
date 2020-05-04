@@ -6,6 +6,7 @@ import {
 	getAnalyticsSummary,
 	getRequestDistribution,
 	getAnalyticsInsights,
+	updateAnalyticsInsights,
 } from '../../components/analytics/utils';
 import { createAction } from './utils';
 import AppConstants from '../constants';
@@ -149,11 +150,14 @@ export function getAppAnalyticsInsights(name) {
 	};
 }
 
-export function updateInsightStatus({ id, status }) {
+export function updateInsightStatus({ id, from, to }) {
+	console.log(id, from ,to);
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		dispatch(createAction(AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS));
-		return getAnalyticsInsights(appName)
+		dispatch(
+			createAction(AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS, null, null, { id }),
+		);
+		return updateAnalyticsInsights({ id, to })
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -162,6 +166,7 @@ export function updateInsightStatus({ id, status }) {
 						undefined,
 						{
 							appName,
+							from,
 						},
 					),
 				),

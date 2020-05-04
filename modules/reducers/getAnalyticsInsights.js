@@ -6,6 +6,20 @@ const initialState = {
 	error: undefined,
 	success: false,
 	results: {},
+	updates: {},
+};
+
+const removeStaleUpdates = (updates) => {
+	const inProgressUpdates = Object.keys(updates).filter(
+		(updateKey) => updates[updateKey].inProgress,
+	);
+
+	return inProgressUpdates.reduce((agg, item) => {
+		return {
+			...agg,
+			[item]: updates[item],
+		};
+	}, {});
 };
 
 function getAppAnalyticsInsights(state = initialState, action) {
@@ -24,6 +38,7 @@ function getAppAnalyticsInsights(state = initialState, action) {
 				results: Object.assign({}, state.results, {
 					[action.meta.appName]: action.payload,
 				}),
+				updates: [],
 				success: true,
 			};
 		case AppConstants.APP.ANALYTICS.GET_INSIGHTS_ERROR:
@@ -35,44 +50,54 @@ function getAppAnalyticsInsights(state = initialState, action) {
 		case AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS:
 			return {
 				...state,
-				isUpdating: action.meta.id,
+				updates: {
+					...removeStaleUpdates(state.updates),
+					[action.meta.id]: {
+						inProgress: true,
+					},
+				},
 				error: null,
 			};
 		case AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS_SUCCESS: {
-			const { status, id, appName } = action.meta;
-			const currentStatusType = Object.keys(state.results[appName]).find((statusType) =>
-				get(state.results[appName], `${statusType}.${id}`),
-			);
+			const { to, id } = action.payload;
+			const { appName, from } = action.meta;
 
-			const insightData = state.results[appName][currentStatusType].find(item => item.type === id);
-			const updateCurrentStatusData = state.results[appName][currentStatusType].filter(
-				(item) => item.type !== id,
-			);
+			const insight = state.results[appName][from].find((item) => item.id === id);
+			const deleteInsightFrom = state.results[appName][from].filter((item) => item.id !== id);
+			const addDataToInsight = [insight, ...state.results[appName][to]];
 
-			const updatedInsights = {
-				...state.results[appName],
-				[currentStatusType]: updateCurrentStatusData,
-				[status]: {
-					...state.results[appName][status],
-					[id]: {
-						...insightData,
-					},
-				},
-			};
 			return {
 				...state,
 				results: Object.assign({}, state.results, {
-					[appName]: updatedInsights,
+					[appName]: {
+						...state.results[appName],
+						[to]: [...addDataToInsight],
+						[from]: [...deleteInsightFrom],
+					},
 				}),
-				isUpdating: null,
-				error: null,
+				updates: {
+					...removeStaleUpdates(state.updates),
+					[id]: {
+						inProgress: false,
+						success: true,
+						from,
+						to,
+					},
+				},
 			};
 		}
 		case AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS_ERROR:
 			return {
 				...state,
-				isUpdating: null,
-				error: action.error,
+				updates: {
+					...removeStaleUpdates(state.updates),
+					[action.meta.id]: {
+						inProgress: false,
+						success: false,
+						from,
+						to,
+					},
+				},
 			};
 		default:
 			return state;

@@ -1,11 +1,16 @@
 import React from 'react';
-import { Select, Spin } from 'antd';
+import { Select, Spin, Button, Icon } from 'antd';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import Flex from '../../../shared/Flex';
-import { getFilterValues, getFilterLabels, setFilterValue } from '../../../../modules/actions';
+import {
+	getFilterValues,
+	getFilterLabels,
+	setFilterValue,
+	toggleInsightsSidebar,
+} from '../../../../modules/actions';
 import SelectedFilters from './SelectedFilters';
 import { isValidPlan } from '../../../../utils';
 
@@ -13,21 +18,18 @@ const { Option } = Select;
 
 const dataRangeFilters = {
 	monthly: {
-		from: moment()
-			.subtract(30, 'days')
-			.format('YYYY/MM/DD'),
+		from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
 		to: moment().format('YYYY/MM/DD'),
 	},
 	weekly: {
-		from: moment()
-			.subtract(7, 'days')
-			.format('YYYY/MM/DD'),
+		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
 		to: moment().format('YYYY/MM/DD'),
 	},
 };
 
 // eslint-disable-next-line
-const filterOption = (input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+const filterOption = (input, option) =>
+	option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
 class Filter extends React.Component {
 	constructor(props) {
@@ -53,9 +55,7 @@ class Filter extends React.Component {
 	}
 
 	componentDidMount() {
-		const {
- fetchFilterLabels, isFetchedFilterLabels, tier, featureCustomEvents,
-} = this.props;
+		const { fetchFilterLabels, isFetchedFilterLabels, tier, featureCustomEvents } = this.props;
 		if (!isFetchedFilterLabels) {
 			if (isValidPlan(tier, featureCustomEvents)) {
 				fetchFilterLabels();
@@ -122,6 +122,8 @@ class Filter extends React.Component {
 			filterId,
 			featureCustomEvents,
 			tier,
+			toggleInsights,
+			hideInsightsButton,
 		} = this.props;
 		if (!isValidPlan(tier, featureCustomEvents)) {
 			return null;
@@ -139,7 +141,7 @@ class Filter extends React.Component {
 							onChange={this.handleFilterByChange}
 							filterOption={filterOption}
 						>
-							{this.filterBy.map(filter => (
+							{this.filterBy.map((filter) => (
 								<Option value={filter.key} key={filter.key}>
 									{filter.label}
 								</Option>
@@ -157,7 +159,7 @@ class Filter extends React.Component {
 								}
 								filterOption={filterOption}
 							>
-								{filterLabels.map(filter => (
+								{filterLabels.map((filter) => (
 									<Option value={filter} key={filter}>
 										{filter}
 									</Option>
@@ -182,7 +184,7 @@ class Filter extends React.Component {
 								onChange={this.handleFilterValueChange}
 								filterOption={filterOption}
 							>
-								{filterValues.map(value => (
+								{filterValues.map((value) => (
 									<Option value={value} key={value}>
 										{value}
 									</Option>
@@ -203,6 +205,12 @@ class Filter extends React.Component {
 								weekly
 							</Select.Option>
 						</Select>
+						{hideInsightsButton ? null : (
+							<Button onClick={toggleInsights} style={{ marginLeft: 15 }}>
+								<Icon type="bar-chart" />
+								Insights
+							</Button>
+						)}
 					</Flex>
 				</Flex>
 				<SelectedFilters filterId={filterId} />
@@ -214,6 +222,7 @@ class Filter extends React.Component {
 Filter.defaultProps = {
 	filterValues: undefined,
 	filterLabels: [],
+	hideInsightsButton: false,
 };
 
 Filter.propTypes = {
@@ -227,10 +236,11 @@ Filter.propTypes = {
 	isLoadingFilterLabels: PropTypes.bool.isRequired,
 	featureCustomEvents: PropTypes.bool.isRequired,
 	isFetchedFilterLabels: PropTypes.bool.isRequired,
+	hideInsightsButton: PropTypes.bool,
 	filterLabels: PropTypes.array,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
 	isLoadingFilterValues: get(state, '$getFilterValues.isFetching'),
 	filterValues: get(state, '$getFilterValues.results'),
 	tier: get(state, '$getAppPlan.results.tier'),
@@ -240,13 +250,11 @@ const mapStateToProps = state => ({
 	filterLabels: get(state, '$getFilterLabels.results.filter_labels'),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
 	fetchFilterValues: (label, prefix) => dispatch(getFilterValues(label, prefix)),
 	fetchFilterLabels: () => dispatch(getFilterLabels()),
-	// eslint-disable-next-line
-	selectFilterValue: (filterId, filterKey, filterValue) => dispatch(setFilterValue(filterId, filterKey, filterValue)),
+	toggleInsights: () => dispatch(toggleInsightsSidebar()),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(Filter);
+export default connect(mapStateToProps, mapDispatchToProps)(Filter);

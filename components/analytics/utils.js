@@ -743,7 +743,7 @@ export const sampleData = {
 						title: 'Language Settings',
 						description:
 							"If you're using a specific language, make sure the language, stemming and stop words are configured in the Language menu.",
-						short_link: '',
+						short_link: '/language',
 						long_link: '',
 					},
 					{
@@ -1178,11 +1178,11 @@ export function getAnalyticsInsights(appName) {
  * Update the analytics insights status
  * @param {string} appName
  */
-export function updateAnalyticsInsights({ appName, status, id }) {
+export function updateAnalyticsInsights(data) {
 	const ACC_API = getURL();
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
-			resolve({ status, id });
+			resolve(data);
 		}, 1500);
 	});
 }
