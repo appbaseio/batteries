@@ -151,13 +151,12 @@ export function getAppAnalyticsInsights(name) {
 }
 
 export function updateInsightStatus({ id, from, to }) {
-	console.log(id, from ,to);
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(
 			createAction(AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS, null, null, { id }),
 		);
-		return updateAnalyticsInsights({ id, to })
+		return updateAnalyticsInsights({ id, status: to, appName })
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -167,6 +166,8 @@ export function updateInsightStatus({ id, from, to }) {
 						{
 							appName,
 							from,
+							to,
+							id,
 						},
 					),
 				),
@@ -180,6 +181,8 @@ export function updateInsightStatus({ id, from, to }) {
 						{
 							appName,
 							id,
+							from,
+							to,
 						},
 					),
 				),
