@@ -520,6 +520,7 @@ class Mappings extends Component {
 			onDeleteField,
 			hideNoneTextType,
 			hideGeoType,
+			deleteLabel,
 		} = this.props;
 
 		const {
@@ -674,6 +675,7 @@ class Mappings extends Component {
 							hideGeoType={hideGeoType}
 							setMapping={this.setMapping}
 							dirty={dirty}
+							deleteLabel={deleteLabel}
 							onDeleteField={onDeleteField}
 							hideNoneTextType={hideNoneTextType}
 							usecases={this.usecases}
@@ -789,6 +791,7 @@ Mappings.propTypes = {
 	renderMappingInfo: func,
 	onUsecaseChange: func,
 	onDeleteField: func,
+	deleteLabel: string,
 };
 
 Mappings.defaultProps = {
@@ -816,6 +819,7 @@ Mappings.defaultProps = {
 	onDeleteField: null,
 	renderMappingInfo: null,
 	onUsecaseChange: null,
+	deleteLabel: '',
 };
 
 const mapStateToProps = state => {
