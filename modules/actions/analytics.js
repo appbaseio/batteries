@@ -151,6 +151,12 @@ export function getAppAnalyticsInsights(name) {
 }
 
 export function updateInsightStatus({ id, from, to }) {
+	/*
+		from: This is the current status of Insight - used in reducers for updating the data of the status.
+		to: This is the status in which we want to update the insight.
+		id: Insight Id
+	*/
+
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(

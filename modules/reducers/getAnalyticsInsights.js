@@ -118,6 +118,7 @@ function getAppAnalyticsInsights(state = initialState, action) {
 						success: false,
 						from,
 						to,
+						error: action.error,
 					},
 				},
 			};
