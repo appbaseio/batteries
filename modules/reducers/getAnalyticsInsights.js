@@ -2,14 +2,15 @@ import AppConstants from '../constants';
 import { get } from 'lodash';
 
 const initialState = {
+	isOpen: false,
 	isFetching: false,
-	error: undefined,
+	error: null,
 	success: false,
 	results: {},
 	updates: {},
 };
 
-const removeStaleUpdates = (updates) => {
+const removeStaleUpdates = (updates = {}) => {
 	const inProgressUpdates = Object.keys(updates).filter(
 		(updateKey) => updates[updateKey].inProgress,
 	);
@@ -24,6 +25,11 @@ const removeStaleUpdates = (updates) => {
 
 function getAppAnalyticsInsights(state = initialState, action) {
 	switch (action.type) {
+		case AppConstants.APP.INSIGHTS_SIDEBAR:
+			return {
+				...state,
+				isOpen: !get(state, 'isOpen'),
+			};
 		case AppConstants.APP.ANALYTICS.GET_INSIGHTS:
 			return {
 				...state,
@@ -35,9 +41,10 @@ function getAppAnalyticsInsights(state = initialState, action) {
 			return {
 				...state,
 				isFetching: false,
-				results: Object.assign({}, state.results, {
+				results: {
+					...state.results,
 					[action.meta.appName]: action.payload,
-				}),
+				},
 				updates: [],
 				success: true,
 			};
@@ -59,56 +66,65 @@ function getAppAnalyticsInsights(state = initialState, action) {
 				error: null,
 			};
 		case AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS_SUCCESS: {
-			const { appName, from, to, id } = action.meta;
+			const { appName, currentStatus, nextStatus, id } = action.meta;
 
-			const insight = state.results[appName][from].find((item) => item.id === id);
-			const deleteInsightFrom = state.results[appName][from].filter((item) => item.id !== id);
+			const insight = get(state, `results.${appName}.${currentStatus}`, []).find(
+				(item) => item.id === id,
+			);
+			const deleteInsightFrom = get(state, `results.${appName}.${currentStatus}`, []).filter(
+				(item) => item.id !== id,
+			);
 
-			if (to === 'deleted') {
+			if (nextStatus === 'deleted') {
 				return {
 					...state,
-					results: Object.assign({}, state.results, {
+					results: {
+						...state.results,
 						[appName]: {
 							...state.results[appName],
-							[from]: [...deleteInsightFrom],
+							[currentStatus]: [...deleteInsightFrom],
 						},
-					}),
+					},
 					updates: {
 						...removeStaleUpdates(state.updates),
 						[id]: {
 							inProgress: false,
 							success: true,
-							from,
-							to,
+							currentStatus,
+							nextStatus,
 						},
 					},
 				};
 			}
 
-			const addDataToInsight = [insight, ...state.results[appName][to]];
+			const addDataToInsight = [
+				insight,
+				...get(state, `results.${appName}.${nextStatus}`, []),
+			];
 
 			return {
 				...state,
-				results: Object.assign({}, state.results, {
+				results: {
+					...state.results,
 					[appName]: {
 						...state.results[appName],
-						[to]: [...addDataToInsight],
-						[from]: [...deleteInsightFrom],
+						[nextStatus]: [...addDataToInsight],
+						[currentStatus]: [...deleteInsightFrom],
 					},
-				}),
+				},
 				updates: {
 					...removeStaleUpdates(state.updates),
 					[id]: {
 						inProgress: false,
 						success: true,
-						from,
-						to,
+						currentStatus,
+						nextStatus,
 					},
 				},
 			};
 		}
 		case AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS_ERROR: {
-			const { from, to, id } = action.meta;
+			const { currentStatus, nextStatus, id } = action.meta;
 			return {
 				...state,
 				updates: {
@@ -116,8 +132,8 @@ function getAppAnalyticsInsights(state = initialState, action) {
 					[id]: {
 						inProgress: false,
 						success: false,
-						from,
-						to,
+						currentStatus,
+						nextStatus,
 						error: action.error,
 					},
 				},

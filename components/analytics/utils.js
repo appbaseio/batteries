@@ -743,21 +743,15 @@ export function getAnalyticsInsights(appName) {
 /**
  * Update the analytics insights status
  * @param {string} appName
+ * @param {string} id
+ * @param {string} status
  */
 export function updateAnalyticsInsights({ id, status, appName }) {
 	const ACC_API = getURL();
-	const authToken = getAuthToken();
-	return doPut(
-		`${ACC_API}/_analytics/${getApp(appName)}insight-status`,
-		{
-			id,
-			status,
-		},
-		{
-			'Content-Type': 'application/json',
-			Authorization: `Basic ${authToken}`,
-		},
-	);
+	return doPut(`${ACC_API}/_analytics/${getApp(appName)}insight-status`, {
+		id,
+		status,
+	});
 }
 
 // Banner messages

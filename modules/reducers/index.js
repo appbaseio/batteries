@@ -14,7 +14,6 @@ import getAppFunction from './getAppFunction';
 import privateRegistries from './getPrivateRegistry';
 import getAppSettings from './getAppSettings';
 import getAppRules from './getAppRules';
-import getInsightSidebar from './getInsightSidebar';
 import getAppAnalyticsInsights from './getAnalyticsInsights';
 
 export default {
@@ -214,5 +213,4 @@ export default {
 	),
 	$getAppSettings: getAppSettings,
 	$getAppAnalyticsInsights: getAppAnalyticsInsights,
-	$getInsightSidebar: getInsightSidebar,
 };

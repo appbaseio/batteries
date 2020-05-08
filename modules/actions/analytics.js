@@ -150,19 +150,18 @@ export function getAppAnalyticsInsights(name) {
 	};
 }
 
-export function updateInsightStatus({ id, from, to }) {
-	/*
-		from: This is the current status of Insight - used in reducers for updating the data of the status.
-		to: This is the status in which we want to update the insight.
-		id: Insight Id
-	*/
-
+/*
+	currentStatus: This is the current status of Insight - used in reducers for updating the data of the status.
+	nextStatus: This is the status in which we want to update the insight.
+	id: Insight Id
+*/
+export function updateInsightStatus({ id, currentStatus, nextStatus }) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(
 			createAction(AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS, null, null, { id }),
 		);
-		return updateAnalyticsInsights({ id, status: to, appName })
+		return updateAnalyticsInsights({ id, status: nextStatus, appName })
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -171,8 +170,8 @@ export function updateInsightStatus({ id, from, to }) {
 						undefined,
 						{
 							appName,
-							from,
-							to,
+							currentStatus,
+							nextStatus,
 							id,
 						},
 					),
@@ -187,8 +186,8 @@ export function updateInsightStatus({ id, from, to }) {
 						{
 							appName,
 							id,
-							from,
-							to,
+							currentStatus,
+							nextStatus,
 						},
 					),
 				),
