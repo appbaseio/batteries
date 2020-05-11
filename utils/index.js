@@ -158,6 +158,7 @@ export const parseSearchState = (searchState = {}) => {
 			...agg,
 			{
 				id: `list-${index}`,
+				type: 'term',
 				defaultValue: listValue,
 				...extraListProps,
 			},
@@ -178,7 +179,7 @@ export const parseSearchState = (searchState = {}) => {
 		...extraSearchProps,
 	};
 
-	const { type: resultType, execute: resultExecute, ...extraResultProps } = resultQuery;
+	const { type: resultType, react: resultReactList ,execute: resultExecute, ...extraResultProps } = resultQuery;
 
 	const result = {
 		id: 'result',
