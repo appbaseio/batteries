@@ -1,5 +1,4 @@
 import get from 'lodash/get';
-import { componentTypes } from '@appbaseio/reactivecore/lib/utils/constants';
 import { doGet, doPost } from './requestService';
 import { getURL } from '../../constants/config';
 
