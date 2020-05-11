@@ -242,7 +242,7 @@ class Filter extends React.Component {
 										<React.Fragment>
 											{Object.keys(get(dateRangeColumns, column, {})).map(
 												(rangeLabel) => (
-													<Col key={column} md={12} span={12}>
+													<Col key={rangeLabel} md={12} span={12}>
 														<Button
 															key={rangeLabel}
 															block
