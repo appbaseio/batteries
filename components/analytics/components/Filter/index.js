@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, Spin } from 'antd';
+import { Select, Spin, Row, Col, Popover, Button, Icon } from 'antd';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -11,23 +11,55 @@ import { isValidPlan } from '../../../../utils';
 
 const { Option } = Select;
 
-const dataRangeFilters = {
-	monthly: {
-		from: moment()
-			.subtract(30, 'days')
-			.format('YYYY/MM/DD'),
+const dateRangeFilters = {
+	'This week': {
+		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
 		to: moment().format('YYYY/MM/DD'),
 	},
-	weekly: {
-		from: moment()
-			.subtract(7, 'days')
-			.format('YYYY/MM/DD'),
+	'Last Week': {
+		from: moment().subtract(14, 'days').format('YYYY/MM/DD'),
+		to: moment().subtract(7, 'days').format('YYYY/MM/DD'),
+	},
+	'This Month': {
+		from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last Month': {
+		from: moment().subtract(60, 'days').format('YYYY/MM/DD'),
+		to: moment().subtract(30, 'days').format('YYYY/MM/DD'),
+	},
+	'Last 7 days': {
+		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 30 days': {
+		from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 60 days': {
+		from: moment().subtract(60, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 90 days': {
+		from: moment().subtract(90, 'days').format('YYYY/MM/DD'),
 		to: moment().format('YYYY/MM/DD'),
 	},
 };
 
+const dateRangeColumns = Object.keys(dateRangeFilters).reduce((agg, item, index) => {
+	const columnIndex = `col_${Math.floor(index / 4)}`; // 4 is the number of items in a column.
+	return {
+		...agg,
+		[columnIndex]: {
+			...get(agg, columnIndex, {}),
+			[item]: dateRangeFilters[item],
+		},
+	};
+}, {});
+
 // eslint-disable-next-line
-const filterOption = (input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+const filterOption = (input, option) =>
+	option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
 
 class Filter extends React.Component {
 	constructor(props) {
@@ -35,6 +67,8 @@ class Filter extends React.Component {
 		this.state = {
 			displayLabelSelector: false,
 			filterKey: '',
+			dateRangePopover: false,
+			selectedDateRange: 'This Month',
 		};
 		this.filterBy = [
 			{
@@ -53,9 +87,7 @@ class Filter extends React.Component {
 	}
 
 	componentDidMount() {
-		const {
- fetchFilterLabels, isFetchedFilterLabels, tier, featureCustomEvents,
-} = this.props;
+		const { fetchFilterLabels, isFetchedFilterLabels, tier, featureCustomEvents } = this.props;
 		if (!isFetchedFilterLabels) {
 			if (isValidPlan(tier, featureCustomEvents)) {
 				fetchFilterLabels();
@@ -97,9 +129,19 @@ class Filter extends React.Component {
 
 	handleDateRangeChange = (filterValue = '') => {
 		const { selectFilterValue, filterId } = this.props;
-		const filters = dataRangeFilters[filterValue];
+		const filters = dateRangeFilters[filterValue];
 		selectFilterValue(filterId, 'from', filters.from);
 		selectFilterValue(filterId, 'to', filters.to);
+		this.setState({
+			dateRangePopover: false,
+			selectedDateRange: filterValue,
+		});
+	};
+
+	handleDateRangePopover = () => {
+		this.setState((state) => ({
+			dateRangePopover: !state.dateRangePopover,
+		}));
 	};
 
 	handleFilterValueSearch = (filterValue) => {
@@ -113,7 +155,7 @@ class Filter extends React.Component {
 	};
 
 	render() {
-		const { displayLabelSelector, filterKey } = this.state;
+		const { displayLabelSelector, filterKey, dateRangePopover, selectedDateRange } = this.state;
 		const {
 			filterLabels,
 			isLoadingFilterValues,
@@ -139,7 +181,7 @@ class Filter extends React.Component {
 							onChange={this.handleFilterByChange}
 							filterOption={filterOption}
 						>
-							{this.filterBy.map(filter => (
+							{this.filterBy.map((filter) => (
 								<Option value={filter.key} key={filter.key}>
 									{filter.label}
 								</Option>
@@ -157,7 +199,7 @@ class Filter extends React.Component {
 								}
 								filterOption={filterOption}
 							>
-								{filterLabels.map(filter => (
+								{filterLabels.map((filter) => (
 									<Option value={filter} key={filter}>
 										{filter}
 									</Option>
@@ -182,7 +224,7 @@ class Filter extends React.Component {
 								onChange={this.handleFilterValueChange}
 								filterOption={filterOption}
 							>
-								{filterValues.map(value => (
+								{filterValues.map((value) => (
 									<Option value={value} key={value}>
 										{value}
 									</Option>
@@ -191,18 +233,46 @@ class Filter extends React.Component {
 						)}
 					</Flex>
 					<Flex>
-						<Select
-							style={{ width: 150, marginBottom: 15 }}
-							onChange={this.handleDateRangeChange}
-							placeholder="Date range"
+						<Popover
+							visible={dateRangePopover}
+							trigger="click"
+							content={
+								<Row style={{ width: 300 }} gutter={[8, 8]}>
+									{Object.keys(dateRangeColumns).map((column) => (
+										<React.Fragment>
+											{Object.keys(get(dateRangeColumns, column, {})).map(
+												(rangeLabel) => (
+													<Col key={column} md={12} span={12}>
+														<Button
+															key={rangeLabel}
+															block
+															type={
+																selectedDateRange === rangeLabel
+																	? 'primary'
+																	: 'default'
+															}
+															onClick={() =>
+																this.handleDateRangeChange(
+																	rangeLabel,
+																)
+															}
+														>
+															{rangeLabel}
+														</Button>
+													</Col>
+												),
+											)}
+										</React.Fragment>
+									))}
+								</Row>
+							}
+							placement="leftTop"
 						>
-							<Select.Option value="monthly" key="monthly">
-								Monthly
-							</Select.Option>
-							<Select.Option value="weekly" key="weekly">
-								weekly
-							</Select.Option>
-						</Select>
+							<Button onClick={this.handleDateRangePopover}>
+								<Icon type="clock-circle" />
+								{selectedDateRange}
+							</Button>
+						</Popover>
 					</Flex>
 				</Flex>
 				<SelectedFilters filterId={filterId} />
@@ -230,7 +300,7 @@ Filter.propTypes = {
 	filterLabels: PropTypes.array,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
 	isLoadingFilterValues: get(state, '$getFilterValues.isFetching'),
 	filterValues: get(state, '$getFilterValues.results'),
 	tier: get(state, '$getAppPlan.results.tier'),
@@ -240,13 +310,11 @@ const mapStateToProps = state => ({
 	filterLabels: get(state, '$getFilterLabels.results.filter_labels'),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
 	fetchFilterValues: (label, prefix) => dispatch(getFilterValues(label, prefix)),
 	fetchFilterLabels: () => dispatch(getFilterLabels()),
 	// eslint-disable-next-line
-	selectFilterValue: (filterId, filterKey, filterValue) => dispatch(setFilterValue(filterId, filterKey, filterValue)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(Filter);
+export default connect(mapStateToProps, mapDispatchToProps)(Filter);
