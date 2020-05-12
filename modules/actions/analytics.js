@@ -137,13 +137,25 @@ export function getAppAnalyticsInsights(name) {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_INSIGHTS));
 		return getAnalyticsInsights(appName)
-			.then((res) =>
-				dispatch(
-					createAction(AppConstants.APP.ANALYTICS.GET_INSIGHTS_SUCCESS, res, undefined, {
-						appName,
-					}),
-				),
-			)
+			.then((res) => {
+				if (res.status === 404) {
+					throw new Error('404: Insights route Not Found');
+				}
+				if (res.status >= 400) {
+					throw new Error(res.error);
+				} else {
+					dispatch(
+						createAction(
+							AppConstants.APP.ANALYTICS.GET_INSIGHTS_SUCCESS,
+							res,
+							undefined,
+							{
+								appName,
+							},
+						),
+					);
+				}
+			})
 			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.ANALYTICS.GET_INSIGHTS_ERROR, null, error)),
 			);
