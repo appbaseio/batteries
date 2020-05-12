@@ -19,7 +19,7 @@ const { Option } = Select;
 const dateRangeFilters = {
 	'This week': {
 		from: moment().startOf('week').format('YYYY/MM/DD'),
-		to: moment().endOf('week').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
 	},
 	'Last Week': {
 		from: moment().subtract(1, 'weeks').startOf('week').format('YYYY/MM/DD'),
@@ -27,7 +27,7 @@ const dateRangeFilters = {
 	},
 	'This Month': {
 		from: moment().startOf('month').format('YYYY/MM/DD'),
-		to: moment().endOf('month').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
 	},
 	'Last Month': {
 		from: moment().subtract(1, 'months').startOf('month').format('YYYY/MM/DD'),
