@@ -29,8 +29,13 @@ class PopularSearches extends React.Component {
 
 	componentDidMount() {
 		const urlParams = getUrlParams(window.location.search);
-		const { filterId, selectFilterValue } = this.props;
-		if (urlParams.from && urlParams.to) {
+		const { filterId, selectFilterValue, filters } = this.props;
+		if (
+			urlParams.from &&
+			urlParams.to &&
+			filters.from !== urlParams.from &&
+			filters.to !== urlParams.to
+		) {
 			selectFilterValue(filterId, 'from', urlParams.from);
 			selectFilterValue(filterId, 'to', urlParams.to);
 			return;

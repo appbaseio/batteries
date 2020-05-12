@@ -30,8 +30,13 @@ class PopularFilters extends React.Component {
 
 	componentDidMount() {
 		const urlParams = getUrlParams(window.location.search);
-		const { filterId, selectFilterValue } = this.props;
-		if (urlParams.from && urlParams.to) {
+		const { filterId, selectFilterValue, filters } = this.props;
+		if (
+			urlParams.from &&
+			urlParams.to &&
+			filters.from !== urlParams.from &&
+			filters.to !== urlParams.to
+		) {
 			selectFilterValue(filterId, 'from', urlParams.from);
 			selectFilterValue(filterId, 'to', urlParams.to);
 			return;
@@ -66,9 +71,7 @@ class PopularFilters extends React.Component {
 	};
 
 	handleReplaySearch = (searchState) => {
-		const {
-			saveState, history, appName, handleReplayClick,
-		} = this.props;
+		const { saveState, history, appName, handleReplayClick } = this.props;
 		saveState(searchState);
 		if (handleReplayClick) {
 			handleReplayClick(appName);
@@ -92,7 +95,7 @@ class PopularFilters extends React.Component {
 					}}
 					showViewOption={false}
 					columns={popularFiltersFull(plan, displayReplaySearch)}
-					dataSource={popularFilters.map(item => ({
+					dataSource={popularFilters.map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
 					}))}
@@ -100,17 +103,18 @@ class PopularFilters extends React.Component {
 					pagination={{
 						pageSize: 10,
 					}}
-					onClickDownload={() => exportCSVFile(
-						headers,
-						popularFilters.map(item => ({
-							key: item.key.replace(/,/g, ''),
-							count: item.count,
-							clicks: item.clicks || '-',
-							source: item.source.replace(/,/g, '') || '-',
-							conversionrate: item.conversionrate || '-',
-						})),
-						'popular_results',
-					)
+					onClickDownload={() =>
+						exportCSVFile(
+							headers,
+							popularFilters.map((item) => ({
+								key: item.key.replace(/,/g, ''),
+								count: item.count,
+								clicks: item.clicks || '-',
+								source: item.source.replace(/,/g, '') || '-',
+								conversionrate: item.conversionrate || '-',
+							})),
+							'popular_results',
+						)
 					}
 				/>
 			</React.Fragment>
@@ -148,7 +152,4 @@ const mapDispatchToProps = (dispatch) => ({
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(withRouter(PopularFilters));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularFilters));

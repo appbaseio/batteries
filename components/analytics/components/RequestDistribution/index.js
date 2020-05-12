@@ -39,12 +39,17 @@ class RequestDistribution extends React.Component {
 	}
 
 	componentDidMount() {
-		const { fetchAppRequestDistribution, filterId, selectFilterValue } = this.props;
+		const { fetchAppRequestDistribution, filterId, selectFilterValue, filters } = this.props;
 		this.setState({
 			width: this.child.parentNode.clientWidth - 60,
 		});
 		const urlParams = getUrlParams(window.location.search);
-		if (urlParams.from && urlParams.to) {
+		if (
+			urlParams.from &&
+			urlParams.to &&
+			filters.from !== urlParams.from &&
+			filters.to !== urlParams.to
+		) {
 			selectFilterValue(filterId, 'from', urlParams.from);
 			selectFilterValue(filterId, 'to', urlParams.to);
 			return;

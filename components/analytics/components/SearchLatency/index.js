@@ -45,12 +45,17 @@ class SearchLatency extends React.Component {
 	}
 
 	componentDidMount() {
-		const { fetchAppSearchLatency, filterId, selectFilterValue } = this.props;
+		const { fetchAppSearchLatency, filterId, selectFilterValue, filters } = this.props;
 		this.setState({
 			width: this.child.parentNode.clientWidth - 60,
 		});
 		const urlParams = getUrlParams(window.location.search);
-		if (urlParams.from && urlParams.to) {
+		if (
+			urlParams.from &&
+			urlParams.to &&
+			filters.from !== urlParams.from &&
+			filters.to !== urlParams.to
+		) {
 			selectFilterValue(filterId, 'from', urlParams.from);
 			selectFilterValue(filterId, 'to', urlParams.to);
 			return;

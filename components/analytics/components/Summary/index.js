@@ -19,9 +19,14 @@ const cardContainer = css`
 
 class Summary extends React.Component {
 	componentDidMount() {
-		const { fetchAppAnalyticsSummary, filterId, selectFilterValue } = this.props;
+		const { fetchAppAnalyticsSummary, filterId, selectFilterValue, filters } = this.props;
 		const urlParams = getUrlParams(window.location.search);
-		if (urlParams.from && urlParams.to) {
+		if (
+			urlParams.from &&
+			urlParams.to &&
+			filters.from !== urlParams.from &&
+			filters.to !== urlParams.to
+		) {
 			selectFilterValue(filterId, 'from', urlParams.from);
 			selectFilterValue(filterId, 'to', urlParams.to);
 			return;
