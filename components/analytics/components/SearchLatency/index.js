@@ -11,8 +11,9 @@ import get from 'lodash/get';
 import Filter from '../Filter';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
-import { getAppSearchLatency } from '../../../../modules/actions';
+import { getAppSearchLatency, setFilterValue } from '../../../../modules/actions';
 import { getAppSearchLatencyByName } from '../../../../modules/selectors';
+import { getUrlParams } from '../../../../../utils/helper';
 
 const getSearchLatencyDummy = (latency = []) => {
 	const dummyLatency = latency.map(l => l);
@@ -44,11 +45,17 @@ class SearchLatency extends React.Component {
 	}
 
 	componentDidMount() {
-		const { fetchAppSearchLatency } = this.props;
-		fetchAppSearchLatency();
+		const { fetchAppSearchLatency, filterId, selectFilterValue } = this.props;
 		this.setState({
 			width: this.child.parentNode.clientWidth - 60,
 		});
+		const urlParams = getUrlParams(window.location.search);
+		if (urlParams.from && urlParams.to) {
+			selectFilterValue(filterId, 'from', urlParams.from);
+			selectFilterValue(filterId, 'to', urlParams.to);
+			return;
+		}
+		fetchAppSearchLatency();
 	}
 
 	componentDidUpdate(prevProps) {
@@ -139,7 +146,9 @@ const mapStateToProps = (state, props) => {
 	};
 };
 const mapDispatchToProps = (dispatch, props) => ({
-	fetchAppSearchLatency: appName => dispatch(getAppSearchLatency(appName, props.filterId)),
+	fetchAppSearchLatency: (appName) => dispatch(getAppSearchLatency(appName, props.filterId)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 export default connect(
 	mapStateToProps,

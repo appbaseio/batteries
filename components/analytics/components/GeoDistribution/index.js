@@ -11,8 +11,9 @@ import ReactTooltip from 'react-tooltip';
 import { feature } from 'topojson-client';
 import { scaleLinear } from 'd3-scale';
 import Filter from '../Filter';
-import { getAppGeoDistribution } from '../../../../modules/actions';
+import { getAppGeoDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppGeoDistributionByName } from '../../../../modules/selectors';
+import { getUrlParams } from '../../../../../utils/helper';
 
 const wrapperStyles = {
 	width: '100%',
@@ -30,7 +31,13 @@ class GeoDistribution extends React.Component {
 	};
 
 	componentDidMount() {
-		const { fetchAppGeoDistribution } = this.props;
+		const { fetchAppGeoDistribution, filterId, selectFilterValue } = this.props;
+		const urlParams = getUrlParams(window.location.search);
+		if (urlParams.from && urlParams.to) {
+			selectFilterValue(filterId, 'from', urlParams.from);
+			selectFilterValue(filterId, 'to', urlParams.to);
+			return;
+		}
 		fetchAppGeoDistribution();
 	}
 
@@ -187,7 +194,9 @@ const mapStateToProps = (state, props) => ({
 	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 });
 const mapDispatchToProps = (dispatch, props) => ({
-	fetchAppGeoDistribution: appName => dispatch(getAppGeoDistribution(appName, props.filterId)),
+	fetchAppGeoDistribution: (appName) => dispatch(getAppGeoDistribution(appName, props.filterId)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 export default connect(
 	mapStateToProps,

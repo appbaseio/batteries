@@ -11,8 +11,9 @@ import Filter from '../Filter';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { displayErrors } from '../../../../utils/heplers';
-import { getAppRequestDistribution } from '../../../../modules/actions';
+import { getAppRequestDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppRequestDistributionByName } from '../../../../modules/selectors';
+import { getUrlParams } from '../../../../../utils/helper';
 
 const normalizedData = (data = []) => {
 	const dataTobeReturned = [];
@@ -38,11 +39,17 @@ class RequestDistribution extends React.Component {
 	}
 
 	componentDidMount() {
-		const { fetchAppRequestDistribution } = this.props;
-		fetchAppRequestDistribution();
+		const { fetchAppRequestDistribution, filterId, selectFilterValue } = this.props;
 		this.setState({
 			width: this.child.parentNode.clientWidth - 60,
 		});
+		const urlParams = getUrlParams(window.location.search);
+		if (urlParams.from && urlParams.to) {
+			selectFilterValue(filterId, 'from', urlParams.from);
+			selectFilterValue(filterId, 'to', urlParams.to);
+			return;
+		}
+		fetchAppRequestDistribution();
 	}
 
 	componentDidUpdate(prevProps) {
@@ -224,6 +231,8 @@ const mapStateToProps = (state, props) => ({
 });
 const mapDispatchToProps = (dispatch, props) => ({
 	fetchAppRequestDistribution: () => dispatch(getAppRequestDistribution(null, props.filterId)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 export default connect(
 	mapStateToProps,

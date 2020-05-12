@@ -8,6 +8,8 @@ import Filter from './Filter';
 import { getNoResultSearches, exportCSVFile, noResultsFull } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
+import { getUrlParams } from '../../../../utils/helper';
+import { setFilterValue } from '../../../modules/actions';
 
 const headers = {
 	key: 'Search Terms',
@@ -17,12 +19,19 @@ class NoResultsSearch extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isFetching: true,
+			isFetching: false,
 			noResults: [],
 		};
 	}
 
 	componentDidMount() {
+		const urlParams = getUrlParams(window.location.search);
+		const { filterId, selectFilterValue } = this.props;
+		if (urlParams.from && urlParams.to) {
+			selectFilterValue(filterId, 'from', urlParams.from);
+			selectFilterValue(filterId, 'to', urlParams.to);
+			return;
+		}
 		this.fetchNoResults();
 	}
 
@@ -35,6 +44,9 @@ class NoResultsSearch extends React.Component {
 
 	fetchNoResults = () => {
 		const { appName, filters } = this.props;
+		this.setState({
+			isFetching: true,
+		});
 		getNoResultSearches(appName, undefined, filters)
 			.then((res) => {
 				this.setState({
@@ -50,9 +62,7 @@ class NoResultsSearch extends React.Component {
 	};
 
 	handleReplaySearch = (searchState) => {
-		const {
-			saveState, history, appName, handleReplayClick,
-		} = this.props;
+		const { saveState, history, appName, handleReplayClick } = this.props;
 		saveState(searchState);
 		if (handleReplayClick) {
 			handleReplayClick(appName);
@@ -68,7 +78,7 @@ class NoResultsSearch extends React.Component {
 		} else {
 			history.push(`/app/${appName}/query-rules`);
 		}
-	}
+	};
 
 	render() {
 		const { isFetching, noResults } = this.state;
@@ -77,7 +87,7 @@ class NoResultsSearch extends React.Component {
 			displayQueryRule,
 			plan,
 			filterId,
-			location: { pathname }
+			location: { pathname },
 		} = this.props;
 
 		const showQueryRule = pathname.includes('cluster') ? false : displayQueryRule;
@@ -92,7 +102,7 @@ class NoResultsSearch extends React.Component {
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					dataSource={noResults.map(item => ({
+					dataSource={noResults.map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
 						handleQueryRule: this.handleQueryRule,
@@ -102,14 +112,15 @@ class NoResultsSearch extends React.Component {
 					pagination={{
 						pageSize: 10,
 					}}
-					onClickDownload={() => exportCSVFile(
-						headers,
-						noResults.map(item => ({
-							key: item.key,
-							count: item.count,
-						})),
-						'no_results_searches',
-					)
+					onClickDownload={() =>
+						exportCSVFile(
+							headers,
+							noResults.map((item) => ({
+								key: item.key,
+								count: item.count,
+							})),
+							'no_results_searches',
+						)
 					}
 				/>
 			</React.Fragment>
@@ -141,11 +152,10 @@ const mapStateToProps = (state, props) => ({
 	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 });
 
-const mapDispatchToProps = dispatch => ({
-	saveState: state => dispatch(setSearchState(state)),
+const mapDispatchToProps = (dispatch) => ({
+	saveState: (state) => dispatch(setSearchState(state)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(withRouter(NoResultsSearch));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(NoResultsSearch));

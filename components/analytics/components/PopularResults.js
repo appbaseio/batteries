@@ -8,6 +8,8 @@ import Searches from './Searches';
 import { getPopularResults, popularResultsFull, exportCSVFile } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
+import { getUrlParams } from '../../../../utils/helper';
+import { setFilterValue } from '../../../modules/actions';
 
 const headers = {
 	key: 'Results',
@@ -22,12 +24,19 @@ class PopularResults extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isFetching: true,
+			isFetching: false,
 			popularResults: [],
 		};
 	}
 
 	componentDidMount() {
+		const urlParams = getUrlParams(window.location.search);
+		const { filterId, selectFilterValue } = this.props;
+		if (urlParams.from && urlParams.to) {
+			selectFilterValue(filterId, 'from', urlParams.from);
+			selectFilterValue(filterId, 'to', urlParams.to);
+			return;
+		}
 		this.fetchPopularResults();
 	}
 
@@ -40,6 +49,9 @@ class PopularResults extends React.Component {
 
 	fetchPopularResults = () => {
 		const { appName, filters } = this.props;
+		this.setState({
+			isFetching: true,
+		});
 		getPopularResults(appName, undefined, undefined, filters)
 			.then((res) => {
 				this.setState({
@@ -131,8 +143,10 @@ const mapStateToProps = (state, props) => ({
 	appName: get(state, '$getCurrentApp.name'),
 	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 });
-const mapDispatchToProps = dispatch => ({
-	saveState: state => dispatch(setSearchState(state)),
+const mapDispatchToProps = (dispatch) => ({
+	saveState: (state) => dispatch(setSearchState(state)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 export default connect(
 	mapStateToProps,
