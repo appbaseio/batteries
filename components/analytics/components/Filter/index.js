@@ -13,20 +13,20 @@ const { Option } = Select;
 
 const dateRangeFilters = {
 	'This week': {
-		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
+		from: moment().startOf('week').format('YYYY/MM/DD'),
+		to: moment().endOf('week').format('YYYY/MM/DD'),
 	},
 	'Last Week': {
-		from: moment().subtract(14, 'days').format('YYYY/MM/DD'),
-		to: moment().subtract(7, 'days').format('YYYY/MM/DD'),
+		from: moment().subtract(1, 'weeks').startOf('week').format('YYYY/MM/DD'),
+		to: moment().subtract(1, 'weeks').endOf('week').format('YYYY/MM/DD'),
 	},
 	'This Month': {
-		from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
+		from: moment().startOf('month').format('YYYY/MM/DD'),
+		to: moment().endOf('month').format('YYYY/MM/DD'),
 	},
 	'Last Month': {
-		from: moment().subtract(60, 'days').format('YYYY/MM/DD'),
-		to: moment().subtract(30, 'days').format('YYYY/MM/DD'),
+		from: moment().subtract(1, 'months').startOf('month').format('YYYY/MM/DD'),
+		to: moment().subtract(1, 'months').endOf('month').format('YYYY/MM/DD'),
 	},
 	'Last 7 days': {
 		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
@@ -239,30 +239,29 @@ class Filter extends React.Component {
 							content={
 								<Row style={{ width: 300 }} gutter={[8, 8]}>
 									{Object.keys(dateRangeColumns).map((column) => (
-										<React.Fragment>
+										<Col key={column} md={12} span={12}>
 											{Object.keys(get(dateRangeColumns, column, {})).map(
-												(rangeLabel) => (
-													<Col key={rangeLabel} md={12} span={12}>
-														<Button
-															key={rangeLabel}
-															block
-															type={
-																selectedDateRange === rangeLabel
-																	? 'primary'
-																	: 'default'
-															}
-															onClick={() =>
-																this.handleDateRangeChange(
-																	rangeLabel,
-																)
-															}
-														>
-															{rangeLabel}
-														</Button>
-													</Col>
+												(rangeLabel, index) => (
+													<Button
+														key={rangeLabel}
+														block
+														style={{
+															marginBottom: index !== 3 ? 8 : 0,
+														}}
+														type={
+															selectedDateRange === rangeLabel
+																? 'primary'
+																: 'default'
+														}
+														onClick={() =>
+															this.handleDateRangeChange(rangeLabel)
+														}
+													>
+														{rangeLabel}
+													</Button>
 												),
 											)}
-										</React.Fragment>
+										</Col>
 									))}
 								</Row>
 							}
