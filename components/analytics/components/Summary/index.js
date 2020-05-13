@@ -10,7 +10,7 @@ import Loader from '../../../shared/Loader/Spinner';
 import { isValidPlan } from '../../../../utils';
 import { displayErrors } from '../../../../utils/heplers';
 import SummaryCard from './SummaryCard';
-import { parseTimeDuration } from '../../utils';
+import { parseTimeDuration, applyFilterParams } from '../../utils';
 import { getUrlParams } from '../../../../../utils/helper';
 
 const cardContainer = css`
@@ -20,18 +20,12 @@ const cardContainer = css`
 class Summary extends React.Component {
 	componentDidMount() {
 		const { fetchAppAnalyticsSummary, filterId, selectFilterValue, filters } = this.props;
-		const urlParams = getUrlParams(window.location.search);
-		if (
-			urlParams.from &&
-			urlParams.to &&
-			filters.from !== urlParams.from &&
-			filters.to !== urlParams.to
-		) {
-			selectFilterValue(filterId, 'from', urlParams.from);
-			selectFilterValue(filterId, 'to', urlParams.to);
-			return;
-		}
-		fetchAppAnalyticsSummary();
+		applyFilterParams({
+			filters,
+			callback: fetchAppAnalyticsSummary,
+			filterId,
+			applyFilter: selectFilterValue,
+		});
 	}
 
 	componentDidUpdate(prevProps) {

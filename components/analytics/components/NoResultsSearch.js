@@ -5,7 +5,7 @@ import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import Searches from './Searches';
 import Filter from './Filter';
-import { getNoResultSearches, exportCSVFile, noResultsFull } from '../utils';
+import { getNoResultSearches, exportCSVFile, noResultsFull, applyFilterParams } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
 import { getUrlParams } from '../../../../utils/helper';
@@ -25,19 +25,13 @@ class NoResultsSearch extends React.Component {
 	}
 
 	componentDidMount() {
-		const urlParams = getUrlParams(window.location.search);
-		const { filterId, selectFilterValue, filters } = this.props;
-		if (
-			urlParams.from &&
-			urlParams.to &&
-			filters.from !== urlParams.from &&
-			filters.to !== urlParams.to
-		) {
-			selectFilterValue(filterId, 'from', urlParams.from);
-			selectFilterValue(filterId, 'to', urlParams.to);
-			return;
-		}
-		this.fetchNoResults();
+		const { filterId, filters, selectFilterValue } = this.props;
+		applyFilterParams({
+			filters,
+			filterId,
+			callback: this.fetchNoResults,
+			applyFilter: selectFilterValue,
+		});
 	}
 
 	componentDidUpdate(prevProps) {

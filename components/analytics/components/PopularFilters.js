@@ -5,7 +5,7 @@ import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import Searches from './Searches';
 import Filter from './Filter';
-import { getPopularFilters, popularFiltersFull, exportCSVFile } from '../utils';
+import { getPopularFilters, popularFiltersFull, exportCSVFile, applyFilterParams } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
 import { getUrlParams } from '../../../../utils/helper';
@@ -29,19 +29,13 @@ class PopularFilters extends React.Component {
 	}
 
 	componentDidMount() {
-		const urlParams = getUrlParams(window.location.search);
-		const { filterId, selectFilterValue, filters } = this.props;
-		if (
-			urlParams.from &&
-			urlParams.to &&
-			filters.from !== urlParams.from &&
-			filters.to !== urlParams.to
-		) {
-			selectFilterValue(filterId, 'from', urlParams.from);
-			selectFilterValue(filterId, 'to', urlParams.to);
-			return;
-		}
-		this.fetchPopularFilters();
+		const { filterId, filters, selectFilterValue } = this.props;
+		applyFilterParams({
+			filters,
+			callback: this.fetchPopularFilters,
+			filterId,
+			applyFilter: selectFilterValue,
+		});
 	}
 
 	componentDidUpdate(prevProps) {

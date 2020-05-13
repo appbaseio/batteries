@@ -45,7 +45,6 @@ function getAppAnalyticsInsights(state = initialState, action) {
 					...state.results,
 					[action.meta.appName]: action.payload,
 				},
-				updates: [],
 				success: true,
 			};
 		case AppConstants.APP.ANALYTICS.GET_INSIGHTS_ERROR:

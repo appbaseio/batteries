@@ -6,6 +6,7 @@ import { Button } from 'antd';
 import { doGet, doPut } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 import { getURL } from '../../../constants/config';
+import { getUrlParams } from '../../../utils/helper';
 
 let lastIndex = 0;
 const updateIndex = () => {
@@ -796,4 +797,21 @@ export const getActiveKeyByRoutes = (tab) => {
 		return true;
 	});
 	return activeKey;
+};
+
+export const applyFilterParams = ({ filters, callback, filterId, applyFilter }) => {
+	const urlParams = getUrlParams(window.location.search);
+	if (
+		urlParams.from &&
+		urlParams.to &&
+		filters.from !== urlParams.from &&
+		filters.to !== urlParams.to
+	) {
+		applyFilter(filterId, 'from', urlParams.from);
+		applyFilter(filterId, 'to', urlParams.to);
+		return;
+	}
+	if (callback) {
+		callback();
+	}
 };

@@ -162,11 +162,13 @@ export function getAppAnalyticsInsights(name) {
 	};
 }
 
-/*
-	currentStatus: This is the current status of Insight - used in reducers for updating the data of the status.
-	nextStatus: This is the status in which we want to update the insight.
-	id: Insight Id
-*/
+/**
+ * Update the analytics insights status
+ * @param {Object} insightData
+ * @param {string} insightData.id - Insight Id
+ * @param {string} insightData.nextStatus - This is the status in which we want to update the insight.
+ * @param {string} insightData.currentStatus - This is the current status of Insight; used in reducers for updating the data of the status.
+ */
 export function updateInsightStatus({ id, currentStatus, nextStatus }) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');

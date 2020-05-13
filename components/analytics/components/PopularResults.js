@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import get from 'lodash/get';
 import Filter from './Filter';
 import Searches from './Searches';
-import { getPopularResults, popularResultsFull, exportCSVFile } from '../utils';
+import { getPopularResults, popularResultsFull, exportCSVFile, applyFilterParams } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
 import { getUrlParams } from '../../../../utils/helper';
@@ -30,19 +30,13 @@ class PopularResults extends React.Component {
 	}
 
 	componentDidMount() {
-		const urlParams = getUrlParams(window.location.search);
-		const { filterId, selectFilterValue, filters } = this.props;
-		if (
-			urlParams.from &&
-			urlParams.to &&
-			filters.from !== urlParams.from &&
-			filters.to !== urlParams.to
-		) {
-			selectFilterValue(filterId, 'from', urlParams.from);
-			selectFilterValue(filterId, 'to', urlParams.to);
-			return;
-		}
-		this.fetchPopularResults();
+		const { filterId, filters, selectFilterValue } = this.props;
+		applyFilterParams({
+			filters,
+			callback: this.fetchPopularResults,
+			filterId,
+			applyFilter: selectFilterValue,
+		});
 	}
 
 	componentDidUpdate(prevProps) {
@@ -72,9 +66,7 @@ class PopularResults extends React.Component {
 	};
 
 	handleReplaySearch = (searchState) => {
-		const {
- saveState, history, appName, handleReplayClick,
-} = this.props;
+		const { saveState, history, appName, handleReplayClick } = this.props;
 		saveState(searchState);
 		if (handleReplayClick) {
 			handleReplayClick(appName);
@@ -98,7 +90,7 @@ class PopularResults extends React.Component {
 					}}
 					showViewOption={false}
 					columns={popularResultsFull(plan, displayReplaySearch)}
-					dataSource={popularResults.map(item => ({
+					dataSource={popularResults.map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
 					}))}
@@ -106,9 +98,10 @@ class PopularResults extends React.Component {
 					pagination={{
 						pageSize: 10,
 					}}
-					onClickDownload={() => exportCSVFile(
+					onClickDownload={() =>
+						exportCSVFile(
 							headers,
-							popularResults.map(item => ({
+							popularResults.map((item) => ({
 								key: item.key,
 								count: item.count,
 								source: item.source && item.source.replace(/,/g, ''),
@@ -153,7 +146,4 @@ const mapDispatchToProps = (dispatch) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(withRouter(PopularResults));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularResults));

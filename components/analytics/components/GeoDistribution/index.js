@@ -14,6 +14,7 @@ import Filter from '../Filter';
 import { getAppGeoDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppGeoDistributionByName } from '../../../../modules/selectors';
 import { getUrlParams } from '../../../../../utils/helper';
+import { applyFilterParams } from '../../utils';
 
 const wrapperStyles = {
 	width: '100%',
@@ -32,18 +33,13 @@ class GeoDistribution extends React.Component {
 
 	componentDidMount() {
 		const { fetchAppGeoDistribution, filterId, selectFilterValue, filters } = this.props;
-		const urlParams = getUrlParams(window.location.search);
-		if (
-			urlParams.from &&
-			urlParams.to &&
-			filters.from !== urlParams.from &&
-			filters.to !== urlParams.to
-		) {
-			selectFilterValue(filterId, 'from', urlParams.from);
-			selectFilterValue(filterId, 'to', urlParams.to);
-			return;
-		}
-		fetchAppGeoDistribution();
+
+		applyFilterParams({
+			filters,
+			callback: fetchAppGeoDistribution,
+			filterId,
+			applyFilter: selectFilterValue,
+		});
 	}
 
 	componentDidUpdate(prevProps) {
