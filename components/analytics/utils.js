@@ -3,9 +3,10 @@ import { css } from 'emotion';
 import moment from 'moment';
 import { Button } from 'antd';
 // import mockProfile from './components/mockProfile';
-import { doGet } from '../../utils/requestService';
+import { doGet, doPut } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 import { getURL } from '../../../constants/config';
+import { getUrlParams } from '../../../utils/helper';
 
 let lastIndex = 0;
 const updateIndex = () => {
@@ -731,6 +732,29 @@ export function getRequestLogs(appName, size = 10, from = 0, filter) {
 	});
 }
 
+/**
+ * Get the analytics insights
+ * @param {string} appName
+ */
+export function getAnalyticsInsights(appName) {
+	const ACC_API = getURL();
+	return doGet(`${ACC_API}/_analytics/${getApp(appName)}insights`);
+}
+
+/**
+ * Update the analytics insights status
+ * @param {string} appName
+ * @param {string} id
+ * @param {string} status
+ */
+export function updateAnalyticsInsights({ id, status, appName }) {
+	const ACC_API = getURL();
+	return doPut(`${ACC_API}/_analytics/${getApp(appName)}insight-status`, {
+		id,
+		status,
+	});
+}
+
 // Banner messages
 export const bannerMessagesAnalytics = {
 	free: {
@@ -773,4 +797,21 @@ export const getActiveKeyByRoutes = (tab) => {
 		return true;
 	});
 	return activeKey;
+};
+
+export const applyFilterParams = ({ filters, callback, filterId, applyFilter }) => {
+	const urlParams = getUrlParams(window.location.search);
+	if (
+		urlParams.from &&
+		urlParams.to &&
+		filters.from !== urlParams.from &&
+		filters.to !== urlParams.to
+	) {
+		applyFilter(filterId, 'from', urlParams.from);
+		applyFilter(filterId, 'to', urlParams.to);
+		return;
+	}
+	if (callback) {
+		callback();
+	}
 };

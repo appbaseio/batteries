@@ -5,14 +5,16 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Card } from 'antd';
 import {
- LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend,
+ LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import Filter from '../Filter';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { displayErrors } from '../../../../utils/heplers';
-import { getAppRequestDistribution } from '../../../../modules/actions';
+import { getAppRequestDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppRequestDistributionByName } from '../../../../modules/selectors';
+import { getUrlParams } from '../../../../../utils/helper';
+import { applyFilterParams } from '../../utils';
 
 const normalizedData = (data = []) => {
 	const dataTobeReturned = [];
@@ -38,10 +40,16 @@ class RequestDistribution extends React.Component {
 	}
 
 	componentDidMount() {
-		const { fetchAppRequestDistribution } = this.props;
-		fetchAppRequestDistribution();
+		const { fetchAppRequestDistribution, filterId, selectFilterValue, filters } = this.props;
 		this.setState({
 			width: this.child.parentNode.clientWidth - 60,
+		});
+
+		applyFilterParams({
+			filters,
+			callback: fetchAppRequestDistribution,
+			filterId,
+			applyFilter: selectFilterValue,
 		});
 	}
 
@@ -130,6 +138,7 @@ class RequestDistribution extends React.Component {
 						<Loader />
 					) : (
 						(success && !data.length && <EmptyData css="height: 400px" />) || (
+							<ResponsiveContainer width="100%" aspect={2.5}>
 							<LineChart
 								width={width}
 								height={400}
@@ -192,6 +201,7 @@ class RequestDistribution extends React.Component {
 									stroke="#e82055"
 								/>
 							</LineChart>
+							</ResponsiveContainer>
 						)
 					)}
 				</Card>
@@ -224,6 +234,8 @@ const mapStateToProps = (state, props) => ({
 });
 const mapDispatchToProps = (dispatch, props) => ({
 	fetchAppRequestDistribution: () => dispatch(getAppRequestDistribution(null, props.filterId)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 export default connect(
 	mapStateToProps,

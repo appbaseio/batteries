@@ -5,12 +5,13 @@ import { Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import { getAppAnalyticsSummaryByName } from '../../../../modules/selectors';
-import { getAppAnalyticsSummary } from '../../../../modules/actions';
+import { getAppAnalyticsSummary, setFilterValue } from '../../../../modules/actions';
 import Loader from '../../../shared/Loader/Spinner';
 import { isValidPlan } from '../../../../utils';
 import { displayErrors } from '../../../../utils/heplers';
 import SummaryCard from './SummaryCard';
-import { parseTimeDuration } from '../../utils';
+import { parseTimeDuration, applyFilterParams } from '../../utils';
+import { getUrlParams } from '../../../../../utils/helper';
 
 const cardContainer = css`
 	padding: 10px;
@@ -18,8 +19,13 @@ const cardContainer = css`
 
 class Summary extends React.Component {
 	componentDidMount() {
-		const { fetchAppAnalyticsSummary } = this.props;
-		fetchAppAnalyticsSummary();
+		const { fetchAppAnalyticsSummary, filterId, selectFilterValue, filters } = this.props;
+		applyFilterParams({
+			filters,
+			callback: fetchAppAnalyticsSummary,
+			filterId,
+			applyFilter: selectFilterValue,
+		});
 	}
 
 	componentDidUpdate(prevProps) {
@@ -323,6 +329,9 @@ const mapStateToProps = (state, props) => {
 	};
 };
 const mapDispatchToProps = (dispatch, props) => ({
-	fetchAppAnalyticsSummary: appName => dispatch(getAppAnalyticsSummary(appName, props.filterId)),
+	fetchAppAnalyticsSummary: (appName) =>
+		dispatch(getAppAnalyticsSummary(appName, props.filterId)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Summary);
