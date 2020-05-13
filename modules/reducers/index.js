@@ -14,6 +14,7 @@ import getAppFunction from './getAppFunction';
 import privateRegistries from './getPrivateRegistry';
 import getAppSettings from './getAppSettings';
 import getAppRules from './getAppRules';
+import getAppAnalyticsInsights from './getAnalyticsInsights';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -211,4 +212,5 @@ export default {
 		AppConstants.ACCOUNT.PAYMENT.UPDATE_ERROR,
 	),
 	$getAppSettings: getAppSettings,
+	$getAppAnalyticsInsights: getAppAnalyticsInsights,
 };

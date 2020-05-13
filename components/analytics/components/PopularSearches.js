@@ -5,9 +5,11 @@ import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import Filter from './Filter';
 import Searches from './Searches';
-import { getPopularSearches, popularSearchesFull, exportCSVFile } from '../utils';
+import { getPopularSearches, popularSearchesFull, exportCSVFile, applyFilterParams } from '../utils';
 import { setSearchState } from '../../../modules/actions/app';
 import Loader from '../../shared/Loader/Spinner';
+import { getUrlParams } from '../../../../utils/helper';
+import { setFilterValue } from '../../../modules/actions';
 
 const headers = {
 	key: 'Search Terms',
@@ -20,13 +22,14 @@ class PopularSearches extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isFetching: true,
+			isFetching: false,
 			popularSearches: [],
 		};
 	}
 
 	componentDidMount() {
-		this.fetchPopularSearches();
+		const { filterId, filters, selectFilterValue } = this.props;
+		applyFilterParams({ filters, filterId, callback:this.fetchPopularSearches, applyFilter: selectFilterValue });
 	}
 
 	componentDidUpdate(prevProps) {
@@ -38,6 +41,9 @@ class PopularSearches extends React.Component {
 
 	fetchPopularSearches = () => {
 		const { appName, filters } = this.props;
+		this.setState({
+			isFetching: true,
+		});
 		getPopularSearches(appName, undefined, undefined, filters)
 			.then((res) => {
 				this.setState({
@@ -146,8 +152,10 @@ const mapStateToProps = (state, props) => ({
 	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 });
 
-const mapDispatchToProps = dispatch => ({
-	saveState: state => dispatch(setSearchState(state)),
+const mapDispatchToProps = (dispatch) => ({
+	saveState: (state) => dispatch(setSearchState(state)),
+	selectFilterValue: (filterId, filterKey, filterValue) =>
+		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
 export default connect(

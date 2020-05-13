@@ -114,6 +114,7 @@ const Analytics = ({
 								onClickViewAll={
 									(onClickViewAll && onClickViewAll.popularResults) || null
 								}
+								breakWord
 							/>
 						</div>
 						<div css={noResultsCls}>
@@ -129,6 +130,7 @@ const Analytics = ({
 								onClickViewAll={
 									(onClickViewAll && onClickViewAll.popularFilters) || null
 								}
+								breakWord
 							/>
 						</div>
 					</Flex>
