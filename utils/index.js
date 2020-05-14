@@ -137,16 +137,16 @@ export const parseSearchState = (searchState = {}) => {
 	);
 
 	// Filter term queries this will be part of MultiList
-	const filterQueries = allComponentsQueries.filter((component) => component.type === 'term');
+	const filterQueries = componentsQueries.filter((component) => component.type === 'term');
 
 	// Search query will contain either type = search or no type but will for sure have value key.
-	const searchQuery = allComponentsQueries.find(
+	const searchQuery = componentsQueries.find(
 		(component) =>
 			(component.type === 'search' || !component.type) && component.hasOwnProperty('value'),
 	) || {};
 
 	// Result query won't have any type or value key in the object.
-	const resultQuery = allComponentsQueries.find(
+	const resultQuery = componentsQueries.find(
 		(component) => !component.type && !component.hasOwnProperty('value'),
 	) || {};
 
@@ -157,10 +157,10 @@ export const parseSearchState = (searchState = {}) => {
 		return [
 			...agg,
 			{
+				...extraListProps,
 				id: `list-${index}`,
 				type: 'term',
 				defaultValue: listValue,
-				...extraListProps,
 			},
 		];
 	}, []);
@@ -174,20 +174,21 @@ export const parseSearchState = (searchState = {}) => {
 	} = searchQuery;
 
 	const search = {
-		id: 'search',
-		defaultValue: searchValue,
 		...extraSearchProps,
+		defaultValue: searchValue,
+		id: 'search',
 	};
 
 	const { type: resultType, react: resultReactList ,execute: resultExecute, ...extraResultProps } = resultQuery;
 
 	const result = {
-		id: 'result',
-		react: { and: ['search', ...filterQueries.map((filter) => filter.id)] },
 		dataField: '_score',
 		...extraResultProps,
+		id: 'result',
+		react: { and: ['search', ...filterQueries.map((filter) => filter.id)] },
 	};
 
+	console.log(aggregations, result, search);
 	return [
 		...aggregations,
 		result,
