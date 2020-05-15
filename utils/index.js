@@ -124,10 +124,6 @@ export const setUserInfo = userInfo => {
 	});
 };
 
-/**
- * Search state parser
- * Generates a search state compatible with SearchSandbox
- */
 export const parseSearchState = (searchState = {}) => {
 	const allComponentsQueries = get(searchState, 'query', []);
 
@@ -140,14 +136,14 @@ export const parseSearchState = (searchState = {}) => {
 	const filterQueries = componentsQueries.filter((component) => component.type === 'term');
 
 	// Search query will contain either type = search or no type but will for sure have value key.
-	const searchQuery = componentsQueries.find(
+	const searchQuery = allComponentsQueries.find(
 		(component) =>
 			(component.type === 'search' || !component.type) && component.hasOwnProperty('value'),
 	) || {};
 
-	// Result query won't have any type or value key in the object.
+	// Result query will contain either type = search or no type, plus it wont have value key and execute will be false.
 	const resultQuery = componentsQueries.find(
-		(component) => !component.type && !component.hasOwnProperty('value'),
+		(component) => (component.type === 'search' || !component.type) && !component.hasOwnProperty('value') && component.execute === false,
 	) || {};
 
 	const parsedState = {};
@@ -160,7 +156,7 @@ export const parseSearchState = (searchState = {}) => {
 				...extraListProps,
 				id: `list-${index}`,
 				type: 'term',
-				defaultValue: listValue,
+				value: listValue,
 			},
 		];
 	}, []);
@@ -175,20 +171,19 @@ export const parseSearchState = (searchState = {}) => {
 
 	const search = {
 		...extraSearchProps,
-		defaultValue: searchValue,
+		value: searchValue,
 		id: 'search',
 	};
 
 	const { type: resultType, react: resultReactList ,execute: resultExecute, ...extraResultProps } = resultQuery;
 
 	const result = {
-		dataField: '_score',
+		dataField: ['_score'],
 		...extraResultProps,
 		id: 'result',
 		react: { and: ['search', ...filterQueries.map((filter) => filter.id)] },
 	};
 
-	console.log(aggregations, result, search);
 	return [
 		...aggregations,
 		result,
