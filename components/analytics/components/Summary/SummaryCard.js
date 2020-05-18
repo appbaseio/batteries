@@ -67,8 +67,15 @@ const SummaryCard = ({
 	showPercent,
 	showComparisonStats,
 	hidePrevStats,
+	isLowerBetter,
 }) => {
 	const comparison = getComparisonValue(value, comparisonValue);
+	let isComparisonPositive = true;
+	if (isLowerBetter && comparison > 0) {
+			isComparisonPositive = false
+	} else if(comparison < 0) {
+		isComparisonPositive = false
+	}
 	return (
 		<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
 			{/* {icon && (
@@ -98,7 +105,7 @@ const SummaryCard = ({
 							value={Math.abs(comparison)}
 							precision={2}
 							valueStyle={{
-								...(comparison > 0 ? { color: '#3f8600' } : { color: '#cf1322' }),
+								...(isComparisonPositive ? { color: '#3f8600' } : { color: '#cf1322' }),
 								fontSize: 18,
 							}}
 							prefix={
@@ -126,6 +133,7 @@ SummaryCard.defaultProps = {
 	style: {},
 	showPercent: false,
 	showComparisonStats: false,
+	isLowerBetter: false,
 	hidePrevStats: false,
 	comparisonValue: undefined,
 	value: 0,
@@ -134,6 +142,7 @@ SummaryCard.propTypes = {
 	percent: PropTypes.number,
 	style: PropTypes.object,
 	showPercent: PropTypes.bool,
+	isLowerBetter: PropTypes.bool,
 	showComparisonStats: PropTypes.bool,
 	hidePrevStats: PropTypes.bool,
 	title: PropTypes.string.isRequired,
