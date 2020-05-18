@@ -219,19 +219,6 @@ class Summary extends React.Component {
 							<Col span={24}>
 								<SummaryCard
 									style={{
-										borderTop: '2px solid #eb2f96',
-										background: '#fff0f6',
-									}}
-									title="Avg Click Position"
-									label={avgClickPosition}
-									showComparisonStats={isEnterpriseUser}
-									value={avgClickPosition}
-									comparisonValue={compAvgClickPosition}
-								/>
-							</Col>
-							<Col span={24}>
-								<SummaryCard
-									style={{
 										background: '#f6ffed',
 										borderTop: '2px solid #52c41a',
 									}}
@@ -242,6 +229,19 @@ class Summary extends React.Component {
 									showComparisonStats={isEnterpriseUser}
 									value={totalConversions}
 									comparisonValue={compTotalConversions}
+								/>
+							</Col>
+							<Col span={24}>
+								<SummaryCard
+									style={{
+										borderTop: '2px solid #eb2f96',
+										background: '#fff0f6',
+									}}
+									title="Avg Click Position"
+									label={avgClickPosition}
+									showComparisonStats={isEnterpriseUser}
+									value={avgClickPosition}
+									comparisonValue={compAvgClickPosition}
 								/>
 							</Col>
 						</Row>
