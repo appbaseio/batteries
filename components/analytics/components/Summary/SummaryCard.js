@@ -44,6 +44,15 @@ const cardStyle = css`
 	.ant-statistic-content-value-decimal {
 		font-size: 14px;
 	}
+	.ant-statistic-content-suffix {
+		font-size: 14px;
+	}
+	.ant-statistic-content {
+		font-size: 14px;
+	}
+	.prefix-icon {
+		font-size: 12px;
+	}
 `;
 
 const getComparisonValue = (value, prevValue) => {
@@ -100,27 +109,35 @@ const SummaryCard = ({
 					) : null}
 				</h2>
 				{showComparisonStats && comparison ? (
-					<Flex className="stats">
-						<Statistic
-							value={Math.abs(comparison)}
-							precision={2}
-							valueStyle={{
-								...(isComparisonPositive ? { color: '#3f8600' } : { color: '#cf1322' }),
-								fontSize: 18,
-							}}
-							prefix={
-								comparison > 0 ? (
-									<Icon type="arrow-up" />
-								) : (
-									<Icon type="arrow-down" />
-								)
-							}
-							formatter={comparisonValue === 0 ? () => '' : undefined}
-							suffix={comparisonValue !== 0 ? '%' : ''}
-						/>
-						{!hidePrevStats && (
-							<span className="prev-stats">Previously: {comparisonValue}</span>
-						)}
+					<Flex flexDirection="column">
+						<Flex className="stats">
+							<Statistic
+								value={Math.abs(comparison)}
+								precision={2}
+								valueStyle={{
+									...(isComparisonPositive ? { color: '#3f8600' } : { color: '#cf1322' }),
+								}}
+								prefix={
+									comparison > 0 ? (
+										<Icon type="plus" className="prefix-icon" />
+									) : (
+										<Icon type="minus" className="prefix-icon" />
+									)
+								}
+								formatter={comparisonValue === 0 ? () => '' : undefined}
+								suffix={comparisonValue !== 0 ? '%' : ''}
+							/>
+							{!hidePrevStats && (
+								<span className="prev-stats">Previously: {comparisonValue}</span>
+							)}
+						</Flex>
+						{
+							hidePrevStats && (
+								<Flex justifyContent="center" alignItems="center">
+									<span className="prev-stats">Previously: {comparisonValue}</span>
+								</Flex>
+							)
+						}
 					</Flex>
 				) : null}
 			</div>
