@@ -120,7 +120,7 @@ const SummaryCard = ({
 						</span>
 					) : null}
 				</h2>
-				{showComparisonStats && comparison ? (
+				{showComparisonStats ? (
 					<Flex
 						style={{
 							height: 35,
@@ -135,7 +135,7 @@ const SummaryCard = ({
 						alignItems="center"
 						flexDirection={hidePrevStats ? 'column' : 'row'}
 					>
-						{comparisonValue !== 0 ? (
+						{comparison && comparisonValue !== 0 ? (
 							<div
 								className="comp-plus"
 								style={{
