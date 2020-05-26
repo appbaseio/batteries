@@ -237,6 +237,7 @@ class Summary extends React.Component {
 									style={{
 										background: '#f6ffed',
 										borderTop: '2px solid #52c41a',
+										minHeight: 151,
 									}}
 									title="Conversions"
 									showPercent

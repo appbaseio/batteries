@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
-import { Statistic, Icon } from 'antd';
 import Flex from '../../../shared/Flex';
 
 const cardStyle = css`
@@ -53,7 +52,25 @@ const cardStyle = css`
 	.prefix-icon {
 		font-size: 12px;
 	}
+	.comp-plus {
+		font-size: 14px;
+		font-weight: bold;
+		line-height: 1.4;
+		padding: 7px 10px;
+		border-radius: 12px;
+		margin-right: 20px;
+	}
 `;
+
+const positiveComp = {
+	color: '#296346',
+	backgroundColor: '#cbf4c9',
+};
+
+const negativeComp = {
+	color: '#820200',
+	backgroundColor: '#ffa193',
+};
 
 const getComparisonValue = (value, prevValue) => {
 	if (value === undefined || value === null || prevValue === undefined || prevValue === null) {
@@ -81,18 +98,13 @@ const SummaryCard = ({
 	const comparison = getComparisonValue(value, comparisonValue);
 	let isComparisonPositive = true;
 	if (isLowerBetter && comparison > 0) {
-			isComparisonPositive = false
-	} else if(comparison < 0) {
-		isComparisonPositive = false
+		isComparisonPositive = false;
+	} else if (comparison < 0) {
+		isComparisonPositive = false;
 	}
 	return (
 		<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
-			{/* {icon && (
-				<div>
-					<Icon type={icon} style={{ fontSize: '2.5em', marginRight: 15 }} />
-				</div>
-			)} */}
-			<div style={{ height: 96 }}>
+			<div>
 				<p>{title}</p>
 				<h2
 					style={{
@@ -109,35 +121,37 @@ const SummaryCard = ({
 					) : null}
 				</h2>
 				{showComparisonStats && comparison ? (
-					<Flex flexDirection="column">
-						<Flex className="stats">
-							<Statistic
-								value={Math.abs(comparison)}
-								precision={2}
-								valueStyle={{
-									...(isComparisonPositive ? { color: '#3f8600' } : { color: '#cf1322' }),
+					<Flex
+						style={{
+							height: 35,
+							...(hidePrevStats
+								? {
+										marginTop: 10,
+										marginBottom: 10,
+								  }
+								: null),
+						}}
+						justifyContent="center"
+						alignItems="center"
+						flexDirection={hidePrevStats ? 'column' : 'row'}
+					>
+						{comparisonValue !== 0 ? (
+							<div
+								className="comp-plus"
+								style={{
+									...(hidePrevStats
+										? {
+												marginRight: 0,
+												marginBottom: 5,
+										  }
+										: null),
+									...(isComparisonPositive ? positiveComp : negativeComp),
 								}}
-								prefix={
-									comparison > 0 ? (
-										<Icon type="plus" className="prefix-icon" />
-									) : (
-										<Icon type="minus" className="prefix-icon" />
-									)
-								}
-								formatter={comparisonValue === 0 ? () => '' : undefined}
-								suffix={comparisonValue !== 0 ? '%' : ''}
-							/>
-							{!hidePrevStats && (
-								<span className="prev-stats">Previously: {comparisonValue}</span>
-							)}
-						</Flex>
-						{
-							hidePrevStats && (
-								<Flex justifyContent="center" alignItems="center">
-									<span className="prev-stats">Previously: {comparisonValue}</span>
-								</Flex>
-							)
-						}
+							>
+								+ {Math.abs(comparison).toFixed(2).toString()}%
+							</div>
+						) : null}
+						<div>Previously: {comparisonValue}</div>
 					</Flex>
 				) : null}
 			</div>
