@@ -116,16 +116,19 @@ class Filter extends React.Component {
 		}
 	}
 
-	setSelectedlabel = ({ from, to }) => {
-		const selectedDateRange = Object.keys(dateRangeFilters).find(
-			(dateRange) =>
-				get(dateRangeFilters, `${dateRange}.from`) === from &&
-				get(dateRangeFilters, `${dateRange}.to`) === to,
-		);
+	setSelectedlabel = (value) => {
+		if (typeof value === 'object' && get(value, 'from') && get(value, 'to')) {
+			const { from, to } = value;
+			const selectedDateRange = Object.keys(dateRangeFilters).find(
+				(dateRange) =>
+					get(dateRangeFilters, `${dateRange}.from`) === from &&
+					get(dateRangeFilters, `${dateRange}.to`) === to,
+			);
 
-		this.setState({
-			selectedDateRange,
-		});
+			this.setState({
+				selectedDateRange,
+			});
+		}
 	};
 
 	handleFilterByChange = (filterBy) => {
@@ -342,6 +345,7 @@ Filter.propTypes = {
 	isFetchedFilterLabels: PropTypes.bool.isRequired,
 	hideInsightsButton: PropTypes.bool,
 	filterLabels: PropTypes.array,
+	toggleInsights: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, props) => ({
