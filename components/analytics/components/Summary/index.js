@@ -11,7 +11,6 @@ import { isValidPlan } from '../../../../utils';
 import { displayErrors } from '../../../../utils/heplers';
 import SummaryCard from './SummaryCard';
 import { parseTimeDuration, applyFilterParams } from '../../utils';
-import { getUrlParams } from '../../../../../utils/helper';
 
 const cardContainer = css`
 	padding: 10px;
@@ -64,6 +63,8 @@ class Summary extends React.Component {
 			compTotalUserSessions,
 			avgSessionDuration,
 			compAvgSessionDuration,
+			avgClickPosition,
+			compAvgClickPosition,
 			bounceRate,
 			compBounceRate,
 			tier,
@@ -112,6 +113,7 @@ class Summary extends React.Component {
 								title="Bounce Rate"
 								label={`${bounceRate}%`}
 								value={bounceRate}
+								isLowerBetter
 								comparisonValue={compBounceRate}
 								showComparisonStats={isEnterpriseUser}
 							/>
@@ -162,6 +164,7 @@ class Summary extends React.Component {
 									title="No Results"
 									label={noResultSearch}
 									value={noResultSearch}
+									isLowerBetter
 									comparisonValue={compNoResultSearch}
 									showPercent
 									percent={noResultsRate}
@@ -218,8 +221,23 @@ class Summary extends React.Component {
 							<Col span={24}>
 								<SummaryCard
 									style={{
+										borderTop: '2px solid #eb2f96',
+										background: '#fff0f6',
+									}}
+									title="Avg Click Position"
+									label={avgClickPosition}
+									isLowerBetter
+									showComparisonStats={isEnterpriseUser}
+									value={avgClickPosition}
+									comparisonValue={compAvgClickPosition}
+								/>
+							</Col>
+							<Col span={24}>
+								<SummaryCard
+									style={{
 										background: '#f6ffed',
 										borderTop: '2px solid #52c41a',
+										minHeight: 151,
 									}}
 									title="Conversions"
 									showPercent
@@ -252,39 +270,42 @@ Summary.defaultProps = {
 	compTotalUserSessions: 0,
 	compBounceRate: 0,
 	compAvgSessionDuration: 0,
+	compAvgClickPosition: 0,
 };
 
 Summary.propTypes = {
 	fetchAppAnalyticsSummary: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	errors: PropTypes.array.isRequired,
-	avgConversionRate: PropTypes.string.isRequired,
-	totalConversions: PropTypes.string.isRequired,
-	totalClicks: PropTypes.string.isRequired,
-	totalResultClicks: PropTypes.string.isRequired,
-	avgClickRate: PropTypes.string.isRequired,
+	avgConversionRate: PropTypes.number.isRequired,
+	totalConversions: PropTypes.number.isRequired,
+	totalClicks: PropTypes.number.isRequired,
+	totalResultClicks: PropTypes.number.isRequired,
+	avgClickRate: PropTypes.number.isRequired,
 	// avgSuggestionClicks: PropTypes.string.isRequired,
-	totalSuggestionClicks: PropTypes.string.isRequired,
-	noResultsRate: PropTypes.string.isRequired,
-	noResultSearch: PropTypes.string.isRequired,
-	totalSearches: PropTypes.string.isRequired,
-	totalUsers: PropTypes.string.isRequired,
-	totalResults: PropTypes.string.isRequired,
-	totalUserSessions: PropTypes.string.isRequired,
-	bounceRate: PropTypes.string.isRequired,
-	avgSessionDuration: PropTypes.string.isRequired,
+	totalSuggestionClicks: PropTypes.number.isRequired,
+	noResultsRate: PropTypes.number.isRequired,
+	noResultSearch: PropTypes.number.isRequired,
+	totalSearches: PropTypes.number.isRequired,
+	totalUsers: PropTypes.number.isRequired,
+	totalResults: PropTypes.number.isRequired,
+	totalUserSessions: PropTypes.number.isRequired,
+	bounceRate: PropTypes.number.isRequired,
+	avgSessionDuration: PropTypes.number.isRequired,
+	avgClickPosition: PropTypes.number.isRequired,
 	// comparison
-	compTotalConversions: PropTypes.string,
-	compTotalClicks: PropTypes.string,
-	compTotalResultClicks: PropTypes.string,
-	compTotalSuggestionClicks: PropTypes.string,
-	compNoResultSearch: PropTypes.string,
-	compTotalSearches: PropTypes.string,
-	compTotalUsers: PropTypes.string,
-	compTotalResults: PropTypes.string,
-	compTotalUserSessions: PropTypes.string,
-	compBounceRate: PropTypes.string,
-	compAvgSessionDuration: PropTypes.string,
+	compTotalConversions: PropTypes.number,
+	compTotalClicks: PropTypes.number,
+	compTotalResultClicks: PropTypes.number,
+	compTotalSuggestionClicks: PropTypes.number,
+	compNoResultSearch: PropTypes.number,
+	compTotalSearches: PropTypes.number,
+	compTotalUsers: PropTypes.number,
+	compTotalResults: PropTypes.number,
+	compTotalUserSessions: PropTypes.number,
+	compBounceRate: PropTypes.number,
+	compAvgSessionDuration: PropTypes.number,
+	compAvgClickPosition: PropTypes.number,
 	// eslint-disable-next-line
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
@@ -319,6 +340,8 @@ const mapStateToProps = (state, props) => {
 		compBounceRate: get(appSummary, 'compare_timeframe.avg_bounce_rate', 0),
 		avgSessionDuration: get(appSummary, 'summary.avg_user_session_duration', 0),
 		compAvgSessionDuration: get(appSummary, 'compare_timeframe.avg_user_session_duration', 0),
+		avgClickPosition: get(appSummary, 'summary.avg_click_position', 0),
+		compAvgClickPosition: get(appSummary, 'compare_timeframe.avg_click_position', 0),
 		totalResults: get(appSummary, 'summary.total_results_count', 0),
 		compTotalResults: get(appSummary, 'compare_timeframe.total_results_count', 0),
 		isLoading: get(state, '$getAppAnalyticsSummary.isFetching'),
