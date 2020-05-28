@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
-import { Statistic, Icon } from 'antd';
 import Flex from '../../../shared/Flex';
 
 const cardStyle = css`
@@ -44,7 +43,34 @@ const cardStyle = css`
 	.ant-statistic-content-value-decimal {
 		font-size: 14px;
 	}
+	.ant-statistic-content-suffix {
+		font-size: 14px;
+	}
+	.ant-statistic-content {
+		font-size: 14px;
+	}
+	.prefix-icon {
+		font-size: 12px;
+	}
+	.comp-plus {
+		font-size: 14px;
+		font-weight: bold;
+		line-height: 1.4;
+		padding: 7px 10px;
+		border-radius: 12px;
+		margin-right: 20px;
+	}
 `;
+
+const positiveComp = {
+	color: '#296346',
+	backgroundColor: '#cbf4c9',
+};
+
+const negativeComp = {
+	color: '#820200',
+	backgroundColor: '#ffa193',
+};
 
 const getComparisonValue = (value, prevValue) => {
 	if (value === undefined || value === null || prevValue === undefined || prevValue === null) {
@@ -67,16 +93,18 @@ const SummaryCard = ({
 	showPercent,
 	showComparisonStats,
 	hidePrevStats,
+	isLowerBetter,
 }) => {
 	const comparison = getComparisonValue(value, comparisonValue);
+	let isComparisonPositive = true;
+	if (isLowerBetter && comparison > 0) {
+		isComparisonPositive = false;
+	} else if (comparison < 0) {
+		isComparisonPositive = false;
+	}
 	return (
 		<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
-			{/* {icon && (
-				<div>
-					<Icon type={icon} style={{ fontSize: '2.5em', marginRight: 15 }} />
-				</div>
-			)} */}
-			<div style={{ height: 96 }}>
+			<div>
 				<p>{title}</p>
 				<h2
 					style={{
@@ -92,28 +120,38 @@ const SummaryCard = ({
 						</span>
 					) : null}
 				</h2>
-				{showComparisonStats && comparison ? (
-					<Flex className="stats">
-						<Statistic
-							value={Math.abs(comparison)}
-							precision={2}
-							valueStyle={{
-								...(comparison > 0 ? { color: '#3f8600' } : { color: '#cf1322' }),
-								fontSize: 18,
-							}}
-							prefix={
-								comparison > 0 ? (
-									<Icon type="arrow-up" />
-								) : (
-									<Icon type="arrow-down" />
-								)
-							}
-							formatter={comparisonValue === 0 ? () => '' : undefined}
-							suffix={comparisonValue !== 0 ? '%' : ''}
-						/>
-						{!hidePrevStats && (
-							<span className="prev-stats">Previously: {comparisonValue}</span>
-						)}
+				{showComparisonStats ? (
+					<Flex
+						style={{
+							height: 35,
+							...(hidePrevStats
+								? {
+										marginTop: 10,
+										marginBottom: 10,
+								  }
+								: null),
+						}}
+						justifyContent="center"
+						alignItems="center"
+						flexDirection={hidePrevStats ? 'column' : 'row'}
+					>
+						{comparison && comparisonValue !== 0 ? (
+							<div
+								className="comp-plus"
+								style={{
+									...(hidePrevStats
+										? {
+												marginRight: 0,
+												marginBottom: 5,
+										  }
+										: null),
+									...(isComparisonPositive ? positiveComp : negativeComp),
+								}}
+							>
+								+ {Math.abs(comparison).toFixed(2).toString()}%
+							</div>
+						) : null}
+						<div>Previously: {comparisonValue}</div>
 					</Flex>
 				) : null}
 			</div>
@@ -126,6 +164,7 @@ SummaryCard.defaultProps = {
 	style: {},
 	showPercent: false,
 	showComparisonStats: false,
+	isLowerBetter: false,
 	hidePrevStats: false,
 	comparisonValue: undefined,
 	value: 0,
@@ -134,6 +173,7 @@ SummaryCard.propTypes = {
 	percent: PropTypes.number,
 	style: PropTypes.object,
 	showPercent: PropTypes.bool,
+	isLowerBetter: PropTypes.bool,
 	showComparisonStats: PropTypes.bool,
 	hidePrevStats: PropTypes.bool,
 	title: PropTypes.string.isRequired,
