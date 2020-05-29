@@ -10,7 +10,7 @@ import Loader from '../../../shared/Loader/Spinner';
 import { isValidPlan } from '../../../../utils';
 import { displayErrors } from '../../../../utils/heplers';
 import SummaryCard from './SummaryCard';
-import { parseTimeDuration, applyFilterParams } from '../../utils';
+import { getFormattedTime, applyFilterParams } from '../../utils';
 
 const cardContainer = css`
 	padding: 10px;
@@ -74,7 +74,6 @@ class Summary extends React.Component {
 		if (isLoading) {
 			return <Loader />;
 		}
-		const formattedTime = parseTimeDuration(avgSessionDuration);
 		const isEnterpriseUser = isValidPlan(tier, featureCustomEvents);
 
 		return (
@@ -124,7 +123,8 @@ class Summary extends React.Component {
 									borderTop: '2px solid #000',
 								}}
 								title="Avg Session Duration"
-								label={`${formattedTime.time} ${formattedTime.formattedUnit || ''}`}
+								label={getFormattedTime(avgSessionDuration)}
+								prevValueLabel={getFormattedTime(compAvgSessionDuration)}
 								value={avgSessionDuration}
 								comparisonValue={compAvgSessionDuration}
 								showComparisonStats={isEnterpriseUser}

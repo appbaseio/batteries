@@ -94,9 +94,10 @@ const SummaryCard = ({
 	showComparisonStats,
 	hidePrevStats,
 	isLowerBetter,
+	prevValueLabel,
 }) => {
 	const comparison = getComparisonValue(value, comparisonValue);
-	let isComparisonPositive = true;
+	let isComparisonPositive = comparison > 0;
 	if (isLowerBetter && comparison > 0) {
 		isComparisonPositive = false;
 	} else if (comparison < 0) {
@@ -148,10 +149,11 @@ const SummaryCard = ({
 									...(isComparisonPositive ? positiveComp : negativeComp),
 								}}
 							>
-								+ {Math.abs(comparison).toFixed(2).toString()}%
+								{comparison > 0 ? '+' : '-'}{' '}
+								{Math.abs(comparison).toFixed(2).toString()}%
 							</div>
 						) : null}
-						<div>Previously: {comparisonValue}</div>
+						<div>Previously: {prevValueLabel || comparisonValue}</div>
 					</Flex>
 				) : null}
 			</div>
@@ -167,10 +169,12 @@ SummaryCard.defaultProps = {
 	isLowerBetter: false,
 	hidePrevStats: false,
 	comparisonValue: undefined,
+	prevValueLabel: undefined,
 	value: 0,
 };
 SummaryCard.propTypes = {
 	percent: PropTypes.number,
+	prevValueLabel: PropTypes.string,
 	style: PropTypes.object,
 	showPercent: PropTypes.bool,
 	isLowerBetter: PropTypes.bool,
