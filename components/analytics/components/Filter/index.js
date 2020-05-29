@@ -73,7 +73,7 @@ class Filter extends React.Component {
 			displayLabelSelector: false,
 			filterKey: '',
 			dateRangePopover: false,
-			selectedDateRange: 'This Month',
+			selectedDateRange: 'Last 30 days',
 		};
 		this.filterBy = [
 			{
