@@ -6,6 +6,10 @@ import Flex from '../../shared/Flex';
 import { defaultColumns } from '../utils';
 import EmptyData from '../../shared/EmptyData';
 
+const generateKey = (pre) => {
+	return `${pre}_${new Date().getTime()}`;
+};
+
 const Searches = ({
 	title,
 	dataSource,
@@ -44,6 +48,7 @@ const Searches = ({
 				css="height: calc(100% - 48px)"
 			>
 				<Table
+					key={generateKey(title)}
 					rowKey={(record) => record.key + record.count}
 					dataSource={dataSource}
 					columns={columns || defaultColumns(plan)}

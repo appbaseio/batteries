@@ -74,7 +74,7 @@ const Analytics = ({
 				<div css={searchCls}>
 					<Searches
 						href="popular-searches"
-						dataSource={getFilteredResults(popularSearches).map(item => ({
+						dataSource={getFilteredResults(popularSearches).map((item) => ({
 							...item,
 							handleReplaySearch,
 						}))}
@@ -87,7 +87,7 @@ const Analytics = ({
 				<div css={noResultsCls}>
 					<Searches
 						href="no-results-searches"
-						dataSource={getFilteredResults(noResults).map(item => ({
+						dataSource={getFilteredResults(noResults).map((item) => ({
 							...item,
 							handleReplaySearch,
 						}))}
@@ -103,7 +103,7 @@ const Analytics = ({
 					<Flex css={results}>
 						<div css={searchCls}>
 							<Searches
-								dataSource={getFilteredResults(popularResults).map(item => ({
+								dataSource={getFilteredResults(popularResults).map((item) => ({
 									...item,
 									handleReplaySearch,
 								}))}
@@ -119,7 +119,7 @@ const Analytics = ({
 						</div>
 						<div css={noResultsCls}>
 							<Searches
-								dataSource={getFilteredResults(popularFilters).map(item => ({
+								dataSource={getFilteredResults(popularFilters).map((item) => ({
 									...item,
 									handleReplaySearch,
 								}))}

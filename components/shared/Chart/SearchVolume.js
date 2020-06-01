@@ -1,11 +1,16 @@
 import React from 'react';
 import {
- LineChart, XAxis, Tooltip, CartesianGrid, Line, YAxis, ResponsiveContainer
+	LineChart,
+	XAxis,
+	Tooltip,
+	CartesianGrid,
+	Line,
+	YAxis,
+	ResponsiveContainer,
 } from 'recharts';
-import { Card, Select } from 'antd';
+import { Card } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
-import { connect } from 'react-redux';
 import EmptyData from '../EmptyData';
 import { mediaKey } from '../../../utils/media';
 
@@ -19,7 +24,8 @@ const chart = css`
 	}
 `;
 
-const normalizeData = (data = []) => data.map((o) => {
+const normalizeData = (data = []) =>
+	data.map((o) => {
 		const newData = o;
 		const date = new Date(o.key_as_string);
 		newData.formatDate = `${date.getMonth() + 1}/${date.getDate()}`;
@@ -30,16 +36,7 @@ class SearchVolumeChart extends React.Component {
 		super(props);
 		this.state = {
 			width: props.width,
-			searchVolume: props.data || [],
-			data: props.data || [],
 		};
-	}
-
-	static getDerivedStateFromProps(props, state) {
-		if (props.data !== state.searchVolume) {
-			return { data: props.data, searchVolume: props.data };
-		}
-		return null;
 	}
 
 	componentDidMount() {
@@ -49,48 +46,11 @@ class SearchVolumeChart extends React.Component {
 		});
 	}
 
-	handleChange = (value) => {
-		const { searchVolume } = this.state;
-		const { length } = searchVolume;
-		if (value === 'weekly') {
-			const data = [];
-			for (let i = 1; i <= 7; i += 1) {
-				if (searchVolume[length - i]) {
-					data.unshift(searchVolume[length - i]);
-				}
-			}
-			this.setState({
-				data,
-			});
-		} else {
-			this.setState({
-				data: searchVolume,
-			});
-		}
-	};
-
 	render() {
-		const { height, plan } = this.props;
-		const { width, data } = this.state;
+		const { height, data } = this.props;
+		const { width } = this.state;
 		return (
-			<Card
-				extra={
-					plan === 'growth' ? (
-						<Select onChange={this.handleChange} defaultValue="monthly">
-							<Select.Option value="monthly" key="monthly">
-								Monthly
-							</Select.Option>
-							<Select.Option value="weekly" key="weekly">
-								weekly
-							</Select.Option>
-						</Select>
-					) : (
-						undefined
-					)
-				}
-				css={chart}
-				title="Daily Search Volume"
-			>
+			<Card css={chart} title="Daily Search Volume">
 				<div
 					ref={(c) => {
 						this.child = c;
@@ -137,12 +97,8 @@ SearchVolumeChart.defaultProps = {
 SearchVolumeChart.propTypes = {
 	data: PropTypes.array,
 	width: PropTypes.number,
-	plan: PropTypes.string.isRequired,
 	height: PropTypes.number,
 	margin: PropTypes.number,
 };
 
-const mapStateToProps = () => ({
-	plan: 'growth',
-});
-export default connect(mapStateToProps)(SearchVolumeChart);
+export default SearchVolumeChart;
