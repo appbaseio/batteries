@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip, Icon } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
 import Flex from '../../../shared/Flex';
@@ -60,6 +61,12 @@ const cardStyle = css`
 		border-radius: 12px;
 		margin-right: 20px;
 	}
+	.tool-tip {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		color: black;
+	}
 `;
 
 const positiveComp = {
@@ -84,17 +91,16 @@ const getComparisonValue = (value, prevValue) => {
 };
 
 const SummaryCard = ({
-	percent,
 	title,
 	label,
 	comparisonValue,
 	value,
 	style,
-	showPercent,
 	showComparisonStats,
 	hidePrevStats,
 	isLowerBetter,
 	prevValueLabel,
+	toolTipMessage,
 }) => {
 	const comparison = getComparisonValue(value, comparisonValue);
 	let isComparisonPositive = comparison > 0;
@@ -105,6 +111,11 @@ const SummaryCard = ({
 	}
 	return (
 		<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
+			{toolTipMessage && (
+				<Tooltip className="tool-tip" placement="rightTop" title={toolTipMessage}>
+					<Icon type="info-circle" />
+				</Tooltip>
+			)}
 			<div>
 				<p>{title}</p>
 				<h2
@@ -115,11 +126,6 @@ const SummaryCard = ({
 					}}
 				>
 					{typeof label === 'string' ? label : (+label).toLocaleString()}
-					{showPercent ? (
-						<span style={{ lineHeight: label > 1000 ? 1 : 'inherit' }}>
-							{`(${percent || '0.00'}%)`}
-						</span>
-					) : null}
 				</h2>
 				{showComparisonStats ? (
 					<Flex
@@ -161,10 +167,9 @@ const SummaryCard = ({
 	);
 };
 SummaryCard.defaultProps = {
-	percent: 0,
 	label: 0,
 	style: {},
-	showPercent: false,
+	toolTipMessage: undefined,
 	showComparisonStats: false,
 	isLowerBetter: false,
 	hidePrevStats: false,
@@ -173,10 +178,9 @@ SummaryCard.defaultProps = {
 	value: 0,
 };
 SummaryCard.propTypes = {
-	percent: PropTypes.number,
 	prevValueLabel: PropTypes.string,
+	toolTipMessage: PropTypes.string,
 	style: PropTypes.object,
-	showPercent: PropTypes.bool,
 	isLowerBetter: PropTypes.bool,
 	showComparisonStats: PropTypes.bool,
 	hidePrevStats: PropTypes.bool,

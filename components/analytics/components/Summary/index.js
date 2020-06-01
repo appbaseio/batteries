@@ -166,8 +166,11 @@ class Summary extends React.Component {
 									value={noResultSearch}
 									isLowerBetter
 									comparisonValue={compNoResultSearch}
-									showPercent
-									percent={noResultsRate}
+									toolTipMessage={
+										noResultsRate > 0
+											? `${noResultsRate}% of your total searches returned no results.`
+											: ''
+									}
 									style={{ background: '#f0f5ff' }}
 									showComparisonStats={isEnterpriseUser}
 									hidePrevStats
@@ -187,9 +190,12 @@ class Summary extends React.Component {
 									label={totalClicks}
 									value={totalClicks}
 									comparisonValue={compTotalClicks}
-									showPercent
-									percent={avgClickRate}
 									showComparisonStats={isEnterpriseUser}
+									toolTipMessage={
+										avgClickRate > 0
+											? `${avgClickRate}% of your searches got clicks.`
+											: ''
+									}
 								/>
 							</Col>
 							<Col sm={24} xs={24} xl={12}>
@@ -240,12 +246,15 @@ class Summary extends React.Component {
 										minHeight: 151,
 									}}
 									title="Conversions"
-									showPercent
-									percent={avgConversionRate}
 									label={totalConversions}
 									showComparisonStats={isEnterpriseUser}
 									value={totalConversions}
 									comparisonValue={compTotalConversions}
+									toolTipMessage={
+										avgConversionRate > 0
+											? `${avgConversionRate}% of your searches got converted.`
+											: ''
+									}
 								/>
 							</Col>
 						</Row>
