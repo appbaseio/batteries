@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import { Modal, Button, Tabs } from 'antd';
 import Grid from '../../../shared/Grid';
-import { getTimeDuration } from '../../utils';
+import { getTimeDuration, getStringifiedJSON } from '../../utils';
 
 const { TabPane } = Tabs;
 
@@ -15,13 +15,7 @@ const modal = css`
 const tab = css`
 	background-color: rgb(190, 245, 255, 0.1);
 `;
-const getData = (data) => {
-	try {
-		return JSON.stringify(data, null, 2);
-	} catch (e) {
-		return data;
-	}
-};
+
 const RequestDetails = ({
 	show,
 	handleCancel,
@@ -64,15 +58,15 @@ const RequestDetails = ({
 			)}
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
 				<TabPane tab="Response" key="response">
-					<pre css={tab}>{getData(response)}</pre>
+					<pre css={tab}>{getStringifiedJSON(response)}</pre>
 				</TabPane>
 				<TabPane tab="Request" key="request">
 					{/* <p css={tab}>{request}</p> */}
 					{/* <pre css={tab}>{JSON.stringify(request, null, 2)}</pre> */}
-					<pre css={tab}>{getData(request)}</pre>
+					<pre css={tab}>{getStringifiedJSON(request)}</pre>
 				</TabPane>
 				<TabPane tab="Headers" key="headers">
-					<pre css={tab}>{getData(headers)}</pre>
+					<pre css={tab}>{getStringifiedJSON(headers)}</pre>
 				</TabPane>
 			</Tabs>
 		</Modal>

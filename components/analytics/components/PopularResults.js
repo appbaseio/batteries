@@ -1,15 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Modal } from 'antd';
 import { withRouter } from 'react-router-dom';
 import get from 'lodash/get';
 import Filter from './Filter';
 import Searches from './Searches';
-import { getPopularResults, popularResultsFull, exportCSVFile, applyFilterParams } from '../utils';
+import {
+	getPopularResults,
+	popularResultsFull,
+	exportCSVFile,
+	applyFilterParams,
+	getStringifiedJSON,
+	getApp,
+} from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
-import { getUrlParams } from '../../../../utils/helper';
 import { setFilterValue } from '../../../modules/actions';
+import { doGet } from '../../../utils/requestService';
+import { getURL } from '../../../../constants/config';
 
 const headers = {
 	key: 'Results',
@@ -25,6 +34,10 @@ class PopularResults extends React.Component {
 		super(props);
 		this.state = {
 			isFetching: false,
+			docID: '',
+			source: null,
+			isLoadingSource: false,
+			visible: false,
 			popularResults: [],
 		};
 	}
@@ -75,8 +88,46 @@ class PopularResults extends React.Component {
 		}
 	};
 
+	handleOk = () => {
+		this.setState({
+			visible: false,
+		});
+	};
+
+	handleCancel = () => {
+		this.setState({
+			visible: false,
+		});
+	};
+
+	handleViewSource = async (id) => {
+		if (id) {
+			const { appName } = this.props;
+			this.setState({
+				docID: id,
+				visible: true,
+				isLoadingSource: true,
+				source: null,
+			});
+			try {
+				const response = await doGet(
+					`${getURL()}/${appName ? getApp(appName) : '*/'}_doc/${id}`,
+				);
+				this.setState({
+					isLoadingSource: false,
+					source: response._source,
+				});
+			} catch (e) {
+				console.error('Error while fetching document', id, e);
+				this.setState({
+					isLoadingSource: false,
+				});
+			}
+		}
+	};
+
 	render() {
-		const { isFetching, popularResults } = this.state;
+		const { isFetching, popularResults, visible, docID, isLoadingSource, source } = this.state;
 		const { plan, displayReplaySearch, filterId } = this.props;
 		if (isFetching) {
 			return <Loader />;
@@ -84,12 +135,24 @@ class PopularResults extends React.Component {
 		return (
 			<React.Fragment>
 				{filterId && <Filter filterId={filterId} />}
+				<Modal
+					title={
+						<span>
+							Viewing source for <b>{docID}</b>
+						</span>
+					}
+					visible={visible}
+					onOk={this.handleOk}
+					onCancel={this.handleCancel}
+				>
+					{isLoadingSource ? 'Loading ...' : <pre>{getStringifiedJSON(source)}</pre>}
+				</Modal>
 				<Searches
 					tableProps={{
 						scroll: { x: 1000 },
 					}}
 					showViewOption={false}
-					columns={popularResultsFull(plan, displayReplaySearch)}
+					columns={popularResultsFull(plan, displayReplaySearch, this.handleViewSource)}
 					dataSource={popularResults.map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,

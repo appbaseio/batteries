@@ -23,12 +23,16 @@ export function getUserPermissions(appName, username) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PERMISSION.GET));
 		return getUserAppsPermissions(appName, username)
-			.then(res => dispatch(
+			.then((res) =>
+				dispatch(
 					createAction(AppConstants.APP.PERMISSION.GET_SUCCESS, res, null, {
 						source: 'user_apps',
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)));
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PERMISSION.GET_ERROR, null, error)),
+			);
 	};
 }
 
@@ -37,11 +41,15 @@ export function getUserPlan() {
 		dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/user/plan`)
-			.then(res => dispatch(
+			.then((res) =>
+				dispatch(
 					createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_SUCCESS, res, null, {
 						source: 'user_apps',
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_ERROR, null, error)));
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET_ERROR, null, error)),
+			);
 	};
 }

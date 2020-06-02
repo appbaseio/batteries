@@ -35,6 +35,15 @@ export const getQueryParams = (paramObj) => {
 	}
 	return queryString;
 };
+
+export const getStringifiedJSON = (data) => {
+	try {
+		return JSON.stringify(data, null, 2);
+	} catch (e) {
+		return data;
+	}
+};
+
 const replaySearch = [
 	{
 		title: 'Replay Search',
@@ -335,23 +344,7 @@ export const popularSearchesFull = (plan, displayReplaySearch, displayQueryRule)
 	];
 };
 
-export const popularResultsFull = (plan, displayReplaySearch) => {
-	if (plan !== 'growth') {
-		return [
-			...popularResultsCol(plan),
-			{
-				title: 'Source',
-				dataIndex: 'source',
-				key: `pr-source${updateIndex()}`,
-				width: '30%',
-				style: {
-					maxWidth: 250,
-				},
-				render: (item) => <div css="overflow-y: scroll; height:150px;">{item}</div>,
-			},
-			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
-		];
-	}
+export const popularResultsFull = (plan, displayReplaySearch, handleViewSource = () => null) => {
 	return [
 		...popularResultsCol('free'),
 		{
@@ -382,10 +375,9 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		...(displayReplaySearch ? replaySearch : []),
 		{
 			title: 'Source',
-			dataIndex: 'source',
+			dataIndex: 'key',
 			key: `pr-source${updateIndex()}`,
-			width: '30%',
-			render: (item) => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+			render: (item) => <Button onClick={() => handleViewSource(item)}>View</Button>,
 		},
 	];
 };
