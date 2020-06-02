@@ -8,14 +8,12 @@ import Filter from './Filter';
 import { getPopularFilters, popularFiltersFull, exportCSVFile, applyFilterParams } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
-import { getUrlParams } from '../../../../utils/helper';
 import { setFilterValue } from '../../../modules/actions';
 
 const headers = {
 	key: 'Filters',
 	count: 'Count',
 	// clicks: 'Clicks',
-	// source: 'Source',
 	// conversionrate: 'Conversion Rate',
 };
 
@@ -104,7 +102,6 @@ class PopularFilters extends React.Component {
 								key: item.key.replace(/,/g, ''),
 								count: item.count,
 								clicks: item.clicks || '-',
-								source: item.source.replace(/,/g, '') || '-',
 								conversionrate: item.conversionrate || '-',
 							})),
 							'popular_results',
