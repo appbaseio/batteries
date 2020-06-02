@@ -5,10 +5,14 @@ import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import Filter from './Filter';
 import Searches from './Searches';
-import { getPopularSearches, popularSearchesFull, exportCSVFile, applyFilterParams } from '../utils';
+import {
+	getPopularSearches,
+	popularSearchesFull,
+	exportCSVFile,
+	applyFilterParams,
+} from '../utils';
 import { setSearchState } from '../../../modules/actions/app';
 import Loader from '../../shared/Loader/Spinner';
-import { getUrlParams } from '../../../../utils/helper';
 import { setFilterValue } from '../../../modules/actions';
 
 const headers = {
@@ -29,7 +33,12 @@ class PopularSearches extends React.Component {
 
 	componentDidMount() {
 		const { filterId, filters, selectFilterValue } = this.props;
-		applyFilterParams({ filters, filterId, callback:this.fetchPopularSearches, applyFilter: selectFilterValue });
+		applyFilterParams({
+			filters,
+			filterId,
+			callback: this.fetchPopularSearches,
+			applyFilter: selectFilterValue,
+		});
 	}
 
 	componentDidUpdate(prevProps) {
@@ -59,9 +68,7 @@ class PopularSearches extends React.Component {
 	};
 
 	handleReplaySearch = (searchState) => {
-		const {
-			saveState, history, appName, handleReplayClick,
-		} = this.props;
+		const { saveState, history, appName, handleReplayClick } = this.props;
 		saveState(searchState);
 		if (handleReplayClick) {
 			handleReplayClick(appName);
@@ -77,7 +84,7 @@ class PopularSearches extends React.Component {
 		} else {
 			history.push(`/app/${appName}/query-rules`);
 		}
-	}
+	};
 
 	render() {
 		const { isFetching, popularSearches } = this.state;
@@ -86,7 +93,7 @@ class PopularSearches extends React.Component {
 			displayReplaySearch,
 			displayQueryRule,
 			filterId,
-			location: { pathname }
+			location: { pathname },
 		} = this.props;
 		const showQueryRule = pathname.includes('cluster') ? false : displayQueryRule;
 		if (isFetching) {
@@ -101,7 +108,7 @@ class PopularSearches extends React.Component {
 					}}
 					showViewOption={false}
 					columns={popularSearchesFull(plan, displayReplaySearch, showQueryRule)}
-					dataSource={popularSearches.map(item => ({
+					dataSource={popularSearches.map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
 						handleQueryRule: this.handleQueryRule,
@@ -110,7 +117,7 @@ class PopularSearches extends React.Component {
 					onClickDownload={() => {
 						exportCSVFile(
 							headers,
-							popularSearches.map(item => ({
+							popularSearches.map((item) => ({
 								key: item.key,
 								count: item.count,
 								clicks: item.clicks || '-',
@@ -145,6 +152,8 @@ PopularSearches.propTypes = {
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
+	selectFilterValue: PropTypes.func.isRequired,
+	location: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state, props) => ({
 	plan: 'growth',
@@ -158,7 +167,4 @@ const mapDispatchToProps = (dispatch) => ({
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(withRouter(PopularSearches));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularSearches));

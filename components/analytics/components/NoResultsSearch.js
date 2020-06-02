@@ -8,7 +8,6 @@ import Filter from './Filter';
 import { getNoResultSearches, exportCSVFile, noResultsFull, applyFilterParams } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
-import { getUrlParams } from '../../../../utils/helper';
 import { setFilterValue } from '../../../modules/actions';
 
 const headers = {
@@ -144,6 +143,8 @@ NoResultsSearch.propTypes = {
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
+	selectFilterValue: PropTypes.func.isRequired,
+	location: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state, props) => ({
 	plan: 'growth',

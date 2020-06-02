@@ -129,6 +129,7 @@ PopularFilters.propTypes = {
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
+	selectFilterValue: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, props) => ({

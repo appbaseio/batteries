@@ -320,6 +320,7 @@ Summary.propTypes = {
 	filters: PropTypes.object,
 	tier: PropTypes.string.isRequired,
 	featureCustomEvents: PropTypes.bool.isRequired,
+	selectFilterValue: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state, props) => {
 	const appSummary = getAppAnalyticsSummaryByName(state);

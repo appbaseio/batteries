@@ -11,7 +11,6 @@ import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { getAppSearchLatency, setFilterValue } from '../../../../modules/actions';
 import { getAppSearchLatencyByName } from '../../../../modules/selectors';
-import { getUrlParams } from '../../../../../utils/helper';
 import { applyFilterParams } from '../../utils';
 
 const getSearchLatencyDummy = (latency = []) => {
@@ -132,6 +131,7 @@ SearchLatency.propTypes = {
 	searchLatency: PropTypes.array.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	success: PropTypes.bool.isRequired,
+	selectFilterValue: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state, props) => {
 	const searchLatency = getAppSearchLatencyByName(state);

@@ -3,9 +3,7 @@ import find from 'lodash/find';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import filter from 'lodash/filter';
-import {
- Card, Tabs, Table, notification, Button, Tooltip,
-} from 'antd';
+import { Card, Tabs, Table, notification, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import Parser from 'partial-json-parser';
 import { getRequestLogs, requestLogs, getTimeDuration } from '../../utils';
@@ -14,9 +12,11 @@ import Loader from '../../../shared/Loader/Spinner';
 
 const { TabPane } = Tabs;
 
-const normalizeData = data => data.map((i) => {
+const normalizeData = (data) =>
+	data.map((i) => {
 		const timeDuration = getTimeDuration(get(i, 'timestamp'));
-		const timeTaken =			timeDuration.time > 0
+		const timeTaken =
+			timeDuration.time > 0
 				? `${timeDuration.time} ${timeDuration.formattedUnit} ago`
 				: 'some time ago';
 		return {
@@ -45,7 +45,7 @@ const parseData = (data = '') => {
 				return partiallyParsed;
 			} catch (err) {
 				const removeBackslash = data.split('\n');
-				const formatted = filter(removeBackslash, o => o !== '');
+				const formatted = filter(removeBackslash, (o) => o !== '');
 				if (formatted.length) {
 					return (
 						<div>
@@ -121,7 +121,7 @@ class RequestLogs extends React.Component {
 
 	handleLogClick = (record) => {
 		const { logs } = this.state;
-		this.currentRequest = logs && find(logs, o => get(o, '_id') === record.id);
+		this.currentRequest = logs && find(logs, (o) => get(o, '_id') === record.id);
 		this.setState({
 			showDetails: true,
 		});
@@ -202,7 +202,7 @@ class RequestLogs extends React.Component {
 		return (
 			<Table
 				css=".ant-table-row { cursor: pointer }"
-				rowKey={record => record.id}
+				rowKey={(record) => record.id}
 				dataSource={hits}
 				columns={requestLogs}
 				pagination={{
@@ -211,7 +211,7 @@ class RequestLogs extends React.Component {
 					onChange: this.handlePageChange,
 				}}
 				scroll={{ x: 700 }}
-				onRow={record => ({
+				onRow={(record) => ({
 					onClick: () => this.handleLogClick(record),
 				})}
 			/>
@@ -223,7 +223,7 @@ class RequestLogs extends React.Component {
 		return (
 			<Card
 				title="Latest Operations"
-				extra={(
+				extra={
 					<Tooltip placement="topLeft" title="Refresh request logs.">
 						<Button
 							onClick={() => {
@@ -232,7 +232,7 @@ class RequestLogs extends React.Component {
 							icon="redo"
 						/>
 					</Tooltip>
-				)}
+				}
 			>
 				{isFetching ? (
 					<Loader />
@@ -297,7 +297,7 @@ RequestLogs.propTypes = {
 	pageSize: PropTypes.number,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
 	appName: get(state, '$getCurrentApp.name'),
 });
 export default connect(mapStateToProps)(RequestLogs);

@@ -14,8 +14,6 @@ const Searches = ({
 	title,
 	dataSource,
 	columns,
-	showViewOption,
-	onClick,
 	plan,
 	pagination,
 	onClickDownload,
@@ -108,6 +106,7 @@ Searches.defaultProps = {
 	onClickDownload: undefined,
 	onClickViewAll: undefined,
 	breakWord: false,
+	tableProps: {},
 };
 Searches.propTypes = {
 	title: PropTypes.string,
@@ -119,6 +118,7 @@ Searches.propTypes = {
 	href: PropTypes.string,
 	plan: PropTypes.string,
 	pagination: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+	tableProps: PropTypes.object,
 };
 
 export default Searches;
