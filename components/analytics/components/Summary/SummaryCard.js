@@ -159,7 +159,9 @@ const SummaryCard = ({
 								{Math.abs(comparison).toFixed(2).toString()}%
 							</div>
 						) : null}
-						<div>Previously: {prevValueLabel || comparisonValue}</div>
+						<div>
+							Previously: {prevValueLabel || (+comparisonValue).toLocaleString()}
+						</div>
 					</Flex>
 				) : null}
 			</div>
