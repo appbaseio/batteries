@@ -71,7 +71,7 @@ class Filter extends React.Component {
 		super(props);
 		this.state = {
 			displayLabelSelector: false,
-			filterKey: undefined,
+			filterKey: '',
 			dateRangePopover: false,
 			selectedDateRange: 'Last 30 days',
 		};
@@ -89,8 +89,6 @@ class Filter extends React.Component {
 				label: 'IP address',
 			},
 		];
-
-		this.currentKeyes = this.filterBy.map((item) => item.key);
 	}
 
 	componentDidMount() {
@@ -119,23 +117,6 @@ class Filter extends React.Component {
 	}
 
 	setSelectedlabel = (value) => {
-		const { selectedDateRange: prevSelectedRange } = this.state;
-
-		let currentSelectedRange = prevSelectedRange;
-
-		const selectedKeyes = Object.keys(value || {});
-		if (Object.keys(value || {}).length === 0) {
-			// Reset keyes when all filters are cleared
-			this.setState({
-				displayLabelSelector: false,
-				filterKey: undefined,
-				selectedDateRange: 'Last 30 days',
-			});
-			return;
-		}
-
-		const selectedFilter = selectedKeyes.find((item) => this.currentKeyes.includes(item));
-
 		if (typeof value === 'object' && get(value, 'from') && get(value, 'to')) {
 			const { from, to } = value;
 			const selectedDateRange = Object.keys(dateRangeFilters).find(
@@ -144,20 +125,16 @@ class Filter extends React.Component {
 					get(dateRangeFilters, `${dateRange}.to`) === to,
 			);
 
-			currentSelectedRange = selectedDateRange;
+			this.setState({
+				selectedDateRange,
+			});
 		}
-
-		this.setState({
-			filterKey: selectedFilter,
-			displayLabelSelector: selectedFilter === 'custom_event',
-			selectedDateRange: currentSelectedRange,
-		});
 	};
 
 	handleFilterByChange = (filterBy) => {
 		if (filterBy === 'custom_event') {
 			this.setState({
-				filterKey: filterBy,
+				filterKey: '',
 				displayLabelSelector: true,
 			});
 		} else {
@@ -225,7 +202,6 @@ class Filter extends React.Component {
 			tier,
 			toggleInsights,
 			hideInsightsButton,
-			selectedFilterValue,
 		} = this.props;
 		if (!isValidPlan(tier, featureCustomEvents)) {
 			return null;
@@ -239,7 +215,6 @@ class Filter extends React.Component {
 							showSearch
 							style={{ width: 150, marginBottom: 15, paddingRight: 15 }}
 							placeholder="Filter by"
-							value={filterKey}
 							optionFilterProp="children"
 							onChange={this.handleFilterByChange}
 							filterOption={filterOption}
@@ -256,7 +231,6 @@ class Filter extends React.Component {
 								style={{ width: 200, paddingRight: 15, marginBottom: 15 }}
 								placeholder="Filter label"
 								optionFilterProp="children"
-								defaultValue={get(selectedFilterValue, filterKey)}
 								onChange={this.handleFilterLabelChange}
 								notFoundContent={
 									isLoadingFilterLabels ? <Spin size="small" /> : 'No label found'
@@ -270,7 +244,7 @@ class Filter extends React.Component {
 								))}
 							</Select>
 						)}
-						{filterKey && filterKey !== 'custom_event' && (
+						{filterKey && (
 							<Select
 								key={filterKey}
 								showSearch
@@ -279,7 +253,6 @@ class Filter extends React.Component {
 									paddingRight: 15,
 									marginBottom: 15,
 								}}
-								defaultValue={get(selectedFilterValue, filterKey)}
 								placeholder="Filter value"
 								optionFilterProp="children"
 								notFoundContent={
