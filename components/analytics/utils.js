@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { Button } from 'antd';
+import get from 'lodash/get';
 // import mockProfile from './components/mockProfile';
 import { doGet, doPut } from '../../utils/requestService';
 import Flex from '../shared/Flex';
@@ -690,7 +691,7 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100, fi
 	});
 }
 // To fetch request logs
-export function getRequestLogs(appName, size = 10, from = 0, filter) {
+export function getRequestLogs(appName, size = 10, from = 0, filter, startDate, endDate) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
@@ -699,6 +700,8 @@ export function getRequestLogs(appName, size = 10, from = 0, filter) {
 			`${ACC_API}/${getApp(appName)}_logs${getQueryParams({
 				size,
 				from,
+				start_date: startDate,
+				end_date: endDate,
 				...(filter &&
 					validFilters.includes(filter) && {
 						filter,
@@ -807,3 +810,49 @@ export const applyFilterParams = ({ filters, callback, filterId, applyFilter }) 
 		callback();
 	}
 };
+
+export const dateRanges = {
+	'This week': {
+		from: moment().startOf('week').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last Week': {
+		from: moment().subtract(1, 'weeks').startOf('week').format('YYYY/MM/DD'),
+		to: moment().subtract(1, 'weeks').endOf('week').format('YYYY/MM/DD'),
+	},
+	'This Month': {
+		from: moment().startOf('month').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last Month': {
+		from: moment().subtract(1, 'months').startOf('month').format('YYYY/MM/DD'),
+		to: moment().subtract(1, 'months').endOf('month').format('YYYY/MM/DD'),
+	},
+	'Last 7 days': {
+		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 30 days': {
+		from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 60 days': {
+		from: moment().subtract(60, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 90 days': {
+		from: moment().subtract(90, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+};
+
+export const dateRangesColumn = Object.keys(dateRanges).reduce((agg, item, index) => {
+	const columnIndex = `col_${Math.floor(index / 4)}`;
+	return {
+		...agg,
+		[columnIndex]: {
+			...get(agg, columnIndex, {}),
+			[item]: dateRanges[item],
+		},
+	};
+}, {});
