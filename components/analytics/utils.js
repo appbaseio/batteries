@@ -61,18 +61,6 @@ const replaySearch = [
 	},
 ];
 
-const queryRule = [
-	{
-		title: 'Manage',
-		key: 'query_rule',
-		width: 90,
-		render: (item) => (
-			<div css="text-align: center">
-				<Button icon="star" onClick={() => item.handleQueryRule(item)} />
-			</div>
-		),
-	},
-];
 export const getTimeDuration = (time) => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
@@ -246,15 +234,11 @@ export const popularSearchesCol = (plan, displayReplaySearch) => {
 	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
 };
 
-export const noResultsFull = (plan, displayReplaySearch, displayQueryRule) => {
+export const noResultsFull = (plan, displayReplaySearch) => {
 	if (plan !== 'growth' && plan !== 'bootstrap') {
 		return defaultColumns();
 	}
-	return [
-		...defaultColumns(),
-		...(displayReplaySearch ? replaySearch : []),
-		...(displayQueryRule ? queryRule : []),
-	];
+	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
 };
 
 export const ConvertToCSV = (objArray) => {
@@ -306,12 +290,11 @@ export const exportCSVFile = (headers, items, fileTitle) => {
 	}
 };
 
-export const popularSearchesFull = (plan, displayReplaySearch, displayQueryRule) => {
+export const popularSearchesFull = (plan, displayReplaySearch) => {
 	if (!plan || plan !== 'growth') {
 		return [
 			...defaultColumns(plan),
 			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
-			...(plan === 'bootstrap' && displayQueryRule ? queryRule : []),
 		];
 	}
 	return [
@@ -340,7 +323,6 @@ export const popularSearchesFull = (plan, displayReplaySearch, displayQueryRule)
 			key: `ps-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
-		...(displayQueryRule ? queryRule : []),
 	];
 };
 
