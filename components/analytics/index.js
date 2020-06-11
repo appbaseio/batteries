@@ -31,6 +31,15 @@ class Main extends React.Component {
 		this.fetchAnalytics();
 	}
 
+	shouldComponentUpdate(oldProps) {
+		const { isInsightsSidebarOpen } = this.props;
+		if (isInsightsSidebarOpen !== oldProps.isInsightsSidebarOpen) {
+			return false;
+		}
+
+		return true;
+	}
+
 	componentDidUpdate(previousProps) {
 		const { filters } = this.props;
 		if (filters && JSON.stringify(previousProps.filters) !== JSON.stringify(filters)) {
@@ -99,6 +108,7 @@ Main.defaultProps = {
 	displayReplaySearch: false,
 	filterId: undefined,
 	filters: undefined,
+	isInsightsSidebarOpen: false,
 };
 Main.propTypes = {
 	appName: PropTypes.string,
@@ -118,6 +128,7 @@ Main.propTypes = {
 	history: PropTypes.object.isRequired,
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
+	isInsightsSidebarOpen: PropTypes.bool,
 };
 const mapStateToProps = (state, props) => {
 	const analyticsArr = Array.isArray(getAppAnalyticsByName(state))
@@ -140,6 +151,7 @@ const mapStateToProps = (state, props) => {
 		noResults: get(appAnalytics, 'no_results_searches', []),
 		isFetching: get(state, '$getAppAnalytics.isFetching'),
 		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+		isInsightsSidebarOpen: get(state, '$getAppAnalyticsInsights.isOpen', false),
 	};
 };
 const mapDispatchToProps = (dispatch, props) => ({
