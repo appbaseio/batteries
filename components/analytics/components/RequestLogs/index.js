@@ -6,7 +6,7 @@ import filter from 'lodash/filter';
 import { Card, Tabs, Table, notification, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import Parser from 'partial-json-parser';
-import { getRequestLogs, requestLogs, getTimeDuration, dateRanges } from '../../utils';
+import { getRequestLogs, requestLogs, getTimeDuration, requestLogsDateRanges } from '../../utils';
 import RequestDetails from './RequestDetails';
 import Loader from '../../../shared/Loader/Spinner';
 import Flex from '../../../shared/Flex';
@@ -96,7 +96,7 @@ class RequestLogs extends React.Component {
 	componentDidMount() {
 		const urlParams = getUrlParams(window.location.search);
 		const { selectedDate } = this.state;
-		const currentSelectedDateRange = dateRanges[selectedDate];
+		const currentSelectedDateRange = requestLogsDateRanges[selectedDate];
 		if (
 			urlParams &&
 			urlParams.from &&
@@ -104,10 +104,10 @@ class RequestLogs extends React.Component {
 			(currentSelectedDateRange.from !== urlParams.from ||
 				currentSelectedDateRange.to !== urlParams.to)
 		) {
-			const selectedDateRange = Object.keys(dateRanges).find(
+			const selectedDateRange = Object.keys(requestLogsDateRanges).find(
 				(dateRange) =>
-					get(dateRanges, `${dateRange}.from`) === urlParams.from &&
-					get(dateRanges, `${dateRange}.to`) === urlParams.to,
+					get(requestLogsDateRanges, `${dateRange}.from`) === urlParams.from &&
+					get(requestLogsDateRanges, `${dateRange}.to`) === urlParams.to,
 			);
 			this.handleDate(selectedDateRange);
 			return;
@@ -166,8 +166,8 @@ class RequestLogs extends React.Component {
 		from = 0,
 		currentPage = 0,
 		tab = this.state.activeTabKey, // eslint-disable-line
-		startDate = get(dateRanges, `${this.state.selectedDate}.from`), // eslint-disable-line
-		endDate = get(dateRanges, `${this.state.selectedDate}.to`), // eslint-disable-line
+		startDate = get(requestLogsDateRanges, `${this.state.selectedDate}.from`), // eslint-disable-line
+		endDate = get(requestLogsDateRanges, `${this.state.selectedDate}.to`), // eslint-disable-line
 	) => {
 		const { appName, pageSize } = this.props;
 		// Set loading to true
@@ -265,17 +265,22 @@ class RequestLogs extends React.Component {
 
 	render() {
 		const { activeTabKey, isFetching, showDetails, isDateVisible, selectedDate } = this.state;
+		const { displayFilter } = this.props;
 		return (
 			<Card
 				title="Latest Operations"
 				extra={
 					<Flex>
-						<DateFilter
-							onChange={this.handleDate}
-							toggleVisible={this.toggleDatePopover}
-							label={selectedDate}
-							visible={isDateVisible}
-						/>
+						{displayFilter ? (
+							<DateFilter
+								onChange={this.handleDate}
+								toggleVisible={this.toggleDatePopover}
+								label={selectedDate}
+								dateRanges={requestLogsDateRanges}
+								visible={isDateVisible}
+								columnItems={5}
+							/>
+						) : null}
 						<Tooltip placement="topLeft" title="Refresh request logs.">
 							<Button
 								style={{ marginLeft: 8 }}
@@ -342,12 +347,14 @@ RequestLogs.defaultProps = {
 	tab: 'all',
 	pageSize: 10,
 	appName: undefined,
+	displayFilter: true,
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
 	onTabChange: PropTypes.func,
 	appName: PropTypes.string,
 	changeUrlOnTabChange: PropTypes.bool,
+	displayFilter: PropTypes.bool,
 	pageSize: PropTypes.number,
 };
 

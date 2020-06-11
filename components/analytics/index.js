@@ -85,7 +85,7 @@ class Main extends React.Component {
 					handleReplaySearch={this.handleReplaySearch}
 				/>
 				<div css="margin-top: 20px">
-					<RequestLogs appName={appName} />
+					<RequestLogs displayFilter={false} appName={appName} />
 				</div>
 			</React.Fragment>
 		);

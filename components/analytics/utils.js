@@ -846,13 +846,26 @@ export const dateRanges = {
 	},
 };
 
-export const dateRangesColumn = Object.keys(dateRanges).reduce((agg, item, index) => {
-	const columnIndex = `col_${Math.floor(index / 4)}`;
-	return {
-		...agg,
-		[columnIndex]: {
-			...get(agg, columnIndex, {}),
-			[item]: dateRanges[item],
-		},
-	};
-}, {});
+export const requestLogsDateRanges = {
+	Today: {
+		from: moment().format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	Yesterday: {
+		from: moment().subtract(1, 'day').format('YYYY/MM/DD'),
+		to: moment().subtract(1, 'day').format('YYYY/MM/DD'),
+	},
+	...dateRanges,
+};
+
+export const dateRangesColumn = (dates = dateRanges, columnItems = 4) =>
+	Object.keys(dates).reduce((agg, item, index) => {
+		const columnIndex = `col_${Math.floor(index / columnItems)}`;
+		return {
+			...agg,
+			[columnIndex]: {
+				...get(agg, columnIndex, {}),
+				[item]: dates[item],
+			},
+		};
+	}, {});
