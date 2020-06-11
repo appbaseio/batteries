@@ -181,7 +181,7 @@ export const parseSearchState = (searchState = {}) => {
 		dataField: ['_score'],
 		...extraResultProps,
 		id: 'result',
-		react: { and: ['search', ...filterQueries.map((filter) => filter.id)] },
+		react: { and: ['search', ...aggregations.map((filter) => filter.id)] },
 	};
 
 	return [

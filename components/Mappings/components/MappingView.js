@@ -13,7 +13,7 @@ class MappingView extends React.Component {
 			return this.renderDropDown({
 				name: 'field-usecase',
 				value: selected,
-				handleChange: (e) => setMapping(fieldname, 'text', e.key),
+				handleChange: (e) => setMapping(fieldname, 'text', e.key, selected),
 				options: Object.entries(usecases).map((entry) => ({
 					value: entry[0],
 					label: entry[1],
