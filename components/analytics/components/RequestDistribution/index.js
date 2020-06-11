@@ -4,16 +4,13 @@ import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { Card } from 'antd';
-import {
- LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import Filter from '../Filter';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { displayErrors } from '../../../../utils/heplers';
 import { getAppRequestDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppRequestDistributionByName } from '../../../../modules/selectors';
-import { getUrlParams } from '../../../../../utils/helper';
 import { applyFilterParams } from '../../utils';
 
 const normalizedData = (data = []) => {
@@ -84,26 +81,25 @@ class RequestDistribution extends React.Component {
 
 	calculateTicks() {
 		const baseTicks = [
-			moment()
-				.startOf('day')
-				.valueOf(),
-			moment()
-				.add(1, 'd')
-				.startOf('day')
-				.valueOf(),
+			moment().startOf('day').valueOf(),
+			moment().add(1, 'd').startOf('day').valueOf(),
 		];
 		const monthlyTicks = [
-			...[...Array(30)].map((x, i) => moment()
+			...[...Array(30)].map((x, i) =>
+				moment()
 					.subtract(30 - i, 'd')
 					.startOf('day')
-					.valueOf()),
+					.valueOf(),
+			),
 			...baseTicks,
 		];
 		const weeklyTicks = [
-			...[...Array(7)].map((x, i) => moment()
+			...[...Array(7)].map((x, i) =>
+				moment()
 					.subtract(7 - i, 'd')
 					.startOf('day')
-					.valueOf()),
+					.valueOf(),
+			),
 			...baseTicks,
 		];
 		this.weeklyTicks = weeklyTicks;
@@ -115,9 +111,7 @@ class RequestDistribution extends React.Component {
 	}
 
 	render() {
-		const {
- isLoading, results, success, filterId, displayFilter,
-} = this.props;
+		const { isLoading, results, success, filterId, displayFilter } = this.props;
 		const { width, ticks } = this.state;
 		const data = normalizedData(results);
 		return (
@@ -138,7 +132,6 @@ class RequestDistribution extends React.Component {
 						<Loader />
 					) : (
 						(success && !data.length && <EmptyData css="height: 400px" />) || (
-							<ResponsiveContainer width="100%" aspect={2.5}>
 							<LineChart
 								width={width}
 								height={400}
@@ -152,7 +145,7 @@ class RequestDistribution extends React.Component {
 							>
 								<CartesianGrid />
 								<XAxis
-									tickFormatter={unixTime => this.getformatedDate(unixTime)}
+									tickFormatter={(unixTime) => this.getformatedDate(unixTime)}
 									type="number"
 									dataKey="key"
 									domain={[ticks[0], ticks[ticks.length - 1]]}
@@ -168,7 +161,8 @@ class RequestDistribution extends React.Component {
 									}}
 								/>
 								<Tooltip
-									labelFormatter={unixTime => moment(unixTime).format('MMMM Do YYYY, HH:MM:SS')
+									labelFormatter={(unixTime) =>
+										moment(unixTime).format('MMMM Do YYYY, HH:MM:SS')
 									}
 								/>
 								<Legend />
@@ -201,7 +195,6 @@ class RequestDistribution extends React.Component {
 									stroke="#e82055"
 								/>
 							</LineChart>
-							</ResponsiveContainer>
 						)
 					)}
 				</Card>
@@ -224,6 +217,7 @@ RequestDistribution.propTypes = {
 	results: PropTypes.array.isRequired,
 	success: PropTypes.bool.isRequired,
 	errors: PropTypes.array.isRequired,
+	selectFilterValue: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state, props) => ({
 	isLoading: get(state, '$getAppRequestDistribution.isFetching'),
@@ -237,7 +231,4 @@ const mapDispatchToProps = (dispatch, props) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(RequestDistribution);
+export default connect(mapStateToProps, mapDispatchToProps)(RequestDistribution);

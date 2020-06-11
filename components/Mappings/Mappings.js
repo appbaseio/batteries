@@ -180,7 +180,7 @@ class Mappings extends Component {
 		return type;
 	};
 
-	setMapping = (field, type, usecase) => {
+	setMapping = (field, type, usecase, oldUsecase) => {
 		const { mapping: currentMapping, esVersion } = this.state;
 		const { onChange, onUsecaseChange } = this.props;
 		let mapping = null;
@@ -198,7 +198,7 @@ class Mappings extends Component {
 				if (onChange) {
 					onChange(mapping);
 					if (onUsecaseChange) {
-						onUsecaseChange(field, type, usecase);
+						onUsecaseChange(field, type, usecase, oldUsecase);
 					}
 				}
 			},
