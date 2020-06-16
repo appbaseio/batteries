@@ -213,4 +213,9 @@ export default {
 	),
 	$getAppSettings: getAppSettings,
 	$getAppAnalyticsInsights: getAppAnalyticsInsights,
+	$getAppGradeMetrics: createRequestReducer(
+		AppConstants.APP.GRADE.GET,
+		AppConstants.APP.GRADE.GET_SUCCESS,
+		AppConstants.APP.GRADE.GET_ERROR,
+	),
 };
