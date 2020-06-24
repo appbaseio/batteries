@@ -22,6 +22,11 @@ export default {
 				analyzer: 'autosuggest_analyzer',
 				search_analyzer: 'standard',
 			},
+			delimiter: {
+				type: 'text',
+				analyzer: 'universal_delimiter_analyzer',
+				index_options: 'offsets',
+			},
 		},
 		analyzer: 'standard',
 		search_analyzer: 'standard',
@@ -43,6 +48,11 @@ export default {
 				index: 'true',
 				analyzer: 'autosuggest_analyzer',
 				search_analyzer: 'standard',
+			},
+			delimiter: {
+				type: 'text',
+				analyzer: 'universal_delimiter_analyzer',
+				index_options: 'offsets',
 			},
 		},
 		analyzer: 'standard',
