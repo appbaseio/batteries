@@ -355,7 +355,10 @@ export const deleteSearchSettings = (name) => {
 	return doDelete(`${ACC_API}/_searchrelevancy/${name}`, { Authorization: `Basic ${authToken}` });
 };
 
-export const getGradeMetrics = () => {
+export const getGradeMetrics = (indices, page) => {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_grade/metrics`);
+	return doPost(`${ACC_API}/_grade/metrics`, {
+		indices,
+		page,
+	});
 };
