@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from 'antd';
 import { css } from 'react-emotion';
-import { BarChart, XAxis, YAxis, Bar, Label } from 'recharts';
+import { BarChart, XAxis, YAxis, Bar, Label, Tooltip } from 'recharts';
 import find from 'lodash/find';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -14,7 +14,7 @@ import { getAppSearchLatencyByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
 
 const getSearchLatencyDummy = (latency = []) => {
-	const dummyLatency = latency.map((l) => l);
+	const dummyLatency = latency.filter((l) => l.count > 0);
 	let count = 0;
 	while (dummyLatency.length < 11) {
 		const key = count * 10;
@@ -114,6 +114,7 @@ class SearchLatency extends React.Component {
 									}}
 									allowDecimals={false}
 								/>
+								<Tooltip />
 								<Bar dataKey="count" fill="#A4C7FF" />
 							</BarChart>
 						)
