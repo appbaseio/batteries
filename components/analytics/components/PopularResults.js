@@ -19,6 +19,7 @@ import { setSearchState } from '../../../modules/actions/app';
 import { setFilterValue } from '../../../modules/actions';
 import { doGet } from '../../../utils/requestService';
 import { getURL } from '../../../../constants/config';
+import { withErrorToaster } from '../../../../components/ErrorToaster/ErrorToaster';
 
 const headers = {
 	key: 'Results',
@@ -195,6 +196,7 @@ PopularResults.propTypes = {
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
+	selectFilterValue: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, props) => ({
@@ -207,4 +209,6 @@ const mapDispatchToProps = (dispatch) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularResults));
+export default withErrorToaster(
+	connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularResults)),
+);

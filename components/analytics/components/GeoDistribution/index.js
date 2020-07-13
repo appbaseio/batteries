@@ -4,17 +4,15 @@ import get from 'lodash/get';
 import keyBy from 'lodash/keyBy';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
- ComposableMap, ZoomableGroup, Geographies, Geography,
-} from 'react-simple-maps';
+import { ComposableMap, ZoomableGroup, Geographies, Geography } from 'react-simple-maps';
 import ReactTooltip from 'react-tooltip';
 import { feature } from 'topojson-client';
 import { scaleLinear } from 'd3-scale';
 import Filter from '../Filter';
 import { getAppGeoDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppGeoDistributionByName } from '../../../../modules/selectors';
-import { getUrlParams } from '../../../../../utils/helper';
 import { applyFilterParams } from '../../utils';
+import { withErrorToaster } from '../../../../../components/ErrorToaster/ErrorToaster';
 
 const wrapperStyles = {
 	width: '100%',
@@ -26,9 +24,7 @@ class GeoDistribution extends React.Component {
 	state = {
 		key: new Date().toISOString(),
 		geographyPaths: [],
-		popScale: scaleLinear()
-			.domain([0, 100, 10000])
-			.range(['#dce6f7', '#6CA4FF', '#1A62FF']),
+		popScale: scaleLinear().domain([0, 100, 10000]).range(['#dce6f7', '#6CA4FF', '#1A62FF']),
 	};
 
 	componentDidMount() {
@@ -66,13 +62,13 @@ class GeoDistribution extends React.Component {
 		fetch(
 			'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/0.12.1/examples/basic-map/static/world-50m.json',
 		)
-			.then(res => res.json())
+			.then((res) => res.json())
 			.then((res) => {
 				const world = res;
 				// Transform your paths with topojson however you want...
 				const countries = feature(world, world.objects[Object.keys(world.objects)[0]])
 					.features;
-				const results = countries.map(country => ({
+				const results = countries.map((country) => ({
 					...country,
 					properties: {
 						count: get(geoDataByKey[country.properties.name], 'count', 0),
@@ -117,11 +113,9 @@ class GeoDistribution extends React.Component {
 							}}
 						>
 							<ZoomableGroup center={[0, 20]}>
-								<Geographies
-									key={key}
-									geography={geographyPaths}
-								>
-									{(geographies, projection) => geographies.map((geography, i) => (
+								<Geographies key={key} geography={geographyPaths}>
+									{(geographies, projection) =>
+										geographies.map((geography, i) => (
 											<Geography
 												// eslint-disable-next-line
 												key={i}
@@ -189,6 +183,7 @@ GeoDistribution.propTypes = {
 	filters: PropTypes.object,
 	geoData: PropTypes.array,
 	fetchAppGeoDistribution: PropTypes.func.isRequired,
+	selectFilterValue: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state, props) => ({
 	geoData: get(getAppGeoDistributionByName(state), 'geo_distribution', []),
@@ -199,7 +194,4 @@ const mapDispatchToProps = (dispatch, props) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(GeoDistribution);
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(GeoDistribution));

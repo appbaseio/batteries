@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 import { clearFilterValue } from '../../../../modules/actions';
 import Flex from '../../../shared/Flex';
+import { withErrorToaster } from '../../../../../components/ErrorToaster/ErrorToaster';
 
 const hiddenFilters = ['size', 'from', 'to', 'clickanalytics'];
 
@@ -22,7 +23,7 @@ const SelectedFilters = ({ selectedFilters, clearFilterValue: onClear }) => {
 	);
 	return (
 		<Flex style={{ flexWrap: 'wrap' }}>
-			{Object.keys(filteredFilters).map(filter => (
+			{Object.keys(filteredFilters).map((filter) => (
 				<Tag color="#108ee9" key={filter} closable onClose={() => onClear(filter)}>
 					{filter} : {filteredFilters[filter]}
 				</Tag>
@@ -52,9 +53,6 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = (dispatch, props) => ({
-	clearFilterValue: filterKey => dispatch(clearFilterValue(props.filterId, filterKey)),
+	clearFilterValue: (filterKey) => dispatch(clearFilterValue(props.filterId, filterKey)),
 });
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(SelectedFilters);
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(SelectedFilters));
