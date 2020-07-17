@@ -173,7 +173,7 @@ export const popularFiltersCol = (plan, displayReplaySearch) => {
 			key: `pf-filters${updateIndex()}`,
 		},
 		{
-			title: 'Impressions',
+			title: 'Selections',
 			dataIndex: 'count',
 			key: `pf-count${updateIndex()}`,
 		},
@@ -327,7 +327,7 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 	];
 };
 
-export const popularResultsFull = (plan, displayReplaySearch, handleViewSource = () => null) => {
+export const popularResultsFull = (plan, displayReplaySearch, ViewSource) => {
 	return [
 		...popularResultsCol('free'),
 		{
@@ -356,12 +356,17 @@ export const popularResultsFull = (plan, displayReplaySearch, handleViewSource =
 			key: `pr-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
-		{
-			title: 'Source',
-			dataIndex: 'key',
-			key: `pr-source${updateIndex()}`,
-			render: (item) => <Button onClick={() => handleViewSource(item)}>View</Button>,
-		},
+		// hide source at cluster level
+		...(getApp('') !== ''
+			? [
+					{
+						title: 'Source',
+						dataIndex: 'key',
+						key: `pr-source${updateIndex()}`,
+						render: (item) => <ViewSource docID={item} />,
+					},
+			  ]
+			: []),
 	];
 };
 export const popularFiltersFull = (plan, displayReplaySearch) => {
