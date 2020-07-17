@@ -11,6 +11,10 @@ const analyzerSettings = {
 				tokenizer: 'standard',
 				type: 'custom',
 			},
+			universal_delimiter_analyzer: {
+				tokenizer: 'keyword',
+				filter: ['lowercase', 'asciifolding', 'word_delimiter'],
+			},
 		},
 		filter: {
 			autosuggest_filter: {
