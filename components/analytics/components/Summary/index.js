@@ -11,7 +11,7 @@ import { isValidPlan } from '../../../../utils';
 import { displayErrors } from '../../../../utils/heplers';
 import SummaryCard from './SummaryCard';
 import { getFormattedTime, applyFilterParams } from '../../utils';
-import { withErrorToaster } from '../../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const cardContainer = css`
 	padding: 10px;

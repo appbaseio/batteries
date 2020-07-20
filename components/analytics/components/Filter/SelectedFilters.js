@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 import { clearFilterValue } from '../../../../modules/actions';
 import Flex from '../../../shared/Flex';
-import { withErrorToaster } from '../../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const hiddenFilters = ['size', 'from', 'to', 'clickanalytics'];
 

@@ -12,7 +12,7 @@ import Filter from '../Filter';
 import { getAppGeoDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppGeoDistributionByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
-import { withErrorToaster } from '../../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const wrapperStyles = {
 	width: '100%',

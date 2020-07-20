@@ -5,7 +5,7 @@ import { Card, Table, Button, Tooltip, Icon } from 'antd';
 import Flex from '../../shared/Flex';
 import { defaultColumns } from '../utils';
 import EmptyData from '../../shared/EmptyData';
-import { withErrorToaster } from '../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const generateKey = (pre) => {
 	return `${pre}_${new Date().getTime()}`;

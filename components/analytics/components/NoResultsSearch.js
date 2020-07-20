@@ -9,7 +9,7 @@ import { getNoResultSearches, exportCSVFile, noResultsFull, applyFilterParams } 
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
 import { setFilterValue } from '../../../modules/actions';
-import { withErrorToaster } from '../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const headers = {
 	key: 'Search Terms',

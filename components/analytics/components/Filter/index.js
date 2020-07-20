@@ -14,7 +14,7 @@ import SelectedFilters from './SelectedFilters';
 import { isValidPlan } from '../../../../utils';
 import DateFilter from './DateFilter';
 import { dateRanges } from '../../utils';
-import { withErrorToaster } from '../../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const { Option } = Select;
 

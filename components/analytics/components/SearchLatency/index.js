@@ -12,7 +12,7 @@ import EmptyData from '../../../shared/EmptyData';
 import { getAppSearchLatency, setFilterValue } from '../../../../modules/actions';
 import { getAppSearchLatencyByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
-import { withErrorToaster } from '../../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const getSearchLatencyDummy = (latency = []) => {
 	const dummyLatency = latency.filter((l) => l.count > 0);

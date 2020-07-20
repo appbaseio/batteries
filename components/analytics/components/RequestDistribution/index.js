@@ -12,7 +12,7 @@ import { displayErrors } from '../../../../utils/heplers';
 import { getAppRequestDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppRequestDistributionByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
-import { withErrorToaster } from '../../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const normalizedData = (data = []) => {
 	const dataTobeReturned = [];

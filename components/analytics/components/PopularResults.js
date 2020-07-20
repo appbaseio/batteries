@@ -19,7 +19,7 @@ import { setSearchState } from '../../../modules/actions/app';
 import { setFilterValue } from '../../../modules/actions';
 import { doGet } from '../../../utils/requestService';
 import { getURL } from '../../../../constants/config';
-import { withErrorToaster } from '../../../../components/ErrorToaster/ErrorToaster';
+import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const headers = {
 	key: 'Results',
