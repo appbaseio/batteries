@@ -194,4 +194,5 @@ const mapDispatchToProps = (dispatch, props) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
+
 export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(GeoDistribution));

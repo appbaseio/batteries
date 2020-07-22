@@ -55,4 +55,5 @@ const mapStateToProps = (state, props) => ({
 const mapDispatchToProps = (dispatch, props) => ({
 	clearFilterValue: (filterKey) => dispatch(clearFilterValue(props.filterId, filterKey)),
 });
+
 export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(SelectedFilters));
