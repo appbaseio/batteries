@@ -12,6 +12,7 @@ import EmptyData from '../../../shared/EmptyData';
 import { getAppSearchLatency, setFilterValue } from '../../../../modules/actions';
 import { getAppSearchLatencyByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const getSearchLatencyDummy = (latency = []) => {
 	const dummyLatency = latency.filter((l) => l.count > 0);
@@ -158,4 +159,4 @@ const mapDispatchToProps = (dispatch, props) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(SearchLatency);
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(SearchLatency));

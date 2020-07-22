@@ -5,6 +5,7 @@ import { Card, Table, Button, Tooltip, Icon } from 'antd';
 import Flex from '../../shared/Flex';
 import { defaultColumns } from '../utils';
 import EmptyData from '../../shared/EmptyData';
+import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const generateKey = (pre) => {
 	return `${pre}_${new Date().getTime()}`;
@@ -14,8 +15,6 @@ const Searches = ({
 	title,
 	dataSource,
 	columns,
-	showViewOption,
-	onClick,
 	plan,
 	pagination,
 	onClickDownload,
@@ -108,6 +107,7 @@ Searches.defaultProps = {
 	onClickDownload: undefined,
 	onClickViewAll: undefined,
 	breakWord: false,
+	tableProps: {},
 };
 Searches.propTypes = {
 	title: PropTypes.string,
@@ -118,7 +118,8 @@ Searches.propTypes = {
 	columns: PropTypes.array,
 	href: PropTypes.string,
 	plan: PropTypes.string,
+	tableProps: PropTypes.object,
 	pagination: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
 };
 
-export default Searches;
+export default withErrorToaster(Searches);
