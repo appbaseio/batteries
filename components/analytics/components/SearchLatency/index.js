@@ -71,8 +71,15 @@ class SearchLatency extends React.Component {
 		}
 	}
 
+	handleBarClick = (payload) => {
+		const { onClickBar } = this.props;
+		if (onClickBar) {
+			onClickBar(payload);
+		}
+	};
+
 	render() {
-		const { searchLatency, isLoading, success, filterId, displayFilter } = this.props;
+		const { searchLatency, isLoading, success, filterId, displayFilter, style } = this.props;
 		const { width } = this.state;
 		return (
 			<div
@@ -81,8 +88,8 @@ class SearchLatency extends React.Component {
 				}}
 				css="width: 100%"
 			>
-				{displayFilter && filterId && <Filter filterId={filterId} />}
-				<Card title="Search Latency" css={cls}>
+				{displayFilter && filterId && <Filter hideCustomEvents filterId={filterId} />}
+				<Card title="Search Latency" css={cls} style={style}>
 					{isLoading ? (
 						<Loader />
 					) : (
@@ -100,22 +107,30 @@ class SearchLatency extends React.Component {
 								data={getSearchLatencyDummy(searchLatency)}
 							>
 								<XAxis dataKey="key">
-									<Label
-										value="Latency (in ms)"
-										offset={0}
-										position="insideBottom"
-									/>
+									<Label value="Latency (in ms)" position="bottom" />
 								</XAxis>
-								<YAxis
-									label={{
-										value: 'Search Count',
-										angle: -90,
-										position: 'insideLeft',
+								<YAxis allowDecimals={false}>
+									<Label value="Search Count" angle={-90} position="left" />
+								</YAxis>
+								<Tooltip
+									labelFormatter={(label) =>
+										`Latency (in ms) : ${label} - ${label + 10}`
+									}
+									formatter={(value) => {
+										return [value, 'Requests'];
 									}}
-									allowDecimals={false}
+									cursor={{ fill: '#dce6f7' }}
 								/>
-								<Tooltip />
-								<Bar dataKey="count" fill="#A4C7FF" />
+								<Bar
+									onClick={this.handleBarClick}
+									style={{
+										cursor: 'pointer',
+									}}
+									dataKey="count"
+									fill="#6CA4FF"
+									stroke="#1A62FF"
+									minPointSize={10}
+								/>
 							</BarChart>
 						)
 					)}
@@ -129,18 +144,22 @@ SearchLatency.defaultProps = {
 	filterId: undefined,
 	filters: undefined,
 	displayFilter: true,
+	style: undefined,
+	onClickBar: undefined,
 };
 
 SearchLatency.propTypes = {
 	displayFilter: PropTypes.bool,
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
+	style: PropTypes.object,
 	fetchAppSearchLatency: PropTypes.func.isRequired,
 	searchLatency: PropTypes.array.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	success: PropTypes.bool.isRequired,
 	isInsightsSidebarOpen: PropTypes.bool.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
+	onClickBar: PropTypes.func,
 };
 const mapStateToProps = (state, props) => {
 	const searchLatency = getAppSearchLatencyByName(state);

@@ -6,12 +6,17 @@ import filter from 'lodash/filter';
 import { Card, Tabs, Table, notification, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import Parser from 'partial-json-parser';
-import { getRequestLogs, requestLogs, getTimeDuration, requestLogsDateRanges } from '../../utils';
+import {
+	getRequestLogs,
+	getRequestLogsColumns,
+	getTimeDuration,
+	requestLogsDateRanges,
+} from '../../utils';
 import RequestDetails from './RequestDetails';
 import Loader from '../../../shared/Loader/Spinner';
 import Flex from '../../../shared/Flex';
 import DateFilter from '../Filter/DateFilter';
-import { getUrlParams } from '../../../../../utils/helper';
+import { getUrlParams } from '../../../../utils/helpers';
 
 const { TabPane } = Tabs;
 
@@ -31,6 +36,7 @@ const normalizeData = (data) =>
 			classifier: get(i, 'category', '').toUpperCase(),
 			timeTaken,
 			status: get(i, 'response.code'),
+			took: get(i, 'response.took'),
 		};
 	});
 
@@ -115,6 +121,18 @@ class RequestLogs extends React.Component {
 		this.fetchRequestLogs();
 	}
 
+	componentDidUpdate(prevProps) {
+		const { startLatency, endLatency, startDate, endDate } = this.props;
+		if (
+			startLatency !== prevProps.startLatency ||
+			endLatency !== prevProps.endLatency ||
+			startDate !== prevProps.startDate ||
+			endDate !== prevProps.endDate
+		) {
+			this.fetchRequestLogs(undefined, undefined, undefined, startDate, endDate);
+		}
+	}
+
 	changeActiveTabKey = (tab) => {
 		this.setState(
 			{
@@ -169,7 +187,7 @@ class RequestLogs extends React.Component {
 		startDate = get(requestLogsDateRanges, `${this.state.selectedDate}.from`), // eslint-disable-line
 		endDate = get(requestLogsDateRanges, `${this.state.selectedDate}.to`), // eslint-disable-line
 	) => {
-		const { appName, pageSize } = this.props;
+		const { appName, pageSize, displaySearchLogs, startLatency, endLatency } = this.props;
 		// Set loading to true
 		this.setState({
 			[tab]: {
@@ -180,7 +198,19 @@ class RequestLogs extends React.Component {
 				},
 			},
 		});
-		getRequestLogs(appName, pageSize, from, tab, startDate, endDate)
+		getRequestLogs(
+			appName,
+			{
+				size: pageSize,
+				from,
+				filter: tab,
+				startDate,
+				endDate,
+				startLatency,
+				endLatency,
+			},
+			displaySearchLogs,
+		)
 			.then((res) => {
 				const { logs } = this.state;
 				const hits = res.logs.map((item, index) => ({
@@ -241,7 +271,7 @@ class RequestLogs extends React.Component {
 	};
 
 	renderTable = (tab) => {
-		const { pageSize } = this.props;
+		const { pageSize, displaySearchLogs } = this.props;
 		const { currentPage, total } = this.state[tab]; // eslint-disable-line
 		const { hits } = this.state[tab][currentPage]; // eslint-disable-line
 		return (
@@ -249,7 +279,7 @@ class RequestLogs extends React.Component {
 				css=".ant-table-row { cursor: pointer }"
 				rowKey={(record) => record.id}
 				dataSource={hits}
-				columns={requestLogs}
+				columns={getRequestLogsColumns(displaySearchLogs)}
 				pagination={{
 					pageSize,
 					total,
@@ -265,10 +295,10 @@ class RequestLogs extends React.Component {
 
 	render() {
 		const { activeTabKey, isFetching, showDetails, isDateVisible, selectedDate } = this.state;
-		const { displayFilter } = this.props;
+		const { displayFilter, title, displaySearchLogs, hideRefreshButton } = this.props;
 		return (
 			<Card
-				title="Latest Operations"
+				title={title}
 				extra={
 					<Flex>
 						{displayFilter ? (
@@ -281,15 +311,17 @@ class RequestLogs extends React.Component {
 								columnItems={5}
 							/>
 						) : null}
-						<Tooltip placement="topLeft" title="Refresh request logs.">
-							<Button
-								style={{ marginLeft: 8 }}
-								onClick={() => {
-									this.fetchRequestLogs();
-								}}
-								icon="redo"
-							/>
-						</Tooltip>
+						{!hideRefreshButton ? (
+							<Tooltip placement="topLeft" title="Refresh request logs.">
+								<Button
+									style={{ marginLeft: 8 }}
+									onClick={() => {
+										this.fetchRequestLogs();
+									}}
+									icon="redo"
+								/>
+							</Tooltip>
+						) : null}
 					</Flex>
 				}
 			>
@@ -297,27 +329,31 @@ class RequestLogs extends React.Component {
 					<Loader />
 				) : (
 					<React.Fragment>
-						<Tabs
-							animated={false}
-							onTabClick={this.changeActiveTabKey}
-							activeKey={activeTabKey}
-						>
-							<TabPane tab="ALL" key={this.tabKeys[0]}>
-								{this.renderTable(this.tabKeys[0])}
-							</TabPane>
-							<TabPane tab="SEARCH" key={this.tabKeys[1]}>
-								{this.renderTable(this.tabKeys[1])}
-							</TabPane>
-							<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
-								{this.renderTable(this.tabKeys[2])}
-							</TabPane>
-							<TabPane tab="DELETE" key={this.tabKeys[3]}>
-								{this.renderTable(this.tabKeys[3])}
-							</TabPane>
-							<TabPane tab="ERROR" key={this.tabKeys[4]}>
-								{this.renderTable(this.tabKeys[4])}
-							</TabPane>
-						</Tabs>
+						{!displaySearchLogs ? (
+							<Tabs
+								animated={false}
+								onTabClick={this.changeActiveTabKey}
+								activeKey={activeTabKey}
+							>
+								<TabPane tab="ALL" key={this.tabKeys[0]}>
+									{this.renderTable(this.tabKeys[0])}
+								</TabPane>
+								<TabPane tab="SEARCH" key={this.tabKeys[1]}>
+									{this.renderTable(this.tabKeys[1])}
+								</TabPane>
+								<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
+									{this.renderTable(this.tabKeys[2])}
+								</TabPane>
+								<TabPane tab="DELETE" key={this.tabKeys[3]}>
+									{this.renderTable(this.tabKeys[3])}
+								</TabPane>
+								<TabPane tab="ERROR" key={this.tabKeys[4]}>
+									{this.renderTable(this.tabKeys[4])}
+								</TabPane>
+							</Tabs>
+						) : (
+							this.renderTable(this.tabKeys[0])
+						)}
 						{showDetails && this.currentRequest && (
 							<RequestDetails
 								show={showDetails}
@@ -345,17 +381,31 @@ RequestLogs.defaultProps = {
 	changeUrlOnTabChange: false,
 	onTabChange: undefined, // Use this to override the default redirect logic on tab change
 	tab: 'all',
+	title: 'Latest Operations',
 	pageSize: 10,
 	appName: undefined,
 	displayFilter: true,
+	displaySearchLogs: false,
+	startLatency: undefined,
+	endLatency: undefined,
+	startDate: undefined,
+	endDate: undefined,
+	hideRefreshButton: false,
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
+	title: PropTypes.any,
 	onTabChange: PropTypes.func,
 	appName: PropTypes.string,
+	displaySearchLogs: PropTypes.bool,
+	hideRefreshButton: PropTypes.bool,
 	changeUrlOnTabChange: PropTypes.bool,
 	displayFilter: PropTypes.bool,
 	pageSize: PropTypes.number,
+	startLatency: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	endLatency: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	startDate: PropTypes.string,
+	endDate: PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({

@@ -8,7 +8,7 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'r
 import Filter from '../Filter';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
-import { displayErrors } from '../../../../utils/heplers';
+import { displayErrors } from '../../../../utils/helpers';
 import { getAppRequestDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppRequestDistributionByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';

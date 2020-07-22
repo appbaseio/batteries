@@ -8,7 +8,7 @@ import { getAppAnalyticsSummaryByName } from '../../../../modules/selectors';
 import { getAppAnalyticsSummary, setFilterValue } from '../../../../modules/actions';
 import Loader from '../../../shared/Loader/Spinner';
 import { isValidPlan } from '../../../../utils';
-import { displayErrors } from '../../../../utils/heplers';
+import { displayErrors } from '../../../../utils/helpers';
 import SummaryCard from './SummaryCard';
 import { getFormattedTime, applyFilterParams } from '../../utils';
 

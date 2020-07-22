@@ -407,7 +407,7 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 	];
 };
 
-export const requestLogs = [
+export const getRequestLogsColumns = (displaySearchLogs) => [
 	{
 		title: 'Operation',
 		dataIndex: 'operation',
@@ -425,12 +425,23 @@ export const requestLogs = [
 		),
 		key: `operation${updateIndex()}`,
 	},
-	{
-		title: 'Type',
-		dataIndex: 'classifier',
-		width: '100px',
-		key: `type${updateIndex()}`,
-	},
+	...(displaySearchLogs
+		? [
+				{
+					title: 'Latency (in ms)',
+					width: '150px',
+					key: `type${updateIndex()}`,
+					dataIndex: 'took',
+				},
+		  ]
+		: [
+				{
+					title: 'Type',
+					dataIndex: 'classifier',
+					width: '100px',
+					key: `type${updateIndex()}`,
+				},
+		  ]),
 	{
 		title: 'Time',
 		dataIndex: 'timeTaken',
@@ -696,22 +707,43 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100, fi
 	});
 }
 // To fetch request logs
-export function getRequestLogs(appName, size = 10, from = 0, filter, startDate, endDate) {
+export function getRequestLogs(
+	appName,
+	queryParams = {
+		size: 10,
+		from: 0,
+		filter: undefined,
+		startDate: undefined,
+		endDate: undefined,
+		startLatency: undefined,
+		endLatency: undefined,
+	},
+	isSearchLogs = false,
+) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
 		const validFilters = ['search', 'success', 'error', 'delete'];
 		fetch(
-			`${ACC_API}/${getApp(appName)}_logs${getQueryParams({
-				size,
-				from,
-				start_date: startDate,
-				end_date: endDate,
-				...(filter &&
-					validFilters.includes(filter) && {
-						filter,
+			`${ACC_API}/${getApp(appName)}${
+				isSearchLogs ? '_logs/search' : '_logs'
+			}${getQueryParams(
+				// remove undefined
+				JSON.parse(
+					JSON.stringify({
+						size: queryParams.size,
+						from: queryParams.from,
+						start_date: queryParams.startDate,
+						end_date: queryParams.endDate,
+						start_latency: queryParams.startLatency,
+						end_latency: queryParams.endLatency,
+						...(queryParams.filter &&
+							validFilters.includes(queryParams.filter) && {
+								filter: queryParams.filter,
+							}),
 					}),
-			})}`,
+				),
+			)}`,
 			{
 				method: 'GET',
 				headers: {
