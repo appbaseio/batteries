@@ -12,6 +12,7 @@ import Loader from '../../../shared/Loader/Spinner';
 import Flex from '../../../shared/Flex';
 import DateFilter from '../Filter/DateFilter';
 import { getUrlParams } from '../../../../../utils/helper';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const { TabPane } = Tabs;
 
@@ -361,4 +362,4 @@ RequestLogs.propTypes = {
 const mapStateToProps = (state) => ({
 	appName: get(state, '$getCurrentApp.name'),
 });
-export default connect(mapStateToProps)(RequestLogs);
+export default withErrorToaster(connect(mapStateToProps)(RequestLogs));
