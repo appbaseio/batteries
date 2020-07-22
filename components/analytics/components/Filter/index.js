@@ -14,6 +14,7 @@ import SelectedFilters from './SelectedFilters';
 import { isValidPlan } from '../../../../utils';
 import DateFilter from './DateFilter';
 import { dateRanges } from '../../utils';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const { Option } = Select;
 
@@ -296,4 +297,4 @@ const mapDispatchToProps = (dispatch) => ({
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Filter);
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(Filter));

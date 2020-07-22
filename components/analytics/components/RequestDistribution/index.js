@@ -12,6 +12,7 @@ import { displayErrors } from '../../../../utils/helpers';
 import { getAppRequestDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppRequestDistributionByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const normalizedData = (data = []) => {
 	const dataTobeReturned = [];
@@ -231,4 +232,4 @@ const mapDispatchToProps = (dispatch, props) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(RequestDistribution);
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(RequestDistribution));
