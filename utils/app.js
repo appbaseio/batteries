@@ -66,7 +66,7 @@ export const getPermission = (appName = '') => {
 					.catch((err) => Promise.reject(err));
 			}
 			// eslint-disable-next-line
-				return Promise.reject({
+			return Promise.reject({
 				message: 'Something went wrong!',
 			});
 		})
@@ -353,4 +353,12 @@ export const deleteSearchSettings = (name) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
 	return doDelete(`${ACC_API}/_searchrelevancy/${name}`, { Authorization: `Basic ${authToken}` });
+};
+
+export const getGradeMetrics = (indices, page) => {
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_grade/metrics`, {
+		indices,
+		page,
+	});
 };

@@ -11,6 +11,7 @@ import { isValidPlan } from '../../../../utils';
 import { displayErrors } from '../../../../utils/heplers';
 import SummaryCard from './SummaryCard';
 import { getFormattedTime, applyFilterParams } from '../../utils';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const cardContainer = css`
 	padding: 10px;
@@ -367,4 +368,4 @@ const mapDispatchToProps = (dispatch, props) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(Summary);
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(Summary));

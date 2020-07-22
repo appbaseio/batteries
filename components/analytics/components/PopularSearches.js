@@ -14,6 +14,7 @@ import {
 import { setSearchState } from '../../../modules/actions/app';
 import Loader from '../../shared/Loader/Spinner';
 import { setFilterValue } from '../../../modules/actions';
+import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const headers = {
 	key: 'Search Terms',
@@ -77,25 +78,10 @@ class PopularSearches extends React.Component {
 		}
 	};
 
-	handleQueryRule = (item) => {
-		const { appName, history } = this.props;
-		if (item.key !== '<empty_query>') {
-			history.push(`/app/${appName}/query-rules?searchTerm=${item.key}&operator=is`);
-		} else {
-			history.push(`/app/${appName}/query-rules`);
-		}
-	};
-
 	render() {
 		const { isFetching, popularSearches } = this.state;
-		const {
-			plan,
-			displayReplaySearch,
-			displayQueryRule,
-			filterId,
-			location: { pathname },
-		} = this.props;
-		const showQueryRule = pathname.includes('cluster') ? false : displayQueryRule;
+		const { plan, displayReplaySearch, filterId } = this.props;
+
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -107,11 +93,10 @@ class PopularSearches extends React.Component {
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					columns={popularSearchesFull(plan, displayReplaySearch, showQueryRule)}
+					columns={popularSearchesFull(plan, displayReplaySearch)}
 					dataSource={popularSearches.map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
-						handleQueryRule: this.handleQueryRule,
 					}))}
 					title="Popular Searches"
 					onClickDownload={() => {
@@ -138,7 +123,6 @@ class PopularSearches extends React.Component {
 PopularSearches.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
-	displayQueryRule: false,
 	filterId: undefined,
 	filters: undefined,
 };
@@ -148,12 +132,10 @@ PopularSearches.propTypes = {
 	filters: PropTypes.object,
 	appName: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
-	displayQueryRule: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
-	location: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state, props) => ({
 	plan: 'growth',
@@ -167,4 +149,6 @@ const mapDispatchToProps = (dispatch) => ({
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularSearches));
+export default withErrorToaster(
+	connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularSearches)),
+);

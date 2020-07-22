@@ -9,6 +9,7 @@ import { getPopularFilters, popularFiltersFull, exportCSVFile, applyFilterParams
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
 import { setFilterValue } from '../../../modules/actions';
+import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const headers = {
 	key: 'Filters',
@@ -144,4 +145,6 @@ const mapDispatchToProps = (dispatch) => ({
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularFilters));
+export default withErrorToaster(
+	connect(mapStateToProps, mapDispatchToProps)(withRouter(PopularFilters)),
+);

@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-	LineChart,
-	XAxis,
-	Tooltip,
-	CartesianGrid,
-	Line,
-	YAxis,
-	ResponsiveContainer,
-} from 'recharts';
+import { LineChart, XAxis, Tooltip, CartesianGrid, Line, YAxis } from 'recharts';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
@@ -57,24 +49,22 @@ class SearchVolumeChart extends React.Component {
 					}}
 				>
 					{data && data.length ? (
-						<ResponsiveContainer width="100%" aspect={2.5}>
-							<LineChart
-								width={width}
-								height={height}
-								data={normalizeData(data)}
-								margin={{
-									top: 5,
-									bottom: 5,
-									right: 10,
-								}}
-							>
-								<XAxis dataKey="formatDate" />
-								<YAxis dataKey="count" />
-								<Tooltip />
-								<CartesianGrid stroke="#f5f5f5" />
-								<Line type="monotone" dataKey="count" stroke="#ff7300" />
-							</LineChart>
-						</ResponsiveContainer>
+						<LineChart
+							width={width}
+							height={height}
+							data={normalizeData(data)}
+							margin={{
+								top: 5,
+								bottom: 5,
+								right: 10,
+							}}
+						>
+							<XAxis dataKey="formatDate" />
+							<YAxis dataKey="count" />
+							<Tooltip />
+							<CartesianGrid stroke="#f5f5f5" />
+							<Line type="monotone" dataKey="count" stroke="#ff7300" />
+						</LineChart>
 					) : (
 						<EmptyData
 							css={`

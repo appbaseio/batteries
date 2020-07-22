@@ -8,20 +8,20 @@ import {
 } from '../../utils/app';
 
 export function getRules() {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RULES.GET));
 		return fetchRules()
-			.then(res => {
+			.then((res) => {
 				dispatch(createAction(AppConstants.APP.RULES.GET_SUCCESS, res, null));
 			})
-			.catch(error => {
+			.catch((error) => {
 				dispatch(createAction(AppConstants.APP.RULES.GET_ERROR, null, error));
 			});
 	};
 }
 
 export function reorderRules({ toBePromoted, toBeDemoted }) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RULES.REORDER, { toBePromoted, toBeDemoted }));
 		const promotePromise = updateRule(toBePromoted);
 		const demotePromise = updateRule(toBeDemoted);
@@ -35,7 +35,7 @@ export function reorderRules({ toBePromoted, toBeDemoted }) {
 					),
 				);
 			})
-			.catch(error =>
+			.catch((error) =>
 				dispatch(
 					createAction(
 						AppConstants.APP.RULES.REORDER_ERROR,
@@ -48,20 +48,20 @@ export function reorderRules({ toBePromoted, toBeDemoted }) {
 }
 
 export function deleteRule(id) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RULES.DELETE, { id }));
 		return removeRule(id)
 			.then(() => {
 				dispatch(createAction(AppConstants.APP.RULES.DELETE_SUCCESS, { id }, null));
 			})
-			.catch(error =>
+			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.RULES.DELETE_ERROR, { id }, error)),
 			);
 	};
 }
 
 export function toggleRuleStatus(rule) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RULES.TOGGLE_STATUS, { ...rule }));
 		return updateRule(rule)
 			.then(() => {
@@ -69,7 +69,7 @@ export function toggleRuleStatus(rule) {
 					createAction(AppConstants.APP.RULES.TOGGLE_STATUS_SUCCESS, { ...rule }, null),
 				);
 			})
-			.catch(error =>
+			.catch((error) =>
 				dispatch(
 					createAction(AppConstants.APP.RULES.TOGGLE_STATUS_ERROR, { ...rule }, error),
 				),
@@ -78,37 +78,37 @@ export function toggleRuleStatus(rule) {
 }
 
 export function addQueryRule(rule) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RULES.CREATE, { ...rule }));
 		return createRule(rule)
-			.then(data =>
+			.then((data) =>
 				dispatch(createAction(AppConstants.APP.RULES.CREATE_SUCCESS, { ...data }, null)),
 			)
-			.catch(error =>
+			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.RULES.CREATE_ERROR, null, error)),
 			);
 	};
 }
 
 export function cloneQueryRule(rule, newRule) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RULES.CLONE, { ...rule }));
 		return createRule(newRule)
-			.then(data => {
+			.then((data) => {
 				dispatch(
 					createAction(AppConstants.APP.RULES.CLONE_SUCCESS, { ...data }, null, {
 						...rule,
 					}),
 				);
 			})
-			.catch(error =>
+			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.RULES.CLONE_ERROR, { ...rule }, error)),
 			);
 	};
 }
 
 export function putRule(rule) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RULES.UPDATE_RULE, { ...rule }));
 		return updateRule(rule)
 			.then(() =>
@@ -116,7 +116,7 @@ export function putRule(rule) {
 					createAction(AppConstants.APP.RULES.UPDATE_RULE_SUCCESS, { ...rule }, null),
 				),
 			)
-			.catch(error =>
+			.catch((error) =>
 				dispatch(
 					createAction(AppConstants.APP.RULES.UPDATE_RULE_ERROR, { ...rule }, error),
 				),

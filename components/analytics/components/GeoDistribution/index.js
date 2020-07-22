@@ -12,6 +12,7 @@ import Filter from '../Filter';
 import { getAppGeoDistribution, setFilterValue } from '../../../../modules/actions';
 import { getAppGeoDistributionByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const wrapperStyles = {
 	width: '100%',
@@ -193,4 +194,5 @@ const mapDispatchToProps = (dispatch, props) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(GeoDistribution);
+
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(GeoDistribution));

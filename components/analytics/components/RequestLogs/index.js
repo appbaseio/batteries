@@ -6,9 +6,13 @@ import filter from 'lodash/filter';
 import { Card, Tabs, Table, notification, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import Parser from 'partial-json-parser';
-import { getRequestLogs, requestLogs, getTimeDuration } from '../../utils';
+import { getRequestLogs, requestLogs, getTimeDuration, requestLogsDateRanges } from '../../utils';
 import RequestDetails from './RequestDetails';
 import Loader from '../../../shared/Loader/Spinner';
+import Flex from '../../../shared/Flex';
+import DateFilter from '../Filter/DateFilter';
+import { getUrlParams } from '../../../../../utils/helper';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const { TabPane } = Tabs;
 
@@ -81,6 +85,8 @@ class RequestLogs extends React.Component {
 			logs: [],
 			isFetching: true,
 			showDetails: false,
+			selectedDate: 'Last 30 days',
+			isDateVisible: false,
 		};
 		this.tabKeys.forEach((tabKey) => {
 			state[tabKey] = defaultTabState;
@@ -89,6 +95,24 @@ class RequestLogs extends React.Component {
 	}
 
 	componentDidMount() {
+		const urlParams = getUrlParams(window.location.search);
+		const { selectedDate } = this.state;
+		const currentSelectedDateRange = requestLogsDateRanges[selectedDate];
+		if (
+			urlParams &&
+			urlParams.from &&
+			urlParams.to &&
+			(currentSelectedDateRange.from !== urlParams.from ||
+				currentSelectedDateRange.to !== urlParams.to)
+		) {
+			const selectedDateRange = Object.keys(requestLogsDateRanges).find(
+				(dateRange) =>
+					get(requestLogsDateRanges, `${dateRange}.from`) === urlParams.from &&
+					get(requestLogsDateRanges, `${dateRange}.to`) === urlParams.to,
+			);
+			this.handleDate(selectedDateRange);
+			return;
+		}
 		this.fetchRequestLogs();
 	}
 
@@ -139,7 +163,13 @@ class RequestLogs extends React.Component {
 	};
 
 	// eslint-disable-next-line
-	fetchRequestLogs = (from = 0, currentPage = 0, tab = this.state.activeTabKey) => {
+	fetchRequestLogs = (
+		from = 0,
+		currentPage = 0,
+		tab = this.state.activeTabKey, // eslint-disable-line
+		startDate = get(requestLogsDateRanges, `${this.state.selectedDate}.from`), // eslint-disable-line
+		endDate = get(requestLogsDateRanges, `${this.state.selectedDate}.to`), // eslint-disable-line
+	) => {
 		const { appName, pageSize } = this.props;
 		// Set loading to true
 		this.setState({
@@ -151,7 +181,7 @@ class RequestLogs extends React.Component {
 				},
 			},
 		});
-		getRequestLogs(appName, pageSize, from, tab)
+		getRequestLogs(appName, pageSize, from, tab, startDate, endDate)
 			.then((res) => {
 				const { logs } = this.state;
 				const hits = res.logs.map((item, index) => ({
@@ -195,6 +225,22 @@ class RequestLogs extends React.Component {
 			});
 	};
 
+	handleDate = (filterValue = '') => {
+		this.setState(
+			{
+				isDateVisible: false,
+				selectedDate: filterValue,
+			},
+			() => this.fetchRequestLogs(),
+		);
+	};
+
+	toggleDatePopover = () => {
+		this.setState((state) => ({
+			isDateVisible: !state.isDateVisible,
+		}));
+	};
+
 	renderTable = (tab) => {
 		const { pageSize } = this.props;
 		const { currentPage, total } = this.state[tab]; // eslint-disable-line
@@ -219,19 +265,33 @@ class RequestLogs extends React.Component {
 	};
 
 	render() {
-		const { activeTabKey, isFetching, showDetails } = this.state;
+		const { activeTabKey, isFetching, showDetails, isDateVisible, selectedDate } = this.state;
+		const { displayFilter } = this.props;
 		return (
 			<Card
 				title="Latest Operations"
 				extra={
-					<Tooltip placement="topLeft" title="Refresh request logs.">
-						<Button
-							onClick={() => {
-								this.fetchRequestLogs();
-							}}
-							icon="redo"
-						/>
-					</Tooltip>
+					<Flex>
+						{displayFilter ? (
+							<DateFilter
+								onChange={this.handleDate}
+								toggleVisible={this.toggleDatePopover}
+								label={selectedDate}
+								dateRanges={requestLogsDateRanges}
+								visible={isDateVisible}
+								columnItems={5}
+							/>
+						) : null}
+						<Tooltip placement="topLeft" title="Refresh request logs.">
+							<Button
+								style={{ marginLeft: 8 }}
+								onClick={() => {
+									this.fetchRequestLogs();
+								}}
+								icon="redo"
+							/>
+						</Tooltip>
+					</Flex>
 				}
 			>
 				{isFetching ? (
@@ -288,16 +348,18 @@ RequestLogs.defaultProps = {
 	tab: 'all',
 	pageSize: 10,
 	appName: undefined,
+	displayFilter: true,
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
 	onTabChange: PropTypes.func,
 	appName: PropTypes.string,
 	changeUrlOnTabChange: PropTypes.bool,
+	displayFilter: PropTypes.bool,
 	pageSize: PropTypes.number,
 };
 
 const mapStateToProps = (state) => ({
 	appName: get(state, '$getCurrentApp.name'),
 });
-export default connect(mapStateToProps)(RequestLogs);
+export default withErrorToaster(connect(mapStateToProps)(RequestLogs));

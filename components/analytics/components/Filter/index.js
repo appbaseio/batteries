@@ -1,7 +1,6 @@
 import React from 'react';
-import { Select, Spin, Row, Col, Popover, Button, Icon } from 'antd';
+import { Select, Spin, Button, Icon } from 'antd';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import Flex from '../../../shared/Flex';
@@ -13,54 +12,11 @@ import {
 } from '../../../../modules/actions';
 import SelectedFilters from './SelectedFilters';
 import { isValidPlan } from '../../../../utils';
+import DateFilter from './DateFilter';
+import { dateRanges } from '../../utils';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const { Option } = Select;
-
-const dateRangeFilters = {
-	'This week': {
-		from: moment().startOf('week').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
-	},
-	'Last Week': {
-		from: moment().subtract(1, 'weeks').startOf('week').format('YYYY/MM/DD'),
-		to: moment().subtract(1, 'weeks').endOf('week').format('YYYY/MM/DD'),
-	},
-	'This Month': {
-		from: moment().startOf('month').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
-	},
-	'Last Month': {
-		from: moment().subtract(1, 'months').startOf('month').format('YYYY/MM/DD'),
-		to: moment().subtract(1, 'months').endOf('month').format('YYYY/MM/DD'),
-	},
-	'Last 7 days': {
-		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
-	},
-	'Last 30 days': {
-		from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
-	},
-	'Last 60 days': {
-		from: moment().subtract(60, 'days').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
-	},
-	'Last 90 days': {
-		from: moment().subtract(90, 'days').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
-	},
-};
-
-const dateRangeColumns = Object.keys(dateRangeFilters).reduce((agg, item, index) => {
-	const columnIndex = `col_${Math.floor(index / 4)}`; // 4 is the number of items in a column.
-	return {
-		...agg,
-		[columnIndex]: {
-			...get(agg, columnIndex, {}),
-			[item]: dateRangeFilters[item],
-		},
-	};
-}, {});
 
 // eslint-disable-next-line
 const filterOption = (input, option) =>
@@ -119,10 +75,10 @@ class Filter extends React.Component {
 	setSelectedlabel = (value) => {
 		if (typeof value === 'object' && get(value, 'from') && get(value, 'to')) {
 			const { from, to } = value;
-			const selectedDateRange = Object.keys(dateRangeFilters).find(
+			const selectedDateRange = Object.keys(dateRanges).find(
 				(dateRange) =>
-					get(dateRangeFilters, `${dateRange}.from`) === from &&
-					get(dateRangeFilters, `${dateRange}.to`) === to,
+					get(dateRanges, `${dateRange}.from`) === from &&
+					get(dateRanges, `${dateRange}.to`) === to,
 			);
 
 			this.setState({
@@ -165,7 +121,7 @@ class Filter extends React.Component {
 
 	handleDateRangeChange = (filterValue = '') => {
 		const { selectFilterValue, filterId } = this.props;
-		const filters = dateRangeFilters[filterValue];
+		const filters = dateRanges[filterValue];
 		selectFilterValue(filterId, 'from', filters.from);
 		selectFilterValue(filterId, 'to', filters.to);
 		this.setState({
@@ -271,45 +227,12 @@ class Filter extends React.Component {
 						)}
 					</Flex>
 					<Flex>
-						<Popover
+						<DateFilter
+							onChange={this.handleDateRangeChange}
+							toggleVisible={this.handleDateRangePopover}
+							label={selectedDateRange}
 							visible={dateRangePopover}
-							trigger="click"
-							content={
-								<Row style={{ width: 300 }} gutter={[8, 8]}>
-									{Object.keys(dateRangeColumns).map((column) => (
-										<Col key={column} md={12} span={12}>
-											{Object.keys(get(dateRangeColumns, column, {})).map(
-												(rangeLabel, index) => (
-													<Button
-														key={rangeLabel}
-														block
-														style={{
-															marginBottom: index !== 3 ? 8 : 0,
-														}}
-														type={
-															selectedDateRange === rangeLabel
-																? 'primary'
-																: 'default'
-														}
-														onClick={() =>
-															this.handleDateRangeChange(rangeLabel)
-														}
-													>
-														{rangeLabel}
-													</Button>
-												),
-											)}
-										</Col>
-									))}
-								</Row>
-							}
-							placement="leftTop"
-						>
-							<Button onClick={this.handleDateRangePopover}>
-								<Icon type="clock-circle" />
-								{selectedDateRange}
-							</Button>
-						</Popover>
+						/>
 						{hideInsightsButton ? null : (
 							<Button onClick={toggleInsights} style={{ marginLeft: 15 }}>
 								<Icon type="bar-chart" />
@@ -369,4 +292,4 @@ const mapDispatchToProps = (dispatch) => ({
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Filter);
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(Filter));

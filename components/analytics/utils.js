@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { Button } from 'antd';
+import get from 'lodash/get';
 // import mockProfile from './components/mockProfile';
 import { doGet, doPut } from '../../utils/requestService';
 import Flex from '../shared/Flex';
@@ -61,18 +62,6 @@ const replaySearch = [
 	},
 ];
 
-const queryRule = [
-	{
-		title: 'Manage',
-		key: 'query_rule',
-		width: 90,
-		render: (item) => (
-			<div css="text-align: center">
-				<Button icon="star" onClick={() => item.handleQueryRule(item)} />
-			</div>
-		),
-	},
-];
 export const getTimeDuration = (time) => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
@@ -184,7 +173,7 @@ export const popularFiltersCol = (plan, displayReplaySearch) => {
 			key: `pf-filters${updateIndex()}`,
 		},
 		{
-			title: 'Impressions',
+			title: 'Selections',
 			dataIndex: 'count',
 			key: `pf-count${updateIndex()}`,
 		},
@@ -246,15 +235,11 @@ export const popularSearchesCol = (plan, displayReplaySearch) => {
 	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
 };
 
-export const noResultsFull = (plan, displayReplaySearch, displayQueryRule) => {
+export const noResultsFull = (plan, displayReplaySearch) => {
 	if (plan !== 'growth' && plan !== 'bootstrap') {
 		return defaultColumns();
 	}
-	return [
-		...defaultColumns(),
-		...(displayReplaySearch ? replaySearch : []),
-		...(displayQueryRule ? queryRule : []),
-	];
+	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
 };
 
 export const ConvertToCSV = (objArray) => {
@@ -306,12 +291,11 @@ export const exportCSVFile = (headers, items, fileTitle) => {
 	}
 };
 
-export const popularSearchesFull = (plan, displayReplaySearch, displayQueryRule) => {
+export const popularSearchesFull = (plan, displayReplaySearch) => {
 	if (!plan || plan !== 'growth') {
 		return [
 			...defaultColumns(plan),
 			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
-			...(plan === 'bootstrap' && displayQueryRule ? queryRule : []),
 		];
 	}
 	return [
@@ -340,11 +324,10 @@ export const popularSearchesFull = (plan, displayReplaySearch, displayQueryRule)
 			key: `ps-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
-		...(displayQueryRule ? queryRule : []),
 	];
 };
 
-export const popularResultsFull = (plan, displayReplaySearch, handleViewSource = () => null) => {
+export const popularResultsFull = (plan, displayReplaySearch, ViewSource) => {
 	return [
 		...popularResultsCol('free'),
 		{
@@ -373,12 +356,17 @@ export const popularResultsFull = (plan, displayReplaySearch, handleViewSource =
 			key: `pr-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
-		{
-			title: 'Source',
-			dataIndex: 'key',
-			key: `pr-source${updateIndex()}`,
-			render: (item) => <Button onClick={() => handleViewSource(item)}>View</Button>,
-		},
+		// hide source at cluster level
+		...(getApp('') !== ''
+			? [
+					{
+						title: 'Source',
+						dataIndex: 'key',
+						key: `pr-source${updateIndex()}`,
+						render: (item) => <ViewSource docID={item} />,
+					},
+			  ]
+			: []),
 	];
 };
 export const popularFiltersFull = (plan, displayReplaySearch) => {
@@ -708,7 +696,7 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100, fi
 	});
 }
 // To fetch request logs
-export function getRequestLogs(appName, size = 10, from = 0, filter) {
+export function getRequestLogs(appName, size = 10, from = 0, filter, startDate, endDate) {
 	return new Promise((resolve, reject) => {
 		const authToken = getAuthToken();
 		const ACC_API = getURL();
@@ -717,6 +705,8 @@ export function getRequestLogs(appName, size = 10, from = 0, filter) {
 			`${ACC_API}/${getApp(appName)}_logs${getQueryParams({
 				size,
 				from,
+				start_date: startDate,
+				end_date: endDate,
 				...(filter &&
 					validFilters.includes(filter) && {
 						filter,
@@ -825,3 +815,62 @@ export const applyFilterParams = ({ filters, callback, filterId, applyFilter }) 
 		callback();
 	}
 };
+
+export const dateRanges = {
+	'This week': {
+		from: moment().startOf('week').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last Week': {
+		from: moment().subtract(1, 'weeks').startOf('week').format('YYYY/MM/DD'),
+		to: moment().subtract(1, 'weeks').endOf('week').format('YYYY/MM/DD'),
+	},
+	'This Month': {
+		from: moment().startOf('month').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last Month': {
+		from: moment().subtract(1, 'months').startOf('month').format('YYYY/MM/DD'),
+		to: moment().subtract(1, 'months').endOf('month').format('YYYY/MM/DD'),
+	},
+	'Last 7 days': {
+		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 30 days': {
+		from: moment().subtract(30, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 60 days': {
+		from: moment().subtract(60, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	'Last 90 days': {
+		from: moment().subtract(90, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+};
+
+export const requestLogsDateRanges = {
+	Today: {
+		from: moment().format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+	Yesterday: {
+		from: moment().subtract(1, 'day').format('YYYY/MM/DD'),
+		to: moment().subtract(1, 'day').format('YYYY/MM/DD'),
+	},
+	...dateRanges,
+};
+
+export const dateRangesColumn = (dates = dateRanges, columnItems = 4) =>
+	Object.keys(dates).reduce((agg, item, index) => {
+		const columnIndex = `col_${Math.floor(index / columnItems)}`;
+		return {
+			...agg,
+			[columnIndex]: {
+				...get(agg, columnIndex, {}),
+				[item]: dates[item],
+			},
+		};
+	}, {});

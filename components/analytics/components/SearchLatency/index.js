@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from 'antd';
 import { css } from 'react-emotion';
-import { BarChart, XAxis, YAxis, Bar, Label, ResponsiveContainer } from 'recharts';
+import { BarChart, XAxis, YAxis, Bar, Label, Tooltip } from 'recharts';
 import find from 'lodash/find';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -12,9 +12,10 @@ import EmptyData from '../../../shared/EmptyData';
 import { getAppSearchLatency, setFilterValue } from '../../../../modules/actions';
 import { getAppSearchLatencyByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const getSearchLatencyDummy = (latency = []) => {
-	const dummyLatency = latency.map((l) => l);
+	const dummyLatency = latency.filter((l) => l.count > 0);
 	let count = 0;
 	while (dummyLatency.length < 11) {
 		const key = count * 10;
@@ -55,6 +56,15 @@ class SearchLatency extends React.Component {
 		});
 	}
 
+	shouldComponentUpdate(oldProps) {
+		const { isInsightsSidebarOpen } = this.props;
+		if (isInsightsSidebarOpen !== oldProps.isInsightsSidebarOpen) {
+			return false;
+		}
+
+		return true;
+	}
+
 	componentDidUpdate(prevProps) {
 		const { filters, fetchAppSearchLatency } = this.props;
 		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
@@ -78,37 +88,36 @@ class SearchLatency extends React.Component {
 						<Loader />
 					) : (
 						(success && !searchLatency.length && <EmptyData css="height: 400px" />) || (
-							<ResponsiveContainer width="100%" aspect={2.8}>
-								<BarChart
-									margin={{
-										top: 20,
-										right: 50,
-										bottom: 20,
-										left: 20,
-									}}
-									barCategoryGap={0}
-									width={width}
-									height={400}
-									data={getSearchLatencyDummy(searchLatency)}
-								>
-									<XAxis dataKey="key">
-										<Label
-											value="Latency (in ms)"
-											offset={0}
-											position="insideBottom"
-										/>
-									</XAxis>
-									<YAxis
-										label={{
-											value: 'Search Count',
-											angle: -90,
-											position: 'insideLeft',
-										}}
-										allowDecimals={false}
+							<BarChart
+								margin={{
+									top: 20,
+									right: 50,
+									bottom: 20,
+									left: 20,
+								}}
+								barCategoryGap={0}
+								width={width}
+								height={400}
+								data={getSearchLatencyDummy(searchLatency)}
+							>
+								<XAxis dataKey="key">
+									<Label
+										value="Latency (in ms)"
+										offset={0}
+										position="insideBottom"
 									/>
-									<Bar dataKey="count" fill="#A4C7FF" />
-								</BarChart>
-							</ResponsiveContainer>
+								</XAxis>
+								<YAxis
+									label={{
+										value: 'Search Count',
+										angle: -90,
+										position: 'insideLeft',
+									}}
+									allowDecimals={false}
+								/>
+								<Tooltip />
+								<Bar dataKey="count" fill="#A4C7FF" />
+							</BarChart>
 						)
 					)}
 				</Card>
@@ -131,6 +140,7 @@ SearchLatency.propTypes = {
 	searchLatency: PropTypes.array.isRequired,
 	isLoading: PropTypes.bool.isRequired,
 	success: PropTypes.bool.isRequired,
+	isInsightsSidebarOpen: PropTypes.bool.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
 };
 const mapStateToProps = (state, props) => {
@@ -141,6 +151,7 @@ const mapStateToProps = (state, props) => {
 		success: get(state, '$getAppSearchLatency.success'),
 		isSearchLatencyPresent: !!searchLatency,
 		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+		isInsightsSidebarOpen: get(state, '$getAppAnalyticsInsights.isOpen', false),
 	};
 };
 const mapDispatchToProps = (dispatch, props) => ({
@@ -148,4 +159,4 @@ const mapDispatchToProps = (dispatch, props) => ({
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(SearchLatency);
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(SearchLatency));

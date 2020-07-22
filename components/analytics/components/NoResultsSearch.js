@@ -9,6 +9,7 @@ import { getNoResultSearches, exportCSVFile, noResultsFull, applyFilterParams } 
 import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
 import { setFilterValue } from '../../../modules/actions';
+import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const headers = {
 	key: 'Search Terms',
@@ -69,26 +70,10 @@ class NoResultsSearch extends React.Component {
 		}
 	};
 
-	handleQueryRule = (item) => {
-		const { appName, history } = this.props;
-		if (item.key !== '<empty_query>') {
-			history.push(`/app/${appName}/query-rules?searchTerm=${item.key}&operator=is`);
-		} else {
-			history.push(`/app/${appName}/query-rules`);
-		}
-	};
-
 	render() {
 		const { isFetching, noResults } = this.state;
-		const {
-			displayReplaySearch,
-			displayQueryRule,
-			plan,
-			filterId,
-			location: { pathname },
-		} = this.props;
+		const { displayReplaySearch, plan, filterId } = this.props;
 
-		const showQueryRule = pathname.includes('cluster') ? false : displayQueryRule;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -105,7 +90,7 @@ class NoResultsSearch extends React.Component {
 						handleReplaySearch: this.handleReplaySearch,
 						handleQueryRule: this.handleQueryRule,
 					}))}
-					columns={noResultsFull(plan, displayReplaySearch, showQueryRule)}
+					columns={noResultsFull(plan, displayReplaySearch)}
 					title="No Results Searches"
 					pagination={{
 						pageSize: 10,
@@ -128,7 +113,6 @@ class NoResultsSearch extends React.Component {
 NoResultsSearch.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
-	displayQueryRule: false,
 	filterId: undefined,
 	filters: undefined,
 };
@@ -139,12 +123,10 @@ NoResultsSearch.propTypes = {
 	filters: PropTypes.object,
 	appName: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
-	displayQueryRule: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
-	location: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state, props) => ({
 	plan: 'growth',
@@ -158,4 +140,6 @@ const mapDispatchToProps = (dispatch) => ({
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(NoResultsSearch));
+export default withErrorToaster(
+	connect(mapStateToProps, mapDispatchToProps)(withRouter(NoResultsSearch)),
+);

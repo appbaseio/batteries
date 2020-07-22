@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import get from 'lodash/get';
 import { clearFilterValue } from '../../../../modules/actions';
 import Flex from '../../../shared/Flex';
+import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const hiddenFilters = ['size', 'from', 'to', 'clickanalytics'];
 
@@ -54,4 +55,5 @@ const mapStateToProps = (state, props) => ({
 const mapDispatchToProps = (dispatch, props) => ({
 	clearFilterValue: (filterKey) => dispatch(clearFilterValue(props.filterId, filterKey)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(SelectedFilters);
+
+export default withErrorToaster(connect(mapStateToProps, mapDispatchToProps)(SelectedFilters));

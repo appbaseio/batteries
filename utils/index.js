@@ -5,7 +5,7 @@ import { getURL } from '../../constants/config';
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission =>
+		(permission) =>
 			permission &&
 			permission.ops.indexOf('read') > -1 &&
 			permission &&
@@ -14,7 +14,7 @@ export function getCredentialsFromPermissions(permissions = []) {
 	);
 	if (!result) {
 		result = permissions.find(
-			permission =>
+			(permission) =>
 				permission &&
 				permission.ops.indexOf('read') > -1 &&
 				permission &&
@@ -24,7 +24,7 @@ export function getCredentialsFromPermissions(permissions = []) {
 	}
 	if (!result) {
 		result = permissions.find(
-			permission =>
+			(permission) =>
 				permission &&
 				permission.ops.indexOf('read') > -1 &&
 				permission &&
@@ -32,7 +32,9 @@ export function getCredentialsFromPermissions(permissions = []) {
 		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission && permission.ops.indexOf('read') > -1);
+		result = permissions.find(
+			(permission) => permission && permission.ops.indexOf('read') > -1,
+		);
 	}
 	if (result) {
 		result.credentials = `${result.username}:${result.password}`;
@@ -42,7 +44,7 @@ export function getCredentialsFromPermissions(permissions = []) {
 
 export function getReadCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission =>
+		(permission) =>
 			permission.read &&
 			!permission.write &&
 			get(permission, 'referers', []).includes('*') &&
@@ -50,14 +52,14 @@ export function getReadCredentialsFromPermissions(permissions = []) {
 	);
 	if (!result) {
 		result = permissions.find(
-			permission =>
+			(permission) =>
 				permission.read &&
 				!permission.write &&
 				get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission.read && !permission.write);
+		result = permissions.find((permission) => permission.read && !permission.write);
 	}
 	return result || false;
 }
@@ -83,11 +85,11 @@ export function getCredentials(appId) {
 				Authorization: `Basic ${authToken}`,
 			},
 		})
-			.then(res => res.json())
-			.then(data => {
+			.then((res) => res.json())
+			.then((data) => {
 				resolve(getCredentialsFromPermissions(data.body));
 			})
-			.catch(e => {
+			.catch((e) => {
 				reject(e);
 			});
 	});
@@ -117,7 +119,7 @@ export const getUserAppsPermissions = () => {
 	return doGet(`${ACC_API}/_permissions`);
 };
 
-export const setUserInfo = userInfo => {
+export const setUserInfo = (userInfo) => {
 	const ACC_API = getURL();
 	return doPost(`${ACC_API}/arc/metadata`, userInfo, {
 		'Content-Type': 'application/json',
@@ -136,20 +138,33 @@ export const parseSearchState = (searchState = {}) => {
 	const filterQueries = componentsQueries.filter((component) => component.type === 'term');
 
 	// Search query will contain either type = search or no type but will for sure have value key.
-	const searchQuery = allComponentsQueries.find(
-		(component) =>
-			(component.type === 'search' || !component.type) && component.hasOwnProperty('value'),
-	) || {};
+	const searchQuery =
+		allComponentsQueries.find(
+			(component) =>
+				(component.type === 'search' || !component.type) &&
+				component.hasOwnProperty('value'),
+		) || {};
 
 	// Result query will contain either type = search or no type, plus it wont have value key and execute will be false.
-	const resultQuery = componentsQueries.find(
-		(component) => (component.type === 'search' || !component.type) && !component.hasOwnProperty('value') && component.execute === false,
-	) || {};
+	const resultQuery =
+		componentsQueries.find(
+			(component) =>
+				(component.type === 'search' || !component.type) &&
+				!component.hasOwnProperty('value') &&
+				component.execute === false,
+		) || {};
 
 	const parsedState = {};
 
 	const aggregations = filterQueries.reduce((agg, item, index) => {
-		const { type: listType, react: listReact, execute: listExecute,value: listValue, id: listId, ...extraListProps } = item;
+		const {
+			type: listType,
+			react: listReact,
+			execute: listExecute,
+			value: listValue,
+			id: listId,
+			...extraListProps
+		} = item;
 		return [
 			...agg,
 			{
@@ -163,7 +178,7 @@ export const parseSearchState = (searchState = {}) => {
 
 	const {
 		type: searchType,
-		execute:searchExecute,
+		execute: searchExecute,
 		react: searchReact,
 		value: searchValue,
 		...extraSearchProps
@@ -175,20 +190,21 @@ export const parseSearchState = (searchState = {}) => {
 		id: 'search',
 	};
 
-	const { type: resultType, react: resultReactList ,execute: resultExecute, ...extraResultProps } = resultQuery;
+	const {
+		type: resultType,
+		react: resultReactList,
+		execute: resultExecute,
+		...extraResultProps
+	} = resultQuery;
 
 	const result = {
 		dataField: ['_score'],
 		...extraResultProps,
 		id: 'result',
-		react: { and: ['search', ...filterQueries.map((filter) => filter.id)] },
+		react: { and: ['search', ...aggregations.map((filter) => filter.id)] },
 	};
 
-	return [
-		...aggregations,
-		result,
-		search,
-	];
+	return [...aggregations, result, search];
 };
 
 export const ARC_PLANS = {
@@ -196,10 +212,10 @@ export const ARC_PLANS = {
 	ARC_STANDARD: 'arc-standard',
 	ARC_ENTERPRISE: 'arc-enterprise',
 	HOSTED_ARC_BASIC: 'hosted-arc-basic',
+	HOSTED_ARC_BASIC_V2: 'hosted-arc-basic-v2',
 	HOSTED_ARC_STANDARD: 'hosted-arc-standard',
 	HOSTED_ARC_ENTERPRISE: 'hosted-arc-enterprise',
 };
-
 
 export const CLUSTER_PLANS = {
 	SANDBOX_2019: '2019-sandbox',
@@ -215,6 +231,7 @@ export const PRICE_BY_PLANS = {
 	[ARC_PLANS.ARC_STANDARD]: 59,
 	[ARC_PLANS.ARC_ENTERPRISE]: 499,
 	[ARC_PLANS.HOSTED_ARC_BASIC]: 39,
+	[ARC_PLANS.HOSTED_ARC_BASIC_V2]: 29,
 	[ARC_PLANS.HOSTED_ARC_STANDARD]: 89,
 	[ARC_PLANS.HOSTED_ARC_ENTERPRISE]: 599,
 	[CLUSTER_PLANS.SANDBOX_2019]: 59,
@@ -223,13 +240,14 @@ export const PRICE_BY_PLANS = {
 	[CLUSTER_PLANS.PRODUCTION_2019_1]: 399,
 	[CLUSTER_PLANS.PRODUCTION_2019_2]: 700,
 	[CLUSTER_PLANS.PRODUCTION_2019_3]: 1599,
-}
+};
 
 export const EFFECTIVE_PRICE_BY_PLANS = {
 	[ARC_PLANS.ARC_BASIC]: 0.03,
 	[ARC_PLANS.ARC_STANDARD]: 0.08,
 	[ARC_PLANS.ARC_ENTERPRISE]: 0.69,
 	[ARC_PLANS.HOSTED_ARC_BASIC]: 0.05,
+	[ARC_PLANS.HOSTED_ARC_BASIC_V2]: 0.04,
 	[ARC_PLANS.HOSTED_ARC_STANDARD]: 0.12,
 	[ARC_PLANS.HOSTED_ARC_ENTERPRISE]: 0.83,
 	[CLUSTER_PLANS.SANDBOX_2019]: 0.08,
@@ -238,7 +256,7 @@ export const EFFECTIVE_PRICE_BY_PLANS = {
 	[CLUSTER_PLANS.PRODUCTION_2019_1]: 0.55,
 	[CLUSTER_PLANS.PRODUCTION_2019_2]: 1.11,
 	[CLUSTER_PLANS.PRODUCTION_2019_3]: 2.22,
-}
+};
 
 export const allowedPlans = [
 	ARC_PLANS.ARC_ENTERPRISE,
@@ -253,8 +271,7 @@ export const features = {
 	SEARCH_RELEVANCY: 'SEARCH_RELEVANCY',
 	QUERY_RULES: 'QUERY_RULES',
 	ANALYTICS: 'ANALYTICS',
-}
-
+};
 
 export const isValidPlan = (tier, override, feature) => {
 	if (override) {
@@ -263,12 +280,14 @@ export const isValidPlan = (tier, override, feature) => {
 
 	switch (feature) {
 		case features.FUNCTIONS:
-			const functionPlans = allowedPlans.filter(plan => plan !== CLUSTER_PLANS.PRODUCTION_2019_1)
-			return tier && functionPlans.includes(tier)
+			const functionPlans = allowedPlans.filter(
+				(plan) => plan !== CLUSTER_PLANS.PRODUCTION_2019_1,
+			);
+			return tier && functionPlans.includes(tier);
 		default:
 			return tier && allowedPlans.includes(tier);
 	}
-}
+};
 
 export const deleteObjectFromPath = (obj, path) => {
 	const fields = path.split('.');
