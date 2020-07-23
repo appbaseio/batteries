@@ -679,7 +679,7 @@ export const getLanguage = (settings) => {
 export const getUsecase = (fields) => {
 	const hasAggsFlag = hasAggs(fields);
 	let hasSearchFlag = 0;
-	if (fields.search) hasSearchFlag = 1;
+	if (fields.search || fields.autosuggest || fields.delimiter) hasSearchFlag = 1;
 
 	if (hasAggsFlag && hasSearchFlag) return 'searchaggs';
 	if (!hasAggsFlag && hasSearchFlag) return 'search';
