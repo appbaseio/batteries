@@ -17,16 +17,20 @@ class ViewSource extends React.Component {
 		};
 	}
 
+	get indexName() {
+		const { appName, index } = this.props;
+		return index || appName;
+	}
+
 	handleViewSource = async () => {
 		const { docID } = this.props;
-		const { appName } = this.props;
 		this.setState({
 			visible: true,
 			isLoadingSource: true,
 			source: null,
 		});
 		try {
-			const response = await doGet(`${getURL()}/${getApp(appName)}_doc/${docID}`);
+			const response = await doGet(`${getURL()}/${this.indexName}/_doc/${docID}`);
 			this.setState({
 				isLoadingSource: false,
 				source: response._source,
@@ -56,7 +60,9 @@ class ViewSource extends React.Component {
 		const { docID } = this.props;
 		return (
 			<React.Fragment>
-				<Button onClick={this.handleViewSource}>View</Button>
+				<Button disabled={!this.indexName} onClick={this.handleViewSource}>
+					View
+				</Button>
 				<Modal
 					title={
 						<span>
@@ -73,14 +79,20 @@ class ViewSource extends React.Component {
 		);
 	}
 }
-
+ViewSource.defaultProps = {
+	appName: undefined,
+	index: undefined,
+};
 ViewSource.propTypes = {
-	appName: PropTypes.string.isRequired,
+	appName: PropTypes.string,
+	index: PropTypes.string,
 	docID: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-	appName: get(state, '$getCurrentApp.name'),
-});
+const mapStateToProps = (state) => {
+	return {
+		appName: get(state, '$getCurrentApp.name'),
+	};
+};
 
 export default connect(mapStateToProps, null)(ViewSource);
