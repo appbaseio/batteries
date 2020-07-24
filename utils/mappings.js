@@ -201,6 +201,84 @@ export async function getESVersion(appName, credentials) {
 	return data.version.number.split('.')[0];
 }
 
+/**
+ * Removes all search subfield
+ * @param {*} originalMappings Original Mappings
+ */
+const deleteSearchMappings = (originalMappings) => {
+	const mappings = JSON.parse(JSON.stringify(originalMappings));
+	if (!get(mappings, 'properties', null)) {
+		return mappings;
+	}
+	const mappingFields = Object.keys(get(mappings, 'properties', {}));
+	return mappingFields.reduce((agg, field) => {
+		if (get(mappings, `properties.${field}.properties`, null)) {
+			return {
+				...agg,
+				properties: {
+					...agg.properties,
+					[field]: deleteSearchMappings(get(mappings, `properties.${field}`, {})),
+				},
+			};
+		}
+
+		const { search, ...rest } = get(mappings, `properties.${field}.fields`, {});
+		return {
+			...agg,
+			properties: {
+				...agg.properties,
+				[field]: {
+					...get(mappings, `properties.${field}`, {}),
+					fields: {
+						...rest,
+					},
+				},
+			},
+		};
+	}, mappings);
+};
+
+/**
+ * Add search subfield to all searchable fields ( field containing autosuggest & delimiter subfields)
+ * @param {*} originalMappings Original Mappings
+ */
+const addSearchMappings = (originalMappings) => {
+	const mappings = JSON.parse(JSON.stringify(originalMappings));
+
+	if (!get(mappings, 'properties', null)) {
+		return mappings;
+	}
+	const mappingFields = Object.keys(get(mappings, 'properties', {}));
+	return mappingFields.reduce((agg, field) => {
+		if (get(mappings, `properties.${field}.properties`, null)) {
+			return {
+				...agg,
+				properties: {
+					...agg.properties,
+					[field]: addSearchMappings(get(mappings, `properties.${field}`, {})),
+				},
+			};
+		}
+
+		return {
+			...agg,
+			properties: {
+				...agg.properties,
+				[field]: {
+					...get(mappings, `properties.${field}`, {}),
+					fields: {
+						...get(mappings, `properties.${field}.fields`, {}),
+						...(get(mappings, `properties.${field}.fields.autosuggest`) ||
+						get(mappings, `properties.${field}.fields.delimiter`)
+							? mappingUsecase.search.fields
+							: {}),
+					},
+				},
+			},
+		};
+	}, mappings);
+};
+
 export function reIndex({
 	mappings,
 	appId,
@@ -209,6 +287,7 @@ export function reIndex({
 	version = '5',
 	credentials,
 	settings,
+	enableNgram,
 }) {
 	const body = {
 		mappings,
@@ -221,6 +300,12 @@ export function reIndex({
 		delete body.type;
 		const { properties, ...rest } = mappings;
 		body.mappings = { properties: { ...properties }, ...rest };
+	}
+
+	if (enableNgram) {
+		body.mappings = addSearchMappings(body.mappings);
+	} else {
+		body.mappings = deleteSearchMappings(body.mappings);
 	}
 
 	return new Promise((resolve, reject) => {
