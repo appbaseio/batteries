@@ -1,5 +1,5 @@
 import AppConstants from '../constants';
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 const initialState = {
 	isOpen: false,

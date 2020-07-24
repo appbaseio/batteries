@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 import mappingUsecase from './mappingUsecase';
 import analyzerSettings, { synonymsSettings } from './analyzerSettings';
