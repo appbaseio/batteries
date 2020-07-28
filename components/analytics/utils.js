@@ -357,16 +357,11 @@ export const popularResultsFull = (plan, displayReplaySearch, ViewSource) => {
 		},
 		...(displayReplaySearch ? replaySearch : []),
 		// hide source at cluster level
-		...(getApp('') !== ''
-			? [
-					{
-						title: 'Source',
-						dataIndex: 'key',
-						key: `pr-source${updateIndex()}`,
-						render: (item) => <ViewSource docID={item} />,
-					},
-			  ]
-			: []),
+		{
+			title: 'Source',
+			key: `pr-source${updateIndex()}`,
+			render: (item) => <ViewSource docID={item.key} index={item.index} />,
+		},
 	];
 };
 export const popularFiltersFull = (plan, displayReplaySearch) => {
