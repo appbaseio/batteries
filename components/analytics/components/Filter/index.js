@@ -158,6 +158,7 @@ class Filter extends React.Component {
 			tier,
 			toggleInsights,
 			hideInsightsButton,
+			hideCustomEvents,
 		} = this.props;
 		if (!isValidPlan(tier, featureCustomEvents)) {
 			return null;
@@ -167,20 +168,22 @@ class Filter extends React.Component {
 			<Flex flexDirection="column" style={{ paddingBottom: 15 }}>
 				<Flex justifyContent="space-between" style={{ flexWrap: 'wrap' }}>
 					<Flex style={{ flexWrap: 'wrap' }}>
-						<Select
-							showSearch
-							style={{ width: 150, marginBottom: 15, paddingRight: 15 }}
-							placeholder="Filter by"
-							optionFilterProp="children"
-							onChange={this.handleFilterByChange}
-							filterOption={filterOption}
-						>
-							{this.filterBy.map((filter) => (
-								<Option value={filter.key} key={filter.key}>
-									{filter.label}
-								</Option>
-							))}
-						</Select>
+						{!hideCustomEvents ? (
+							<Select
+								showSearch
+								style={{ width: 150, marginBottom: 15, paddingRight: 15 }}
+								placeholder="Filter by"
+								optionFilterProp="children"
+								onChange={this.handleFilterByChange}
+								filterOption={filterOption}
+							>
+								{this.filterBy.map((filter) => (
+									<Option value={filter.key} key={filter.key}>
+										{filter.label}
+									</Option>
+								))}
+							</Select>
+						) : null}
 						{displayLabelSelector && (
 							<Select
 								showSearch
@@ -252,6 +255,7 @@ Filter.defaultProps = {
 	selectedFilterValue: null,
 	filterLabels: [],
 	hideInsightsButton: false,
+	hideCustomEvents: false,
 };
 
 Filter.propTypes = {
@@ -267,6 +271,7 @@ Filter.propTypes = {
 	featureCustomEvents: PropTypes.bool.isRequired,
 	isFetchedFilterLabels: PropTypes.bool.isRequired,
 	hideInsightsButton: PropTypes.bool,
+	hideCustomEvents: PropTypes.bool,
 	filterLabels: PropTypes.array,
 	toggleInsights: PropTypes.func.isRequired,
 };

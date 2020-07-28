@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { setCurrentApp, getAppPlan } from '../../modules/actions';
 import { getAppPlanByName } from '../../modules/selectors';
 import Loader from '../shared/Loader/Spinner';
-import { displayErrors } from '../../utils/heplers';
+import { displayErrors } from '../../utils/helpers';
 
 let previousProps = {};
 
@@ -93,8 +93,8 @@ const mapStateToProps = (state, ownProps) => ({
 	errors: [ownProps.shouldFetchAppPlan !== false && get(state, '$getAppPlan.error')],
 });
 
-const mapDispatchToProps = dispatch => ({
-	fetchAppPlan: appName => dispatch(getAppPlan(appName)),
+const mapDispatchToProps = (dispatch) => ({
+	fetchAppPlan: (appName) => dispatch(getAppPlan(appName)),
 	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
 });
 

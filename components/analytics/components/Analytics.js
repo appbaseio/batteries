@@ -5,7 +5,7 @@ import { css } from 'react-emotion';
 import Filter from './Filter';
 import Flex from '../../shared/Flex';
 import { popularFiltersCol, popularResultsCol, popularSearchesCol, noResultsFull } from '../utils';
-import { getFilteredResults } from '../../../utils/heplers';
+import { getFilteredResults } from '../../../utils/helpers';
 import { mediaKey } from '../../../utils/media';
 import Searches from './Searches';
 import SearchVolumeChart from '../../shared/Chart/SearchVolume';
@@ -37,6 +37,17 @@ const noResultsCls = css`
 	}
 `;
 
+const handleClickBar = (payload) => {
+	const startLatency = payload.key;
+	const endLatency = startLatency + 10;
+	const newURL = `${window.location.protocol}//${
+		window.location.host
+	}${window.location.pathname.replace(
+		'analytics',
+		'search-latency',
+	)}?start_latency=${startLatency}&end_latency=${endLatency}&redirect_to=logs`;
+	window.location.href = newURL;
+};
 const Analytics = ({
 	noResults,
 	popularSearches,
@@ -138,7 +149,11 @@ const Analytics = ({
 						<GeoDistribution filterId={filterId} displayFilter={false} />
 					</Flex>
 					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
-						<SearchLatency filterId={filterId} displayFilter={false} />
+						<SearchLatency
+							onClickBar={handleClickBar}
+							filterId={filterId}
+							displayFilter={false}
+						/>
 					</Flex>
 					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
 						<RequestDistribution filterId={filterId} displayFilter={false} />
