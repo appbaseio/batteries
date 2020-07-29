@@ -7,7 +7,15 @@ import { deleteObjectFromPath } from '.';
 import language from '../../constants/language';
 
 const PRESERVED_KEYS = ['meta'];
-export const REMOVED_KEYS = ['~logs', '~percolator', '.logs', '.percolator', '_default_'];
+export const REMOVED_KEYS = [
+	'~logs',
+	'~percolator',
+	'.logs',
+	'.percolator',
+	'_default_',
+	'dynamic',
+	'dynamic_templates',
+];
 
 export function getAuthHeaders(credentials) {
 	if (credentials) {
@@ -20,7 +28,8 @@ export function getAuthHeaders(credentials) {
 
 export function getMappings(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
-		fetch(`${url}/${appName}/_mapping`, {
+		// If index is not defined then use pattern to eliminate the system indices
+		fetch(`${url}/${appName || '*,-.*'}/_mapping`, {
 			method: 'GET',
 			headers: {
 				...getAuthHeaders(credentials),
@@ -29,17 +38,30 @@ export function getMappings(appName, credentials, url = getURL()) {
 		})
 			.then((res) => res.json())
 			.then((data) => {
-				const types = Object.keys(data[appName].mappings).filter(
-					(type) => !REMOVED_KEYS.includes(type),
-				);
-
 				let mappings = {};
-				types.forEach((type) => {
-					mappings = {
-						...mappings,
-						[type]: data[appName].mappings[type],
-					};
-				});
+				if (appName) {
+					const types = Object.keys(data[appName].mappings).filter(
+						(type) => !REMOVED_KEYS.includes(type),
+					);
+					types.forEach((type) => {
+						mappings = {
+							...mappings,
+							[type]: data[appName].mappings[type],
+						};
+					});
+				} else {
+					Object.keys(data).forEach((index) => {
+						const types = Object.keys(data[index].mappings).filter(
+							(type) => !REMOVED_KEYS.includes(type),
+						);
+						types.forEach((type) => {
+							mappings = {
+								...mappings,
+								[type]: { ...mappings[type], ...data[index].mappings[type] },
+							};
+						});
+					});
+				}
 				resolve(mappings);
 			})
 			.catch((e) => {

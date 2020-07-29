@@ -45,7 +45,7 @@ export function getAppMappings(appName, credentials, url) {
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, {
-						appName,
+						appName: appName || 'default',
 						credentials,
 					}),
 				),
