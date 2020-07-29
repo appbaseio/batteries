@@ -55,17 +55,9 @@ const VersionController = ({ version, arcVersion, children, title, style }) => {
 		return (
 			<Card title={title} style={style}>
 				<div>
-					This feature requires the minimum version of Arc to be <b>{version}</b>. Your
-					current arc version is <b>{arcVersion}</b>, you can upgrade your arc version in
-					just one click from the{' '}
-					<a
-						target="_blank"
-						rel="noopener noreferrer"
-						href="https://dashboard.appbase.io/"
-					>
-						Appbase.io
-					</a>{' '}
-					dashboard.
+					This feature requires the minimum version of appbase.io to be <b>{version}</b>.
+					Your current version is <b>{arcVersion}</b>, you can upgrade your version from
+					the cluster detail view of the dashboard.
 				</div>
 			</Card>
 		);
