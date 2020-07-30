@@ -1,5 +1,6 @@
 import React from 'react';
-import { Tooltip, Icon } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
 import Flex from '../../../shared/Flex';
@@ -110,10 +111,10 @@ const SummaryCard = ({
 		isComparisonPositive = false;
 	}
 	return (
-		<Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
+        <Flex alignItems="center" justifyContent="center" style={style} className={cardStyle}>
 			{toolTipMessage && (
 				<Tooltip className="tool-tip" placement="rightTop" title={toolTipMessage}>
-					<Icon type="info-circle" />
+					<InfoCircleOutlined />
 				</Tooltip>
 			)}
 			<div>
@@ -166,7 +167,7 @@ const SummaryCard = ({
 				) : null}
 			</div>
 		</Flex>
-	);
+    );
 };
 SummaryCard.defaultProps = {
 	label: 0,

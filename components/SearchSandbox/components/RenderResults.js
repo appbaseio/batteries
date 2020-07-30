@@ -1,5 +1,6 @@
 import React from 'react';
-import { Tree, Row, Col, Button, Tag, Icon } from 'antd';
+import { LinkOutlined, StarTwoTone } from '@ant-design/icons';
+import { Tree, Row, Col, Button, Tag } from 'antd';
 import Appbase from 'appbase-js';
 import ExpandCollapse from 'react-expand-collapse';
 
@@ -84,7 +85,7 @@ class RenderResultsConsumer extends React.Component {
 				const description = getNestedValue(res, descriptionKey);
 				const image = getNestedValue(res, imageKey);
 				return (
-					<Row
+                    <Row
 						type="flex"
 						onClick={triggerClickAnalytics}
 						key={res._id}
@@ -94,7 +95,7 @@ class RenderResultsConsumer extends React.Component {
 						{res._promoted && (
 							<div>
 								<Tag color="blue">
-									<Icon type="star" style={{ marginRight: 5 }} theme="twoTone" />
+									<StarTwoTone style={{ marginRight: 5 }} />
 									Promoted
 								</Tag>
 							</div>
@@ -124,7 +125,7 @@ class RenderResultsConsumer extends React.Component {
 							{url ? (
 								<Button
 									shape="circle"
-									icon="link"
+									icon={<LinkOutlined />}
 									style={{ marginRight: '5px' }}
 									onClick={() => window.open(url, '_blank')}
 								/>
@@ -143,15 +144,15 @@ class RenderResultsConsumer extends React.Component {
 							/>
 						</div>
 					</Row>
-				);
+                );
 			}
 			default:
 				return (
-					<div className={listItem} key={_id} onClick={triggerClickAnalytics}>
+                    <div className={listItem} key={_id} onClick={triggerClickAnalytics}>
 						{res._promoted && (
 							<div>
 								<Tag color="blue">
-									<Icon type="star" style={{ marginRight: 5 }} theme="twoTone" />
+									<StarTwoTone style={{ marginRight: 5 }} />
 									Promoted
 								</Tag>
 							</div>
@@ -177,7 +178,7 @@ class RenderResultsConsumer extends React.Component {
 							/>
 						</div>
 					</div>
-				);
+                );
 		}
 	}
 }

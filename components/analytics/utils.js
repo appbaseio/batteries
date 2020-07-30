@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
+import { RedoOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import get from 'lodash/get';
 // import mockProfile from './components/mockProfile';
@@ -54,7 +55,7 @@ const replaySearch = [
 			<div css="text-align: center">
 				<Button
 					disabled={!item.search_state}
-					icon="redo"
+					icon={<RedoOutlined />}
 					onClick={() => item.handleReplaySearch(item.search_state)}
 				/>
 			</div>

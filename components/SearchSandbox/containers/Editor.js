@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, Button, Modal, Form, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Col, Card, Button, Modal, message } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';
@@ -222,7 +225,7 @@ export default class Editor extends Component {
 			</span>
 		);
 		return (
-			<ReactiveBase
+            <ReactiveBase
 				app={appName}
 				credentials={credentials}
 				url={url}
@@ -235,7 +238,7 @@ export default class Editor extends Component {
 							<Button
 								style={{ width: '100%' }}
 								size="large"
-								icon="plus-circle-o"
+								icon={<PlusCircleOutlined />}
 								className="search-tutorial-3"
 								onClick={this.showModal}
 							>
@@ -375,7 +378,7 @@ export default class Editor extends Component {
 					</Modal>
 				</Row>
 			</ReactiveBase>
-		);
+        );
 	}
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Result, Icon, Button, Alert } from 'antd';
+import { AlertTwoTone, MessageOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Result, Button, Alert } from 'antd';
 import * as Sentry from '@sentry/browser';
 import PropTypes from 'prop-types';
 
@@ -36,28 +37,28 @@ class ErrorToaster extends React.Component {
 
 		if (hasError && inline) {
 			return (
-				<Alert
+                <Alert
 					message={
 						<React.Fragment>
 							<span style={{ display: 'inline-block', marginRight: 5 }}>
 								{title || 'Something went wrong.'}
 							</span>
 							<Button size="small" type="primary" onClick={this.toggleError}>
-								<Icon type="reload" />
+								<ReloadOutlined />
 								Retry
 							</Button>
 						</React.Fragment>
 					}
 					type="error"
 				/>
-			);
+            );
 		}
 
 		if (hasError) {
 			return (
-				<React.Fragment>
+                <React.Fragment>
 					<Result
-						icon={<Icon twoToneColor="#fa541c" type="alert" theme="twoTone" />}
+						icon={<AlertTwoTone twoToneColor="#fa541c" />}
 						title={
 							<React.Fragment>
 								{title || (
@@ -71,18 +72,18 @@ class ErrorToaster extends React.Component {
 						extra={
 							<React.Fragment>
 								<Button onClick={() => window.Intercom('show')}>
-									<Icon type="message" />
+									<MessageOutlined />
 									Chat with us
 								</Button>
 								<Button type="primary" onClick={this.toggleError}>
-									<Icon type="reload" />
+									<ReloadOutlined />
 									Retry
 								</Button>
 							</React.Fragment>
 						}
 					/>
 				</React.Fragment>
-			);
+            );
 		}
 
 		return <React.Fragment>{children}</React.Fragment>;

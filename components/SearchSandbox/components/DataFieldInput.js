@@ -1,5 +1,8 @@
 import React from 'react';
-import { Button, Form, Table } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Table } from 'antd';
 
 import { NumberInput, DropdownInput } from '../../shared/Input';
 import { rowStyles, deleteStyles } from '../styles';
@@ -17,7 +20,7 @@ class DataFieldInput extends React.Component {
 	renderDeleteButton = (x, y, index) => (
 		<Button
 			className={deleteStyles}
-			icon="delete"
+			icon={<DeleteOutlined />}
 			shape="circle"
 			type="danger"
 			onClick={() => this.handleSearchDataFieldDelete(index)}

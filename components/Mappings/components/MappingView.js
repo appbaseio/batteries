@@ -1,5 +1,6 @@
 import React from 'react';
-import { Icon, Popover, Button, Dropdown, Menu } from 'antd';
+import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
+import { Popover, Button, Dropdown, Menu } from 'antd';
 
 import MappingIcon from './MappingIcon';
 import { subItem, deleteBtn, item, title, row, dropdown } from '../styles';
@@ -68,13 +69,13 @@ class MappingView extends React.Component {
 		);
 		const selectedOption = options.find((option) => option.value === value);
 		return (
-			<Dropdown overlay={menu}>
+            <Dropdown overlay={menu}>
 				<Button className={dropdown}>
 					{(selectedOption && selectedOption.label) || value}
-					<Icon type="down" />
+					<DownOutlined />
 				</Button>
 			</Dropdown>
-		);
+        );
 	};
 
 	renderMapping = (
@@ -108,7 +109,7 @@ class MappingView extends React.Component {
 		} = this.props;
 		if (fields) {
 			return (
-				<section key={type} className={row}>
+                <section key={type} className={row}>
 					{renderMappingInfo && initialRender ? renderMappingInfo({ dirty }) : null}
 					<h4 className={`${title} ${deleteBtn}`}>
 						<span title={type}>
@@ -143,7 +144,7 @@ class MappingView extends React.Component {
 									deletePath(address, true);
 								}}
 							>
-								<Icon type="delete" />
+								<DeleteOutlined />
 								{deleteLabel || 'Delete'}
 							</a>
 						)}
@@ -220,7 +221,7 @@ class MappingView extends React.Component {
 							return null;
 						}
 						return (
-							<div key={field} className={item}>
+                            <div key={field} className={item}>
 								<div className={deleteBtn}>
 									<span title={field} css={flex}>
 										{mappingInfo}
@@ -240,7 +241,7 @@ class MappingView extends React.Component {
 											}
 										}}
 									>
-										<Icon type="delete" />
+										<DeleteOutlined />
 										{deleteLabel || 'Delete'}
 									</a>
 								</div>
@@ -277,10 +278,10 @@ class MappingView extends React.Component {
 										: null}
 								</div>
 							</div>
-						);
+                        );
 					})}
 				</section>
-			);
+            );
 		}
 		return null;
 	};
