@@ -28,7 +28,7 @@ import {
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import { getRawMappingsByAppName } from '../../modules/selectors';
-import { setCurrentApp, getAppMappings as getMappings, clearMappings } from '../../modules/actions';
+import { setCurrentApp, getAppMappings as getMappings, clearMappings, getSettings as getSearchSettings } from '../../modules/actions';
 
 import { Header, footerStyles } from './styles';
 import NewFieldModal from './NewFieldModal';
@@ -135,7 +135,11 @@ class Mappings extends Component {
 			appbaseCredentials,
 			mapping,
 			url,
+			getSettingsAction,
 		} = this.props;
+
+		// Fetch search relevancy
+		getSettingsAction(appName);
 
 		// initialise or update current app state
 		updateCurrentApp(appName, appId);
@@ -340,7 +344,7 @@ class Mappings extends Component {
 
 		const { deletedPaths, activeType, esVersion, shards, replicas } = this.state;
 
-		const { appId, credentials } = this.props;
+		const { appId, credentials, enableNgram } = this.props;
 
 		let { mapping } = this.state;
 
@@ -375,6 +379,7 @@ class Mappings extends Component {
 			version: esVersion,
 			credentials,
 			settings: appSettings,
+			enableNgram,
 		})
 			.then(async () => {
 				if (callback && typeof callback === 'function') {
@@ -382,7 +387,7 @@ class Mappings extends Component {
 				}
 				this.handleReindex();
 			})
-			.catch(err => {
+			.catch((err) => {
 				const failedTime = Date.now();
 				if (failedTime - currentTime >= 60000) {
 					this.setState({
@@ -792,6 +797,7 @@ Mappings.propTypes = {
 	onUsecaseChange: func,
 	onDeleteField: func,
 	deleteLabel: string,
+	enableNgram: bool,
 };
 
 Mappings.defaultProps = {
@@ -820,11 +826,13 @@ Mappings.defaultProps = {
 	renderMappingInfo: null,
 	onUsecaseChange: null,
 	deleteLabel: '',
+	enableNgram: true,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, props) => {
 	const { username, password } = get(state, 'user.data', {});
 	const appName = get(state, '$getCurrentApp.name');
+	const defaultSettings = get(state.$getAppSettings, `defaultSettings`);
 	return {
 		appName,
 		appId: get(state, '$getCurrentApp.name'),
@@ -833,6 +841,13 @@ const mapStateToProps = state => {
 		loadingError: get(state, '$getAppMappings.error', null),
 		appbaseCredentials: username ? `${username}:${password}` : null,
 		credentials: username ? `${username}:${password}` : null,
+		enableNgram:
+			props.forceNgram ||
+			get(
+				get(state, ['$getAppSettings', 'settings', appName], defaultSettings),
+				'indexSettings.enableNgram',
+				true,
+			),
 	};
 };
 
@@ -844,6 +859,7 @@ const mapDispatchToProps = dispatch => ({
 	clearMappings: appName => dispatch(clearMappings(appName)),
 	addApp: appName => dispatch(appendApp(appName)),
 	deleteApp: appName => dispatch(removeAppData(appName)),
+	getSettingsAction: (name) => dispatch(getSearchSettings(name)),
 });
 
 const withRouterRef = Wrapped => {
