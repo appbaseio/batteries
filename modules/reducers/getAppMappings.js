@@ -26,11 +26,7 @@ function getAppMappings(state = initialState, action) {
 					[action.meta.appName]: action.payload,
 				}),
 				traversedMappings: Object.assign({}, state.traversedMappings, {
-					[action.meta.appName]: traverseMapping(
-						action.payload,
-						action.meta.appName,
-						action.meta.credentials,
-					),
+					[action.meta.appName]: traverseMapping(action.payload),
 				}),
 				success: true,
 			};

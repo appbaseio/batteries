@@ -51,15 +51,9 @@ export function getMappings(appName, credentials, url = getURL()) {
 					});
 				} else {
 					Object.keys(data).forEach((index) => {
-						const types = Object.keys(data[index].mappings).filter(
-							(type) => !REMOVED_KEYS.includes(type),
-						);
-						types.forEach((type) => {
-							mappings = {
-								...mappings,
-								[type]: { ...mappings[type], ...data[index].mappings[type] },
-							};
-						});
+						mappings[index] = {
+							...data[index].mappings,
+						};
 					});
 				}
 				resolve(mappings);
@@ -499,7 +493,9 @@ export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 	if (mappings.properties) {
 		checkIfPropertyPresent(mappings, 'properties');
 	} else {
-		Object.keys(mappings).forEach((k) => checkIfPropertyPresent(mappings[k], k));
+		Object.keys(mappings).forEach((k) => {
+			checkIfPropertyPresent(mappings[k], k);
+		});
 	}
 	return fieldObject.properties ? fieldObject.properties : fieldObject;
 }
