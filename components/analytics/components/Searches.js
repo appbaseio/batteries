@@ -48,7 +48,7 @@ const Searches = ({
 			>
 				<Table
 					key={generateKey(title)}
-					rowKey={(record) => record.key + record.count}
+					rowKey={(record) => record.key + record.count + record.value}
 					dataSource={dataSource}
 					columns={columns || defaultColumns(plan)}
 					pagination={pagination}
