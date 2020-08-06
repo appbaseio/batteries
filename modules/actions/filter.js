@@ -25,8 +25,10 @@ export function getFilterLabels() {
 		const ACC_API = getURL();
 		dispatch(createAction(AppConstants.APP.FILTER.GET_LABEL));
 		return doGet(`${ACC_API}/_analytics/filter-labels`)
-			.then(res => dispatch(createAction(AppConstants.APP.FILTER.GET_LABEL_SUCCESS, res)))
-			.catch(error => dispatch(createAction(AppConstants.APP.FILTER.GET_LABEL_ERROR, null, error)));
+			.then((res) => dispatch(createAction(AppConstants.APP.FILTER.GET_LABEL_SUCCESS, res)))
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.FILTER.GET_LABEL_ERROR, null, error)),
+			);
 	};
 }
 
@@ -37,14 +39,18 @@ export function getFilterValues(label, prefix = '', name) {
 		dispatch(createAction(AppConstants.APP.FILTER.GET_VALUE));
 		return doGet(
 			`${ACC_API}/_analytics/${getApp(appName)}filter-values/${label}${
-				prefix.trim() ? `?prefix=${prefix}` : ''
+				prefix.trim() ? `?prefix=${encodeURIComponent(prefix)}` : ''
 			}`,
 		)
-			.then(res => dispatch(
+			.then((res) =>
+				dispatch(
 					createAction(AppConstants.APP.FILTER.GET_VALUE_SUCCESS, res, null, {
 						appName: label,
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.FILTER.GET_VALUE_ERROR, null, error)));
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.FILTER.GET_VALUE_ERROR, null, error)),
+			);
 	};
 }

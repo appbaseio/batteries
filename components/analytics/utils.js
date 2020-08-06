@@ -28,9 +28,9 @@ export const getQueryParams = (paramObj) => {
 	if (paramObj) {
 		Object.keys(paramObj).forEach((o, i) => {
 			if (i === 0) {
-				queryString = `?${o}=${paramObj[o]}`;
+				queryString = `?${o}=${encodeURIComponent(paramObj[o])}`;
 			} else {
-				queryString += `&${o}=${paramObj[o]}`;
+				queryString += `&${o}=${encodeURIComponent(paramObj[o])}`;
 			}
 		});
 	}
