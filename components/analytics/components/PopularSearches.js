@@ -14,6 +14,7 @@ import {
 import { setSearchState } from '../../../modules/actions/app';
 import Loader from '../../shared/Loader/Spinner';
 import { setFilterValue } from '../../../modules/actions';
+import SummaryStats from './Summary/SummaryStats';
 import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const headers = {
@@ -28,7 +29,7 @@ class PopularSearches extends React.Component {
 		super(props);
 		this.state = {
 			isFetching: false,
-			popularSearches: [],
+			popularSearches: null,
 		};
 	}
 
@@ -80,7 +81,7 @@ class PopularSearches extends React.Component {
 
 	render() {
 		const { isFetching, popularSearches } = this.state;
-		const { plan, displayReplaySearch, filterId } = this.props;
+		const { plan, displayReplaySearch, filterId, displaySummaryStats } = this.props;
 
 		if (isFetching) {
 			return <Loader />;
@@ -88,13 +89,43 @@ class PopularSearches extends React.Component {
 		return (
 			<React.Fragment>
 				{filterId && <Filter filterId={filterId} />}
+				{displaySummaryStats ? (
+					<SummaryStats
+						summaryConfig={[
+							{
+								label: 'Total Searches',
+								value: get(popularSearches, 'total_searches'),
+							},
+							{
+								label: 'Search Terms',
+								value: get(popularSearches, 'total_search_terms'),
+							},
+							{
+								label: 'Clicks',
+								value: get(popularSearches, 'total_clicks'),
+							},
+							{
+								label: 'Avg. Click Position',
+								value: get(popularSearches, 'avg_click_position'),
+							},
+							{
+								label: 'Avg. Click Rate',
+								value: get(popularSearches, 'avg_click_rate'),
+							},
+							{
+								label: 'Avg. Conversion Rate',
+								value: get(popularSearches, 'avg_conversion_rate'),
+							},
+						]}
+					/>
+				) : null}
 				<Searches
 					tableProps={{
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
 					columns={popularSearchesFull(plan, displayReplaySearch)}
-					dataSource={popularSearches.map((item) => ({
+					dataSource={(get(popularSearches, 'popular_searches') || []).map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
 					}))}
@@ -102,7 +133,7 @@ class PopularSearches extends React.Component {
 					onClickDownload={() => {
 						exportCSVFile(
 							headers,
-							popularSearches.map((item) => ({
+							(get(popularSearches, 'popular_searches') || []).map((item) => ({
 								key: item.key,
 								count: item.count,
 								clicks: item.clicks || '-',
@@ -123,6 +154,7 @@ class PopularSearches extends React.Component {
 PopularSearches.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
+	displaySummaryStats: false,
 	filterId: undefined,
 	filters: undefined,
 };
@@ -136,6 +168,7 @@ PopularSearches.propTypes = {
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
+	displaySummaryStats: PropTypes.bool,
 };
 const mapStateToProps = (state, props) => ({
 	plan: 'growth',
