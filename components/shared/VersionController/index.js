@@ -69,10 +69,10 @@ VersionController.defaultProps = {
 };
 VersionController.propTypes = {
 	// User props
-	title: PropTypes.string,
+	title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	style: PropTypes.object,
 	version: PropTypes.string.isRequired,
-	children: PropTypes.string.isRequired,
+	children: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 	// System props
 	arcVersion: PropTypes.string.isRequired,
 };
