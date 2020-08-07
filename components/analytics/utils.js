@@ -591,7 +591,7 @@ export function getPopularSearches(appName, clickanalytics = true, size = 100, f
 			.then((res) => res.json())
 			.then((res) => {
 				// resolve the promise with response
-				resolve(res.popular_searches);
+				resolve(res);
 				// resolve(data.body.popularSearches);
 			})
 			.catch((e) => {
@@ -624,7 +624,7 @@ export function getNoResultSearches(appName, size = 100, filters) {
 			.then((res) => res.json())
 			.then((res) => {
 				// resolve the promise with response
-				resolve(res.no_results_searches);
+				resolve(res);
 			})
 			.catch((e) => {
 				reject(e);
@@ -654,7 +654,7 @@ export function getPopularResults(appName, clickanalytics = true, size = 100, fi
 			.then((res) => res.json())
 			.then((res) => {
 				// resolve the promise with response
-				resolve(res.popular_results);
+				resolve(res);
 			})
 			.catch((e) => {
 				reject(e);
@@ -694,7 +694,7 @@ export function getPopularFilters(appName, clickanalytics = true, size = 100, fi
 			.then((res) => res.json())
 			.then((res) => {
 				// resolve the promise with response
-				resolve(res.popular_filters);
+				resolve(res);
 			})
 			.catch((e) => {
 				reject(e);

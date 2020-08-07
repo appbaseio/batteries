@@ -13,6 +13,7 @@ import { getAppRequestDistribution, setFilterValue } from '../../../../modules/a
 import { getAppRequestDistributionByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
 import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
+import SummaryStats from '../Summary/SummaryStats';
 
 const normalizedData = (data = []) => {
 	const dataTobeReturned = [];
@@ -112,7 +113,19 @@ class RequestDistribution extends React.Component {
 	}
 
 	render() {
-		const { isLoading, results, success, filterId, displayFilter } = this.props;
+		const {
+			isLoading,
+			results,
+			success,
+			filterId,
+			displayFilter,
+			displaySummaryStats,
+			totalRequests,
+			total200,
+			total201,
+			total400,
+			total401,
+		} = this.props;
 		const { width, ticks } = this.state;
 		const data = normalizedData(results);
 		return (
@@ -123,6 +136,32 @@ class RequestDistribution extends React.Component {
 				css="width: 100%"
 			>
 				{displayFilter && filterId && <Filter filterId={filterId} />}
+				{!isLoading && displaySummaryStats ? (
+					<SummaryStats
+						summaryConfig={[
+							{
+								label: 'Total Requests',
+								value: totalRequests,
+							},
+							{
+								label: '200 Requests',
+								value: total200,
+							},
+							{
+								label: '201 Requests',
+								value: total201,
+							},
+							{
+								label: '400 Requests',
+								value: total400,
+							},
+							{
+								label: '401 Requests',
+								value: total401,
+							},
+						]}
+					/>
+				) : null}
 				<Card
 					title="Request Distribution"
 					style={{
@@ -207,6 +246,12 @@ RequestDistribution.defaultProps = {
 	displayFilter: true,
 	filterId: undefined,
 	filters: undefined,
+	displaySummaryStats: false,
+	totalRequests: 0,
+	total200: 0,
+	total201: 0,
+	total400: 0,
+	total401: 0,
 };
 
 RequestDistribution.propTypes = {
@@ -219,14 +264,28 @@ RequestDistribution.propTypes = {
 	success: PropTypes.bool.isRequired,
 	errors: PropTypes.array.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
+	displaySummaryStats: PropTypes.bool,
+	totalRequests: PropTypes.number,
+	total200: PropTypes.number,
+	total201: PropTypes.number,
+	total400: PropTypes.number,
+	total401: PropTypes.number,
 };
-const mapStateToProps = (state, props) => ({
-	isLoading: get(state, '$getAppRequestDistribution.isFetching'),
-	errors: [get(state, '$getAppRequestDistribution.error')],
-	success: get(state, '$getAppRequestDistribution.success'),
-	results: get(getAppRequestDistributionByName(state), 'request_distribution', []),
-	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
-});
+const mapStateToProps = (state, props) => {
+	const requestDistributionRaw = getAppRequestDistributionByName(state);
+	return {
+		isLoading: get(state, '$getAppRequestDistribution.isFetching'),
+		errors: [get(state, '$getAppRequestDistribution.error')],
+		success: get(state, '$getAppRequestDistribution.success'),
+		results: get(requestDistributionRaw, 'request_distribution', []),
+		totalRequests: get(requestDistributionRaw, 'total_requests', []),
+		total200: get(requestDistributionRaw, 'total_200', []),
+		total201: get(requestDistributionRaw, 'total_201', []),
+		total400: get(requestDistributionRaw, 'total_400', []),
+		total401: get(requestDistributionRaw, 'total_401', []),
+		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+	};
+};
 const mapDispatchToProps = (dispatch, props) => ({
 	fetchAppRequestDistribution: () => dispatch(getAppRequestDistribution(null, props.filterId)),
 	selectFilterValue: (filterId, filterKey, filterValue) =>

@@ -13,6 +13,7 @@ import { getAppSearchLatency, setFilterValue } from '../../../../modules/actions
 import { getAppSearchLatencyByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
 import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
+import SummaryStats from '../Summary/SummaryStats';
 
 const getSearchLatencyDummy = (latency = []) => {
 	const dummyLatency = latency.filter((l) => l.count > 0);
@@ -80,7 +81,17 @@ class SearchLatency extends React.Component {
 	};
 
 	render() {
-		const { searchLatency, isLoading, success, filterId, displayFilter, style } = this.props;
+		const {
+			searchLatency,
+			isLoading,
+			success,
+			filterId,
+			displayFilter,
+			style,
+			displaySummaryStats,
+			totalSearches,
+			avgSearchLatency,
+		} = this.props;
 		const { width } = this.state;
 		return (
 			<div
@@ -90,6 +101,20 @@ class SearchLatency extends React.Component {
 				css="width: 100%"
 			>
 				{displayFilter && filterId && <Filter hideCustomEvents filterId={filterId} />}
+				{!isLoading && displaySummaryStats ? (
+					<SummaryStats
+						summaryConfig={[
+							{
+								label: 'Total Searches',
+								value: totalSearches,
+							},
+							{
+								label: 'Avg. Search Latency',
+								value: `${avgSearchLatency} (in ms)`,
+							},
+						]}
+					/>
+				) : null}
 				<Card title="Search Latency" css={cls} style={style}>
 					{isLoading ? (
 						<Loader />
@@ -147,6 +172,9 @@ SearchLatency.defaultProps = {
 	displayFilter: true,
 	style: undefined,
 	onClickBar: undefined,
+	displaySummaryStats: false,
+	totalSearches: 0,
+	avgSearchLatency: 0,
 };
 
 SearchLatency.propTypes = {
@@ -161,11 +189,16 @@ SearchLatency.propTypes = {
 	isInsightsSidebarOpen: PropTypes.bool.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
 	onClickBar: PropTypes.func,
+	displaySummaryStats: PropTypes.bool,
+	totalSearches: PropTypes.number,
+	avgSearchLatency: PropTypes.number,
 };
 const mapStateToProps = (state, props) => {
 	const searchLatency = getAppSearchLatencyByName(state);
 	return {
 		searchLatency: get(searchLatency, 'latencies', []),
+		totalSearches: get(searchLatency, 'total_searches', []),
+		avgSearchLatency: get(searchLatency, 'avg_search_latency', []),
 		isLoading: get(state, '$getAppSearchLatency.isFetching'),
 		success: get(state, '$getAppSearchLatency.success'),
 		isSearchLatencyPresent: !!searchLatency,
