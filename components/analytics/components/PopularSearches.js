@@ -15,6 +15,7 @@ import { setSearchState } from '../../../modules/actions/app';
 import Loader from '../../shared/Loader/Spinner';
 import { setFilterValue } from '../../../modules/actions';
 import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
+import QueryOverview from './QueryOverview';
 
 const headers = {
 	key: 'Search Terms',
@@ -93,7 +94,12 @@ class PopularSearches extends React.Component {
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					columns={popularSearchesFull(plan, displayReplaySearch)}
+					columns={popularSearchesFull(
+						plan,
+						displayReplaySearch,
+						QueryOverview,
+						filterId,
+					)}
 					dataSource={popularSearches.map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
@@ -124,7 +130,7 @@ PopularSearches.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
 	filterId: undefined,
-	filters: undefined,
+	filters: {},
 };
 PopularSearches.propTypes = {
 	plan: PropTypes.string.isRequired,
@@ -140,7 +146,7 @@ PopularSearches.propTypes = {
 const mapStateToProps = (state, props) => ({
 	plan: 'growth',
 	appName: get(state, '$getCurrentApp.name'),
-	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+	filters: get(state, `$getSelectedFilters.${props.filterId}`),
 });
 
 const mapDispatchToProps = (dispatch) => ({

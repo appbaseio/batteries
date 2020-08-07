@@ -114,7 +114,7 @@ NoResultsSearch.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
 	filterId: undefined,
-	filters: undefined,
+	filters: {},
 };
 
 NoResultsSearch.propTypes = {
@@ -131,7 +131,7 @@ NoResultsSearch.propTypes = {
 const mapStateToProps = (state, props) => ({
 	plan: 'growth',
 	appName: get(state, '$getCurrentApp.name'),
-	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+	filters: get(state, `$getSelectedFilters.${props.filterId}`),
 });
 
 const mapDispatchToProps = (dispatch) => ({

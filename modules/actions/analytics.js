@@ -7,6 +7,7 @@ import {
 	getRequestDistribution,
 	getAnalyticsInsights,
 	updateAnalyticsInsights,
+	getQueryOverview,
 } from '../../components/analytics/utils';
 import { createAction } from './utils';
 import AppConstants from '../constants';
@@ -68,6 +69,32 @@ export function getAppSearchLatency(name, filterId) {
 			)
 			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.ANALYTICS.GET_LATENCY_ERROR, null, error)),
+			);
+	};
+}
+
+export function getAppQueryOverview(name, filterId, query) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_QUERY_VOLUME));
+		return getQueryOverview(appName, filters, query)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_QUERY_VOLUME_SUCCESS,
+						res,
+						undefined,
+						{
+							appName,
+						},
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(AppConstants.APP.ANALYTICS.GET_QUERY_VOLUME_ERROR, null, error),
+				),
 			);
 	};
 }
