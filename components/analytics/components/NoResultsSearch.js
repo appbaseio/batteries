@@ -10,6 +10,7 @@ import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
 import { setFilterValue } from '../../../modules/actions';
 import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
+import SummaryStats from './Summary/SummaryStats';
 
 const headers = {
 	key: 'Search Terms',
@@ -20,7 +21,7 @@ class NoResultsSearch extends React.Component {
 		super(props);
 		this.state = {
 			isFetching: false,
-			noResults: [],
+			noResults: null,
 		};
 	}
 
@@ -72,7 +73,7 @@ class NoResultsSearch extends React.Component {
 
 	render() {
 		const { isFetching, noResults } = this.state;
-		const { displayReplaySearch, plan, filterId } = this.props;
+		const { displayReplaySearch, plan, filterId, displaySummaryStats } = this.props;
 
 		if (isFetching) {
 			return <Loader />;
@@ -80,12 +81,26 @@ class NoResultsSearch extends React.Component {
 		return (
 			<React.Fragment>
 				{filterId && <Filter filterId={filterId} />}
+				{displaySummaryStats ? (
+					<SummaryStats
+						summaryConfig={[
+							{
+								label: 'Total Searches',
+								value: get(noResults, 'total_searches'),
+							},
+							{
+								label: 'Search Terms',
+								value: get(noResults, 'total_search_terms'),
+							},
+						]}
+					/>
+				) : null}
 				<Searches
 					tableProps={{
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					dataSource={noResults.map((item) => ({
+					dataSource={(get(noResults, 'no_results_searches') || []).map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
 						handleQueryRule: this.handleQueryRule,
@@ -98,7 +113,7 @@ class NoResultsSearch extends React.Component {
 					onClickDownload={() =>
 						exportCSVFile(
 							headers,
-							noResults.map((item) => ({
+							(get(noResults, 'no_results_searches') || []).map((item) => ({
 								key: item.key,
 								count: item.count,
 							})),
@@ -113,6 +128,7 @@ class NoResultsSearch extends React.Component {
 NoResultsSearch.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
+	displaySummaryStats: false,
 	filterId: undefined,
 	filters: {},
 };
@@ -123,6 +139,7 @@ NoResultsSearch.propTypes = {
 	filters: PropTypes.object,
 	appName: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
+	displaySummaryStats: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,

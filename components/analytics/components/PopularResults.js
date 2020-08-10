@@ -11,6 +11,7 @@ import Loader from '../../shared/Loader/Spinner';
 import { setSearchState } from '../../../modules/actions/app';
 import { setFilterValue } from '../../../modules/actions';
 import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
+import SummaryStats from './Summary/SummaryStats';
 
 const headers = {
 	key: 'Results',
@@ -25,7 +26,7 @@ class PopularResults extends React.Component {
 		super(props);
 		this.state = {
 			isFetching: false,
-			popularResults: [],
+			popularResults: null,
 		};
 	}
 
@@ -77,20 +78,50 @@ class PopularResults extends React.Component {
 
 	render() {
 		const { isFetching, popularResults } = this.state;
-		const { plan, displayReplaySearch, filterId } = this.props;
+		const { plan, displayReplaySearch, filterId, displaySummaryStats } = this.props;
 		if (isFetching) {
 			return <Loader />;
 		}
 		return (
 			<React.Fragment>
 				{filterId && <Filter filterId={filterId} />}
+				{displaySummaryStats ? (
+					<SummaryStats
+						summaryConfig={[
+							{
+								label: 'Total Results',
+								value: get(popularResults, 'total_results'),
+							},
+							{
+								label: 'Total Impressions',
+								value: get(popularResults, 'total_impressions'),
+							},
+							{
+								label: 'Clicks',
+								value: get(popularResults, 'total_clicks'),
+							},
+							{
+								label: 'Avg. Click Position',
+								value: get(popularResults, 'avg_click_position'),
+							},
+							{
+								label: 'Avg. Click Rate',
+								value: get(popularResults, 'avg_click_rate'),
+							},
+							{
+								label: 'Avg. Conversion Rate',
+								value: get(popularResults, 'avg_conversion_rate'),
+							},
+						]}
+					/>
+				) : null}
 				<Searches
 					tableProps={{
 						scroll: { x: 1000 },
 					}}
 					showViewOption={false}
 					columns={popularResultsFull(plan, displayReplaySearch, ViewSource)}
-					dataSource={popularResults.map((item) => ({
+					dataSource={(get(popularResults, 'popular_results') || []).map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
 					}))}
@@ -101,7 +132,7 @@ class PopularResults extends React.Component {
 					onClickDownload={() =>
 						exportCSVFile(
 							headers,
-							popularResults.map((item) => ({
+							(get(popularResults, 'popular_results') || []).map((item) => ({
 								key: item.key,
 								count: item.count,
 								clicks: item.clicks || '-',
@@ -120,6 +151,7 @@ class PopularResults extends React.Component {
 PopularResults.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
+	displaySummaryStats: false,
 	filterId: undefined,
 	filters: undefined,
 };
@@ -130,6 +162,7 @@ PopularResults.propTypes = {
 	plan: PropTypes.string.isRequired,
 	appName: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
+	displaySummaryStats: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,

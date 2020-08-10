@@ -13,6 +13,7 @@ import { getAppGeoDistribution, setFilterValue } from '../../../../modules/actio
 import { getAppGeoDistributionByName } from '../../../../modules/selectors';
 import { applyFilterParams } from '../../utils';
 import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
+import SummaryStats from '../Summary/SummaryStats';
 
 const wrapperStyles = {
 	width: '100%',
@@ -94,10 +95,31 @@ class GeoDistribution extends React.Component {
 
 	render() {
 		const { geographyPaths, popScale, key } = this.state;
-		const { geoData, filterId, displayFilter } = this.props;
+		const {
+			geoData,
+			filterId,
+			displayFilter,
+			displaySummaryStats,
+			totalSearches,
+			totalCountries,
+		} = this.props;
 		return (
 			<React.Fragment>
 				{displayFilter && filterId && <Filter filterId={filterId} />}
+				{displaySummaryStats ? (
+					<SummaryStats
+						summaryConfig={[
+							{
+								label: 'Total Searches',
+								value: totalSearches,
+							},
+							{
+								label: 'Total Countries',
+								value: totalCountries,
+							},
+						]}
+					/>
+				) : null}
 				<Card css="width: 100%" title="Geography Visualization">
 					<div style={wrapperStyles}>
 						<ComposableMap
@@ -176,9 +198,15 @@ GeoDistribution.defaultProps = {
 	displayFilter: true,
 	filterId: undefined,
 	filters: undefined,
+	displaySummaryStats: false,
+	totalSearches: 0,
+	totalCountries: 0,
 };
 GeoDistribution.propTypes = {
 	displayFilter: PropTypes.bool,
+	displaySummaryStats: PropTypes.bool,
+	totalSearches: PropTypes.number,
+	totalCountries: PropTypes.number,
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	geoData: PropTypes.array,
@@ -187,6 +215,8 @@ GeoDistribution.propTypes = {
 };
 const mapStateToProps = (state, props) => ({
 	geoData: get(getAppGeoDistributionByName(state), 'geo_distribution', []),
+	totalSearches: get(getAppGeoDistributionByName(state), 'total_searches', 0),
+	totalCountries: get(getAppGeoDistributionByName(state), 'total_countries', 0),
 	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
 });
 const mapDispatchToProps = (dispatch, props) => ({
