@@ -153,6 +153,12 @@ export default {
 		AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION_ERROR,
 		computeStateByAppName,
 	),
+	$getAppPopularSearches: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES,
+		AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES_ERROR,
+		computeStateByAppName,
+	),
 	$createAppPermission: createRequestReducer(
 		AppConstants.APP.PERMISSION.CREATE,
 		AppConstants.APP.PERMISSION.CREATE_SUCCESS,

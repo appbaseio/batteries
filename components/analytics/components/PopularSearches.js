@@ -5,18 +5,14 @@ import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import Filter from './Filter';
 import Searches from './Searches';
-import {
-	getPopularSearches,
-	popularSearchesFull,
-	exportCSVFile,
-	applyFilterParams,
-} from '../utils';
+import { popularSearchesFull, exportCSVFile, applyFilterParams } from '../utils';
 import { setSearchState } from '../../../modules/actions/app';
+import { getAppPopularSearches } from '../../../modules/actions/analytics';
+import { getAppPopularSearchesByName } from '../../../modules/selectors';
 import Loader from '../../shared/Loader/Spinner';
 import { setFilterValue } from '../../../modules/actions';
 import SummaryStats from './Summary/SummaryStats';
 import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
-import QueryOverview from './QueryOverview';
 
 const headers = {
 	key: 'Search Terms',
@@ -26,22 +22,20 @@ const headers = {
 	// conversionrate: 'Conversion Rate',
 };
 class PopularSearches extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isFetching: false,
-			popularSearches: null,
-		};
-	}
-
 	componentDidMount() {
-		const { filterId, filters, selectFilterValue } = this.props;
-		applyFilterParams({
-			filters,
-			filterId,
-			callback: this.fetchPopularSearches,
-			applyFilter: selectFilterValue,
-		});
+		const { filterId, filters, selectFilterValue, isSuccess, popularSearches } = this.props;
+		if (
+			!isSuccess ||
+			// to handle the index switch
+			popularSearches === null
+		) {
+			applyFilterParams({
+				filters,
+				filterId,
+				callback: this.fetchPopularSearches,
+				applyFilter: selectFilterValue,
+			});
+		}
 	}
 
 	componentDidUpdate(prevProps) {
@@ -52,22 +46,8 @@ class PopularSearches extends React.Component {
 	}
 
 	fetchPopularSearches = () => {
-		const { appName, filters } = this.props;
-		this.setState({
-			isFetching: true,
-		});
-		getPopularSearches(appName, undefined, undefined, filters)
-			.then((res) => {
-				this.setState({
-					popularSearches: res,
-					isFetching: false,
-				});
-			})
-			.catch(() => {
-				this.setState({
-					isFetching: false,
-				});
-			});
+		const { appName, fetchPopularSearches } = this.props;
+		fetchPopularSearches(appName);
 	};
 
 	handleReplaySearch = (searchState) => {
@@ -81,15 +61,21 @@ class PopularSearches extends React.Component {
 	};
 
 	render() {
-		const { isFetching, popularSearches } = this.state;
-		const { plan, displayReplaySearch, filterId, displaySummaryStats } = this.props;
-
-		if (isFetching) {
+		const {
+			plan,
+			isLoading,
+			displayReplaySearch,
+			filterId,
+			displaySummaryStats,
+			displayFilter,
+			popularSearches,
+		} = this.props;
+		if (isLoading) {
 			return <Loader />;
 		}
 		return (
 			<React.Fragment>
-				{filterId && <Filter filterId={filterId} />}
+				{displayFilter && filterId && <Filter filterId={filterId} />}
 				{displaySummaryStats ? (
 					<SummaryStats
 						summaryConfig={[
@@ -125,12 +111,7 @@ class PopularSearches extends React.Component {
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					columns={popularSearchesFull(
-						plan,
-						displayReplaySearch,
-						QueryOverview,
-						filterId,
-					)}
+					columns={popularSearchesFull(plan, displayReplaySearch)}
 					dataSource={(get(popularSearches, 'popular_searches') || []).map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
@@ -161,13 +142,22 @@ PopularSearches.defaultProps = {
 	handleReplayClick: undefined,
 	displayReplaySearch: false,
 	displaySummaryStats: false,
+	displayFilter: false,
+	isLoading: false,
+	isSuccess: false,
 	filterId: undefined,
+	popularSearches: null,
 	filters: {},
 };
 PopularSearches.propTypes = {
 	plan: PropTypes.string.isRequired,
+	popularSearches: PropTypes.object,
+	isLoading: PropTypes.bool,
+	isSuccess: PropTypes.bool,
 	filterId: PropTypes.string,
+	displayFilter: PropTypes.bool,
 	filters: PropTypes.object,
+	fetchPopularSearches: PropTypes.func.isRequired,
 	appName: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
@@ -176,14 +166,22 @@ PopularSearches.propTypes = {
 	selectFilterValue: PropTypes.func.isRequired,
 	displaySummaryStats: PropTypes.bool,
 };
-const mapStateToProps = (state, props) => ({
-	plan: 'growth',
-	appName: get(state, '$getCurrentApp.name'),
-	filters: get(state, `$getSelectedFilters.${props.filterId}`),
-});
+const mapStateToProps = (state, props) => {
+	const popularSearchesRaw = getAppPopularSearchesByName(state);
+	return {
+		plan: 'growth',
+		isLoading: get(state, '$getAppPopularSearches.isFetching'),
+		isSuccess: get(state, '$getAppPopularSearches.success'),
+		popularSearches: popularSearchesRaw,
+		appName: get(state, '$getCurrentApp.name'),
+		filters: get(state, `$getSelectedFilters.${props.filterId}`),
+	};
+};
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch, props) => ({
 	saveState: (state) => dispatch(setSearchState(state)),
+	fetchPopularSearches: (appName, clickAnalytics, size) =>
+		dispatch(getAppPopularSearches(appName, clickAnalytics, size, props.filterId)),
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });

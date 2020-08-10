@@ -245,7 +245,7 @@ class RequestDistribution extends React.Component {
 RequestDistribution.defaultProps = {
 	displayFilter: true,
 	filterId: undefined,
-	filters: undefined,
+	filters: {},
 	displaySummaryStats: false,
 	totalRequests: 0,
 	total200: 0,
@@ -283,7 +283,7 @@ const mapStateToProps = (state, props) => {
 		total201: get(requestDistributionRaw, 'total_201', []),
 		total400: get(requestDistributionRaw, 'total_400', []),
 		total401: get(requestDistributionRaw, 'total_401', []),
-		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 	};
 };
 const mapDispatchToProps = (dispatch, props) => ({

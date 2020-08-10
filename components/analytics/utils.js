@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { Button } from 'antd';
+import { Link } from 'react-router-dom';
 import get from 'lodash/get';
 // import mockProfile from './components/mockProfile';
 import { doGet, doPut } from '../../utils/requestService';
@@ -201,15 +202,19 @@ export const popularResultsCol = (plan, displayReplaySearch) => {
 	}
 	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
-export const defaultColumns = (plan, QueryOverview, filterId) => {
+export const defaultColumns = (plan, redirectToQuery = false) => {
 	const defaults = [
 		{
 			title: 'Search Terms',
 			dataIndex: 'key',
 			key: `search-term${updateIndex()}`,
-			...(QueryOverview
+			...(redirectToQuery
 				? {
-						render: (key) => <QueryOverview query={key} filterId={filterId} />,
+						render: (key) => (
+							<Link to={`popular-searches/query-overview/${key}`}>
+								<Button type="link">{key}</Button>
+							</Link>
+						),
 				  }
 				: null),
 		},
@@ -332,15 +337,15 @@ export const exportCSVFile = (headers, items, fileTitle) => {
 	}
 };
 
-export const popularSearchesFull = (plan, displayReplaySearch, QueryOverview, filterId) => {
+export const popularSearchesFull = (plan, displayReplaySearch) => {
 	if (!plan || plan !== 'growth') {
 		return [
-			...defaultColumns(plan, QueryOverview, filterId),
+			...defaultColumns(plan, true),
 			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
 		];
 	}
 	return [
-		...defaultColumns('free', QueryOverview, filterId),
+		...defaultColumns('free', true),
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',

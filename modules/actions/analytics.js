@@ -8,6 +8,7 @@ import {
 	getAnalyticsInsights,
 	updateAnalyticsInsights,
 	getQueryOverview,
+	getPopularSearches,
 } from '../../components/analytics/utils';
 import { createAction } from './utils';
 import AppConstants from '../constants';
@@ -73,10 +74,23 @@ export function getAppSearchLatency(name, filterId) {
 	};
 }
 
+const getFilters = (state, filterId) => {
+	if (Array.isArray(filterId)) {
+		return filterId.reduce(
+			(acc, curr) => ({ ...get(state, `$getSelectedFilters.${curr}`, {}), ...acc }),
+			{},
+		);
+	}
+	if (filterId) {
+		return get(state, `$getSelectedFilters.${filterId}`, {});
+	}
+	return null;
+};
+
 export function getAppQueryOverview(name, filterId, query) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const filters = getFilters(getState(), filterId);
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_QUERY_VOLUME));
 		return getQueryOverview(appName, filters, query)
 			.then((res) =>
@@ -121,6 +135,36 @@ export function getAppRequestDistribution(name, filterId) {
 				dispatch(
 					createAction(
 						AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function getAppPopularSearches(name, clickAnalytics, size, filterId) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES));
+		return getPopularSearches(appName, clickAnalytics, size, filters)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES_SUCCESS,
+						res,
+						undefined,
+						{
+							appName,
+						},
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES_ERROR,
 						null,
 						error,
 					),
@@ -198,7 +242,7 @@ export function getAppAnalyticsInsights(name) {
  */
 export function updateInsightStatus({ id, currentStatus, nextStatus }) {
 	return (dispatch, getState) => {
-		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		const appName = get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(
 			createAction(AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS, null, null, { id }),
 		);
