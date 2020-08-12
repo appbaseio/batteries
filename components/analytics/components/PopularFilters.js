@@ -99,12 +99,12 @@ class PopularFilters extends React.Component {
 								value: get(popularFilters, 'total_clicks'),
 							},
 							{
-								label: 'Avg. Click Position',
-								value: get(popularFilters, 'avg_click_position'),
-							},
-							{
 								label: 'Avg. Click Rate',
 								value: get(popularFilters, 'avg_click_rate'),
+							},
+							{
+								label: 'Avg. Click Position',
+								value: get(popularFilters, 'avg_click_position'),
 							},
 							{
 								label: 'Avg. Conversion Rate',

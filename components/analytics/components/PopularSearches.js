@@ -92,12 +92,12 @@ class PopularSearches extends React.Component {
 								value: get(popularSearches, 'total_clicks'),
 							},
 							{
-								label: 'Avg. Click Position',
-								value: get(popularSearches, 'avg_click_position'),
-							},
-							{
 								label: 'Avg. Click Rate',
 								value: get(popularSearches, 'avg_click_rate'),
+							},
+							{
+								label: 'Avg. Click Position',
+								value: get(popularSearches, 'avg_click_position'),
 							},
 							{
 								label: 'Avg. Conversion Rate',

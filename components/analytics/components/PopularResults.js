@@ -101,12 +101,12 @@ class PopularResults extends React.Component {
 								value: get(popularResults, 'total_clicks'),
 							},
 							{
-								label: 'Avg. Click Position',
-								value: get(popularResults, 'avg_click_position'),
-							},
-							{
 								label: 'Avg. Click Rate',
 								value: get(popularResults, 'avg_click_rate'),
+							},
+							{
+								label: 'Avg. Click Position',
+								value: get(popularResults, 'avg_click_position'),
 							},
 							{
 								label: 'Avg. Conversion Rate',

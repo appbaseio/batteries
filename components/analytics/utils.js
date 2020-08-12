@@ -352,16 +352,16 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 			key: `ps-clicks${updateIndex()}`,
 		},
 		{
-			title: 'Avg Click Position',
-			dataIndex: 'click_position',
-			render: (i) => i.toFixed(2),
-			key: `ps-clickposition${updateIndex()}`,
-		},
-		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
 			render: (i) => i.toFixed(2),
 			key: `ps-clickrate${updateIndex()}`,
+		},
+		{
+			title: 'Avg Click Position',
+			dataIndex: 'click_position',
+			render: (i) => i.toFixed(2),
+			key: `ps-clickposition${updateIndex()}`,
 		},
 		{
 			title: 'Conversion Rate',
