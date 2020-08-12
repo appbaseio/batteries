@@ -10,6 +10,8 @@ const appPermission = (state) => get(state, '$getAppPermissions.results');
 const appSearchLatency = (state) => get(state, '$getAppSearchLatency.results');
 const appGeoDistribution = (state) => get(state, '$getAppGeoDistribution.results');
 const appRequestDistribution = (state) => get(state, '$getAppRequestDistribution.results');
+const appQueryOverview = (state) => get(state, '$getAppQueryOverview.results');
+const appPopularSearches = (state) => get(state, '$getAppPopularSearches.results');
 const appAnalyticsSummary = (state) => get(state, '$getAppAnalyticsSummary.results');
 const appPublicKey = (state) => get(state, '$getAppPublicKey.results');
 const appFunctions = (state) => get(state, '$getAppFunctions.results');
@@ -45,6 +47,8 @@ const getAppRequestDistributionByName = createSelector(
 	appName,
 	getCollectionByKey,
 );
+const getAppQueryOverviewByName = createSelector(appQueryOverview, appName, getCollectionByKey);
+const getAppPopularSearchesByName = createSelector(appPopularSearches, appName, getCollectionByKey);
 
 const getAppPublicKey = createSelector(appPublicKey, appName, getCollectionByKey);
 const getAppFunctions = createSelector(appFunctions, appName, getCollectionByKey);
@@ -65,4 +69,6 @@ export {
 	getAppSettings,
 	getAppRules,
 	getAppAnalyticsInsightsByName,
+	getAppQueryOverviewByName,
+	getAppPopularSearchesByName,
 };

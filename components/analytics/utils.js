@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { Button } from 'antd';
+import { Link } from 'react-router-dom';
 import get from 'lodash/get';
 // import mockProfile from './components/mockProfile';
 import { doGet, doPut } from '../../utils/requestService';
@@ -201,12 +202,21 @@ export const popularResultsCol = (plan, displayReplaySearch) => {
 	}
 	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
-export const defaultColumns = (plan) => {
+export const defaultColumns = (plan, redirectToQuery = false) => {
 	const defaults = [
 		{
 			title: 'Search Terms',
 			dataIndex: 'key',
 			key: `search-term${updateIndex()}`,
+			...(redirectToQuery
+				? {
+						render: (key) => (
+							<Link to={`popular-searches/query-overview/${key}`}>
+								<Button type="link">{key}</Button>
+							</Link>
+						),
+				  }
+				: null),
 		},
 		{
 			title: 'Total Queries',
@@ -227,6 +237,42 @@ export const defaultColumns = (plan) => {
 		},
 	];
 };
+
+export const topClicksColumns = () => [
+	{
+		title: 'Results',
+		dataIndex: 'key',
+		key: `top-click${updateIndex()}`,
+	},
+	{
+		title: 'Clicks',
+		dataIndex: 'count',
+		key: `top-click-count${updateIndex()}`,
+	},
+	{
+		title: 'Click Type',
+		dataIndex: 'click_type',
+		key: `top-click_type${updateIndex()}`,
+	},
+];
+
+export const topResultsColumns = (ViewSource) => [
+	{
+		title: 'Results',
+		dataIndex: 'key',
+		key: `top-results-key${updateIndex()}`,
+	},
+	{
+		title: 'Impressions',
+		dataIndex: 'count',
+		key: `top-results-count${updateIndex()}`,
+	},
+	{
+		title: 'Source',
+		key: `top-results-source${updateIndex()}`,
+		render: (item) => <ViewSource docID={item.key} index={item.index} />,
+	},
+];
 
 export const popularSearchesCol = (plan, displayReplaySearch) => {
 	if (plan !== 'growth' && plan !== 'bootstrap') {
@@ -294,12 +340,12 @@ export const exportCSVFile = (headers, items, fileTitle) => {
 export const popularSearchesFull = (plan, displayReplaySearch) => {
 	if (!plan || plan !== 'growth') {
 		return [
-			...defaultColumns(plan),
+			...defaultColumns(plan, true),
 			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
 		];
 	}
 	return [
-		...defaultColumns('free'),
+		...defaultColumns('free', true),
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
@@ -516,6 +562,41 @@ export function getSearchLatency(appName, filters) {
 				Authorization: `Basic ${authToken}`,
 			},
 		})
+			// Comment out this line
+			.then((res) => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+
+/**
+ * Get the query overview
+ * @param {string} appName
+ * @param {string} filters
+ * @param {string} query
+ */
+export function getQueryOverview(appName, filters, query) {
+	return new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
+		const ACC_API = getURL();
+		fetch(
+			`${ACC_API}/_analytics/${getApp(appName)}query-overview${getQueryParams({
+				...filters,
+				...(query && query !== '<empty_query>' ? { query } : null),
+			})}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
+				},
+			},
+		)
 			// Comment out this line
 			.then((res) => res.json())
 			.then((res) => {

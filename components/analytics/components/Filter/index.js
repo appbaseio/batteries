@@ -58,7 +58,7 @@ class Filter extends React.Component {
 		if (!isFetchedFilterLabels) {
 			if (isValidPlan(tier, featureCustomEvents)) {
 				if (selectedFilterValue) {
-					this.setSelectedlabel(selectedFilterValue);
+					this.setSelectedLabel(selectedFilterValue);
 				}
 				fetchFilterLabels();
 			}
@@ -68,11 +68,11 @@ class Filter extends React.Component {
 	componentDidUpdate(prevProps) {
 		const { selectedFilterValue } = this.props;
 		if (JSON.stringify(prevProps.selectedFilterValue) !== JSON.stringify(selectedFilterValue)) {
-			this.setSelectedlabel(selectedFilterValue);
+			this.setSelectedLabel(selectedFilterValue);
 		}
 	}
 
-	setSelectedlabel = (value) => {
+	setSelectedLabel = (value) => {
 		if (typeof value === 'object' && get(value, 'from') && get(value, 'to')) {
 			const { from, to } = value;
 			const selectedDateRange = Object.keys(dateRanges).find(
