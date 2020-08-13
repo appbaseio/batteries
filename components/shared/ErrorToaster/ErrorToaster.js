@@ -8,14 +8,20 @@ class ErrorToaster extends React.Component {
 		hasError: false,
 	};
 
-	toggleError = () => {
-		this.setState((prevState) => ({
-			hasError: !prevState.hasError,
-		}));
+	retry = () => {
+		this.setState({
+			hasError: false,
+		});
+	};
+
+	catchError = () => {
+		this.setState({
+			hasError: true,
+		});
 	};
 
 	componentDidCatch(error, errorInfo) {
-		this.toggleError();
+		this.catchError();
 		Sentry.withScope((scope) => {
 			Object.keys(errorInfo).forEach((key) => {
 				scope.setExtra(key, errorInfo[key]);
@@ -30,7 +36,7 @@ class ErrorToaster extends React.Component {
 
 		if (hasError && placeholder) {
 			return placeholder({
-				errorHandler: this.toggleError,
+				errorHandler: this.retry,
 			});
 		}
 
@@ -42,7 +48,7 @@ class ErrorToaster extends React.Component {
 							<span style={{ display: 'inline-block', marginRight: 5 }}>
 								{title || 'Something went wrong.'}
 							</span>
-							<Button size="small" type="primary" onClick={this.toggleError}>
+							<Button size="small" type="primary" onClick={this.retry}>
 								<Icon type="reload" />
 								Retry
 							</Button>
@@ -74,7 +80,7 @@ class ErrorToaster extends React.Component {
 									<Icon type="message" />
 									Chat with us
 								</Button>
-								<Button type="primary" onClick={this.toggleError}>
+								<Button type="primary" onClick={this.retry}>
 									<Icon type="reload" />
 									Retry
 								</Button>
