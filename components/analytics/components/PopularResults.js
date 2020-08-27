@@ -78,7 +78,7 @@ class PopularResults extends React.Component {
 
 	render() {
 		const { isFetching, popularResults } = this.state;
-		const { plan, displayReplaySearch, filterId, displaySummaryStats } = this.props;
+		const { plan, filterId, displaySummaryStats } = this.props;
 		if (isFetching) {
 			return <Loader />;
 		}
@@ -120,7 +120,7 @@ class PopularResults extends React.Component {
 						scroll: { x: 1000 },
 					}}
 					showViewOption={false}
-					columns={popularResultsFull(plan, displayReplaySearch, ViewSource)}
+					columns={popularResultsFull(plan, ViewSource)}
 					dataSource={(get(popularResults, 'popular_results') || []).map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
@@ -150,7 +150,6 @@ class PopularResults extends React.Component {
 
 PopularResults.defaultProps = {
 	handleReplayClick: undefined,
-	displayReplaySearch: false,
 	displaySummaryStats: false,
 	filterId: undefined,
 	filters: undefined,
@@ -161,7 +160,6 @@ PopularResults.propTypes = {
 	filters: PropTypes.object,
 	plan: PropTypes.string.isRequired,
 	appName: PropTypes.string.isRequired,
-	displayReplaySearch: PropTypes.bool,
 	displaySummaryStats: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,

@@ -373,7 +373,7 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 	];
 };
 
-export const popularResultsFull = (plan, displayReplaySearch, ViewSource) => {
+export const popularResultsFull = (plan, ViewSource) => {
 	return [
 		...popularResultsCol('free'),
 		{
@@ -401,8 +401,6 @@ export const popularResultsFull = (plan, displayReplaySearch, ViewSource) => {
 			render: (i) => i.toFixed(2),
 			key: `pr-conversionrate${updateIndex()}`,
 		},
-		...(displayReplaySearch ? replaySearch : []),
-		// hide source at cluster level
 		{
 			title: 'Source',
 			key: `pr-source${updateIndex()}`,
