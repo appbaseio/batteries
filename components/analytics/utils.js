@@ -231,7 +231,7 @@ export const defaultColumns = (plan, redirectToQuery = false) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
-			render: (i) => i.toFixed(2),
+			render: (i) => `${i.toFixed(2)}%`,
 			key: `clickrate${updateIndex()}`,
 		},
 	];
@@ -353,7 +353,7 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
-			render: (i) => i.toFixed(2),
+			render: (i) => `${i.toFixed(2)}%`,
 			key: `ps-clickrate${updateIndex()}`,
 		},
 		{
@@ -365,7 +365,7 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
-			render: (i) => i.toFixed(2),
+			render: (i) => `${i.toFixed(2)}%`,
 			key: `ps-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
@@ -383,7 +383,7 @@ export const popularResultsFull = (plan, ViewSource) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
-			render: (i) => i.toFixed(2),
+			render: (i) => `${i.toFixed(2)}%`,
 			key: `pr-clickrate${updateIndex()}`,
 		},
 		{
@@ -397,7 +397,7 @@ export const popularResultsFull = (plan, ViewSource) => {
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
-			render: (i) => i.toFixed(2),
+			render: (i) => `${i.toFixed(2)}%`,
 			key: `pr-conversionrate${updateIndex()}`,
 		},
 		{
@@ -424,7 +424,7 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Rate',
 			dataIndex: 'click_rate',
-			render: (i) => i.toFixed(2),
+			render: (i) => `${i.toFixed(2)}%`,
 			key: `pf-clickrate${updateIndex()}`,
 		},
 		{
@@ -438,7 +438,7 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Conversion Rate',
 			dataIndex: 'conversion_rate',
-			render: (i) => i.toFixed(2),
+			render: (i) => `${i.toFixed(2)}%`,
 			key: `pf-conversionrate${updateIndex()}`,
 		},
 		...(displayReplaySearch ? replaySearch : []),
