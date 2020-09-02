@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
+import { truncate } from 'lodash';
 import Filter from './Filter';
 import Searches from './Searches';
 import { popularSearchesFull, exportCSVFile, applyFilterParams } from '../utils';
@@ -93,7 +94,8 @@ class PopularSearches extends React.Component {
 							},
 							{
 								label: 'Avg. Click Rate',
-								value: get(popularSearches, 'avg_click_rate'),
+								value: `${get(popularSearches, 'avg_click_rate')}%`,
+								percent: true,
 							},
 							{
 								label: 'Avg. Click Position',
@@ -101,7 +103,7 @@ class PopularSearches extends React.Component {
 							},
 							{
 								label: 'Avg. Conversion Rate',
-								value: get(popularSearches, 'avg_conversion_rate'),
+								value: `${get(popularSearches, 'avg_conversion_rate')}%`,
 							},
 						]}
 					/>
