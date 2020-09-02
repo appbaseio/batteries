@@ -167,8 +167,7 @@ export const popularFiltersCol = (plan, displayReplaySearch) => {
 			title: 'Filters',
 			render: (item) => (
 				<React.Fragment>
-					<strong>{item.key}</strong>
-					{` ${item.value}`}
+					<strong>{item.value || item.key}</strong>
 				</React.Fragment>
 			),
 			key: `pf-filters${updateIndex()}`,

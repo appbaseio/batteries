@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
+import { Table } from 'antd';
 import Searches from './Searches';
 import Filter from './Filter';
 import { getPopularFilters, popularFiltersFull, exportCSVFile, applyFilterParams } from '../utils';
@@ -17,6 +18,71 @@ const headers = {
 	count: 'Count',
 	// clicks: 'Clicks',
 	// conversionrate: 'Conversion Rate',
+};
+
+const groupBy = (collection, property) => {
+	let i = 0;
+	let val;
+	let index;
+	const values = [];
+	const result = [];
+	for (; i < collection.length; i += 1) {
+		val = collection[i][property];
+		index = values.indexOf(val);
+		if (index > -1) result[index].push(collection[i]);
+		else {
+			values.push(val);
+			result.push([collection[i]]);
+		}
+	}
+	return result;
+};
+
+const getNormalizedData = (filtersData = []) => {
+	const groupedData = groupBy(filtersData, 'key');
+	const normalizedData = [];
+	groupedData.forEach((data) => {
+		if (data.length) {
+			const { key } = data[0];
+			let count = 0;
+			let clicks = 0;
+			let clickRate = 0;
+			let clickPosition = 0;
+			let clickPositionCount = 0;
+			let conversions = 0;
+			let conversionRate = 0;
+
+			data.forEach((item) => {
+				count += item.count;
+				clicks += item.clicks;
+				clickPosition += item.click_position;
+				if (item.click_position) {
+					clickPositionCount += 1;
+				}
+				// Popular filters endpoint doesn't return conversions so calculate it from conversion rate
+				conversions += (item.conversion_rate * item.count) / 100;
+			});
+			if (key) {
+				if (count !== 0) {
+					clickRate = (clicks / count) * 100;
+					conversionRate = (conversions / count) * 100;
+				}
+				if (clickPositionCount !== 0) {
+					clickPosition /= clickPositionCount;
+				}
+				normalizedData.push({
+					key,
+					count,
+					clicks,
+					click_rate: clickRate,
+					click_position: clickPosition,
+					conversion_rate: conversionRate,
+					child: data,
+				});
+			}
+		}
+	});
+	return normalizedData;
 };
 
 class PopularFilters extends React.Component {
@@ -116,13 +182,27 @@ class PopularFilters extends React.Component {
 				<Searches
 					tableProps={{
 						scroll: { x: 700 },
+						expandedRowRender: (record) => {
+							return (
+								<Table
+									columns={popularFiltersFull(plan, displayReplaySearch)}
+									dataSource={record.child.map((item) => ({
+										...item,
+										handleReplaySearch: this.handleReplaySearch,
+									}))}
+									rowKey={(item) => item.key + item.count + item.value}
+								/>
+							);
+						},
 					}}
 					showViewOption={false}
-					columns={popularFiltersFull(plan, displayReplaySearch)}
-					dataSource={(get(popularFilters, 'popular_filters') || []).map((item) => ({
-						...item,
-						handleReplaySearch: this.handleReplaySearch,
-					}))}
+					columns={popularFiltersFull(plan, false)}
+					dataSource={getNormalizedData(get(popularFilters, 'popular_filters')).map(
+						(item) => ({
+							...item,
+							handleReplaySearch: this.handleReplaySearch,
+						}),
+					)}
 					title="Popular Filters"
 					pagination={{
 						pageSize: 10,
