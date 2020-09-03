@@ -63,6 +63,14 @@ const replaySearch = [
 	},
 ];
 
+const replaySearchFake = [
+	{
+		title: '',
+		key: 'search_state',
+		width: 125,
+	},
+];
+
 export const getTimeDuration = (time) => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
@@ -161,18 +169,32 @@ export const parseTimeDuration = (time) => {
 	};
 };
 
-export const popularFiltersCol = (plan, displayReplaySearch) => {
+export const popularFiltersCol = (plan, displayReplaySearch, isSubTable = false) => {
 	const defaults = [
-		{
-			title: 'Filters',
-			render: (item) => (
-				<React.Fragment>
-					<strong>{item.key}</strong>
-					{` ${item.value}`}
-				</React.Fragment>
-			),
-			key: `pf-filters${updateIndex()}`,
-		},
+		...(isSubTable
+			? [
+					{
+						title: 'Values',
+						render: (item) => (
+							<React.Fragment>
+								<strong>{item.value}</strong>
+							</React.Fragment>
+						),
+						key: `pf-values${updateIndex()}`,
+					},
+			  ]
+			: [
+					{
+						title: 'Filters',
+						render: (item) => (
+							<React.Fragment>
+								<strong>{item.key}</strong>
+								{item.value ? ` ${item.value}` : ''}
+							</React.Fragment>
+						),
+						key: `pf-filters${updateIndex()}`,
+					},
+			  ]),
 		{
 			title: 'Selections',
 			dataIndex: 'count',
@@ -184,7 +206,7 @@ export const popularFiltersCol = (plan, displayReplaySearch) => {
 	}
 	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
-export const popularResultsCol = (plan, displayReplaySearch) => {
+export const popularResultsCol = (plan) => {
 	const defaults = [
 		{
 			title: 'Results',
@@ -200,7 +222,7 @@ export const popularResultsCol = (plan, displayReplaySearch) => {
 	if (!plan || (plan !== 'growth' && plan !== 'bootstrap')) {
 		return defaults;
 	}
-	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
+	return defaults;
 };
 export const defaultColumns = (plan, redirectToQuery = false) => {
 	const defaults = [
@@ -408,15 +430,23 @@ export const popularResultsFull = (plan, ViewSource) => {
 		},
 	];
 };
-export const popularFiltersFull = (plan, displayReplaySearch) => {
+export const popularFiltersFull = (plan, displayReplaySearch, isSubTable) => {
 	if (plan !== 'growth') {
 		return [
-			...popularFiltersCol(plan),
+			...popularFiltersCol(plan, false, isSubTable),
 			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
 		];
 	}
+	let replaySearchCol = [];
+	if (displayReplaySearch) {
+		if (isSubTable) {
+			replaySearchCol = replaySearch;
+		} else {
+			replaySearchCol = replaySearchFake;
+		}
+	}
 	return [
-		...popularFiltersCol('free'),
+		...popularFiltersCol('free', false, isSubTable),
 		{
 			title: 'Clicks',
 			dataIndex: 'clicks',
@@ -442,7 +472,7 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 			render: (i) => `${i.toFixed(2)}%`,
 			key: `pf-conversionrate${updateIndex()}`,
 		},
-		...(displayReplaySearch ? replaySearch : []),
+		...replaySearchCol,
 	];
 };
 
