@@ -185,18 +185,19 @@ class PopularFilters extends React.Component {
 						expandedRowRender: (record) => {
 							return (
 								<Table
-									columns={popularFiltersFull(plan, displayReplaySearch)}
+									columns={popularFiltersFull(plan, displayReplaySearch, true)}
 									dataSource={record.child.map((item) => ({
 										...item,
 										handleReplaySearch: this.handleReplaySearch,
 									}))}
 									rowKey={(item) => item.key + item.count + item.value}
+									pagination={false}
 								/>
 							);
 						},
 					}}
 					showViewOption={false}
-					columns={popularFiltersFull(plan, false)}
+					columns={popularFiltersFull(plan, displayReplaySearch)}
 					dataSource={getNormalizedData(get(popularFilters, 'popular_filters')).map(
 						(item) => ({
 							...item,
