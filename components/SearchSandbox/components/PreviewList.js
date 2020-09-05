@@ -93,7 +93,7 @@ class PreviewList extends React.Component {
 
 	handleSave = () => {
 		const values = {};
-		this.options.forEach(option => (values[option] = this.state[option]));
+		this.options.forEach((option) => (values[option] = this.state[option]));
 
 		if (!this.state.description || !this.state.title) {
 			message.error('Please select title and description fields');
@@ -101,26 +101,26 @@ class PreviewList extends React.Component {
 		this.props.handleSavePreview(values);
 	};
 
-	resetSelectedOption = optionName => {
+	resetSelectedOption = (optionName) => {
 		const name = optionName;
 		this.setState({
 			[name]: '',
 		});
 	};
 
-	renderDropdown = name => {
-		const options = this.options.filter(option => option !== name);
+	renderDropdown = (name) => {
+		const options = this.options.filter((option) => option !== name);
 		const usedValue = [];
-		options.forEach(value => usedValue.push(this.state[value]));
+		options.forEach((value) => usedValue.push(this.state[value]));
 
-		const menuOption = this.props.options.filter(option => !usedValue.includes(option));
+		const menuOption = this.props.options.filter((option) => !usedValue.includes(option));
 
 		const menu = (
 			<Menu
-				onClick={e => this.handleMenuClick(e, name)}
+				onClick={(e) => this.handleMenuClick(e, name)}
 				style={{ maxHeight: '250px', overflowY: 'scroll' }}
 			>
-				{menuOption.map(option => (
+				{menuOption.map((option) => (
 					<Menu.Item key={option}>{option}</Menu.Item>
 				))}
 			</Menu>
@@ -152,7 +152,7 @@ class PreviewList extends React.Component {
 		);
 	};
 
-	handleSwitch = checked => {
+	handleSwitch = (checked) => {
 		this.setState({
 			showRest: checked,
 		});
@@ -169,13 +169,13 @@ class PreviewList extends React.Component {
 		let resultComponentProps = this.props.componentProps.result || {};
 		resultComponentProps = {
 			...resultComponentProps,
-			renderItem: res => {
+			renderItem: (res) => {
 				const url = getNestedValue(res, urlKey);
 				const title = getNestedValue(res, titleKey);
 				const description = getNestedValue(res, descriptionKey);
 				const image = getNestedValue(res, imageKey);
 				return (
-					<Row type="flex" gutter={16} key={res._id} className={resultStyle}>
+					<Row type="flex" gutter={16} key={res._id} id={res._id} className={resultStyle}>
 						<Col span={image ? 6 : 0}>
 							<img src={image} alt={title || 'Choose a valid Title Field for alt'} />
 						</Col>
@@ -215,8 +215,8 @@ class PreviewList extends React.Component {
 				<Row gutter={16} align="middle">
 					<Col md={8} span={24}>
 						{this.options
-							.filter(i => i !== 'showRest')
-							.map(option => this.renderDropdown(option))}
+							.filter((i) => i !== 'showRest')
+							.map((option) => this.renderDropdown(option))}
 						<Paragraph strong>Show Remaining Fields</Paragraph>
 						<Switch checked={showRest} onChange={this.handleSwitch} />
 					</Col>
