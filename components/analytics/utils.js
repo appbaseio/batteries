@@ -260,7 +260,7 @@ export const defaultColumns = (plan, redirectToQuery = false) => {
 	];
 };
 
-export const topClicksColumns = () => [
+export const topClicksColumns = (ViewSource) => [
 	{
 		title: 'Results',
 		dataIndex: 'key',
@@ -268,13 +268,19 @@ export const topClicksColumns = () => [
 	},
 	{
 		title: 'Clicks',
-		dataIndex: 'count',
+		render: (item) => (
+			<span>
+				<b>{item.count}</b>
+				{` (${item.click_type})`}
+			</span>
+		),
+		width: 150,
 		key: `top-click-count${updateIndex()}`,
 	},
 	{
-		title: 'Click Type',
-		dataIndex: 'click_type',
-		key: `top-click_type${updateIndex()}`,
+		title: 'Source',
+		key: `top-results-source${updateIndex()}`,
+		render: (item) => <ViewSource docID={item.key} index={item.index} />,
 	},
 ];
 
@@ -287,6 +293,7 @@ export const topResultsColumns = (ViewSource) => [
 	{
 		title: 'Impressions',
 		dataIndex: 'count',
+		width: 150,
 		key: `top-results-count${updateIndex()}`,
 	},
 	{
@@ -614,6 +621,7 @@ export function getQueryOverview(appName, filters, query) {
 		const ACC_API = getURL();
 		fetch(
 			`${ACC_API}/_analytics/${getApp(appName)}query-overview${getQueryParams({
+				size: 100,
 				...filters,
 				...(query && query !== '<empty_query>' ? { query } : null),
 			})}`,

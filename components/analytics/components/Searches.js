@@ -120,7 +120,6 @@ Searches.propTypes = {
 	plan: PropTypes.string,
 	tableProps: PropTypes.object,
 	pagination: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-	tableProps: PropTypes.object,
 };
 
 export default withErrorToaster(Searches);

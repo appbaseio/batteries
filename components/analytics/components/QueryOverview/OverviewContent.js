@@ -19,21 +19,21 @@ import { topClicksColumns, topResultsColumns, applyFilterParams } from '../../ut
 const results = css`
 	width: 100%;
 	margin-top: 20px;
-	${mediaKey.small} {
+	${mediaKey.medium} {
 		flex-direction: column;
 	}
 `;
 const searchCls = css`
 	flex: 50%;
 	margin-right: 10px;
-	${mediaKey.small} {
+	${mediaKey.medium} {
 		margin-right: 0;
 	}
 `;
 const noResultsCls = css`
 	flex: 50%;
 	margin-left: 10px;
-	${mediaKey.small} {
+	${mediaKey.medium} {
 		margin-left: 0;
 		margin-top: 20px;
 	}
@@ -102,17 +102,32 @@ class OverviewContent extends React.Component {
 							<div css={searchCls}>
 								<Searches
 									dataSource={topClicks}
-									columns={topClicksColumns()}
+									columns={topClicksColumns(ViewSource)}
 									title="Top Clicks"
 									css="height: 100%"
+									breakWord
+									tableProps={{
+										pagination: {
+											pageSize: 5,
+										},
+										rowKey: (record) => record.key + record.click_type,
+									}}
 								/>
 							</div>
 							<div css={noResultsCls}>
 								<Searches
 									dataSource={topResults}
+									pagination
 									columns={topResultsColumns(ViewSource)}
 									title="Top Results"
 									css="height: 100%"
+									breakWord
+									tableProps={{
+										pagination: {
+											pageSize: 5,
+										},
+										rowKey: (record) => record.key + record.click_type,
+									}}
 								/>
 							</div>
 						</Flex>
