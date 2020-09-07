@@ -303,7 +303,6 @@ export function reIndex({
 	version = '5',
 	credentials,
 	settings,
-	enableNgram,
 }) {
 	const body = {
 		mappings,
@@ -316,12 +315,6 @@ export function reIndex({
 		delete body.type;
 		const { properties, ...rest } = mappings;
 		body.mappings = { properties: { ...properties }, ...rest };
-	}
-
-	if (enableNgram) {
-		body.mappings = addSearchMappings(body.mappings);
-	} else {
-		body.mappings = deleteSearchMappings(body.mappings);
 	}
 
 	return new Promise((resolve, reject) => {
