@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
-import { truncate } from 'lodash';
 import Filter from './Filter';
 import Searches from './Searches';
 import { popularSearchesFull, exportCSVFile, applyFilterParams } from '../utils';
@@ -118,6 +117,7 @@ class PopularSearches extends React.Component {
 						...item,
 						handleReplaySearch: this.handleReplaySearch,
 					}))}
+					breakWord
 					title="Popular Searches"
 					onClickDownload={() => {
 						exportCSVFile(

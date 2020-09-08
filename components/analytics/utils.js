@@ -233,9 +233,7 @@ export const defaultColumns = (plan, redirectToQuery = false) => {
 			...(redirectToQuery
 				? {
 						render: (key) => (
-							<Link to={`popular-searches/query-overview/${key}`}>
-								<Button type="link">{key}</Button>
-							</Link>
+							<Link to={`popular-searches/query-overview/${key}`}>{key}</Link>
 						),
 				  }
 				: null),
@@ -271,7 +269,7 @@ export const topClicksColumns = (ViewSource) => [
 		render: (item) => (
 			<span>
 				<b>{item.count}</b>
-				{` (${item.click_type})`}
+				{item.click_type ? ` (${item.click_type})` : ''}
 			</span>
 		),
 		width: 150,

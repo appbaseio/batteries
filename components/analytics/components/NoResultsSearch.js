@@ -105,6 +105,7 @@ class NoResultsSearch extends React.Component {
 						handleReplaySearch: this.handleReplaySearch,
 						handleQueryRule: this.handleQueryRule,
 					}))}
+					breakWord
 					columns={noResultsFull(plan, displayReplaySearch)}
 					title="No Results Searches"
 					pagination={{
