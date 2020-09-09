@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Card } from 'antd';
+import { Card, Tooltip, Icon } from 'antd';
 import { css } from 'react-emotion';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -103,7 +103,19 @@ class OverviewContent extends React.Component {
 								<Searches
 									dataSource={topClicks}
 									columns={topClicksColumns(ViewSource)}
-									title="Top Clicks"
+									title={
+										<span>
+											Top Result Clicks
+											<Tooltip title="In the drilldown view, only result clicks are shown. The summary stat includes suggestion clicks as well.">
+												<Icon
+													style={{
+														marginLeft: 8,
+													}}
+													type="info-circle"
+												/>
+											</Tooltip>
+										</span>
+									}
 									css="height: 100%"
 									breakWord
 									tableProps={{
