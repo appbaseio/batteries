@@ -56,7 +56,7 @@ class RequestDistribution extends React.Component {
 		const { errors, filters, fetchAppRequestDistribution } = this.props;
 		displayErrors(errors, prevProps.errors);
 
-		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+		if (filters && prevProps.filters !== filters) {
 			fetchAppRequestDistribution();
 			if (get(filters, 'from') && get(filters, 'to')) {
 				const a = moment(get(filters, 'from'));
@@ -245,7 +245,7 @@ class RequestDistribution extends React.Component {
 RequestDistribution.defaultProps = {
 	displayFilter: true,
 	filterId: undefined,
-	filters: {},
+	filters: undefined,
 	displaySummaryStats: false,
 	totalRequests: 0,
 	total200: 0,

@@ -150,7 +150,7 @@ const mapStateToProps = (state, props) => {
 		searchVolume: get(appAnalytics, 'search_histogram', []),
 		noResults: get(appAnalytics, 'no_results_searches', []),
 		isFetching: get(state, '$getAppAnalytics.isFetching'),
-		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 		isInsightsSidebarOpen: get(state, '$getAppAnalyticsInsights.isOpen', false),
 	};
 };

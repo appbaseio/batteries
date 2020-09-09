@@ -31,7 +31,7 @@ class Summary extends React.Component {
 	componentDidUpdate(prevProps) {
 		const { errors, filters } = this.props;
 		displayErrors(errors, prevProps.errors);
-		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+		if (filters && prevProps.filters !== filters) {
 			const { fetchAppAnalyticsSummary } = this.props;
 			fetchAppAnalyticsSummary();
 		}
@@ -358,7 +358,7 @@ const mapStateToProps = (state, props) => {
 		isLoading: get(state, '$getAppAnalyticsSummary.isFetching'),
 		tier: get(state, '$getAppPlan.results.tier'),
 		errors: [get(state, '$getAppAnalyticsSummary.error')],
-		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 		featureCustomEvents: get(state, '$getAppPlan.results.feature_custom_events', false),
 	};
 };

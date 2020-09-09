@@ -68,7 +68,7 @@ class SearchLatency extends React.Component {
 
 	componentDidUpdate(prevProps) {
 		const { filters, fetchAppSearchLatency } = this.props;
-		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+		if (filters && prevProps.filters !== filters) {
 			fetchAppSearchLatency();
 		}
 	}
@@ -202,7 +202,7 @@ const mapStateToProps = (state, props) => {
 		isLoading: get(state, '$getAppSearchLatency.isFetching'),
 		success: get(state, '$getAppSearchLatency.success'),
 		isSearchLatencyPresent: !!searchLatency,
-		filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 		isInsightsSidebarOpen: get(state, '$getAppAnalyticsInsights.isOpen', false),
 	};
 };

@@ -37,7 +37,7 @@ class NoResultsSearch extends React.Component {
 
 	componentDidUpdate(prevProps) {
 		const { filters } = this.props;
-		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+		if (filters && prevProps.filters !== filters) {
 			this.fetchNoResults();
 		}
 	}
@@ -131,7 +131,7 @@ NoResultsSearch.defaultProps = {
 	displayReplaySearch: false,
 	displaySummaryStats: false,
 	filterId: undefined,
-	filters: {},
+	filters: undefined,
 };
 
 NoResultsSearch.propTypes = {

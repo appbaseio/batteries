@@ -35,7 +35,7 @@ const DateFilter = ({ visible, toggleVisible, onChange, label, dateRanges, colum
 			}
 			placement="leftTop"
 		>
-			<Button onClick={toggleVisible}>
+			<Button style={{ marginLeft: 15 }} onClick={toggleVisible}>
 				<Icon type="clock-circle" />
 				{label}
 			</Button>

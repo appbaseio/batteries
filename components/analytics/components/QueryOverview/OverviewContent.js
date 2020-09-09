@@ -52,7 +52,7 @@ class OverviewContent extends React.Component {
 
 	componentDidUpdate(prevProps) {
 		const { filters, fetchAppQueryOverview } = this.props;
-		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+		if (filters && prevProps.filters !== filters) {
 			fetchAppQueryOverview();
 		}
 	}
@@ -144,7 +144,7 @@ OverviewContent.defaultProps = {
 	histogram: [],
 	topClicks: [],
 	topResults: [],
-	filters: {},
+	filters: undefined,
 };
 OverviewContent.propTypes = {
 	filterId: PropTypes.oneOf([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,

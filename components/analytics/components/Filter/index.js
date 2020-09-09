@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, Spin, Button, Icon } from 'antd';
+import { Select, Spin, Button, Icon, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
@@ -140,6 +140,13 @@ class Filter extends React.Component {
 		this.fetchFilterValue(filterValue);
 	};
 
+	handleRefresh = () => {
+		const { selectFilterValue, filterId } = this.props;
+		// Set filter key as `refresh` to im-mutate the filters with same value in the redux store
+		// so component can trigger the API (check the getSelectedFilters reducer it handles that special case)
+		selectFilterValue(filterId, 'refresh__data');
+	};
+
 	fetchFilterValue = (filterValue = '') => {
 		const { filterKey } = this.state;
 		const { fetchFilterValues } = this.props;
@@ -230,6 +237,9 @@ class Filter extends React.Component {
 						)}
 					</Flex>
 					<Flex>
+						<Tooltip placement="topLeft" title="Refresh data.">
+							<Button onClick={this.handleRefresh} icon="redo" />
+						</Tooltip>
 						<DateFilter
 							onChange={this.handleDateRangeChange}
 							toggleVisible={this.handleDateRangePopover}

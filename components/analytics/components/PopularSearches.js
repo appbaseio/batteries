@@ -40,7 +40,7 @@ class PopularSearches extends React.Component {
 
 	componentDidUpdate(prevProps) {
 		const { filters } = this.props;
-		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+		if (filters && prevProps.filters !== filters) {
 			this.fetchPopularSearches();
 		}
 	}
@@ -149,7 +149,7 @@ PopularSearches.defaultProps = {
 	isSuccess: false,
 	filterId: undefined,
 	popularSearches: null,
-	filters: {},
+	filters: undefined,
 };
 PopularSearches.propTypes = {
 	plan: PropTypes.string.isRequired,

@@ -106,7 +106,7 @@ class PopularFilters extends React.Component {
 
 	componentDidUpdate(prevProps) {
 		const { filters } = this.props;
-		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+		if (filters && prevProps.filters !== filters) {
 			this.fetchPopularFilters();
 		}
 	}
@@ -250,7 +250,7 @@ PopularFilters.propTypes = {
 const mapStateToProps = (state, props) => ({
 	plan: 'growth',
 	appName: get(state, '$getCurrentApp.name'),
-	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+	filters: get(state, `$getSelectedFilters.${props.filterId}`),
 });
 
 const mapDispatchToProps = (dispatch) => ({

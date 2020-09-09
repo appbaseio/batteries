@@ -44,7 +44,7 @@ class GeoDistribution extends React.Component {
 		if (JSON.stringify(prevProps.geoData) !== JSON.stringify(geoData)) {
 			this.loadPaths();
 		}
-		if (filters && JSON.stringify(prevProps.filters) !== JSON.stringify(filters)) {
+		if (filters && prevProps.filters !== filters) {
 			const { fetchAppGeoDistribution } = this.props;
 			fetchAppGeoDistribution();
 		}
@@ -217,7 +217,7 @@ const mapStateToProps = (state, props) => ({
 	geoData: get(getAppGeoDistributionByName(state), 'geo_distribution', []),
 	totalSearches: get(getAppGeoDistributionByName(state), 'total_searches', 0),
 	totalCountries: get(getAppGeoDistributionByName(state), 'total_countries', 0),
-	filters: get(state, `$getSelectedFilters.${props.filterId}`, {}),
+	filters: get(state, `$getSelectedFilters.${props.filterId}`),
 });
 const mapDispatchToProps = (dispatch, props) => ({
 	fetchAppGeoDistribution: (appName) => dispatch(getAppGeoDistribution(appName, props.filterId)),
