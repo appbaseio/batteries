@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { string, object, func, bool } from 'prop-types';
-import { Tooltip, Icon, Button, Affix, message, Typography } from 'antd';
+import { Tooltip, Icon, Button, Affix, message, Typography, Alert } from 'antd';
 import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -640,6 +640,13 @@ class Mappings extends Component {
 								Reload Mappings
 							</Typography.Text>
 						</Tooltip>
+						{dirty ? (
+							<Alert
+								type="warning"
+								style={{ marginBottom: 10 }}
+								description="Re-indexing is required for applying the mappings."
+							/>
+						) : null}
 						<Header>
 							<span>
 								Field Name
@@ -732,7 +739,7 @@ class Mappings extends Component {
 				</MappingsContainer>
 				<NewFieldModal
 					types={Object.keys(this.state.mapping).filter(
-						type => !REMOVED_KEYS.includes(type),
+						(type) => !REMOVED_KEYS.includes(type),
 					)}
 					show={this.state.showModal}
 					addField={this.addField}
