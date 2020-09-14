@@ -7,6 +7,7 @@ const Banner = ({
 	title,
 	description,
 	buttonText,
+	videoLink,
 	href,
 	showButton,
 	onClick,
@@ -39,17 +40,29 @@ const Banner = ({
 				}}
 			>
 				{showButton && (
-					<Button
-						size="large"
-						type="primary"
-						{...(!onClick && { href })}
-						target="_blank"
-						rel="noopener noreferrer"
-						onClick={onClick}
-						icon={icon}
-					>
-						{buttonText}
-					</Button>
+					<React.Fragment>
+						{videoLink !== '#' && (
+							<a
+								target="_blank"
+								rel="noreferrer"
+								href={videoLink}
+								style={{ textAlign: 'center' }}
+							>
+								Watch Video
+							</a>
+						)}
+						<Button
+							size="large"
+							type="primary"
+							{...(!onClick && { href })}
+							target="_blank"
+							rel="noopener noreferrer"
+							onClick={onClick}
+							icon={icon}
+						>
+							{buttonText}
+						</Button>
+					</React.Fragment>
 				)}
 				{renderButtons && renderButtons()}
 			</Col>
@@ -61,6 +74,7 @@ Banner.defaultProps = {
 	description: '',
 	href: '/billing',
 	buttonText: 'Upgrade Now',
+	videoLink: '#',
 	showButton: true,
 	onClick: undefined,
 	showGoBack: false,
@@ -75,6 +89,7 @@ Banner.propTypes = {
 	onClick: PropTypes.func,
 	description: PropTypes.string,
 	buttonText: PropTypes.string,
+	videoLink: PropTypes.string,
 	href: PropTypes.string,
 	showButton: PropTypes.bool,
 	showGoBack: PropTypes.bool,
