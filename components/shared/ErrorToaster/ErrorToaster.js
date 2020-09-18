@@ -23,9 +23,7 @@ class ErrorToaster extends React.Component {
 	componentDidCatch(error, errorInfo) {
 		this.catchError();
 		Sentry.withScope((scope) => {
-			Object.keys(errorInfo).forEach((key) => {
-				scope.setExtra(key, errorInfo[key]);
-			});
+			scope.setExtras(errorInfo);
 			Sentry.captureException(error);
 		});
 	}
