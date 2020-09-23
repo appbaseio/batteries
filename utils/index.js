@@ -126,6 +126,12 @@ export const setUserInfo = (userInfo) => {
 	});
 };
 
+const extractFunctionalProps = (props = {}) => ({
+	defaultQuery: props.defaultQuery ? () => props.defaultQuery : null,
+	customQuery: props.customQuery ? () => props.customQuery : null,
+	customHighlight: props.customHighlight ? () => props.customHighlight : null,
+})
+
 export const parseSearchState = (searchState = {}) => {
 	const allComponentsQueries = get(searchState, 'query', []);
 
@@ -169,6 +175,7 @@ export const parseSearchState = (searchState = {}) => {
 			...agg,
 			{
 				...extraListProps,
+				...extractFunctionalProps(extraListProps),
 				id: `list-${index}`,
 				type: 'term',
 				value: listValue,
@@ -186,6 +193,7 @@ export const parseSearchState = (searchState = {}) => {
 
 	const search = {
 		...extraSearchProps,
+		...extractFunctionalProps(extraSearchProps),
 		value: searchValue,
 		id: 'search',
 	};
@@ -202,6 +210,7 @@ export const parseSearchState = (searchState = {}) => {
 		...extraResultProps,
 		id: 'result',
 		react: { and: ['search', ...aggregations.map((filter) => filter.id)] },
+		...extractFunctionalProps(extraResultProps)
 	};
 
 	return [...aggregations, result, search];
