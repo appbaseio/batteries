@@ -3,7 +3,7 @@ import { Modal, Button } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getStringifiedJSON, getApp } from '../utils';
+import { getStringifiedJSON } from '../utils';
 import { doGet } from '../../../utils/requestService';
 import { getURL } from '../../../../constants/config';
 
@@ -30,7 +30,13 @@ class ViewSource extends React.Component {
 			source: null,
 		});
 		try {
-			const response = await doGet(`${getURL()}/${this.indexName}/_doc/${docID}`);
+			// To use the alias for `reindexed` indices because indices may not present
+			let alias = this.indexName;
+			const splited = this.indexName.split('_reindexed_');
+			if (splited[0]) {
+				[alias] = splited;
+			}
+			const response = await doGet(`${getURL()}/${alias}/_doc/${docID}`);
 			this.setState({
 				isLoadingSource: false,
 				source: response._source,
