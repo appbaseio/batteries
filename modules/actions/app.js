@@ -247,3 +247,11 @@ export function updateAppPaymentMethod(stripeToken, product) {
 export function toggleInsightsSidebar() {
 	return createAction(AppConstants.APP.INSIGHTS_SIDEBAR);
 }
+
+export function setLocalMappingState(appName, data) {
+	return {
+		type: AppConstants.APP.SEARCH_SETTINGS.SET_LOCAL_MAPPING_STATE,
+		appName,
+		data,
+	};
+}

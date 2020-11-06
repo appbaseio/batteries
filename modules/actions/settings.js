@@ -8,17 +8,17 @@ import {
 } from '../../utils/app';
 
 export function getSettings(name) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.GET));
 		return getSearchSettings(name)
-			.then(res =>
+			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.SEARCH_SETTINGS.GET_SUCCESS, res, null, {
 						appName: name,
 					}),
 				),
 			)
-			.catch(error => {
+			.catch((error) => {
 				if (error && error.code === 404) {
 					dispatch(getDefaultSettings());
 				}
@@ -28,15 +28,15 @@ export function getSettings(name) {
 }
 
 export function getDefaultSettings() {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.GET_DEFAULT));
 		return getDefaultSearchSettings()
-			.then(res =>
+			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.SEARCH_SETTINGS.GET_DEFAULT_SUCCESS, res, null),
 				),
 			)
-			.catch(error =>
+			.catch((error) =>
 				dispatch(
 					createAction(AppConstants.APP.SEARCH_SETTINGS.GET_DEFAULT_ERROR, null, error),
 				),
@@ -45,41 +45,51 @@ export function getDefaultSettings() {
 }
 
 export function putSettings(name, payload) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.UPDATE));
 		return putSearchSettings(name, payload)
-			.then(res =>
+			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.SEARCH_SETTINGS.UPDATE_SUCCESS, res, null, {
 						name,
 					}),
 				),
 			)
-			.catch(error =>
+			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.UPDATE_ERROR, null, error)),
 			);
 	};
 }
 
 export function deleteSettings(name) {
-	return dispatch => {
+	return (dispatch) => {
 		dispatch(
 			createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE, null, null, {
 				name,
 			}),
 		);
 		return deleteSearchSettings(name)
-			.then(res =>
+			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE_SUCCESS, res, null, {
 						name,
 					}),
 				),
 			)
-			.catch(error =>
-				dispatch(createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE_ERROR, null, error, {
-					name,
-				})),
+			.catch((error) =>
+				dispatch(
+					createAction(AppConstants.APP.SEARCH_SETTINGS.DELETE_ERROR, null, error, {
+						name,
+					}),
+				),
 			);
+	};
+}
+
+export function setLocalRelevancyState(appName, data) {
+	return {
+		type: AppConstants.APP.SEARCH_SETTINGS.SET_LOCAL_SEARCH_RELEVANCY_STATE,
+		appName,
+		data,
 	};
 }
