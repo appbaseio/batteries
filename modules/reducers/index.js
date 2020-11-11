@@ -15,6 +15,8 @@ import privateRegistries from './getPrivateRegistry';
 import getAppSettings from './getAppSettings';
 import getAppRules from './getAppRules';
 import getAppAnalyticsInsights from './getAnalyticsInsights';
+import localRelevancyReducer from './localRelevancy';
+import localMappingReducer from './localMapping';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -230,4 +232,6 @@ export default {
 		AppConstants.APP.GRADE.GET_SUCCESS,
 		AppConstants.APP.GRADE.GET_ERROR,
 	),
+	$getLocalRelevancy: localRelevancyReducer,
+	$getLocalMapping: localMappingReducer,
 };
