@@ -1,5 +1,4 @@
 import get from 'lodash/get';
-
 import mappingUsecase from './mappingUsecase';
 import analyzerSettings, { synonymsSettings } from './analyzerSettings';
 import { getURL } from '../../constants/config';
@@ -217,84 +216,6 @@ export async function getESVersion(appName, credentials) {
 	return data.version.number.split('.')[0];
 }
 
-/**
- * Removes all search subfield
- * @param {*} originalMappings Original Mappings
- */
-const deleteSearchMappings = (originalMappings) => {
-	const mappings = JSON.parse(JSON.stringify(originalMappings));
-	if (!get(mappings, 'properties', null)) {
-		return mappings;
-	}
-	const mappingFields = Object.keys(get(mappings, 'properties', {}));
-	return mappingFields.reduce((agg, field) => {
-		if (get(mappings, `properties.${field}.properties`, null)) {
-			return {
-				...agg,
-				properties: {
-					...agg.properties,
-					[field]: deleteSearchMappings(get(mappings, `properties.${field}`, {})),
-				},
-			};
-		}
-
-		const { search, ...rest } = get(mappings, `properties.${field}.fields`, {});
-		return {
-			...agg,
-			properties: {
-				...agg.properties,
-				[field]: {
-					...get(mappings, `properties.${field}`, {}),
-					fields: {
-						...rest,
-					},
-				},
-			},
-		};
-	}, mappings);
-};
-
-/**
- * Add search subfield to all searchable fields ( field containing autosuggest & delimiter subfields)
- * @param {*} originalMappings Original Mappings
- */
-const addSearchMappings = (originalMappings) => {
-	const mappings = JSON.parse(JSON.stringify(originalMappings));
-
-	if (!get(mappings, 'properties', null)) {
-		return mappings;
-	}
-	const mappingFields = Object.keys(get(mappings, 'properties', {}));
-	return mappingFields.reduce((agg, field) => {
-		if (get(mappings, `properties.${field}.properties`, null)) {
-			return {
-				...agg,
-				properties: {
-					...agg.properties,
-					[field]: addSearchMappings(get(mappings, `properties.${field}`, {})),
-				},
-			};
-		}
-
-		return {
-			...agg,
-			properties: {
-				...agg.properties,
-				[field]: {
-					...get(mappings, `properties.${field}`, {}),
-					fields: {
-						...get(mappings, `properties.${field}.fields`, {}),
-						...(get(mappings, `properties.${field}.fields.autosuggest`) ||
-						get(mappings, `properties.${field}.fields.delimiter`)
-							? mappingUsecase.search.fields
-							: {}),
-					},
-				},
-			},
-		};
-	}, mappings);
-};
-
 export function reIndex({
 	mappings,
 	appId,
@@ -461,7 +382,7 @@ export function updateMappingES7(mapping, field, type, usecase) {
  * @returns {{ [key: string]: Array<string> | Array<string> }}
  * For v7 apps it'll return an array of fields instead of an object
  */
-export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
+export function traverseMapping(mappings = {}, returnOnlyLeafFields = false, isAggFields = false) {
 	const fieldObject = {};
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
@@ -469,7 +390,19 @@ export function traverseMapping(mappings = {}, returnOnlyLeafFields = false) {
 			if (mp.properties) {
 				Object.keys(mp.properties).forEach((mpp) => {
 					if (!returnOnlyLeafFields) {
-						fieldObject[type].push(`${prefix}${mpp}`);
+						let fieldName = `${prefix}${mpp}`;
+						// Set Keyword field
+						if (isAggFields) {
+							if (
+								mp.properties[mpp].type === 'text' ||
+								mp.properties[mpp].type === 'string'
+							) {
+								if (get(mp.properties[mpp], 'fields.keyword')) {
+									fieldName = `${fieldName}.keyword`;
+								}
+							}
+						}
+						fieldObject[type].push(fieldName);
 					}
 					const field = mp.properties[mpp];
 					if (field && field.properties) {
