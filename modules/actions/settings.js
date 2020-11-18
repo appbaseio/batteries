@@ -93,3 +93,11 @@ export function setLocalRelevancyState(appName, data) {
 		data,
 	};
 }
+
+export function setAdvanceSearchState(fieldName, state) {
+	return {
+		type: AppConstants.APP.SEARCH_SETTINGS.SET_ADVANCE_SEARCH_STATE,
+		fieldName,
+		state,
+	};
+}
