@@ -65,7 +65,7 @@ const VersionController = ({ version, arcVersion, children, title, style }) => {
 	return children;
 };
 VersionController.defaultProps = {
-	title: 'Update Arc Version',
+	title: 'Upgrade Appbase.io Version',
 };
 VersionController.propTypes = {
 	// User props
