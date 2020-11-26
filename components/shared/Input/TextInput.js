@@ -2,13 +2,11 @@ import React from 'react';
 import { func, string, any } from 'prop-types';
 import { Input } from 'antd';
 
-const TextInput = ({
- name, value, handleChange, placeholder,
-}) => (
+const TextInput = ({ name, value, handleChange, placeholder }) => (
 	<Input
 		name={name}
 		defaultValue={value}
-		onChange={e => handleChange({ [name]: e.target.value })}
+		onChange={(e) => handleChange({ [name]: e.target.value })}
 		placeholder={placeholder || `Enter ${name} here`}
 	/>
 );
