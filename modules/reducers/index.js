@@ -18,6 +18,7 @@ import getAppAnalyticsInsights from './getAnalyticsInsights';
 import localRelevancyReducer from './localRelevancy';
 import localMappingReducer from './localMapping';
 import getAdvanceSearchState from './getAdvanceSearchState';
+import reIndexingTasks from './reIndexingTasks';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -236,4 +237,5 @@ export default {
 	$getLocalRelevancy: localRelevancyReducer,
 	$getLocalMapping: localMappingReducer,
 	$getAdvanceSearchState: getAdvanceSearchState,
+	$reIndexingTasks: reIndexingTasks,
 };

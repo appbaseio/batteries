@@ -101,3 +101,17 @@ export function setAdvanceSearchState(fieldName, state) {
 		state,
 	};
 }
+
+export function setReIndexingTasks(data) {
+	return {
+		type: AppConstants.APP.SEARCH_SETTINGS.SET_RE_INDEXING_TASKS,
+		data,
+	};
+}
+
+export function addReIndexingTasks(data) {
+	return {
+		type: AppConstants.APP.SEARCH_SETTINGS.ADD_RE_INDEXING_TASKS,
+		data,
+	};
+}
