@@ -20,7 +20,9 @@ export function getPublicKey(name) {
 					}),
 				);
 			})
-			.catch(error => dispatch(createAction(AppConstants.APP.PUBLIC_KEY.GET_ERROR, null, error)));
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PUBLIC_KEY.GET_ERROR, null, error)),
+			);
 	};
 }
 
@@ -33,11 +35,15 @@ export function updatePublicKey(name, key, role) {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.PUBLIC_KEY.UPDATE));
 		return setPublicKey(appName, key, role)
-			.then(res => dispatch(
+			.then((res) =>
+				dispatch(
 					createAction(AppConstants.APP.PUBLIC_KEY.UPDATE_SUCCESS, res, null, {
 						appName,
 					}),
-				))
-			.catch(error => dispatch(createAction(AppConstants.APP.PUBLIC_KEY.UPDATE_ERROR, null, error)));
+				),
+			)
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PUBLIC_KEY.UPDATE_ERROR, null, error)),
+			);
 	};
 }

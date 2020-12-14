@@ -12,7 +12,8 @@ const createRequestReducer = (
 	extendSuccessState,
 	extendInitialState,
 	clearAction,
-) => function request(state = initialState, action) {
+) =>
+	function request(state = initialState, action) {
 		const getExtendedState = (extendState) => {
 			if (typeof extendState === 'function') {
 				return extendState(action, state);

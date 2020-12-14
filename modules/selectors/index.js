@@ -17,6 +17,8 @@ const appPublicKey = (state) => get(state, '$getAppPublicKey.results');
 const appFunctions = (state) => get(state, '$getAppFunctions.results');
 const appSearchSettings = (state) => get(state, '$getAppSettings.results');
 const appRules = (state) => get(state, '$getAppRules.results');
+const searchPreferences = (state) => get(state, '$getSearchPreferences.results');
+const recommendationPreferences = (state) => get(state, '$getRecommendationsPreferences.results');
 const appAnalyticsInsights = (state) => get(state, '$getAppAnalyticsInsights.results', {});
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
@@ -54,7 +56,15 @@ const getAppPublicKey = createSelector(appPublicKey, appName, getCollectionByKey
 const getAppFunctions = createSelector(appFunctions, appName, getCollectionByKey);
 const getAppSettings = createSelector(appSearchSettings, appName, getCollectionByKey);
 const getAppRules = createSelector(appRules, appName, getCollectionByKey);
+const getSearchPreferencesByName = createSelector(searchPreferences, appName, getCollectionByKey);
+const getRecommendationsPreferencesByName = createSelector(
+	recommendationPreferences,
+	appName,
+	getCollectionByKey,
+);
 export {
+	getSearchPreferencesByName,
+	getRecommendationsPreferencesByName,
 	getRawMappingsByAppName,
 	getTraversedMappingsByAppName,
 	getAppSearchLatencyByName,
