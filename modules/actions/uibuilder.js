@@ -76,7 +76,6 @@ export function saveSearchPreferences(payload, name) {
 }
 
 export function deleteSearchPreferences(defaultPreferences, name) {
-	console.log('default payload', defaultPreferences);
 	return (dispatch, getState) => {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE));
 		const ACC_API = getURL();
