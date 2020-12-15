@@ -75,13 +75,14 @@ export function saveSearchPreferences(payload, name) {
 	};
 }
 
-export function deleteSearchPreferences(name) {
+export function deleteSearchPreferences(defaultPreferences, name) {
+	console.log('default payload', defaultPreferences);
 	return (dispatch, getState) => {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE));
 		const ACC_API = getURL();
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		return doDelete(`${ACC_API}/_uibuilder/${appName}/search`)
-			.then((res) =>
+			.then((res) => {
 				dispatch(
 					createAction(
 						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE_SUCCESS,
@@ -91,8 +92,18 @@ export function deleteSearchPreferences(name) {
 							appName,
 						},
 					),
-				),
-			)
+				);
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET_SUCCESS,
+						defaultPreferences,
+						null,
+						{
+							appName,
+						},
+					),
+				);
+			})
 			.catch((error) =>
 				dispatch(
 					createAction(
@@ -175,13 +186,13 @@ export function saveRecommendationsPreferences(payload, name) {
 	};
 }
 
-export function deleteRecommendationsPreferences(name) {
+export function deleteRecommendationsPreferences(defaultPreferences, name) {
 	return (dispatch, getState) => {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE));
 		const ACC_API = getURL();
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		return doDelete(`${ACC_API}/_uibuilder/${appName}/recommendations`)
-			.then((res) =>
+			.then((res) => {
 				dispatch(
 					createAction(
 						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE_SUCCESS,
@@ -191,8 +202,18 @@ export function deleteRecommendationsPreferences(name) {
 							appName,
 						},
 					),
-				),
-			)
+				);
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET_SUCCESS,
+						defaultPreferences,
+						null,
+						{
+							appName,
+						},
+					),
+				);
+			})
 			.catch((error) =>
 				dispatch(
 					createAction(
