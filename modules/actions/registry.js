@@ -16,7 +16,9 @@ export function getPrivateRegistry(name = 'default') {
 					}),
 				);
 			})
-			.catch(error => dispatch(createAction(AppConstants.APP.PRIVATE_REGISTRY.GET_ERROR, null, error)));
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PRIVATE_REGISTRY.GET_ERROR, null, error)),
+			);
 	};
 }
 
@@ -29,6 +31,8 @@ export function updatePrivateRegistry(payload = {}) {
 					createAction(AppConstants.APP.PRIVATE_REGISTRY.UPDATE_SUCCESS, payload, null),
 				);
 			})
-			.catch(error => dispatch(createAction(AppConstants.APP.PRIVATE_REGISTRY.UPDATE_ERROR, null, error)));
+			.catch((error) =>
+				dispatch(createAction(AppConstants.APP.PRIVATE_REGISTRY.UPDATE_ERROR, null, error)),
+			);
 	};
 }

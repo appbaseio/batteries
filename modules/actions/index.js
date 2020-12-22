@@ -10,3 +10,4 @@ export * from './functions';
 export * from './settings';
 export * from './rules';
 export * from './grade';
+export * from './uibuilder';
