@@ -265,4 +265,8 @@ export default {
 			},
 		},
 	},
+	MONITORING: {
+		SET_CONFIG: 'SET_CONFIG',
+		SET_TIME_FILTER: 'SET_TIME_FILTER',
+	},
 };

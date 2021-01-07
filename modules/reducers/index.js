@@ -19,6 +19,7 @@ import localRelevancyReducer from './localRelevancy';
 import localMappingReducer from './localMapping';
 import getAdvanceSearchState from './getAdvanceSearchState';
 import reIndexingTasks from './reIndexingTasks';
+import monitoring from './monitoring';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -274,4 +275,5 @@ export default {
 	$getLocalMapping: localMappingReducer,
 	$getAdvanceSearchState: getAdvanceSearchState,
 	$reIndexingTasks: reIndexingTasks,
+	$monitoring: monitoring,
 };
