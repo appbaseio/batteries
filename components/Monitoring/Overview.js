@@ -23,7 +23,6 @@ const Overview = ({ config, timeFilter }) => {
 		let isMounted = true;
 		async function getOverviewData() {
 			const overviewResponse = await fetchOverviewData(config, timeFilter);
-			console.log({ overviewResponse });
 			if (isMounted) {
 				setOverviewData({
 					loading: false,

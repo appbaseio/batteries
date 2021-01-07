@@ -167,8 +167,11 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 
 		const memoryTuple = get(responses[3], 'aggregations.instances.buckets').reduce(
 			(agg, item) => [
-				agg[0] + get(item.memory, 'hits.hits.0._source.system.memory.actual.free'),
-				agg[1] + get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
+				agg[0] + get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
+				agg[1] +
+					get(item.memory, 'hits.hits.0._source.system.memory.actual.free') +
+					agg[1] +
+					get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
 			],
 			[0, 0],
 		);
@@ -257,6 +260,96 @@ export const fetchIndicesData = async (config, timeFilter) => {
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.count',
 			),
 		};
+	} catch (err) {
+		throw err;
+	}
+};
+
+export const fetchNodeStats = async (config, timeFilter) => {
+	try {
+		const { esURL, esUsername, esPassword } = config;
+
+		const nodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const jvmHeap = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory.actual*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const disk = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const esSearchConfig = getMonitoringSearchConfig({
+			url: esURL,
+			password: esPassword,
+			username: esUsername,
+		});
+		const esRes = await fetch(esSearchConfig.url, {
+			method: esSearchConfig.method,
+			headers: esSearchConfig.headers,
+			body: `{"preference": "node_count"}\n${nodes}\n{"preference": "cpu_usage"}\n${cpuUsage}\n{"preference": "jvm_heap"}\n${jvmHeap}\n{"preference": "memory"}\n${memory}\n{"preference": "disk"}\n${disk}\n{"preference": "indices"}\n`,
+		});
+		const { responses } = await esRes.json();
+
+		const nodeBucket = get(responses[0], 'aggregations.instances.buckets');
+
+		const data = nodeBucket.map((bucket) => {
+			const cpuDetails = get(responses[1], 'aggregations.instances.buckets').find(
+				(i) => i.key === bucket.key,
+			);
+			const jvmHeapDetails = get(responses[2], 'aggregations.instances.buckets').find(
+				(i) => i.key === bucket.key,
+			);
+			const memoryDetails = get(responses[3], 'aggregations.instances.buckets').find(
+				(i) => i.key === bucket.key,
+			);
+			const diskDetails = get(responses[4], 'aggregations.instances.buckets').find(
+				(i) => i.key === bucket.key,
+			);
+			return {
+				key: bucket.key,
+				cpuUsage: get(cpuDetails, 'cpu.hits.hits.0._source.system.cpu.total.norm.pct'),
+				jvmHeap: `${formatSizeUnits(
+					get(
+						jvmHeapDetails,
+						'jvm.hits.hits.0._source.elasticsearch.node.stats.jvm.mem.heap.used.bytes',
+					),
+				)} / ${formatSizeUnits(
+					get(
+						jvmHeapDetails,
+						'jvm.hits.hits.0._source.elasticsearch.node.stats.jvm.mem.heap.max.bytes',
+					),
+				)}`,
+				memory: `${formatSizeUnits(
+					get(
+						memoryDetails,
+						'memory.hits.hits.0._source.system.memory.actual.used.bytes',
+					),
+				)} / ${formatSizeUnits(
+					get(memoryDetails, 'memory.hits.hits.0._source.system.memory.actual.free') +
+						get(
+							memoryDetails,
+							'memory.hits.hits.0._source.system.memory.actual.used.bytes',
+						),
+				)}`,
+				disk: `${formatSizeUnits(
+					get(
+						diskDetails,
+						'disk.hits.hits.0._source.elasticsearch.node.stats.fs.summary.available.bytes',
+					),
+				)} / ${formatSizeUnits(
+					get(
+						diskDetails,
+						'disk.hits.hits.0._source.elasticsearch.node.stats.fs.summary.total.bytes',
+					),
+				)}`,
+				documents: get(
+					diskDetails,
+					'disk.hits.hits.0._source.elasticsearch.node.stats.indices.docs.count',
+				),
+			};
+		});
+		return data;
 	} catch (err) {
 		throw err;
 	}

@@ -17,7 +17,6 @@ const NodeSummary = ({ config, timeFilter }) => {
 		let isMounted = true;
 		async function getNodeSummaryData() {
 			const nodeSummaryResponse = await fetchNodeSummaryData(config, timeFilter);
-			console.log({ nodeSummaryResponse });
 			if (isMounted) {
 				setNodeSummaryData({
 					loading: false,

@@ -6,6 +6,7 @@ import { Card, Tooltip, Button } from 'antd';
 import { setMonitoringConfig } from '../../modules/actions';
 import Loader from '../shared/Loader/Spinner';
 import Summary from './Summary';
+import NodeStats from './NodeStats';
 
 const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConfig }) => {
 	const [data, setData] = useState({
@@ -88,6 +89,8 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 								}
 							>
 								<Summary />
+								<br />
+								<NodeStats />
 							</Card>
 						</div>
 					) : (

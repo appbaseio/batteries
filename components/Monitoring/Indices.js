@@ -17,7 +17,6 @@ const Indices = ({ config, timeFilter }) => {
 		let isMounted = true;
 		async function getIndicesData() {
 			const indicesResponse = await fetchIndicesData(config, timeFilter);
-			console.log({ indicesResponse });
 			if (isMounted) {
 				setIndicesData({
 					loading: false,
