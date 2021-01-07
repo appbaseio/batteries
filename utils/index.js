@@ -9,9 +9,12 @@ import { doGet } from './requestService';
  */
 export const isStaging = false;
 // export const isStaging = process.env.CONTEXT === 'deploy-preview';
+
 export const ACC_API = isStaging
 	? 'https://accapi-staging.reactiveapps.io'
 	: 'https://accapi.appbase.io';
+
+// export const ACC_API = 'http://localhost:3000';
 export const SCALR_API = isStaging
 	? 'https://api-staging.reactiveapps.io'
 	: 'https://scalr.api.appbase.io';
@@ -20,43 +23,51 @@ export const SCALR_API = isStaging
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission => permission.read
-			&& permission.write
-			&& get(permission, 'referers', []).includes('*')
-			&& get(permission, 'include_fields', []).includes('*'),
+		(permission) =>
+			permission.read &&
+			permission.write &&
+			get(permission, 'referers', []).includes('*') &&
+			get(permission, 'include_fields', []).includes('*'),
 	);
 	if (!result) {
 		result = permissions.find(
-			permission => permission.read
-				&& permission.write
-				&& get(permission, 'referers', []).includes('*'),
+			(permission) =>
+				permission.read &&
+				permission.write &&
+				get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission.read && permission.write);
+		result = permissions.find(
+			(permission) => permission.read && permission.write,
+		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission.read);
+		result = permissions.find((permission) => permission.read);
 	}
 	return result;
 }
 
 export function getReadCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission => permission.read
-			&& !permission.write
-			&& get(permission, 'referers', []).includes('*')
-			&& get(permission, 'include_fields', []).includes('*'),
+		(permission) =>
+			permission.read &&
+			!permission.write &&
+			get(permission, 'referers', []).includes('*') &&
+			get(permission, 'include_fields', []).includes('*'),
 	);
 	if (!result) {
 		result = permissions.find(
-			permission => permission.read
-				&& !permission.write
-				&& get(permission, 'referers', []).includes('*'),
+			(permission) =>
+				permission.read &&
+				!permission.write &&
+				get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission.read && !permission.write);
+		result = permissions.find(
+			(permission) => permission.read && !permission.write,
+		);
 	}
 	return result || false;
 }
@@ -70,7 +81,7 @@ export function getCredentials(appId) {
 				'Content-Type': 'application/json',
 			},
 		})
-			.then(res => res.json())
+			.then((res) => res.json())
 			.then((data) => {
 				resolve(getCredentialsFromPermissions(data.body));
 			})
@@ -99,8 +110,9 @@ export function isEqual(x, y) {
 	}
 	return true;
 }
-export const getUserAppsPermissions = () => doGet(`${ACC_API}/user/apps/permissions`);
-export const setUserInfo = userInfo =>
+export const getUserAppsPermissions = () =>
+	doGet(`${ACC_API}/user/apps/permissions`);
+export const setUserInfo = (userInfo) =>
 	new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/user/profile`, {
 			method: 'PUT',
@@ -110,9 +122,9 @@ export const setUserInfo = userInfo =>
 			},
 			body: JSON.stringify(userInfo),
 		})
-			.then(res => res.json())
-			.then(data => resolve(data))
-			.catch(error => reject(error));
+			.then((res) => res.json())
+			.then((data) => resolve(data))
+			.catch((error) => reject(error));
 	});
 
 /**
@@ -124,13 +136,13 @@ export const parseSearchState = (searchState = {}) => {
 	let listCounter = 1;
 	const componentIds = {};
 	// Filter out the components
-	Object.keys(searchState).forEach(key => {
+	Object.keys(searchState).forEach((key) => {
 		const { value, dataField, URLParams, ...state } = searchState[key];
 		// Change value to defaultValue
 		// Don't set URL params
 		state.defaultValue = value;
 		if (Array.isArray(dataField)) {
-			state.dataField = dataField.filter(i => !i.split('.')[1]);
+			state.dataField = dataField.filter((i) => !i.split('.')[1]);
 		} else if (typeof dataField === 'string') {
 			state.dataField = dataField.split('.')[0];
 		}
@@ -166,7 +178,7 @@ export const parseSearchState = (searchState = {}) => {
 		}
 		const newReact = [];
 		if (react[queryFormat] instanceof Array) {
-			react[queryFormat].forEach(reactKey => {
+			react[queryFormat].forEach((reactKey) => {
 				if (componentIds[reactKey]) {
 					newReact.push(componentIds[reactKey]);
 				}
@@ -175,7 +187,7 @@ export const parseSearchState = (searchState = {}) => {
 		return newReact.length ? newReact : undefined;
 	};
 	// Update the react props
-	Object.keys(searchProfile).forEach(key => {
+	Object.keys(searchProfile).forEach((key) => {
 		const { react, ...state } = searchProfile[key];
 		const newReact = {};
 		if (react) {
