@@ -1,4 +1,14 @@
 import get from 'lodash/get';
+import moment from 'moment';
+
+export const TIME_FILTER = {
+	'now-5m': { label: 'Last 5 minutes', interval: '45s' },
+	'now-1h': { label: 'Last 1 hour', interval: '10m' },
+	'now-3h': { label: 'Last 3 hours', interval: '30m' },
+	'now-12h': { label: 'Last 12 hours', interval: '1h' },
+	'now-1d': { label: 'Last 24 hours', interval: '2h' },
+	'now-7d': { label: 'Last 7 days', interval: '1d' },
+};
 
 export const getMonitoringSearchConfig = ({ username, password, url }) => ({
 	url: `${url}/metricbeat-*/_msearch`,
@@ -139,12 +149,14 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 		});
 
 		const { responses } = await esRes.json();
-		const cpuUsageString = (
-			get(responses[1], 'aggregations.instances.buckets').reduce(
+		const cpuUsageString = `${(
+			(get(responses[1], 'aggregations.instances.buckets').reduce(
 				(agg, item) => agg + get(item.cpu, 'hits.hits.0._source.system.cpu.total.norm.pct'),
 				0,
-			) / get(responses[1], 'aggregations.instances.buckets').length
-		).toFixed(4);
+			) /
+				get(responses[1], 'aggregations.instances.buckets').length) *
+			100
+		).toFixed(2)}%`;
 
 		const jvmHeapTuple = get(responses[2], 'aggregations.instances.buckets').reduce(
 			(agg, item) => [
@@ -306,9 +318,12 @@ export const fetchNodeStats = async (config, timeFilter) => {
 			const diskDetails = get(responses[4], 'aggregations.instances.buckets').find(
 				(i) => i.key === bucket.key,
 			);
+
 			return {
 				key: bucket.key,
-				cpuUsage: get(cpuDetails, 'cpu.hits.hits.0._source.system.cpu.total.norm.pct'),
+				cpuUsage: `${(
+					get(cpuDetails, 'cpu.hits.hits.0._source.system.cpu.total.norm.pct') * 100
+				).toFixed(2)}%`,
 				jvmHeap: `${formatSizeUnits(
 					get(
 						jvmHeapDetails,
@@ -353,4 +368,117 @@ export const fetchNodeStats = async (config, timeFilter) => {
 	} catch (err) {
 		throw err;
 	}
+};
+
+export const fetchGraphData = async (config, timeFilter, nodeId) => {
+	const cpuSet = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"cpu"}}]}}}`;
+
+	const nodeSet = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"node_stats":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"node_stats"}}]}}}`;
+
+	const memorySet = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"memory"}}]}}}`;
+
+	const { esURL, esUsername, esPassword } = config;
+
+	const esSearchConfig = getMonitoringSearchConfig({
+		url: esURL,
+		password: esPassword,
+		username: esUsername,
+	});
+	const esRes = await fetch(esSearchConfig.url, {
+		method: esSearchConfig.method,
+		headers: esSearchConfig.headers,
+		body: `{"preference": "cpuSet"}\n${cpuSet}\n{"preference": "nodeSet"}\n${nodeSet}\n{"preference": "memorySet"}\n${memorySet}\n`,
+	});
+
+	const { responses } = await esRes.json();
+	console.log({ responses });
+
+	const getDateIntervalValue = (dateValue) => {
+		const isDayInterval = timeFilter === 'now-7d';
+		const isSecondInterval = timeFilter === 'now-5m';
+		if (isDayInterval) {
+			return moment.utc(dateValue).format('DD-MMM');
+		}
+		if (isSecondInterval) {
+			moment.utc(dateValue).format('HH:mm:ss');
+		}
+
+		return moment.utc(dateValue).format('HH:mm');
+	};
+
+	return {
+		cpuUsage: get(responses[0], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: Number(
+				(get(item, 'cpu.hits.hits.0._source.system.cpu.total.norm.pct') * 100).toFixed(2),
+			),
+		})),
+		diskAvailable: get(responses[1], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: Number(
+				(
+					get(
+						item,
+						'node_stats.hits.hits.0._source.elasticsearch.node.stats.fs.summary.available.bytes',
+					) / 1073741824
+				).toFixed(2),
+			),
+		})),
+		jvmHeap: get(responses[1], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: Number(
+				(
+					get(
+						item,
+						'node_stats.hits.hits.0._source.elasticsearch.node.stats.jvm.mem.heap.used.bytes',
+					) / 1073741824
+				).toFixed(2),
+			),
+		})),
+		memory: get(responses[2], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: Number(
+				(
+					get(item, 'memory.hits.hits.0._source.system.memory.actual.used.bytes') /
+					1073741824
+				).toFixed(2),
+			),
+		})),
+		indexMemory: get(responses[1], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: Number(
+				(
+					get(
+						item,
+						'node_stats.hits.hits.0._source.elasticsearch.node.stats.indices.store.size.bytes',
+					) / 1073741824
+				).toFixed(2),
+			),
+		})),
+		segmentCount: get(responses[1], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: get(
+				item,
+				'node_stats.hits.hits.0._source.elasticsearch.node.stats.indices.segments.count',
+			),
+		})),
+	};
 };

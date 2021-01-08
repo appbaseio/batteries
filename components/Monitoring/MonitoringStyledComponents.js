@@ -6,6 +6,8 @@ export const CustomCard = styled(Card)`
 	border: 0;
 	border-top: 2px solid rgb(0, 0, 0);
 	height: 250px;
+	flex: 1;
+	margin: 10px;
 	.ant-card-head {
 		border-bottom: 0;
 		padding: 0 15px;
@@ -24,4 +26,8 @@ export const CustomCard = styled(Card)`
 
 export const Title = styled.span`
 	font-weight: bold;
+`;
+
+export const GraphContainer = styled.div`
+	margin: 10px;
 `;

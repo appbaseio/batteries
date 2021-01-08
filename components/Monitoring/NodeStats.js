@@ -6,6 +6,8 @@ import { Table } from 'antd';
 
 import { fetchNodeStats } from '../../utils/monitoring';
 
+import NodeGraphs from './NodeGraphs';
+
 const NodeStats = ({ config, timeFilter }) => {
 	const [nodeData, setNodeData] = useState({
 		loading: true,
@@ -16,7 +18,6 @@ const NodeStats = ({ config, timeFilter }) => {
 		let isMounted = true;
 		const getData = async () => {
 			const nodeDataRes = await fetchNodeStats(config, timeFilter);
-			console.log({ nodeDataRes });
 			if (isMounted) {
 				setNodeData({
 					loading: false,
@@ -72,7 +73,7 @@ const NodeStats = ({ config, timeFilter }) => {
 				loading={nodeData.loading}
 				bordered
 				pagination={false}
-				expandedRowRender={(record) => <p style={{ margin: 0 }}>{record.key}</p>}
+				expandedRowRender={(record) => <NodeGraphs nodeKey={record.key} />}
 			/>
 		</div>
 	);
