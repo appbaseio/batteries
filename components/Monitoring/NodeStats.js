@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import { Table } from 'antd';
+import { Table, Tooltip, Icon } from 'antd';
 
 import { fetchNodeStats } from '../../utils/monitoring';
-
+import { messages } from './messages';
 import NodeGraphs from './NodeGraphs';
 
 const NodeStats = ({ config, timeFilter }) => {
@@ -30,36 +30,66 @@ const NodeStats = ({ config, timeFilter }) => {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [timeFilter]);
 
 	const columns = [
 		{
 			title: 'Node',
-			dataIndex: 'key',
-			key: 'key',
+			dataIndex: 'name',
+			key: 'name',
 		},
 		{
-			title: 'CPU Usage',
+			title: (
+				<Tooltip title={get(messages, 'tooltips.tableCpuUsage')}>
+					<span>
+						CPU Usage <Icon type="info-circle" />
+					</span>
+				</Tooltip>
+			),
 			dataIndex: 'cpuUsage',
 			key: 'cpuUsage',
 		},
 		{
-			title: 'JVM Heap',
+			title: (
+				<Tooltip title={get(messages, 'tooltips.tableJvmHeap')}>
+					<span>
+						JVM Heap <Icon type="info-circle" />
+					</span>
+				</Tooltip>
+			),
 			dataIndex: 'jvmHeap',
 			key: 'jvmHeap',
 		},
 		{
-			title: 'Memory',
+			title: (
+				<Tooltip title={get(messages, 'tooltips.tableMemory')}>
+					<span>
+						Memory <Icon type="info-circle" />
+					</span>
+				</Tooltip>
+			),
 			dataIndex: 'memory',
 			key: 'memory',
 		},
 		{
-			title: 'Documents',
+			title: (
+				<Tooltip title={get(messages, 'tooltips.tableDocuments')}>
+					<span>
+						Documents <Icon type="info-circle" />
+					</span>
+				</Tooltip>
+			),
 			dataIndex: 'documents',
 			key: 'documents',
 		},
 		{
-			title: 'Disk Available',
+			title: (
+				<Tooltip title={get(messages, 'tooltips.tableDiskAvailable')}>
+					<span>
+						Disk Available <Icon type="info-circle" />
+					</span>
+				</Tooltip>
+			),
 			dataIndex: 'disk',
 			key: 'disk',
 		},

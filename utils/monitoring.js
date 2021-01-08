@@ -45,8 +45,6 @@ export const fetchOverviewData = async (config, timeFilter) => {
 			esPassword,
 			isAppbase,
 			arcURL,
-			arcPassword,
-			arcUsername,
 			kibanaURL,
 			kibanaUsername,
 			kibanaPassword,
@@ -54,7 +52,7 @@ export const fetchOverviewData = async (config, timeFilter) => {
 
 		const esStatus = `{"size":0,"aggs":{"status":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cluster_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const uptime = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const uptime = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*", "cloud.instance.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"now-1h","lte":"now"}}}]}}}`;
 
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
@@ -69,20 +67,15 @@ export const fetchOverviewData = async (config, timeFilter) => {
 		});
 
 		const esData = await esRes.json();
-		let arcData = esData;
+		let arcFetchEndpoint = `${esURL}/arc/plan`;
 		if (!isAppbase) {
-			const arcSearchConfig = getMonitoringSearchConfig({
-				url: arcURL,
-				password: arcPassword,
-				username: arcUsername,
-			});
-			const arcRes = await fetch(arcSearchConfig.url, {
-				method: arcSearchConfig.method,
-				headers: arcSearchConfig.headers,
-				body: `{}\n${esStatus}\n{}\n${uptime}\n`,
-			});
+			arcFetchEndpoint = `${arcURL}/arc/plan`;
+		}
 
-			arcData = await arcRes.json();
+		const arcRes = await fetch(arcFetchEndpoint);
+		let arcStatus = 'green';
+		if (arcRes.status > 400) {
+			arcStatus = 'red';
 		}
 
 		let kibanaData = null;
@@ -102,18 +95,19 @@ export const fetchOverviewData = async (config, timeFilter) => {
 				esData,
 				'responses.0.aggregations.status.hits.hits.0._source.elasticsearch.cluster.stats.status',
 			),
-			arcStatus: get(
-				arcData,
-				'responses.0.aggregations.status.hits.hits.0._source.elasticsearch.cluster.stats.status',
-			),
+			arcStatus,
 			kibanaStatus: get(kibanaData, 'status.overall.state', null),
 			uptime: get(esData, 'responses.1.aggregations.instances.buckets').map((item) => ({
-				node: item.key,
-				uptime: parseInt(
-					(get(item.uptimes, 'hits.hits.0._source.system.uptime.duration.ms', 0) /
-						(1000 * 60 * 60)) %
-						24,
-					10,
+				node: get(
+					item.uptimes,
+					'hits.hits.0._source.cloud.instance.name',
+					get(item.uptimes, 'hits.hits.0._source.cloud.instance.id'),
+				),
+				uptime: Number(
+					(
+						get(item.uptimes, 'hits.hits.0._source.system.uptime.duration.ms', 0) /
+						(1000 * 60 * 60)
+					).toFixed(2),
 				),
 			})),
 		};
@@ -252,11 +246,11 @@ export const fetchIndicesData = async (config, timeFilter) => {
 			indices: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.total',
-			),
+			).toLocaleString(),
 			documents: get(
 				responses[1],
 				'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.primaries.docs.count',
-			),
+			).toLocaleString(),
 			data: formatSizeUnits(
 				get(
 					responses[1],
@@ -266,11 +260,11 @@ export const fetchIndicesData = async (config, timeFilter) => {
 			primaryShards: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
-			),
+			).toLocaleString(),
 			replicaShards: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.count',
-			),
+			).toLocaleString(),
 		};
 	} catch (err) {
 		throw err;
@@ -281,7 +275,7 @@ export const fetchNodeStats = async (config, timeFilter) => {
 	try {
 		const { esURL, esUsername, esPassword } = config;
 
-		const nodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const nodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp", "cloud.instance*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
@@ -321,6 +315,11 @@ export const fetchNodeStats = async (config, timeFilter) => {
 
 			return {
 				key: bucket.key,
+				name: get(
+					bucket,
+					'nodes.hits.hits.0._source.cloud.instance.name',
+					get(bucket, 'nodes.hits.hits.0._source.cloud.instance.id'),
+				),
 				cpuUsage: `${(
 					get(cpuDetails, 'cpu.hits.hits.0._source.system.cpu.total.norm.pct') * 100
 				).toFixed(2)}%`,
@@ -361,7 +360,7 @@ export const fetchNodeStats = async (config, timeFilter) => {
 				documents: get(
 					diskDetails,
 					'disk.hits.hits.0._source.elasticsearch.node.stats.indices.docs.count',
-				),
+				).toLocaleString(),
 			};
 		});
 		return data;
@@ -403,7 +402,6 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 	});
 
 	const { responses } = await esRes.json();
-	console.log({ responses });
 
 	const getDateIntervalValue = (dateValue) => {
 		const isDayInterval = timeFilter === 'now-7d';

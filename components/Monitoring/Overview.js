@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, Skeleton } from 'antd';
+import { Badge, Skeleton, Tooltip, Icon } from 'antd';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -7,6 +7,7 @@ import get from 'lodash/get';
 import Flex from '../shared/Flex';
 import { CustomCard, Title } from './MonitoringStyledComponents';
 import { fetchOverviewData } from '../../utils/monitoring';
+import { messages } from './messages';
 
 const HEALTH_TEXT = {
 	green: 'Healthy',
@@ -36,15 +37,18 @@ const Overview = ({ config, timeFilter }) => {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
-
+	}, [timeFilter]);
 	return (
 		<CustomCard title="Overview">
 			{overviewData.loading ? (
 				<Skeleton active />
 			) : (
 				<>
-					<Title>Health</Title>
+					<Tooltip title={get(messages, 'tooltips.health')}>
+						<Title>
+							Health <Icon type="info-circle" />
+						</Title>
+					</Tooltip>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<span>Elasticsearch</span>
 						<Badge
@@ -71,10 +75,14 @@ const Overview = ({ config, timeFilter }) => {
 						</>
 					)}
 					<br />
-					<Title>Uptime</Title>
-					{get(overviewData, 'data.uptime').map((item, index) => (
+					<Tooltip title={get(messages, 'tooltips.uptime')}>
+						<Title>
+							Uptime <Icon type="info-circle" />
+						</Title>
+					</Tooltip>
+					{get(overviewData, 'data.uptime').map((item) => (
 						<Flex justifyContent="space-between" key={item.node}>
-							<span>Node: {index}</span>
+							<span>{item.node}</span>
 							<span>{item.uptime} hrs</span>
 						</Flex>
 					))}

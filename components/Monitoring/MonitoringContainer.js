@@ -2,17 +2,24 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Card, Tooltip, Button } from 'antd';
+import get from 'lodash/get';
 
 import { setMonitoringConfig } from '../../modules/actions';
+import { CLUSTER_PLANS } from '../../utils';
 import Loader from '../shared/Loader/Spinner';
 import Summary from './Summary';
 import NodeStats from './NodeStats';
+import TimeFilter from './TimeFilter';
+import Overlay from '../shared/Overlay';
+import { messages } from './messages';
 
-const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConfig }) => {
+const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConfig, plan }) => {
 	const [data, setData] = useState({
 		isLoading: true,
 		hasMetricbeat: false,
 	});
+
+	const isClusterPlan = Object.values(CLUSTER_PLANS).includes(plan);
 
 	const [refreshKey, setRefreshKey] = useState(Date.now());
 
@@ -52,11 +59,28 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 			}
 		};
 
-		getData();
+		if (isClusterPlan) {
+			getData();
+		}
 		return () => {
 			isMounted = false;
 		};
 	}, []);
+
+	if (!isClusterPlan) {
+		return (
+			<div style={{ marginTop: 100 }}>
+				<Overlay
+					lockSectionStyle={{
+						transform: 'translateY(70%)',
+					}}
+					src="https://www.dropbox.com/s/nwqf21zsyp8lhui/Screenshot%202021-01-08%20at%207.10.35%20PM.png?raw=1"
+					alt="Query Rules"
+				/>
+				<p style={{ textAlign: 'center' }}>{get(messages, 'featureUnavailable')}</p>
+			</div>
+		);
+	}
 
 	return (
 		<div>
@@ -77,15 +101,18 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 							<Card
 								title={<b>Monitoring</b>}
 								extra={
-									<Tooltip placement="topLeft" title="Refresh request logs.">
-										<Button
-											style={{ marginLeft: 8 }}
-											onClick={() => {
-												setRefreshKey(Date.now());
-											}}
-											icon="redo"
-										/>
-									</Tooltip>
+									<>
+										<Tooltip placement="topLeft" title="Refresh request logs.">
+											<Button
+												style={{ marginLeft: 8 }}
+												onClick={() => {
+													setRefreshKey(Date.now());
+												}}
+												icon="redo"
+											/>
+										</Tooltip>
+										<TimeFilter plan={plan} />
+									</>
 								}
 							>
 								<Summary />
@@ -94,7 +121,25 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 							</Card>
 						</div>
 					) : (
-						<h1>Monitoring setup not found</h1>
+						<div style={{ marginTop: 100 }}>
+							<Overlay
+								lockSectionStyle={{
+									transform: 'translateY(70%)',
+								}}
+								src="https://www.dropbox.com/s/nwqf21zsyp8lhui/Screenshot%202021-01-08%20at%207.10.35%20PM.png?raw=1"
+								alt="Query Rules"
+							/>
+							<p style={{ textAlign: 'center' }}>
+								{get(messages, 'monitoringUnavailable')} Please{' '}
+								<span
+									style={{ cursor: 'pointer', color: 'dodgerblue' }}
+									onClick={() => window.Intercom('show')}
+								>
+									contact us
+								</span>
+								.
+							</p>
+						</div>
 					)}
 				</>
 			)}
@@ -108,6 +153,7 @@ MonitoringContainer.propTypes = {
 	esPassword: PropTypes.string.isRequired,
 	setConfig: PropTypes.func.isRequired,
 	isAppbase: PropTypes.bool,
+	plan: PropTypes.string.isRequired,
 };
 
 MonitoringContainer.defaultProps = {
@@ -115,7 +161,9 @@ MonitoringContainer.defaultProps = {
 };
 
 const mapDispatchToProps = (dispatch) => {
-	return { setConfig: (data) => dispatch(setMonitoringConfig(data)) };
+	return {
+		setConfig: (data) => dispatch(setMonitoringConfig(data)),
+	};
 };
 
 export default connect(null, mapDispatchToProps)(MonitoringContainer);

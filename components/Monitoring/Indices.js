@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import { Skeleton } from 'antd';
+import { Skeleton, Tooltip, Icon } from 'antd';
 
 import Flex from '../shared/Flex';
 import { CustomCard, Title } from './MonitoringStyledComponents';
 import { fetchIndicesData } from '../../utils/monitoring';
+import { messages } from './messages';
 
 const Indices = ({ config, timeFilter }) => {
 	const [indicesData, setIndicesData] = useState({
@@ -30,7 +31,7 @@ const Indices = ({ config, timeFilter }) => {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [timeFilter]);
 	return (
 		<CustomCard
 			title={`Indices${
@@ -42,19 +43,35 @@ const Indices = ({ config, timeFilter }) => {
 			) : (
 				<>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Title>Documents</Title>
+						<Tooltip title={get(messages, 'tooltips.summaryDocuments')}>
+							<Title>
+								Documents <Icon type="info-circle" />
+							</Title>
+						</Tooltip>
 						<span>{get(indicesData, 'data.documents')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Title>Data</Title>
+						<Tooltip title={get(messages, 'tooltips.summaryData')}>
+							<Title>
+								Data <Icon type="info-circle" />
+							</Title>
+						</Tooltip>
 						<span>{get(indicesData, 'data.data')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Title>Primary Shards</Title>
+						<Tooltip title={get(messages, 'tooltips.summaryPrimaryShards')}>
+							<Title>
+								Primary Shards <Icon type="info-circle" />
+							</Title>
+						</Tooltip>
 						<span>{get(indicesData, 'data.primaryShards')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Title>Replica Shards</Title>
+						<Tooltip title={get(messages, 'tooltips.summaryReplicaShards')}>
+							<Title>
+								Replica Shards <Icon type="info-circle" />
+							</Title>
+						</Tooltip>
 						<span>{get(indicesData, 'data.replicaShards')}</span>
 					</Flex>
 				</>

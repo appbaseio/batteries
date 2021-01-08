@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
-import { Skeleton, Card } from 'antd';
+import { Skeleton, Card, Tooltip as AntToolTip, Icon } from 'antd';
 import { LineChart, XAxis, YAxis, Tooltip, Line, Legend } from 'recharts';
 
 import { fetchGraphData } from '../../utils/monitoring';
 import GraphToolTip from './GraphToolTip';
 import Flex from '../shared/Flex';
 import { GraphContainer } from './MonitoringStyledComponents';
+import { messages } from './messages';
 
 const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 	const [graphData, setGraphData] = useState({
@@ -32,9 +33,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
-
-	console.log({ data: graphData.data });
+	}, [timeFilter]);
 
 	return (
 		<div>
@@ -44,9 +43,17 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 				<>
 					<Flex>
 						<GraphContainer>
-							<Card title="CPU Usage">
+							<Card
+								title={
+									<AntToolTip title={get(messages, 'tooltips.graphCpuUsage')}>
+										<span>
+											CPU Usage <Icon type="info-circle" />
+										</span>
+									</AntToolTip>
+								}
+							>
 								<LineChart
-									width={500}
+									width={450}
 									height={250}
 									data={graphData.data.cpuUsage}
 									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -56,15 +63,25 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 									<Tooltip
 										content={<GraphToolTip graphLabel="CPU Usage" unit="%" />}
 									/>
-									<Legend formatter={() => `CPU Usage (%)`} />
+									<Legend formatter={() => `CPU Usage`} />
 									<Line type="monotone" dataKey="data" stroke="#8884d8" />
 								</LineChart>
 							</Card>
 						</GraphContainer>
 						<GraphContainer>
-							<Card title="Disk Available">
+							<Card
+								title={
+									<AntToolTip
+										title={get(messages, 'tooltips.graphDiskAvailable')}
+									>
+										<span>
+											Disk Available <Icon type="info-circle" />
+										</span>
+									</AntToolTip>
+								}
+							>
 								<LineChart
-									width={500}
+									width={450}
 									height={250}
 									data={graphData.data.diskAvailable}
 									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -74,7 +91,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 									<Tooltip
 										content={<GraphToolTip graphLabel="Disk" unit="GB" />}
 									/>
-									<Legend formatter={() => `Disk Available`} />
+									<Legend formatter={() => `Disk Available (GB)`} />
 									<Line type="monotone" dataKey="data" stroke="#8884d8" />
 								</LineChart>
 							</Card>
@@ -82,9 +99,17 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 					</Flex>
 					<Flex>
 						<GraphContainer>
-							<Card title="JVM Heap">
+							<Card
+								title={
+									<AntToolTip title={get(messages, 'tooltips.graphpJvmHeap')}>
+										<span>
+											JVM Heap <Icon type="info-circle" />
+										</span>
+									</AntToolTip>
+								}
+							>
 								<LineChart
-									width={500}
+									width={450}
 									height={250}
 									data={graphData.data.jvmHeap}
 									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -100,9 +125,17 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 							</Card>
 						</GraphContainer>
 						<GraphContainer>
-							<Card title="Memory Utilization">
+							<Card
+								title={
+									<AntToolTip title={get(messages, 'tooltips.graphMemory')}>
+										<span>
+											Memory Utilization <Icon type="info-circle" />
+										</span>
+									</AntToolTip>
+								}
+							>
 								<LineChart
-									width={500}
+									width={450}
 									height={250}
 									data={graphData.data.memory}
 									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -125,9 +158,17 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 					</Flex>
 					<Flex>
 						<GraphContainer>
-							<Card title="Index Memory">
+							<Card
+								title={
+									<AntToolTip title={get(messages, 'tooltips.graphIndexMemory')}>
+										<span>
+											Index Memory <Icon type="info-circle" />
+										</span>
+									</AntToolTip>
+								}
+							>
 								<LineChart
-									width={500}
+									width={450}
 									height={250}
 									data={graphData.data.indexMemory}
 									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -145,9 +186,17 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 							</Card>
 						</GraphContainer>
 						<GraphContainer>
-							<Card title="Segment Count">
+							<Card
+								title={
+									<AntToolTip title={get(messages, 'tooltips.graphSegmentCount')}>
+										<span>
+											Segment Count <Icon type="info-circle" />
+										</span>
+									</AntToolTip>
+								}
+							>
 								<LineChart
-									width={500}
+									width={450}
 									height={250}
 									data={graphData.data.segmentCount}
 									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}

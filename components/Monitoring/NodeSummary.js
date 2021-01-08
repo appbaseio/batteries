@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
+import { Skeleton, Icon, Tooltip } from 'antd';
 
-import { Skeleton } from 'antd';
 import Flex from '../shared/Flex';
 import { CustomCard, Title } from './MonitoringStyledComponents';
 import { fetchNodeSummaryData } from '../../utils/monitoring';
+import { messages } from './messages';
 
 const NodeSummary = ({ config, timeFilter }) => {
 	const [nodeSummaryData, setNodeSummaryData] = useState({
@@ -30,7 +31,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [timeFilter]);
 	return (
 		<CustomCard
 			title={`Nodes${
@@ -42,19 +43,35 @@ const NodeSummary = ({ config, timeFilter }) => {
 			) : (
 				<>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Title>CPU Usage</Title>
+						<Tooltip title={get(messages, 'tooltips.summaryCpuUsage')}>
+							<Title>
+								CPU Usage <Icon type="info-circle" />
+							</Title>
+						</Tooltip>
 						<span>{get(nodeSummaryData, 'data.cpuUsage')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Title>JVM Heap</Title>
+						<Tooltip title={get(messages, 'tooltips.summaryHeapUsage')}>
+							<Title>
+								JVM Heap <Icon type="info-circle" />
+							</Title>
+						</Tooltip>
 						<span>{get(nodeSummaryData, 'data.jvmHeap')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Title>Memory</Title>
+						<Tooltip title={get(messages, 'tooltips.summaryMemoryUsage')}>
+							<Title>
+								Memory <Icon type="info-circle" />
+							</Title>
+						</Tooltip>
 						<span>{get(nodeSummaryData, 'data.memory')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Title>Disk Available</Title>
+						<Tooltip title={get(messages, 'tooltips.summaryDiskAvailable')}>
+							<Title>
+								Disk Available <Icon type="info-circle" />
+							</Title>
+						</Tooltip>
 						<span>{get(nodeSummaryData, 'data.disk')}</span>
 					</Flex>
 				</>
