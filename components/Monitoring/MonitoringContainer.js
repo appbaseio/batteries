@@ -99,7 +99,7 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 							key={refreshKey}
 						>
 							<Card
-								title={<b>Monitoring</b>}
+								title={<b>Cluster Monitoring</b>}
 								extra={
 									<>
 										<Tooltip placement="topLeft" title="Refresh request logs.">

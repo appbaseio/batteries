@@ -407,13 +407,13 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		const isDayInterval = timeFilter === 'now-7d';
 		const isSecondInterval = timeFilter === 'now-5m';
 		if (isDayInterval) {
-			return moment.utc(dateValue).format('DD-MMM');
+			return moment.utc(dateValue).local().format('DD-MMM');
 		}
 		if (isSecondInterval) {
-			moment.utc(dateValue).format('HH:mm:ss');
+			moment.utc(dateValue).local().format('HH:mm:ss');
 		}
 
-		return moment.utc(dateValue).format('HH:mm');
+		return moment.utc(dateValue).local().format('HH:mm');
 	};
 
 	return {
