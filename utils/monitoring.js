@@ -55,6 +55,8 @@ export const fetchOverviewData = async (config, timeFilter) => {
 
 		const uptime = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*", "cloud.instance.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"now-1h","lte":"now"}}}]}}}`;
 
+		const liveNodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
 			password: esPassword,
@@ -64,7 +66,7 @@ export const fetchOverviewData = async (config, timeFilter) => {
 		const esRes = await fetch(esSearchConfig.url, {
 			method: esSearchConfig.method,
 			headers: esSearchConfig.headers,
-			body: `{"preference": "cluster_health"}\n${esStatus}\n{"preference": "uptime"}\n${uptime}\n`,
+			body: `{"preference": "cluster_health"}\n${esStatus}\n{"preference": "uptime"}\n${uptime}\n{"preference": "live_nodes"}\n${liveNodes}\n`,
 		});
 
 		const esData = await esRes.json();
@@ -91,14 +93,13 @@ export const fetchOverviewData = async (config, timeFilter) => {
 			kibanaData = await kibanaRes.json();
 		}
 
-		return {
-			esStatus: get(
-				esData,
-				'responses.0.aggregations.status.hits.hits.0._source.elasticsearch.cluster.stats.status',
-			),
-			arcStatus,
-			kibanaStatus: get(kibanaData, 'status.overall.state', null),
-			uptime: get(esData, 'responses.1.aggregations.instances.buckets').map((item) => ({
+		const currentNodes = get(esData, 'responses.2.aggregations.instances.buckets').map(
+			(i) => i.key,
+		);
+
+		const uptimes = get(esData, 'responses.1.aggregations.instances.buckets')
+			.map((item) => ({
+				nodeId: get(item.uptimes, 'hits.hits.0._source.cloud.instance.id'),
 				node: get(
 					item.uptimes,
 					'hits.hits.0._source.cloud.instance.name',
@@ -110,7 +111,17 @@ export const fetchOverviewData = async (config, timeFilter) => {
 						(1000 * 60 * 60)
 					).toFixed(2),
 				),
-			})),
+			}))
+			.filter((item) => currentNodes.includes(item.nodeId));
+
+		return {
+			esStatus: get(
+				esData,
+				'responses.0.aggregations.status.hits.hits.0._source.elasticsearch.cluster.stats.status',
+			),
+			arcStatus,
+			kibanaStatus: get(kibanaData, 'status.overall.state', null),
+			uptime: uptimes,
 		};
 	} catch (err) {
 		throw err;
@@ -120,8 +131,6 @@ export const fetchOverviewData = async (config, timeFilter) => {
 export const fetchNodeSummaryData = async (config, timeFilter) => {
 	try {
 		const { esURL, esUsername, esPassword } = config;
-
-		const nodes = `{"size":0,"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cluster_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
@@ -140,20 +149,20 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 		const esRes = await fetch(esSearchConfig.url, {
 			method: esSearchConfig.method,
 			headers: esSearchConfig.headers,
-			body: `{"preference": "node_count"}\n${nodes}\n{"preference": "cpu_usage"}\n${cpuUsage}\n{"preference": "jvm_heap"}\n${jvmHeap}\n{"preference": "memory"}\n${memory}\n{"preference": "disk"}\n${disk}\n`,
+			body: `{"preference": "cpu_usage"}\n${cpuUsage}\n{"preference": "jvm_heap"}\n${jvmHeap}\n{"preference": "memory"}\n${memory}\n{"preference": "disk"}\n${disk}\n`,
 		});
 
 		const { responses } = await esRes.json();
 		const cpuUsageString = `${(
-			(get(responses[1], 'aggregations.instances.buckets').reduce(
+			(get(responses[0], 'aggregations.instances.buckets').reduce(
 				(agg, item) => agg + get(item.cpu, 'hits.hits.0._source.system.cpu.total.norm.pct'),
 				0,
 			) /
-				get(responses[1], 'aggregations.instances.buckets').length) *
+				get(responses[0], 'aggregations.instances.buckets').length) *
 			100
 		).toFixed(2)}%`;
 
-		const jvmHeapTuple = get(responses[2], 'aggregations.instances.buckets').reduce(
+		const jvmHeapTuple = get(responses[1], 'aggregations.instances.buckets').reduce(
 			(agg, item) => [
 				agg[0] +
 					get(
@@ -172,7 +181,7 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 			1,
 		)}% (${formatSizeUnits(jvmHeapTuple[0])} / ${formatSizeUnits(jvmHeapTuple[1])})`;
 
-		const memoryTuple = get(responses[3], 'aggregations.instances.buckets').reduce(
+		const memoryTuple = get(responses[2], 'aggregations.instances.buckets').reduce(
 			(agg, item) => {
 				return [
 					agg[0] +
@@ -189,7 +198,7 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 			1,
 		)}% (${formatSizeUnits(memoryTuple[0])} / ${formatSizeUnits(memoryTuple[1])})`;
 
-		const diskTuple = get(responses[4], 'aggregations.instances.buckets').reduce(
+		const diskTuple = get(responses[3], 'aggregations.instances.buckets').reduce(
 			(agg, item) => [
 				agg[0] +
 					get(
@@ -210,10 +219,7 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 			diskTuple[0],
 		)} / ${formatSizeUnits(diskTuple[1])})`;
 		return {
-			nodes: get(
-				responses[0],
-				'aggregations.nodes.hits.hits.0._source.elasticsearch.cluster.stats.nodes.count',
-			),
+			nodes: get(responses[0], 'aggregations.instances.buckets').length,
 			cpuUsage: cpuUsageString,
 			jvmHeap: jvmHeapString,
 			memory: memoryString,
