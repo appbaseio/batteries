@@ -20,21 +20,22 @@ export const getMonitoringSearchConfig = ({ username, password, url }) => ({
 });
 
 export const formatSizeUnits = (byte) => {
-	let bytes = byte;
-	if (bytes >= 1073741824) {
-		bytes = `${(bytes / 1073741824).toFixed(2)} GB`;
-	} else if (bytes >= 1048576) {
-		bytes = `${(bytes / 1048576).toFixed(2)} MB`;
-	} else if (bytes >= 1024) {
-		bytes = `${(bytes / 1024).toFixed(2)} KB`;
-	} else if (bytes > 1) {
-		bytes += ' bytes';
-	} else if (bytes === 1) {
-		bytes += ' byte';
-	} else {
-		bytes = '0 bytes';
-	}
-	return bytes;
+	const bytes = byte;
+	// if (bytes >= 1073741824) {
+	// 	bytes = `${(bytes / 1073741824).toFixed(2)} GB`;
+	// } else if (bytes >= 1048576) {
+	// 	bytes = `${(bytes / 1048576).toFixed(2)} MB`;
+	// } else if (bytes >= 1024) {
+	// 	bytes = `${(bytes / 1024).toFixed(2)} KB`;
+	// } else if (bytes > 1) {
+	// 	bytes += ' bytes';
+	// } else if (bytes === 1) {
+	// 	bytes += ' byte';
+	// } else {
+	// 	bytes = '0 bytes';
+	// }
+
+	return `${(bytes / 1073741824).toFixed(2)} GB`;
 };
 
 export const fetchOverviewData = async (config, timeFilter) => {
@@ -126,7 +127,7 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 
 		const jvmHeap = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory.actual*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const disk = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.fs.summary*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
@@ -172,15 +173,18 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 		)}% (${formatSizeUnits(jvmHeapTuple[0])} / ${formatSizeUnits(jvmHeapTuple[1])})`;
 
 		const memoryTuple = get(responses[3], 'aggregations.instances.buckets').reduce(
-			(agg, item) => [
-				agg[0] + get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
-				agg[1] +
-					get(item.memory, 'hits.hits.0._source.system.memory.actual.free') +
+			(agg, item) => {
+				return [
+					agg[0] +
+						get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
 					agg[1] +
-					get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
-			],
+						get(item.memory, 'hits.hits.0._source.system.memory.actual.free') +
+						get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
+				];
+			},
 			[0, 0],
 		);
+
 		const memoryString = `${((memoryTuple[0] / memoryTuple[1]) * 100).toFixed(
 			1,
 		)}% (${formatSizeUnits(memoryTuple[0])} / ${formatSizeUnits(memoryTuple[1])})`;
@@ -249,21 +253,27 @@ export const fetchIndicesData = async (config, timeFilter) => {
 			).toLocaleString(),
 			documents: get(
 				responses[1],
-				'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.primaries.docs.count',
+				'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.total.docs.count',
 			).toLocaleString(),
 			data: formatSizeUnits(
 				get(
 					responses[1],
-					'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.primaries.store.size.bytes',
+					'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.total.store.size.bytes',
 				),
 			),
 			primaryShards: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
 			).toLocaleString(),
-			replicaShards: get(
-				responses[0],
-				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.count',
+			replicaShards: (
+				get(
+					responses[0],
+					'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.count',
+				) -
+				get(
+					responses[0],
+					'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
+				)
 			).toLocaleString(),
 		};
 	} catch (err) {

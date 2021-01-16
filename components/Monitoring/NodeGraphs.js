@@ -101,7 +101,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 						<GraphContainer>
 							<Card
 								title={
-									<AntToolTip title={get(messages, 'tooltips.graphpJvmHeap')}>
+									<AntToolTip title={get(messages, 'tooltips.graphJvmHeap')}>
 										<span>
 											JVM Heap <Icon type="info-circle" />
 										</span>
