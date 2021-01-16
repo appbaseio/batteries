@@ -1,6 +1,6 @@
 import constants from '../constants';
 
-const monitoring = (state = { config: {}, filter: { time: 'now-1h' } }, action) => {
+const monitoring = (state = { config: {}, filter: { time: 'now-5m' } }, action) => {
 	switch (action.type) {
 		case constants.MONITORING.SET_CONFIG:
 			return {
