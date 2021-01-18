@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import { Skeleton, Icon, Tooltip } from 'antd';
+import { Skeleton, Icon, Tooltip, Alert } from 'antd';
 
 import Flex from '../shared/Flex';
 import { CustomCard, Title } from './MonitoringStyledComponents';
@@ -48,7 +48,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 								CPU Usage <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(nodeSummaryData, 'data.cpuUsage')}</span>
+						<span>{get(nodeSummaryData, 'data.cpuUsage', 'N/A')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<Tooltip title={get(messages, 'tooltips.summaryHeapUsage')}>
@@ -56,7 +56,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 								JVM Heap <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(nodeSummaryData, 'data.jvmHeap')}</span>
+						<span>{get(nodeSummaryData, 'data.jvmHeap', 'N/A')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<Tooltip title={get(messages, 'tooltips.summaryMemoryUsage')}>
@@ -64,7 +64,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 								Memory <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(nodeSummaryData, 'data.memory')}</span>
+						<span>{get(nodeSummaryData, 'data.memory', 'N/A')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<Tooltip title={get(messages, 'tooltips.summaryDiskAvailable')}>
@@ -72,8 +72,19 @@ const NodeSummary = ({ config, timeFilter }) => {
 								Disk Available <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(nodeSummaryData, 'data.disk')}</span>
+						<span>{get(nodeSummaryData, 'data.disk', 'N/A')}</span>
 					</Flex>
+					{!nodeSummaryData.data && (
+						<Alert
+							type="warning"
+							message="No Data available for given time frame"
+							showIcon
+							size="small"
+							style={{
+								marginTop: 10,
+							}}
+						/>
+					)}
 				</>
 			)}
 		</CustomCard>

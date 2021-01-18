@@ -104,6 +104,9 @@ const NodeStats = ({ config, timeFilter }) => {
 				bordered
 				pagination={false}
 				expandedRowRender={(record) => <NodeGraphs nodeKey={record.key} />}
+				locale={{
+					emptyText: `No data available for given time frame`,
+				}}
 			/>
 		</div>
 	);

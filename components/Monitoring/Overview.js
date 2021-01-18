@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, Skeleton, Tooltip, Icon } from 'antd';
+import { Badge, Skeleton, Tooltip, Icon, Alert } from 'antd';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -51,10 +51,14 @@ const Overview = ({ config, timeFilter }) => {
 					</Tooltip>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<span>Elasticsearch</span>
-						<Badge
-							color={get(overviewData, 'data.esStatus')}
-							text={HEALTH_TEXT[get(overviewData, 'data.esStatus')]}
-						/>
+						{get(overviewData, 'data.esState') ? (
+							<Badge
+								color={get(overviewData, 'data.esStatus')}
+								text={HEALTH_TEXT[get(overviewData, 'data.esStatus')]}
+							/>
+						) : (
+							<span>N/A</span>
+						)}
 					</Flex>
 					<Flex justifyContent="space-between">
 						<span>Appbase.io</span>
@@ -63,29 +67,44 @@ const Overview = ({ config, timeFilter }) => {
 							text={HEALTH_TEXT[get(overviewData, 'data.arcStatus')]}
 						/>
 					</Flex>
-					{get(overviewData, 'data.kibanaStatus') && (
-						<>
-							<span>Kibana</span>
-							<Flex justifyContent="space-between">
-								<Badge
-									color={get(overviewData, 'data.kibanaStatus')}
-									text={HEALTH_TEXT[get(overviewData, 'data.kibanaStatus')]}
-								/>
-							</Flex>
-						</>
-					)}
+
+					<Flex justifyContent="space-between">
+						<span>Kibana</span>
+
+						{get(overviewData, 'data.kibanaStatus') ? (
+							<Badge
+								color={get(overviewData, 'data.kibanaStatus')}
+								text={HEALTH_TEXT[get(overviewData, 'data.kibanaStatus')]}
+							/>
+						) : (
+							<span>N/A</span>
+						)}
+					</Flex>
+
 					<br />
 					<Tooltip title={get(messages, 'tooltips.uptime')}>
 						<Title>
 							Uptime <Icon type="info-circle" />
 						</Title>
 					</Tooltip>
-					{get(overviewData, 'data.uptime').map((item) => (
-						<Flex justifyContent="space-between" key={item.node}>
-							<span>{item.node}</span>
-							<span>{item.uptime} hrs</span>
-						</Flex>
-					))}
+					{get(overviewData, 'data.uptime').length ? (
+						get(overviewData, 'data.uptime').map((item) => (
+							<Flex justifyContent="space-between" key={item.node}>
+								<span>{item.node}</span>
+								<span>{item.uptime} hrs</span>
+							</Flex>
+						))
+					) : (
+						<Alert
+							type="warning"
+							message="No Data available for given time frame"
+							showIcon
+							size="small"
+							style={{
+								marginTop: 10,
+							}}
+						/>
+					)}
 				</>
 			)}
 		</CustomCard>

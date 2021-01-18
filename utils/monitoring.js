@@ -113,11 +113,11 @@ export const fetchOverviewData = async (config, timeFilter) => {
 				),
 			}))
 			.filter((item) => currentNodes.includes(item.nodeId));
-
 		return {
 			esStatus: get(
 				esData,
 				'responses.0.aggregations.status.hits.hits.0._source.elasticsearch.cluster.stats.status',
+				null,
 			),
 			arcStatus,
 			kibanaStatus: get(kibanaData, 'status.overall.state', null),
@@ -153,6 +153,10 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 		});
 
 		const { responses } = await esRes.json();
+		const instanceBuckets = get(responses[0], 'aggregations.instances.buckets');
+		if (!instanceBuckets.length) {
+			return null;
+		}
 		const cpuUsageString = `${(
 			(get(responses[0], 'aggregations.instances.buckets').reduce(
 				(agg, item) => agg + get(item.cpu, 'hits.hits.0._source.system.cpu.total.norm.pct'),
@@ -251,6 +255,9 @@ export const fetchIndicesData = async (config, timeFilter) => {
 		});
 
 		const { responses } = await esRes.json();
+		if (!get(responses[0], 'aggregations.cluster.hits.hits').length) {
+			return null;
+		}
 
 		return {
 			indices: get(

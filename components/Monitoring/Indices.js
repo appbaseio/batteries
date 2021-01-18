@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import { Skeleton, Tooltip, Icon } from 'antd';
+import { Skeleton, Tooltip, Icon, Alert } from 'antd';
 
 import Flex from '../shared/Flex';
 import { CustomCard, Title } from './MonitoringStyledComponents';
@@ -32,6 +32,7 @@ const Indices = ({ config, timeFilter }) => {
 			isMounted = false;
 		};
 	}, [timeFilter]);
+
 	return (
 		<CustomCard
 			title={`Indices${
@@ -48,23 +49,23 @@ const Indices = ({ config, timeFilter }) => {
 								Documents <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(indicesData, 'data.documents')}</span>
+						<span>{get(indicesData, 'data.documents', 'N/A')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Tooltip title={get(messages, 'tooltips.summaryData')}>
+						<Tooltip title={get(messages, 'tooltips.summaryData', 'N/A')}>
 							<Title>
 								Data <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(indicesData, 'data.data')}</span>
+						<span>{get(indicesData, 'data.data', 'N/A')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Tooltip title={get(messages, 'tooltips.summaryPrimaryShards')}>
+						<Tooltip title={get(messages, 'tooltips.summaryPrimaryShards', 'N/A')}>
 							<Title>
 								Primary Shards <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(indicesData, 'data.primaryShards')}</span>
+						<span>{get(indicesData, 'data.primaryShards', 'N/A')}</span>
 					</Flex>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<Tooltip title={get(messages, 'tooltips.summaryReplicaShards')}>
@@ -72,8 +73,19 @@ const Indices = ({ config, timeFilter }) => {
 								Replica Shards <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(indicesData, 'data.replicaShards')}</span>
+						<span>{get(indicesData, 'data.replicaShards', 'N/A')}</span>
 					</Flex>
+					{!indicesData.data && (
+						<Alert
+							type="warning"
+							message="No Data available for given time frame"
+							showIcon
+							size="small"
+							style={{
+								marginTop: 10,
+							}}
+						/>
+					)}
 				</>
 			)}
 		</CustomCard>
