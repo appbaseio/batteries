@@ -78,7 +78,7 @@ const Indices = ({ config, timeFilter }) => {
 					{!indicesData.data && (
 						<Alert
 							type="warning"
-							message="No Data available for given time frame"
+							message="No data available for given time frame"
 							showIcon
 							size="small"
 							style={{
