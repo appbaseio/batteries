@@ -51,7 +51,7 @@ const Overview = ({ config, timeFilter }) => {
 					</Tooltip>
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<span>Elasticsearch</span>
-						{get(overviewData, 'data.esState') ? (
+						{get(overviewData, 'data.esStatus') ? (
 							<Badge
 								color={get(overviewData, 'data.esStatus')}
 								text={HEALTH_TEXT[get(overviewData, 'data.esStatus')]}
