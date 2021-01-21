@@ -23,7 +23,10 @@ const Overview = ({ config, timeFilter }) => {
 	useEffect(() => {
 		let isMounted = true;
 		async function getOverviewData() {
-			const overviewResponse = await fetchOverviewData(config, timeFilter);
+			const overviewResponse = await fetchOverviewData(
+				config,
+				timeFilter,
+			);
 			if (isMounted) {
 				setOverviewData({
 					loading: false,
@@ -49,35 +52,69 @@ const Overview = ({ config, timeFilter }) => {
 							Health <Icon type="info-circle" />
 						</Title>
 					</Tooltip>
-					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<span>Elasticsearch</span>
+					<Flex
+						justifyContent="space-between"
+						style={{ paddingTop: 10 }}
+					>
+						<div style={{ flex: 1 }}>Elasticsearch</div>
 						{get(overviewData, 'data.esStatus') ? (
 							<Badge
 								color={get(overviewData, 'data.esStatus')}
-								text={HEALTH_TEXT[get(overviewData, 'data.esStatus')]}
+								text={
+									HEALTH_TEXT[
+										get(overviewData, 'data.esStatus')
+									]
+								}
+								style={{
+									flex: 1,
+									textAlign: 'right',
+								}}
 							/>
 						) : (
-							<span>N/A</span>
+							<div style={{ flex: 1, textAlign: 'right' }}>
+								N/A
+							</div>
 						)}
 					</Flex>
 					<Flex justifyContent="space-between">
-						<span>Appbase.io</span>
+						<div style={{ flex: 1 }}>Appbase.io</div>
 						<Badge
 							color={get(overviewData, 'data.arcStatus')}
-							text={HEALTH_TEXT[get(overviewData, 'data.arcStatus')]}
+							text={
+								HEALTH_TEXT[get(overviewData, 'data.arcStatus')]
+							}
+							style={{
+								flex: 1,
+								textAlign: 'right',
+							}}
 						/>
 					</Flex>
 
 					<Flex justifyContent="space-between">
-						<span>Kibana</span>
+						<div style={{ flex: 1 }}>Kibana</div>
 
 						{get(overviewData, 'data.kibanaStatus') ? (
 							<Badge
 								color={get(overviewData, 'data.kibanaStatus')}
-								text={HEALTH_TEXT[get(overviewData, 'data.kibanaStatus')]}
+								text={
+									HEALTH_TEXT[
+										get(overviewData, 'data.kibanaStatus')
+									]
+								}
+								style={{
+									flex: 1,
+									textAlign: 'right',
+								}}
 							/>
 						) : (
-							<span>N/A</span>
+							<div
+								style={{
+									flex: 1,
+									textAlign: 'right',
+								}}
+							>
+								N/A
+							</div>
 						)}
 					</Flex>
 
@@ -88,10 +125,15 @@ const Overview = ({ config, timeFilter }) => {
 						</Title>
 					</Tooltip>
 					{get(overviewData, 'data.uptime').length ? (
-						get(overviewData, 'data.uptime').map((item) => (
-							<Flex justifyContent="space-between" key={item.node}>
-								<span>{item.node}</span>
-								<span>{item.uptime}</span>
+						get(overviewData, 'data.uptime').map(item => (
+							<Flex
+								justifyContent="space-between"
+								key={item.node}
+							>
+								<div style={{ fleX: 1 }}>{item.node}</div>
+								<div style={{ flex: 1, textAlign: 'right' }}>
+									{item.uptime}
+								</div>
 							</Flex>
 						))
 					) : (
@@ -116,7 +158,7 @@ Overview.propTypes = {
 	timeFilter: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	return {
 		config: get(state, '$monitoring.config', {}),
 		timeFilter: get(state, '$monitoring.filter.time', ''),

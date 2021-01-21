@@ -13,7 +13,18 @@ import TimeFilter from './TimeFilter';
 import Overlay from '../shared/Overlay';
 import { messages } from './messages';
 
-const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConfig, plan }) => {
+const MonitoringContainer = ({
+	esURL,
+	esUsername,
+	esPassword,
+	arcURL,
+	kibanaURL,
+	kibanaUsername,
+	kibanaPassword,
+	isAppbase,
+	setConfig,
+	plan,
+}) => {
 	const [data, setData] = useState({
 		isLoading: true,
 		hasMetricbeat: false,
@@ -29,7 +40,9 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 			try {
 				const res = await fetch(`${esURL}/metricbeat-*`, {
 					headers: {
-						Authorization: `Basic ${btoa(`${esUsername}:${esPassword}`)}`,
+						Authorization: `Basic ${btoa(
+							`${esUsername}:${esPassword}`,
+						)}`,
 						'Content-Type': 'application/json',
 					},
 				});
@@ -40,6 +53,10 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 						esUsername,
 						esPassword,
 						isAppbase,
+						arcURL,
+						kibanaUsername,
+						kibanaPassword,
+						kibanaURL,
 					});
 					// just to make sure redux store is updated with configs
 					setTimeout(() => {
@@ -77,7 +94,9 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 					src="https://www.dropbox.com/s/nwqf21zsyp8lhui/Screenshot%202021-01-08%20at%207.10.35%20PM.png?raw=1"
 					alt="Query Rules"
 				/>
-				<p style={{ textAlign: 'center' }}>{get(messages, 'featureUnavailable')}</p>
+				<p style={{ textAlign: 'center' }}>
+					{get(messages, 'featureUnavailable')}
+				</p>
 			</div>
 		);
 	}
@@ -94,7 +113,7 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 								width: '100%',
 								maxWidth: 1300,
 								margin: '0 auto',
-								padding: '40px 20px 20px',
+								padding: isAppbase ? '40px 20px 20px' : '',
 							}}
 							key={refreshKey}
 						>
@@ -102,7 +121,10 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 								title={<b>Cluster Monitoring</b>}
 								extra={
 									<>
-										<Tooltip placement="topLeft" title="Refresh request logs.">
+										<Tooltip
+											placement="topLeft"
+											title="Refresh request logs."
+										>
 											<Button
 												style={{ marginLeft: 8 }}
 												onClick={() => {
@@ -132,7 +154,10 @@ const MonitoringContainer = ({ esURL, esUsername, esPassword, isAppbase, setConf
 							<p style={{ textAlign: 'center' }}>
 								{get(messages, 'monitoringUnavailable')} Please{' '}
 								<span
-									style={{ cursor: 'pointer', color: 'dodgerblue' }}
+									style={{
+										cursor: 'pointer',
+										color: 'dodgerblue',
+									}}
 									onClick={() => window.Intercom('show')}
 								>
 									contact us
@@ -154,15 +179,23 @@ MonitoringContainer.propTypes = {
 	setConfig: PropTypes.func.isRequired,
 	isAppbase: PropTypes.bool,
 	plan: PropTypes.string.isRequired,
+	arcURL: PropTypes.string,
+	kibanaUsername: PropTypes.string,
+	kibanaPassword: PropTypes.string,
+	kibanaURL: PropTypes.string,
 };
 
 MonitoringContainer.defaultProps = {
 	isAppbase: false,
+	arcURL: '',
+	kibanaURL: '',
+	kibanaPassword: '',
+	kibanaUsername: '',
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
 	return {
-		setConfig: (data) => dispatch(setMonitoringConfig(data)),
+		setConfig: data => dispatch(setMonitoringConfig(data)),
 	};
 };
 
