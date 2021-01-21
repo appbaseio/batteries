@@ -11,6 +11,7 @@ import {
 	computeStateByAppName,
 	computePlan,
 } from './utils';
+import monitoring from './monitoring';
 
 export default {
 	$getAppInfo: getAppInfo,
@@ -170,4 +171,5 @@ export default {
 		AppConstants.ACCOUNT.PAYMENT.UPDATE_SUCCESS,
 		AppConstants.ACCOUNT.PAYMENT.UPDATE_ERROR,
 	),
+	$monitoring: monitoring,
 };

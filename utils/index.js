@@ -9,9 +9,12 @@ import { doGet } from './requestService';
  */
 export const isStaging = false;
 // export const isStaging = process.env.CONTEXT === 'deploy-preview';
+
 export const ACC_API = isStaging
 	? 'https://accapi-staging.reactiveapps.io'
 	: 'https://accapi.appbase.io';
+
+// export const ACC_API = 'http://localhost:3000';
 export const SCALR_API = isStaging
 	? 'https://api-staging.reactiveapps.io'
 	: 'https://scalr.api.appbase.io';
@@ -20,20 +23,24 @@ export const SCALR_API = isStaging
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission => permission.read
-			&& permission.write
-			&& get(permission, 'referers', []).includes('*')
-			&& get(permission, 'include_fields', []).includes('*'),
+		permission =>
+			permission.read &&
+			permission.write &&
+			get(permission, 'referers', []).includes('*') &&
+			get(permission, 'include_fields', []).includes('*'),
 	);
 	if (!result) {
 		result = permissions.find(
-			permission => permission.read
-				&& permission.write
-				&& get(permission, 'referers', []).includes('*'),
+			permission =>
+				permission.read &&
+				permission.write &&
+				get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission.read && permission.write);
+		result = permissions.find(
+			permission => permission.read && permission.write,
+		);
 	}
 	if (!result) {
 		result = permissions.find(permission => permission.read);
@@ -43,20 +50,24 @@ export function getCredentialsFromPermissions(permissions = []) {
 
 export function getReadCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		permission => permission.read
-			&& !permission.write
-			&& get(permission, 'referers', []).includes('*')
-			&& get(permission, 'include_fields', []).includes('*'),
+		permission =>
+			permission.read &&
+			!permission.write &&
+			get(permission, 'referers', []).includes('*') &&
+			get(permission, 'include_fields', []).includes('*'),
 	);
 	if (!result) {
 		result = permissions.find(
-			permission => permission.read
-				&& !permission.write
-				&& get(permission, 'referers', []).includes('*'),
+			permission =>
+				permission.read &&
+				!permission.write &&
+				get(permission, 'referers', []).includes('*'),
 		);
 	}
 	if (!result) {
-		result = permissions.find(permission => permission.read && !permission.write);
+		result = permissions.find(
+			permission => permission.read && !permission.write,
+		);
 	}
 	return result || false;
 }
@@ -71,10 +82,10 @@ export function getCredentials(appId) {
 			},
 		})
 			.then(res => res.json())
-			.then((data) => {
+			.then(data => {
 				resolve(getCredentialsFromPermissions(data.body));
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -99,7 +110,8 @@ export function isEqual(x, y) {
 	}
 	return true;
 }
-export const getUserAppsPermissions = () => doGet(`${ACC_API}/user/apps/permissions`);
+export const getUserAppsPermissions = () =>
+	doGet(`${ACC_API}/user/apps/permissions`);
 export const setUserInfo = userInfo =>
 	new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/user/profile`, {
@@ -212,4 +224,16 @@ export const deleteObjectFromPath = (obj, path) => {
 		return deleteObjectFromPath(obj[fields[0]], fields.slice(1).join('.'));
 	}
 	return false;
+};
+
+export const CLUSTER_PLANS = {
+	SANDBOX_2019: '2019-sandbox',
+	HOBBY_2019: '2019-hobby',
+	STARTER_2019: '2019-starter',
+	PRODUCTION_2019_1: '2019-production-1',
+	PRODUCTION_2019_2: '2019-production-2',
+	PRODUCTION_2019_3: '2019-production-3',
+	SANDBOX_2020: '2020-sandbox',
+	HOBBY_2020: '2020-hobby',
+	STARTER_2020: '2020-starter',
 };
