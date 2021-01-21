@@ -38,6 +38,16 @@ export const formatSizeUnits = (byte) => {
 	return `${(bytes / 1073741824).toFixed(2)} GB`;
 };
 
+function sortNode(a, b) {
+	if (a.node < b.node) {
+		return -1;
+	}
+	if (a.node > b.node) {
+		return 1;
+	}
+	return 0;
+}
+
 export const fetchOverviewData = async (config, timeFilter) => {
 	try {
 		const {
@@ -126,7 +136,7 @@ export const fetchOverviewData = async (config, timeFilter) => {
 			),
 			arcStatus,
 			kibanaStatus: get(kibanaData, 'status.overall.state', null),
-			uptime: uptimes,
+			uptime: uptimes.sort(sortNode),
 		};
 	} catch (err) {
 		throw err;
@@ -343,7 +353,7 @@ export const fetchNodeStats = async (config, timeFilter) => {
 
 			return {
 				key: bucket.key,
-				name: get(
+				node: get(
 					bucket,
 					'nodes.hits.hits.0._source.cloud.instance.name',
 					get(bucket, 'nodes.hits.hits.0._source.cloud.instance.id'),
@@ -391,7 +401,7 @@ export const fetchNodeStats = async (config, timeFilter) => {
 				).toLocaleString(),
 			};
 		});
-		return data;
+		return data.sort(sortNode);
 	} catch (err) {
 		throw err;
 	}

@@ -35,8 +35,8 @@ const NodeStats = ({ config, timeFilter }) => {
 	const columns = [
 		{
 			title: 'Node',
-			dataIndex: 'name',
-			key: 'name',
+			dataIndex: 'node',
+			key: 'node',
 		},
 		{
 			title: (
