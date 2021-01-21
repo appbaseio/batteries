@@ -12,9 +12,9 @@ const getTimeFilters = (currentPlan) => {
 	return Object.keys(TIME_FILTER).reduce((agg, item) => {
 		if (
 			item === 'now-7d' &&
-			(currentPlan !== CLUSTER_PLANS.PRODUCTION_2019_1 ||
-				currentPlan !== CLUSTER_PLANS.PRODUCTION_2019_2 ||
-				currentPlan !== CLUSTER_PLANS.PRODUCTION_2019_3)
+			currentPlan !== CLUSTER_PLANS.PRODUCTION_2019_1 &&
+			currentPlan !== CLUSTER_PLANS.PRODUCTION_2019_2 &&
+			currentPlan !== CLUSTER_PLANS.PRODUCTION_2019_3
 		) {
 			return { ...agg };
 		}
