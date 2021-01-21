@@ -183,6 +183,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 								</LineChart>
 							</Card>
 						</GraphContainer>
+						<GraphContainer />
 					</Flex>
 				</>
 			)}
