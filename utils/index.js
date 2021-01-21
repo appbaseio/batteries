@@ -23,7 +23,7 @@ export const SCALR_API = isStaging
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		(permission) =>
+		permission =>
 			permission.read &&
 			permission.write &&
 			get(permission, 'referers', []).includes('*') &&
@@ -31,7 +31,7 @@ export function getCredentialsFromPermissions(permissions = []) {
 	);
 	if (!result) {
 		result = permissions.find(
-			(permission) =>
+			permission =>
 				permission.read &&
 				permission.write &&
 				get(permission, 'referers', []).includes('*'),
@@ -39,18 +39,18 @@ export function getCredentialsFromPermissions(permissions = []) {
 	}
 	if (!result) {
 		result = permissions.find(
-			(permission) => permission.read && permission.write,
+			permission => permission.read && permission.write,
 		);
 	}
 	if (!result) {
-		result = permissions.find((permission) => permission.read);
+		result = permissions.find(permission => permission.read);
 	}
 	return result;
 }
 
 export function getReadCredentialsFromPermissions(permissions = []) {
 	let result = permissions.find(
-		(permission) =>
+		permission =>
 			permission.read &&
 			!permission.write &&
 			get(permission, 'referers', []).includes('*') &&
@@ -58,7 +58,7 @@ export function getReadCredentialsFromPermissions(permissions = []) {
 	);
 	if (!result) {
 		result = permissions.find(
-			(permission) =>
+			permission =>
 				permission.read &&
 				!permission.write &&
 				get(permission, 'referers', []).includes('*'),
@@ -66,7 +66,7 @@ export function getReadCredentialsFromPermissions(permissions = []) {
 	}
 	if (!result) {
 		result = permissions.find(
-			(permission) => permission.read && !permission.write,
+			permission => permission.read && !permission.write,
 		);
 	}
 	return result || false;
@@ -81,11 +81,11 @@ export function getCredentials(appId) {
 				'Content-Type': 'application/json',
 			},
 		})
-			.then((res) => res.json())
-			.then((data) => {
+			.then(res => res.json())
+			.then(data => {
 				resolve(getCredentialsFromPermissions(data.body));
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -112,7 +112,7 @@ export function isEqual(x, y) {
 }
 export const getUserAppsPermissions = () =>
 	doGet(`${ACC_API}/user/apps/permissions`);
-export const setUserInfo = (userInfo) =>
+export const setUserInfo = userInfo =>
 	new Promise((resolve, reject) => {
 		fetch(`${ACC_API}/user/profile`, {
 			method: 'PUT',
@@ -122,9 +122,9 @@ export const setUserInfo = (userInfo) =>
 			},
 			body: JSON.stringify(userInfo),
 		})
-			.then((res) => res.json())
-			.then((data) => resolve(data))
-			.catch((error) => reject(error));
+			.then(res => res.json())
+			.then(data => resolve(data))
+			.catch(error => reject(error));
 	});
 
 /**
@@ -136,13 +136,13 @@ export const parseSearchState = (searchState = {}) => {
 	let listCounter = 1;
 	const componentIds = {};
 	// Filter out the components
-	Object.keys(searchState).forEach((key) => {
+	Object.keys(searchState).forEach(key => {
 		const { value, dataField, URLParams, ...state } = searchState[key];
 		// Change value to defaultValue
 		// Don't set URL params
 		state.defaultValue = value;
 		if (Array.isArray(dataField)) {
-			state.dataField = dataField.filter((i) => !i.split('.')[1]);
+			state.dataField = dataField.filter(i => !i.split('.')[1]);
 		} else if (typeof dataField === 'string') {
 			state.dataField = dataField.split('.')[0];
 		}
@@ -178,7 +178,7 @@ export const parseSearchState = (searchState = {}) => {
 		}
 		const newReact = [];
 		if (react[queryFormat] instanceof Array) {
-			react[queryFormat].forEach((reactKey) => {
+			react[queryFormat].forEach(reactKey => {
 				if (componentIds[reactKey]) {
 					newReact.push(componentIds[reactKey]);
 				}
@@ -187,7 +187,7 @@ export const parseSearchState = (searchState = {}) => {
 		return newReact.length ? newReact : undefined;
 	};
 	// Update the react props
-	Object.keys(searchProfile).forEach((key) => {
+	Object.keys(searchProfile).forEach(key => {
 		const { react, ...state } = searchProfile[key];
 		const newReact = {};
 		if (react) {
@@ -224,4 +224,16 @@ export const deleteObjectFromPath = (obj, path) => {
 		return deleteObjectFromPath(obj[fields[0]], fields.slice(1).join('.'));
 	}
 	return false;
+};
+
+export const CLUSTER_PLANS = {
+	SANDBOX_2019: '2019-sandbox',
+	HOBBY_2019: '2019-hobby',
+	STARTER_2019: '2019-starter',
+	PRODUCTION_2019_1: '2019-production-1',
+	PRODUCTION_2019_2: '2019-production-2',
+	PRODUCTION_2019_3: '2019-production-3',
+	SANDBOX_2020: '2020-sandbox',
+	HOBBY_2020: '2020-hobby',
+	STARTER_2020: '2020-starter',
 };
