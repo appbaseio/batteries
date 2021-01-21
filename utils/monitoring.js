@@ -98,20 +98,25 @@ export const fetchOverviewData = async (config, timeFilter) => {
 		);
 
 		const uptimes = get(esData, 'responses.1.aggregations.instances.buckets')
-			.map((item) => ({
-				nodeId: get(item.uptimes, 'hits.hits.0._source.cloud.instance.id'),
-				node: get(
-					item.uptimes,
-					'hits.hits.0._source.cloud.instance.name',
-					get(item.uptimes, 'hits.hits.0._source.cloud.instance.id'),
-				),
-				uptime: Number(
-					(
-						get(item.uptimes, 'hits.hits.0._source.system.uptime.duration.ms', 0) /
-						(1000 * 60 * 60)
-					).toFixed(2),
-				),
-			}))
+			.map((item) => {
+				const hours = Math.ceil(
+					get(item.uptimes, 'hits.hits.0._source.system.uptime.duration.ms', 0) /
+						(1000 * 60 * 60),
+				);
+				let uptimeData = `${hours} hrs`;
+				if (hours > 100) {
+					uptimeData = `${Math.ceil(hours / 24)} days`;
+				}
+				return {
+					nodeId: get(item.uptimes, 'hits.hits.0._source.cloud.instance.id'),
+					node: get(
+						item.uptimes,
+						'hits.hits.0._source.cloud.instance.name',
+						get(item.uptimes, 'hits.hits.0._source.cloud.instance.id'),
+					),
+					uptime: uptimeData,
+				};
+			})
 			.filter((item) => currentNodes.includes(item.nodeId));
 		return {
 			esStatus: get(

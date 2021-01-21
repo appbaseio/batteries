@@ -91,7 +91,7 @@ const Overview = ({ config, timeFilter }) => {
 						get(overviewData, 'data.uptime').map((item) => (
 							<Flex justifyContent="space-between" key={item.node}>
 								<span>{item.node}</span>
-								<span>{item.uptime} hrs</span>
+								<span>{item.uptime}</span>
 							</Flex>
 						))
 					) : (
