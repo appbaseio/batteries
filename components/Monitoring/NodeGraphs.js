@@ -35,6 +35,15 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 		};
 	}, [timeFilter]);
 
+	const isAppbase = get(config, 'isAppbase');
+
+	const graphDimensions = isAppbase
+		? {
+				width: 450,
+				height: 250,
+		  }
+		: { width: 350, height: 250 };
+
 	return (
 		<div>
 			{graphData.loading ? (
@@ -45,26 +54,46 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 						<GraphContainer>
 							<Card
 								title={
-									<AntToolTip title={get(messages, 'tooltips.graphCpuUsage')}>
+									<AntToolTip
+										title={get(
+											messages,
+											'tooltips.graphCpuUsage',
+										)}
+									>
 										<span>
-											CPU Usage <Icon type="info-circle" />
+											CPU Usage{' '}
+											<Icon type="info-circle" />
 										</span>
 									</AntToolTip>
 								}
 							>
 								<LineChart
-									width={450}
-									height={250}
+									width={graphDimensions.width}
+									height={graphDimensions.height}
 									data={graphData.data.cpuUsage}
-									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+									margin={{
+										top: 5,
+										right: 30,
+										left: 20,
+										bottom: 5,
+									}}
 								>
 									<XAxis dataKey="date" />
 									<YAxis dataKey="data" />
 									<Tooltip
-										content={<GraphToolTip graphLabel="CPU Usage" unit="%" />}
+										content={
+											<GraphToolTip
+												graphLabel="CPU Usage"
+												unit="%"
+											/>
+										}
 									/>
 									<Legend formatter={() => `CPU Usage`} />
-									<Line type="monotone" dataKey="data" stroke="#8884d8" />
+									<Line
+										type="monotone"
+										dataKey="data"
+										stroke="#8884d8"
+									/>
 								</LineChart>
 							</Card>
 						</GraphContainer>
@@ -72,27 +101,47 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 							<Card
 								title={
 									<AntToolTip
-										title={get(messages, 'tooltips.graphDiskAvailable')}
+										title={get(
+											messages,
+											'tooltips.graphDiskAvailable',
+										)}
 									>
 										<span>
-											Disk Available <Icon type="info-circle" />
+											Disk Available{' '}
+											<Icon type="info-circle" />
 										</span>
 									</AntToolTip>
 								}
 							>
 								<LineChart
-									width={450}
-									height={250}
+									width={graphDimensions.width}
+									height={graphDimensions.height}
 									data={graphData.data.diskAvailable}
-									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+									margin={{
+										top: 5,
+										right: 30,
+										left: 20,
+										bottom: 5,
+									}}
 								>
 									<XAxis dataKey="date" />
 									<YAxis dataKey="data" />
 									<Tooltip
-										content={<GraphToolTip graphLabel="Disk" unit="GB" />}
+										content={
+											<GraphToolTip
+												graphLabel="Disk"
+												unit="GB"
+											/>
+										}
 									/>
-									<Legend formatter={() => `Disk Available (GB)`} />
-									<Line type="monotone" dataKey="data" stroke="#8884d8" />
+									<Legend
+										formatter={() => `Disk Available (GB)`}
+									/>
+									<Line
+										type="monotone"
+										dataKey="data"
+										stroke="#8884d8"
+									/>
 								</LineChart>
 							</Card>
 						</GraphContainer>
@@ -101,7 +150,12 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 						<GraphContainer>
 							<Card
 								title={
-									<AntToolTip title={get(messages, 'tooltips.graphJvmHeap')}>
+									<AntToolTip
+										title={get(
+											messages,
+											'tooltips.graphJvmHeap',
+										)}
+									>
 										<span>
 											JVM Heap <Icon type="info-circle" />
 										</span>
@@ -109,36 +163,61 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 								}
 							>
 								<LineChart
-									width={450}
-									height={250}
+									width={graphDimensions.width}
+									height={graphDimensions.height}
 									data={graphData.data.jvmHeap}
-									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+									margin={{
+										top: 5,
+										right: 30,
+										left: 20,
+										bottom: 5,
+									}}
 								>
 									<XAxis dataKey="date" />
 									<YAxis dataKey="data" />
 									<Tooltip
-										content={<GraphToolTip graphLabel="JVM" unit="GB" />}
+										content={
+											<GraphToolTip
+												graphLabel="JVM"
+												unit="GB"
+											/>
+										}
 									/>
 									<Legend formatter={() => `JVM Heap (GB)`} />
-									<Line type="monotone" dataKey="data" stroke="#8884d8" />
+									<Line
+										type="monotone"
+										dataKey="data"
+										stroke="#8884d8"
+									/>
 								</LineChart>
 							</Card>
 						</GraphContainer>
 						<GraphContainer>
 							<Card
 								title={
-									<AntToolTip title={get(messages, 'tooltips.graphMemory')}>
+									<AntToolTip
+										title={get(
+											messages,
+											'tooltips.graphMemory',
+										)}
+									>
 										<span>
-											Memory Utilization <Icon type="info-circle" />
+											Memory Utilization{' '}
+											<Icon type="info-circle" />
 										</span>
 									</AntToolTip>
 								}
 							>
 								<LineChart
-									width={450}
-									height={250}
+									width={graphDimensions.width}
+									height={graphDimensions.height}
 									data={graphData.data.memory}
-									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+									margin={{
+										top: 5,
+										right: 30,
+										left: 20,
+										bottom: 5,
+									}}
 								>
 									<XAxis dataKey="date" />
 									<YAxis dataKey="data" />
@@ -150,8 +229,16 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 											/>
 										}
 									/>
-									<Legend formatter={() => `Memory Utilization (GB)`} />
-									<Line type="monotone" dataKey="data" stroke="#8884d8" />
+									<Legend
+										formatter={() =>
+											`Memory Utilization (GB)`
+										}
+									/>
+									<Line
+										type="monotone"
+										dataKey="data"
+										stroke="#8884d8"
+									/>
 								</LineChart>
 							</Card>
 						</GraphContainer>
@@ -160,26 +247,43 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 						<GraphContainer>
 							<Card
 								title={
-									<AntToolTip title={get(messages, 'tooltips.graphSegmentCount')}>
+									<AntToolTip
+										title={get(
+											messages,
+											'tooltips.graphSegmentCount',
+										)}
+									>
 										<span>
-											Segment Count <Icon type="info-circle" />
+											Segment Count{' '}
+											<Icon type="info-circle" />
 										</span>
 									</AntToolTip>
 								}
 							>
 								<LineChart
-									width={450}
-									height={250}
+									width={graphDimensions.width}
+									height={graphDimensions.height}
 									data={graphData.data.segmentCount}
-									margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+									margin={{
+										top: 5,
+										right: 30,
+										left: 20,
+										bottom: 5,
+									}}
 								>
 									<XAxis dataKey="date" />
 									<YAxis dataKey="data" />
 									<Tooltip
-										content={<GraphToolTip graphLabel="Segment Count" />}
+										content={
+											<GraphToolTip graphLabel="Segment Count" />
+										}
 									/>
 									<Legend formatter={() => `Segment Count`} />
-									<Line type="monotone" dataKey="data" stroke="#8884d8" />
+									<Line
+										type="monotone"
+										dataKey="data"
+										stroke="#8884d8"
+									/>
 								</LineChart>
 							</Card>
 						</GraphContainer>
@@ -197,7 +301,7 @@ NodeGraphs.propTypes = {
 	timeFilter: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	return {
 		config: get(state, '$monitoring.config', {}),
 		timeFilter: get(state, '$monitoring.filter.time', ''),

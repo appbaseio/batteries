@@ -103,7 +103,9 @@ const NodeStats = ({ config, timeFilter }) => {
 				loading={nodeData.loading}
 				bordered
 				pagination={false}
-				expandedRowRender={(record) => <NodeGraphs nodeKey={record.key} />}
+				expandedRowRender={record => (
+					<NodeGraphs nodeKey={record.key} />
+				)}
 				locale={{
 					emptyText: `No data available for given time frame`,
 				}}
@@ -117,7 +119,7 @@ NodeStats.propTypes = {
 	timeFilter: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	return {
 		config: get(state, '$monitoring.config', {}),
 		timeFilter: get(state, '$monitoring.filter.time', ''),

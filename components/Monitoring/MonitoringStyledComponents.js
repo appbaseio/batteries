@@ -30,8 +30,14 @@ export const CustomCard = styled(Card)`
 	}
 `;
 
-export const Title = styled.span`
+export const Title = styled.div`
 	font-weight: bold;
+	flex: 1;
+`;
+
+export const Value = styled.div`
+	text-align: right;
+	flex: 1;
 `;
 
 export const GraphContainer = styled.div`

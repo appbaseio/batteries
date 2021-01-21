@@ -5,7 +5,7 @@ import get from 'lodash/get';
 import { Skeleton, Icon, Tooltip, Alert } from 'antd';
 
 import Flex from '../shared/Flex';
-import { CustomCard, Title } from './MonitoringStyledComponents';
+import { CustomCard, Title, Value } from './MonitoringStyledComponents';
 import { fetchNodeSummaryData } from '../../utils/monitoring';
 import { messages } from './messages';
 
@@ -17,7 +17,10 @@ const NodeSummary = ({ config, timeFilter }) => {
 	useEffect(() => {
 		let isMounted = true;
 		async function getNodeSummaryData() {
-			const nodeSummaryResponse = await fetchNodeSummaryData(config, timeFilter);
+			const nodeSummaryResponse = await fetchNodeSummaryData(
+				config,
+				timeFilter,
+			);
 			if (isMounted) {
 				setNodeSummaryData({
 					loading: false,
@@ -35,44 +38,77 @@ const NodeSummary = ({ config, timeFilter }) => {
 	return (
 		<CustomCard
 			title={`Nodes${
-				get(nodeSummaryData, 'data.nodes') ? `: ${get(nodeSummaryData, 'data.nodes')}` : ''
+				get(nodeSummaryData, 'data.nodes')
+					? `: ${get(nodeSummaryData, 'data.nodes')}`
+					: ''
 			}`}
 		>
 			{nodeSummaryData.loading ? (
 				<Skeleton active />
 			) : (
 				<>
-					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Tooltip title={get(messages, 'tooltips.summaryCpuUsage')}>
+					<Flex
+						justifyContent="space-between"
+						style={{ paddingTop: 10 }}
+					>
+						<Tooltip
+							title={get(messages, 'tooltips.summaryCpuUsage')}
+						>
 							<Title>
 								CPU Usage <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(nodeSummaryData, 'data.cpuUsage', 'N/A')}</span>
+						<Value>
+							{get(nodeSummaryData, 'data.cpuUsage', 'N/A')}
+						</Value>
 					</Flex>
-					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Tooltip title={get(messages, 'tooltips.summaryHeapUsage')}>
+					<Flex
+						justifyContent="space-between"
+						style={{ paddingTop: 10 }}
+					>
+						<Tooltip
+							title={get(messages, 'tooltips.summaryHeapUsage')}
+						>
 							<Title>
 								JVM Heap <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(nodeSummaryData, 'data.jvmHeap', 'N/A')}</span>
+						<Value>
+							{get(nodeSummaryData, 'data.jvmHeap', 'N/A')}
+						</Value>
 					</Flex>
-					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Tooltip title={get(messages, 'tooltips.summaryMemoryUsage')}>
+					<Flex
+						justifyContent="space-between"
+						style={{ paddingTop: 10 }}
+					>
+						<Tooltip
+							title={get(messages, 'tooltips.summaryMemoryUsage')}
+						>
 							<Title>
 								Memory <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(nodeSummaryData, 'data.memory', 'N/A')}</span>
+						<Value>
+							{get(nodeSummaryData, 'data.memory', 'N/A')}
+						</Value>
 					</Flex>
-					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
-						<Tooltip title={get(messages, 'tooltips.summaryDiskAvailable')}>
+					<Flex
+						justifyContent="space-between"
+						style={{ paddingTop: 10 }}
+					>
+						<Tooltip
+							title={get(
+								messages,
+								'tooltips.summaryDiskAvailable',
+							)}
+						>
 							<Title>
 								Disk Available <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<span>{get(nodeSummaryData, 'data.disk', 'N/A')}</span>
+						<Value>
+							{get(nodeSummaryData, 'data.disk', 'N/A')}
+						</Value>
 					</Flex>
 					{!nodeSummaryData.data && (
 						<Alert
@@ -96,7 +132,7 @@ NodeSummary.propTypes = {
 	timeFilter: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	return {
 		config: get(state, '$monitoring.config', {}),
 		timeFilter: get(state, '$monitoring.filter.time', ''),
