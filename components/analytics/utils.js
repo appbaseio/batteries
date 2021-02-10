@@ -48,7 +48,7 @@ export const getQueryParams = (paramConfig, shouldApplyDateFilters = true) => {
 			paramObj.to_timestamp =
 				Math.ceil(new Date(paramObj.to).getTime() / 1000) + 24 * 60 * 60 - 1; // end of day
 		}
-		paramObj.time_zone = 'Asia/Calcutta';
+		paramObj.time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	}
 
 	if (paramObj) {
