@@ -25,15 +25,14 @@ const requestOpt = css`
 	border: solid 1px #00ff88;
 `;
 
-const defaultDateRange = {
-	from: moment().subtract(30, 'days').unix(),
-	to: moment().unix(),
-};
-
 export const getQueryParams = (paramConfig, shouldApplyDateFilters = true) => {
 	let queryString = '';
 	let paramObj = paramConfig;
 	if (shouldApplyDateFilters) {
+		const defaultDateRange = {
+			from: moment().subtract(30, 'days').unix(),
+			to: moment().unix(),
+		};
 		if (!paramObj) {
 			paramObj = {};
 		}
