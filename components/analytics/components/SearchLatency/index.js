@@ -197,8 +197,8 @@ const mapStateToProps = (state, props) => {
 	const searchLatency = getAppSearchLatencyByName(state);
 	return {
 		searchLatency: get(searchLatency, 'latencies', []),
-		totalSearches: get(searchLatency, 'total_searches', []),
-		avgSearchLatency: get(searchLatency, 'avg_search_latency', []),
+		totalSearches: get(searchLatency, 'total_searches'),
+		avgSearchLatency: get(searchLatency, 'avg_search_latency'),
 		isLoading: get(state, '$getAppSearchLatency.isFetching'),
 		success: get(state, '$getAppSearchLatency.success'),
 		isSearchLatencyPresent: !!searchLatency,

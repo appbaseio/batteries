@@ -23,28 +23,41 @@ const SummaryStats = ({ summaryConfig, style }) => {
 			style={style}
 		>
 			<VersionController version="7.31.0">
-				{[...Array(Math.ceil(summaryConfig.length / 6))].map((_, rowIndex) => {
-					return (
-						<Row gutter={8} className={cardContainer}>
-							{[...Array(6)].map((__, colIndex) => {
-								const summary = summaryConfig[6 * rowIndex + colIndex];
-								return summary ? (
-									<Col sm={24} xs={24} xl={4}>
-										<SummaryCard
-											style={{
-												borderTop: summary.borderTop || '2px solid #000',
-											}}
+				<div>
+					{[...Array(Math.ceil(summaryConfig.length / 6))].map((_, rowIndex) => {
+						return (
+							<Row
+								// eslint-disable-next-line
+								key={rowIndex}
+								gutter={8}
+								className={cardContainer}
+							>
+								{[...Array(6)].map((__, colIndex) => {
+									const summary = summaryConfig[6 * rowIndex + colIndex];
+									return summary ? (
+										<Col
 											key={summary.label + summary.value}
-											title={summary.label}
-											label={summary.value}
-											showComparisonStats={false}
-										/>
-									</Col>
-								) : null;
-							})}
-						</Row>
-					);
-				})}
+											sm={24}
+											xs={24}
+											xl={4}
+										>
+											<SummaryCard
+												style={{
+													borderTop:
+														summary.borderTop || '2px solid #000',
+												}}
+												key={summary.label + summary.value}
+												title={summary.label}
+												label={summary.value}
+												showComparisonStats={false}
+											/>
+										</Col>
+									) : null;
+								})}
+							</Row>
+						);
+					})}
+				</div>
 			</VersionController>
 		</Card>
 	);

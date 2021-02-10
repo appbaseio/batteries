@@ -111,7 +111,6 @@ class PopularSearches extends React.Component {
 					tableProps={{
 						scroll: { x: 700 },
 					}}
-					showViewOption={false}
 					columns={popularSearchesFull(plan, displayReplaySearch)}
 					dataSource={(get(popularSearches, 'popular_searches') || []).map((item) => ({
 						...item,
