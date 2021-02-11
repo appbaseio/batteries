@@ -1016,3 +1016,107 @@ export const dateRangesColumn = (dates = dateRanges, columnItems = 4) =>
 			},
 		};
 	}, {});
+
+export const recentResultsCol = (plan) => {
+	const defaults = [
+		{
+			title: 'Results',
+			dataIndex: 'key',
+			key: `rr-results${updateIndex()}`,
+		},
+		{
+			title: 'Impressions',
+			dataIndex: 'count',
+			key: `rr-count${updateIndex()}`,
+		},
+	];
+	if (!plan || (plan !== 'growth' && plan !== 'bootstrap')) {
+		return defaults;
+	}
+	return defaults;
+};
+
+export const recentSearchesFull = (plan, displayReplaySearch) => {
+	if (plan !== 'growth' && plan !== 'bootstrap') {
+		return defaultColumns();
+	}
+	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
+};
+
+export const recentResultsFull = (plan, ViewSource) => {
+	return [
+		...recentResultsCol('free'),
+		{
+			title: 'Source',
+			key: `rr-source${updateIndex()}`,
+			render: (item) => <ViewSource docID={item.key} index={item.index} />,
+		},
+	];
+};
+
+/**
+ * Get the no results seraches
+ * @param {string} appName
+ */
+export function getRecentSearches(appName, size = 100, filters) {
+	return new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
+		const ACC_API = getURL();
+		fetch(
+			`${ACC_API}/_analytics/${getApp(appName)}recent-searches${getQueryParams({
+				size,
+				show_global: true,
+				...filters,
+			})}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
+				},
+			},
+		)
+			// Comment out this line
+			.then((res) => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
+/**
+ * Get the no results seraches
+ * @param {string} appName
+ */
+export function getRecentResults(appName, size = 100, filters) {
+	return new Promise((resolve, reject) => {
+		const authToken = getAuthToken();
+		const ACC_API = getURL();
+		fetch(
+			`${ACC_API}/_analytics/${getApp(appName)}recent-results${getQueryParams({
+				size,
+				show_global: true,
+				...filters,
+			})}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Basic ${authToken}`,
+				},
+			},
+		)
+			// Comment out this line
+			.then((res) => res.json())
+			.then((res) => {
+				// resolve the promise with response
+				resolve(res);
+			})
+			.catch((e) => {
+				reject(e);
+			});
+	});
+}
