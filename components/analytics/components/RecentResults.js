@@ -15,9 +15,6 @@ import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 const headers = {
 	key: 'Results',
 	count: 'Impressions',
-	// clicks: 'Clicks',
-	// clickposition: 'Click Position',
-	// conversionrate: 'Conversion Rate',
 };
 class RecentResults extends React.Component {
 	constructor(props) {

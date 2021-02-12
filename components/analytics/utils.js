@@ -1059,64 +1059,36 @@ export const recentResultsFull = (plan, ViewSource) => {
  * @param {string} appName
  */
 export function getRecentSearches(appName, size = 100, filters) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(
-			`${ACC_API}/_analytics/${getApp(appName)}recent-searches${getQueryParams({
-				size,
-				show_global: true,
-				...filters,
-			})}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
-			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doGet(
+		`${ACC_API}/_analytics/${getApp(appName)}recent-searches${getQueryParams({
+			size,
+			show_global: true,
+			...filters,
+		})}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
 }
 /**
  * Get the no results seraches
  * @param {string} appName
  */
 export function getRecentResults(appName, size = 100, filters) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(
-			`${ACC_API}/_analytics/${getApp(appName)}recent-results${getQueryParams({
-				size,
-				show_global: true,
-				...filters,
-			})}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
-			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doGet(
+		`${ACC_API}/_analytics/${getApp(appName)}recent-results${getQueryParams({
+			size,
+			show_global: true,
+			...filters,
+		})}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
 }
