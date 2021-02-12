@@ -1042,7 +1042,7 @@ export const recentResultsFull = (ViewSource) => {
 };
 
 /**
- * Get the no results seraches
+ * Get the recent seraches
  * @param {string} appName
  */
 export function getRecentSearches(appName, size = 100, filters) {
@@ -1056,7 +1056,7 @@ export function getRecentSearches(appName, size = 100, filters) {
 	);
 }
 /**
- * Get the no results seraches
+ * Get the no recent results
  * @param {string} appName
  */
 export function getRecentResults(appName, size = 100, filters) {
