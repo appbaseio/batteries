@@ -6,10 +6,9 @@ import { withRouter } from 'react-router-dom';
 import Searches from './Searches';
 import Filter from './Filter';
 import ViewSource from './ViewSource';
-import { getRecentResults, exportCSVFile, recentResultsFull, applyFilterParams } from '../utils';
+import { exportCSVFile, recentResultsFull, applyFilterParams } from '../utils';
 import Loader from '../../shared/Loader/Spinner';
-import { setSearchState } from '../../../modules/actions/app';
-import { setFilterValue } from '../../../modules/actions';
+import { getAppRecentResults, setFilterValue } from '../../../modules/actions';
 import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
 const headers = {
@@ -17,14 +16,6 @@ const headers = {
 	count: 'Impressions',
 };
 class RecentResults extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isFetching: false,
-			recentResults: null,
-		};
-	}
-
 	componentDidMount() {
 		const { filterId, filters, selectFilterValue } = this.props;
 		applyFilterParams({
@@ -43,27 +34,23 @@ class RecentResults extends React.Component {
 	}
 
 	fetchRecentResults = () => {
-		const { appName, filters } = this.props;
-		this.setState({
-			isFetching: true,
-		});
-		getRecentResults(appName, undefined, filters)
-			.then((res) => {
-				this.setState({
-					recentResults: res,
-					isFetching: false,
-				});
-			})
-			.catch(() => {
-				this.setState({
-					isFetching: false,
-				});
-			});
+		const { appName, fetchRecentResults } = this.props;
+		fetchRecentResults(appName);
+	};
+
+	getResults = () => {
+		const { appName, recentResults } = this.props;
+		if (recentResults && recentResults[appName]) {
+			return recentResults[appName];
+		}
+		if (recentResults && recentResults.default) {
+			return recentResults.default;
+		}
+		return [];
 	};
 
 	render() {
-		const { isFetching, recentResults } = this.state;
-		const { plan, filterId } = this.props;
+		const { plan, filterId, isFetching, recentResults } = this.props;
 
 		if (isFetching) {
 			return <Loader />;
@@ -76,7 +63,7 @@ class RecentResults extends React.Component {
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					dataSource={(recentResults || []).map((item) => item)}
+					dataSource={this.getResults().map((item) => item)}
 					breakWord
 					columns={recentResultsFull(plan, ViewSource)}
 					title="Recent Results"
@@ -102,6 +89,8 @@ RecentResults.defaultProps = {
 	appName: undefined,
 	filterId: undefined,
 	filters: undefined,
+	isFetching: false,
+	recentResults: undefined,
 };
 
 RecentResults.propTypes = {
@@ -110,15 +99,20 @@ RecentResults.propTypes = {
 	filters: PropTypes.object,
 	appName: PropTypes.string,
 	selectFilterValue: PropTypes.func.isRequired,
+	fetchRecentResults: PropTypes.func.isRequired,
+	isFetching: PropTypes.bool,
+	recentResults: PropTypes.object,
 };
 const mapStateToProps = (state, props) => ({
-	plan: 'growth',
+	plan: get(state, '$getAppPlan.results.plan'),
 	appName: get(state, '$getCurrentApp.name'),
 	filters: get(state, `$getSelectedFilters.${props.filterId}`),
+	isFetching: get(state, '$getAppRecentResults.isFetching'),
+	recentResults: get(state, '$getAppRecentResults.results'),
 });
 
-const mapDispatchToProps = (dispatch) => ({
-	saveState: (state) => dispatch(setSearchState(state)),
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchRecentResults: (appName) => dispatch(getAppRecentResults(appName, props.filterId)),
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });

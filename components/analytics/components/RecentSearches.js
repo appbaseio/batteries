@@ -5,9 +5,9 @@ import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import Searches from './Searches';
 import Filter from './Filter';
-import { getRecentSearches, exportCSVFile, recentSearchesFull, applyFilterParams } from '../utils';
+import { exportCSVFile, recentSearchesFull, applyFilterParams } from '../utils';
+import { getAppRecentSearches } from '../../../modules/actions/analytics';
 import Loader from '../../shared/Loader/Spinner';
-import { setSearchState } from '../../../modules/actions/app';
 import { setFilterValue } from '../../../modules/actions';
 import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
 
@@ -16,14 +16,6 @@ const headers = {
 	count: 'Total Queries',
 };
 class RecentSearches extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isFetching: false,
-			recentSearches: null,
-		};
-	}
-
 	componentDidMount() {
 		const { filterId, filters, selectFilterValue } = this.props;
 		applyFilterParams({
@@ -42,37 +34,23 @@ class RecentSearches extends React.Component {
 	}
 
 	fetchRecentSearches = () => {
-		const { appName, filters } = this.props;
-		this.setState({
-			isFetching: true,
-		});
-		getRecentSearches(appName, undefined, filters)
-			.then((res) => {
-				this.setState({
-					recentSearches: res,
-					isFetching: false,
-				});
-			})
-			.catch(() => {
-				this.setState({
-					isFetching: false,
-				});
-			});
+		const { appName, fetchRecentSearches } = this.props;
+		fetchRecentSearches(appName);
 	};
 
-	handleReplaySearch = (searchState) => {
-		const { saveState, history, appName, handleReplayClick } = this.props;
-		saveState(searchState);
-		if (handleReplayClick) {
-			handleReplayClick(appName);
-		} else {
-			history.push(`/app/${appName}/search-preview`);
+	getSearches = () => {
+		const { appName, recentSearches } = this.props;
+		if (recentSearches && recentSearches[appName]) {
+			return recentSearches[appName];
 		}
+		if (recentSearches && recentSearches.default) {
+			return recentSearches.default;
+		}
+		return [];
 	};
 
 	render() {
-		const { isFetching, recentSearches } = this.state;
-		const { displayReplaySearch, plan, filterId } = this.props;
+		const { displayReplaySearch, plan, filterId, isFetching, recentSearches } = this.props;
 
 		if (isFetching) {
 			return <Loader />;
@@ -86,10 +64,8 @@ class RecentSearches extends React.Component {
 						scroll: { x: 700 },
 					}}
 					showViewOption={false}
-					dataSource={(recentSearches || []).map((item) => ({
+					dataSource={this.getSearches().map((item) => ({
 						...item,
-						handleReplaySearch: this.handleReplaySearch,
-						handleQueryRule: this.handleQueryRule,
 					}))}
 					breakWord
 					columns={recentSearchesFull(plan, displayReplaySearch)}
@@ -114,10 +90,11 @@ class RecentSearches extends React.Component {
 }
 RecentSearches.defaultProps = {
 	appName: undefined,
-	handleReplayClick: undefined,
 	displayReplaySearch: false,
 	filterId: undefined,
 	filters: undefined,
+	isFetching: false,
+	recentSearches: undefined,
 };
 
 RecentSearches.propTypes = {
@@ -126,19 +103,23 @@ RecentSearches.propTypes = {
 	filters: PropTypes.object,
 	appName: PropTypes.string,
 	displayReplaySearch: PropTypes.bool,
-	saveState: PropTypes.func.isRequired,
-	handleReplayClick: PropTypes.func,
-	history: PropTypes.object.isRequired,
+	fetchRecentSearches: PropTypes.func.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
+	isFetching: PropTypes.bool,
+	recentSearches: PropTypes.object,
 };
 const mapStateToProps = (state, props) => ({
 	plan: get(state, '$getAppPlan.results.plan'),
 	appName: get(state, '$getCurrentApp.name'),
 	filters: get(state, `$getSelectedFilters.${props.filterId}`),
+	isFetching: get(state, '$getAppRecentSearches.isFetching'),
+	recentSearches: get(state, '$getAppRecentSearches.results'),
 });
 
-const mapDispatchToProps = (dispatch) => ({
-	saveState: (state) => dispatch(setSearchState(state)),
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchRecentSearches: (appName) => {
+		return dispatch(getAppRecentSearches(appName, props.filterId));
+	},
 	selectFilterValue: (filterId, filterKey, filterValue) =>
 		dispatch(setFilterValue(filterId, filterKey, filterValue)),
 });

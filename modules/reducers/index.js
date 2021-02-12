@@ -200,6 +200,18 @@ export default {
 		AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES_ERROR,
 		computeStateByAppName,
 	),
+	$getAppRecentSearches: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_RECENT_SEARCHES,
+		AppConstants.APP.ANALYTICS.GET_RECENT_SEARCHES_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_RECENT_SEARCHES_ERROR,
+		computeStateByAppName,
+	),
+	$getAppRecentResults: createRequestReducer(
+		AppConstants.APP.ANALYTICS.GET_RECENT_RESULTS,
+		AppConstants.APP.ANALYTICS.GET_RECENT_RESULTS_SUCCESS,
+		AppConstants.APP.ANALYTICS.GET_RECENT_RESULTS_ERROR,
+		computeStateByAppName,
+	),
 	$createAppPermission: createRequestReducer(
 		AppConstants.APP.PERMISSION.CREATE,
 		AppConstants.APP.PERMISSION.CREATE_SUCCESS,
