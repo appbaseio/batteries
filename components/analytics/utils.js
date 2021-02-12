@@ -1017,8 +1017,12 @@ export const dateRangesColumn = (dates = dateRanges, columnItems = 4) =>
 		};
 	}, {});
 
-export const recentResultsCol = (plan) => {
-	const defaults = [
+export const recentSearchesFull = () => {
+	return defaultColumns();
+};
+
+export const recentResultsFull = (ViewSource) => {
+	return [
 		{
 			title: 'Results',
 			dataIndex: 'key',
@@ -1029,23 +1033,6 @@ export const recentResultsCol = (plan) => {
 			dataIndex: 'count',
 			key: `rr-count${updateIndex()}`,
 		},
-	];
-	if (!plan || (plan !== 'growth' && plan !== 'bootstrap')) {
-		return defaults;
-	}
-	return defaults;
-};
-
-export const recentSearchesFull = (plan, displayReplaySearch) => {
-	if (plan !== 'growth' && plan !== 'bootstrap') {
-		return defaultColumns();
-	}
-	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
-};
-
-export const recentResultsFull = (plan, ViewSource) => {
-	return [
-		...recentResultsCol('free'),
 		{
 			title: 'Source',
 			key: `rr-source${updateIndex()}`,
@@ -1059,7 +1046,6 @@ export const recentResultsFull = (plan, ViewSource) => {
  * @param {string} appName
  */
 export function getRecentSearches(appName, size = 100, filters) {
-	const authToken = getAuthToken();
 	const ACC_API = getURL();
 	return doGet(
 		`${ACC_API}/_analytics/${getApp(appName)}recent-searches${getQueryParams({
@@ -1067,10 +1053,6 @@ export function getRecentSearches(appName, size = 100, filters) {
 			show_global: true,
 			...filters,
 		})}`,
-		{
-			'Content-Type': 'application/json',
-			Authorization: `Basic ${authToken}`,
-		},
 	);
 }
 /**
@@ -1078,7 +1060,6 @@ export function getRecentSearches(appName, size = 100, filters) {
  * @param {string} appName
  */
 export function getRecentResults(appName, size = 100, filters) {
-	const authToken = getAuthToken();
 	const ACC_API = getURL();
 	return doGet(
 		`${ACC_API}/_analytics/${getApp(appName)}recent-results${getQueryParams({
@@ -1086,9 +1067,5 @@ export function getRecentResults(appName, size = 100, filters) {
 			show_global: true,
 			...filters,
 		})}`,
-		{
-			'Content-Type': 'application/json',
-			Authorization: `Basic ${authToken}`,
-		},
 	);
 }

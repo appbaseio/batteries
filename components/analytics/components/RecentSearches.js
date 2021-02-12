@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import Searches from './Searches';
 import Filter from './Filter';
 import { exportCSVFile, recentSearchesFull, applyFilterParams } from '../utils';
+import { displayErrors } from '../../../utils/helpers';
 import { getAppRecentSearches } from '../../../modules/actions/analytics';
 import Loader from '../../shared/Loader/Spinner';
 import { setFilterValue } from '../../../modules/actions';
@@ -27,7 +28,8 @@ class RecentSearches extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const { filters } = this.props;
+		const { filters, errors } = this.props;
+		displayErrors(errors, prevProps.errors);
 		if (filters && prevProps.filters !== filters) {
 			this.fetchRecentSearches();
 		}
@@ -50,7 +52,7 @@ class RecentSearches extends React.Component {
 	};
 
 	render() {
-		const { displayReplaySearch, plan, filterId, isFetching, recentSearches } = this.props;
+		const { filterId, isFetching, recentSearches } = this.props;
 
 		if (isFetching) {
 			return <Loader />;
@@ -68,7 +70,7 @@ class RecentSearches extends React.Component {
 						...item,
 					}))}
 					breakWord
-					columns={recentSearchesFull(plan, displayReplaySearch)}
+					columns={recentSearchesFull()}
 					title="Recent Searches"
 					pagination={{
 						pageSize: 10,
@@ -90,7 +92,6 @@ class RecentSearches extends React.Component {
 }
 RecentSearches.defaultProps = {
 	appName: undefined,
-	displayReplaySearch: false,
 	filterId: undefined,
 	filters: undefined,
 	isFetching: false,
@@ -98,15 +99,14 @@ RecentSearches.defaultProps = {
 };
 
 RecentSearches.propTypes = {
-	plan: PropTypes.string.isRequired,
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	appName: PropTypes.string,
-	displayReplaySearch: PropTypes.bool,
 	fetchRecentSearches: PropTypes.func.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
 	isFetching: PropTypes.bool,
 	recentSearches: PropTypes.object,
+	errors: PropTypes.array.isRequired,
 };
 const mapStateToProps = (state, props) => ({
 	plan: get(state, '$getAppPlan.results.plan'),
@@ -114,6 +114,7 @@ const mapStateToProps = (state, props) => ({
 	filters: get(state, `$getSelectedFilters.${props.filterId}`),
 	isFetching: get(state, '$getAppRecentSearches.isFetching'),
 	recentSearches: get(state, '$getAppRecentSearches.results'),
+	errors: [get(state, '$getAppRecentSearches.error')],
 });
 
 const mapDispatchToProps = (dispatch, props) => ({

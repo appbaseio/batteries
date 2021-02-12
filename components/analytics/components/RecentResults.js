@@ -7,6 +7,7 @@ import Searches from './Searches';
 import Filter from './Filter';
 import ViewSource from './ViewSource';
 import { exportCSVFile, recentResultsFull, applyFilterParams } from '../utils';
+import { displayErrors } from '../../../utils/helpers';
 import Loader from '../../shared/Loader/Spinner';
 import { getAppRecentResults, setFilterValue } from '../../../modules/actions';
 import { withErrorToaster } from '../../shared/ErrorToaster/ErrorToaster';
@@ -27,7 +28,8 @@ class RecentResults extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const { filters } = this.props;
+		const { filters, errors } = this.props;
+		displayErrors(errors, prevProps.errors);
 		if (filters && prevProps.filters !== filters) {
 			this.fetchRecentResults();
 		}
@@ -50,7 +52,7 @@ class RecentResults extends React.Component {
 	};
 
 	render() {
-		const { plan, filterId, isFetching, recentResults } = this.props;
+		const { filterId, isFetching, recentResults } = this.props;
 
 		if (isFetching) {
 			return <Loader />;
@@ -65,7 +67,7 @@ class RecentResults extends React.Component {
 					showViewOption={false}
 					dataSource={this.getResults().map((item) => item)}
 					breakWord
-					columns={recentResultsFull(plan, ViewSource)}
+					columns={recentResultsFull(ViewSource)}
 					title="Recent Results"
 					pagination={{
 						pageSize: 10,
@@ -94,7 +96,6 @@ RecentResults.defaultProps = {
 };
 
 RecentResults.propTypes = {
-	plan: PropTypes.string.isRequired,
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	appName: PropTypes.string,
@@ -102,13 +103,14 @@ RecentResults.propTypes = {
 	fetchRecentResults: PropTypes.func.isRequired,
 	isFetching: PropTypes.bool,
 	recentResults: PropTypes.object,
+	errors: PropTypes.array.isRequired,
 };
 const mapStateToProps = (state, props) => ({
-	plan: get(state, '$getAppPlan.results.plan'),
 	appName: get(state, '$getCurrentApp.name'),
 	filters: get(state, `$getSelectedFilters.${props.filterId}`),
 	isFetching: get(state, '$getAppRecentResults.isFetching'),
 	recentResults: get(state, '$getAppRecentResults.results'),
+	errors: [get(state, '$getAppRecentResults.error')],
 });
 
 const mapDispatchToProps = (dispatch, props) => ({

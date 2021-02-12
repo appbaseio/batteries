@@ -302,11 +302,7 @@ export function getAppRecentSearches(name, filterId) {
 			)
 			.catch((error) =>
 				dispatch(
-					createAction(
-						AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES_ERROR,
-						null,
-						error,
-					),
+					createAction(AppConstants.APP.ANALYTICS.GET_RECENT_SEARCHES_ERROR, null, error),
 				),
 			);
 	};
