@@ -24,8 +24,10 @@ function getSelectedFilters(state = {}, action) {
 					[action.payload.filterId]: obj,
 				};
 			}
-			const { [action.payload.filterId]: del, ...obj } = state;
-			return obj;
+			return {
+				...state,
+				[action.payload.filterId]: {},
+			};
 		}
 		default:
 			return state;
