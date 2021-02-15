@@ -9,6 +9,8 @@ import {
 	updateAnalyticsInsights,
 	getQueryOverview,
 	getPopularSearches,
+	getRecentSearches,
+	getRecentResults,
 } from '../../components/analytics/utils';
 import { createAction } from './utils';
 import AppConstants from '../constants';
@@ -275,6 +277,58 @@ export function updateInsightStatus({ id, currentStatus, nextStatus }) {
 							nextStatus,
 						},
 					),
+				),
+			);
+	};
+}
+
+export function getAppRecentSearches(name, filterId) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_RECENT_SEARCHES));
+		return getRecentSearches(appName, filters)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_RECENT_SEARCHES_SUCCESS,
+						res,
+						undefined,
+						{
+							appName,
+						},
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(AppConstants.APP.ANALYTICS.GET_RECENT_SEARCHES_ERROR, null, error),
+				),
+			);
+	};
+}
+
+export function getAppRecentResults(name, filterId) {
+	return (dispatch, getState) => {
+		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
+		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_RECENT_RESULTS));
+		return getRecentResults(appName, filters)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.ANALYTICS.GET_RECENT_RESULTS_SUCCESS,
+						res,
+						undefined,
+						{
+							appName,
+						},
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(AppConstants.APP.ANALYTICS.GET_RECENT_RESULTS_ERROR, null, error),
 				),
 			);
 	};

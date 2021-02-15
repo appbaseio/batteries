@@ -1016,3 +1016,56 @@ export const dateRangesColumn = (dates = dateRanges, columnItems = 4) =>
 			},
 		};
 	}, {});
+
+export const recentSearchesFull = () => {
+	return defaultColumns();
+};
+
+export const recentResultsFull = (ViewSource) => {
+	return [
+		{
+			title: 'Results',
+			dataIndex: 'key',
+			key: `rr-results${updateIndex()}`,
+		},
+		{
+			title: 'Impressions',
+			dataIndex: 'count',
+			key: `rr-count${updateIndex()}`,
+		},
+		{
+			title: 'Source',
+			key: `rr-source${updateIndex()}`,
+			render: (item) => <ViewSource docID={item.key} index={item.index} />,
+		},
+	];
+};
+
+/**
+ * Get the recent seraches
+ * @param {string} appName
+ */
+export function getRecentSearches(appName, size = 100, filters) {
+	const ACC_API = getURL();
+	return doGet(
+		`${ACC_API}/_analytics/${getApp(appName)}recent-searches${getQueryParams({
+			size,
+			show_global: true,
+			...filters,
+		})}`,
+	);
+}
+/**
+ * Get the no recent results
+ * @param {string} appName
+ */
+export function getRecentResults(appName, size = 100, filters) {
+	const ACC_API = getURL();
+	return doGet(
+		`${ACC_API}/_analytics/${getApp(appName)}recent-results${getQueryParams({
+			size,
+			show_global: true,
+			...filters,
+		})}`,
+	);
+}
