@@ -24,8 +24,32 @@ const requestOpt = css`
 	border-radius: 3px;
 	border: solid 1px #00ff88;
 `;
-export const getQueryParams = (paramObj) => {
+
+export const getQueryParams = (paramConfig, shouldApplyDateFilters = true) => {
 	let queryString = '';
+	let paramObj = paramConfig;
+	if (shouldApplyDateFilters) {
+		const defaultDateRange = {
+			from: moment().subtract(30, 'days').unix(),
+			to: moment().unix(),
+		};
+		if (!paramObj) {
+			paramObj = {};
+		}
+		if (!paramObj.from) {
+			paramObj.from_timestamp = defaultDateRange.from;
+		} else {
+			paramObj.from_timestamp = Math.ceil(new Date(paramObj.from).getTime() / 1000);
+		}
+		if (!paramObj.to) {
+			paramObj.to_timestamp = defaultDateRange.to;
+		} else {
+			paramObj.to_timestamp =
+				Math.ceil(new Date(paramObj.to).getTime() / 1000) + 24 * 60 * 60 - 1; // end of day
+		}
+		paramObj.time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	}
+
 	if (paramObj) {
 		Object.keys(paramObj).forEach((o, i) => {
 			if (i === 0) {
@@ -555,10 +579,6 @@ export function getAnalytics(appName, filters) {
 		const url = `${ACC_API}/_analytics/${getApp(appName)}advanced`;
 		const queryParams = getQueryParams({
 			...filters,
-			// from: moment()
-			// 	.subtract(30, 'days')
-			// 	.format('YYYY/MM/DD'),
-			// to: moment().format('YYYY/MM/DD'),
 		});
 
 		const authToken = getAuthToken();
@@ -853,6 +873,7 @@ export function getRequestLogs(
 							}),
 					}),
 				),
+				false,
 			)}`,
 			{
 				method: 'GET',

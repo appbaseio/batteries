@@ -135,7 +135,7 @@ class RequestDistribution extends React.Component {
 				}}
 				css="width: 100%"
 			>
-				{displayFilter && filterId && <Filter filterId={filterId} />}
+				{displayFilter && filterId && <Filter hideCustomEvents filterId={filterId} />}
 				{!isLoading && displaySummaryStats ? (
 					<SummaryStats
 						summaryConfig={[
@@ -202,7 +202,7 @@ class RequestDistribution extends React.Component {
 								/>
 								<Tooltip
 									labelFormatter={(unixTime) =>
-										moment(unixTime).format('MMMM Do YYYY, HH:MM:SS')
+										moment(unixTime).format('MMMM Do YYYY, HH:mm:ss')
 									}
 								/>
 								<Legend />
@@ -278,11 +278,11 @@ const mapStateToProps = (state, props) => {
 		errors: [get(state, '$getAppRequestDistribution.error')],
 		success: get(state, '$getAppRequestDistribution.success'),
 		results: get(requestDistributionRaw, 'request_distribution', []),
-		totalRequests: get(requestDistributionRaw, 'total_requests', []),
-		total200: get(requestDistributionRaw, 'total_200', []),
-		total201: get(requestDistributionRaw, 'total_201', []),
-		total400: get(requestDistributionRaw, 'total_400', []),
-		total401: get(requestDistributionRaw, 'total_401', []),
+		totalRequests: get(requestDistributionRaw, 'total_requests'),
+		total200: get(requestDistributionRaw, 'total_200'),
+		total201: get(requestDistributionRaw, 'total_201'),
+		total400: get(requestDistributionRaw, 'total_400'),
+		total401: get(requestDistributionRaw, 'total_401'),
 		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 	};
 };

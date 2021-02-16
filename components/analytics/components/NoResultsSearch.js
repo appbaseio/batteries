@@ -99,7 +99,6 @@ class NoResultsSearch extends React.Component {
 					tableProps={{
 						scroll: { x: 700 },
 					}}
-					showViewOption={false}
 					dataSource={(get(noResults, 'no_results_searches') || []).map((item) => ({
 						...item,
 						handleReplaySearch: this.handleReplaySearch,

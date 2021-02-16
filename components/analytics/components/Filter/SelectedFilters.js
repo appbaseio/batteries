@@ -7,7 +7,15 @@ import { clearFilterValue } from '../../../../modules/actions';
 import Flex from '../../../shared/Flex';
 import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
-const hiddenFilters = ['size', 'from', 'to', 'clickanalytics'];
+const hiddenFilters = [
+	'size',
+	'from',
+	'to',
+	'from_timestamp',
+	'to_timestamp',
+	'time_zone',
+	'clickanalytics',
+];
 
 const SelectedFilters = ({ selectedFilters, clearFilterValue: onClear }) => {
 	const filteredFilters = Object.keys(selectedFilters).reduce(

@@ -119,7 +119,6 @@ class PopularResults extends React.Component {
 					tableProps={{
 						scroll: { x: 1000 },
 					}}
-					showViewOption={false}
 					columns={popularResultsFull(plan, ViewSource)}
 					dataSource={(get(popularResults, 'popular_results') || []).map((item) => ({
 						...item,

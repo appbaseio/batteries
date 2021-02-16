@@ -196,7 +196,6 @@ class PopularFilters extends React.Component {
 							);
 						},
 					}}
-					showViewOption={false}
 					columns={popularFiltersFull(plan, displayReplaySearch)}
 					dataSource={getNormalizedData(get(popularFilters, 'popular_filters')).map(
 						(item) => ({
