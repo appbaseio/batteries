@@ -43,11 +43,11 @@ class NoResultsSearch extends React.Component {
 	}
 
 	fetchNoResults = () => {
-		const { appName, filters } = this.props;
+		const { appName, filters, arcVersion } = this.props;
 		this.setState({
 			isFetching: true,
 		});
-		getNoResultSearches(appName, undefined, filters)
+		getNoResultSearches(appName, undefined, filters, arcVersion)
 			.then((res) => {
 				this.setState({
 					noResults: res,
@@ -138,6 +138,7 @@ NoResultsSearch.propTypes = {
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	appName: PropTypes.string.isRequired,
+	arcVersion: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
 	displaySummaryStats: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
@@ -149,6 +150,7 @@ const mapStateToProps = (state, props) => ({
 	plan: 'growth',
 	appName: get(state, '$getCurrentApp.name'),
 	filters: get(state, `$getSelectedFilters.${props.filterId}`),
+	arcVersion: get(state, `$getAppPlan.results.version`),
 });
 
 const mapDispatchToProps = (dispatch) => ({

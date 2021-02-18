@@ -188,7 +188,14 @@ class RequestLogs extends React.Component {
 		startDate = get(requestLogsDateRanges, `${this.state.selectedDate}.from`), // eslint-disable-line
 		endDate = get(requestLogsDateRanges, `${this.state.selectedDate}.to`), // eslint-disable-line
 	) => {
-		const { appName, pageSize, displaySearchLogs, startLatency, endLatency } = this.props;
+		const {
+			appName,
+			pageSize,
+			displaySearchLogs,
+			startLatency,
+			endLatency,
+			arcVersion,
+		} = this.props;
 		// Set loading to true
 		this.setState({
 			[tab]: {
@@ -211,6 +218,7 @@ class RequestLogs extends React.Component {
 				endLatency,
 			},
 			displaySearchLogs,
+			arcVersion,
 		)
 			.then((res) => {
 				const { logs } = this.state;
@@ -403,6 +411,7 @@ RequestLogs.propTypes = {
 	changeUrlOnTabChange: PropTypes.bool,
 	displayFilter: PropTypes.bool,
 	pageSize: PropTypes.number,
+	arcVersion: PropTypes.string.isRequired,
 	startLatency: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 	endLatency: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 	startDate: PropTypes.string,
@@ -411,5 +420,6 @@ RequestLogs.propTypes = {
 
 const mapStateToProps = (state) => ({
 	appName: get(state, '$getCurrentApp.name'),
+	arcVersion: get(state, '$getAppPlan.results.version'),
 });
 export default withErrorToaster(connect(mapStateToProps)(RequestLogs));

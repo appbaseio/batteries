@@ -9,6 +9,7 @@ import { doGet, doPut } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 import { getURL } from '../../../constants/config';
 import { getUrlParams } from '../../../utils/helper';
+import { versionCompare } from '../../utils/helpers';
 
 let lastIndex = 0;
 const updateIndex = () => {
@@ -25,10 +26,12 @@ const requestOpt = css`
 	border: solid 1px #00ff88;
 `;
 
-export const getQueryParams = (paramConfig, shouldApplyDateFilters = true) => {
+export const getQueryParams = (paramConfig, arcVersion, shouldApplyDateFilters = true) => {
 	let queryString = '';
 	let paramObj = paramConfig;
-	if (shouldApplyDateFilters) {
+	const versionComparison = versionCompare(arcVersion, '7.40.1');
+	// Apply new params to only for arc versions >= 7.40.1
+	if ([0, 1].includes(versionComparison) && shouldApplyDateFilters) {
 		const defaultDateRange = {
 			from: moment().subtract(30, 'days').unix(),
 			to: moment().unix(),
@@ -573,58 +576,28 @@ export const getApp = (app) => {
  * Get the analytics
  * @param {string} appName
  */
-export function getAnalytics(appName, filters) {
-	return new Promise((resolve, reject) => {
-		const ACC_API = getURL();
-		const url = `${ACC_API}/_analytics/${getApp(appName)}advanced`;
-		const queryParams = getQueryParams({
-			...filters,
-		});
-
-		const authToken = getAuthToken();
-		fetch(url + queryParams, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${authToken}`,
+export function getAnalytics(appName, filters, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}advanced${getQueryParams(
+			{
+				...filters,
 			},
-		})
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+			arcVersion,
+		)}`,
+	);
 }
 /**
  * Get the search latency
  * @param {string} appName
  */
-export function getSearchLatency(appName, filters) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(`${ACC_API}/_analytics/${getApp(appName)}latency${getQueryParams(filters)}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Basic ${authToken}`,
-			},
-		})
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+export function getSearchLatency(appName, filters, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}latency${getQueryParams(
+			filters,
+			arcVersion,
+			false,
+		)}`,
+	);
 }
 
 /**
@@ -633,210 +606,112 @@ export function getSearchLatency(appName, filters) {
  * @param {string} filters
  * @param {string} query
  */
-export function getQueryOverview(appName, filters, query) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(
-			`${ACC_API}/_analytics/${getApp(appName)}query-overview${getQueryParams({
+export function getQueryOverview(appName, filters, query, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}query-overview${getQueryParams(
+			{
 				size: 100,
 				...filters,
 				...(query && query !== '<empty_query>' ? { query } : null),
-			})}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
 			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+			arcVersion,
+		)}`,
+	);
 }
 /**
  * Get the geo distribution
  * @param {string} appName
  */
-export function getGeoDistribution(appName, filters) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(
-			`${ACC_API}/_analytics/${getApp(appName)}geo-distribution${getQueryParams(filters)}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
-			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+export function getGeoDistribution(appName, filters, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}geo-distribution${getQueryParams(
+			filters,
+			arcVersion,
+		)}`,
+	);
 }
 /**
  * Get the search latency
  * @param {string} appName
  */
-export function getAnalyticsSummary(appName, filters) {
-	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_analytics/${getApp(appName)}summary${getQueryParams(filters)}`);
+export function getAnalyticsSummary(appName, filters, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}summary${getQueryParams(filters, arcVersion)}`,
+	);
 }
 /**
  * Get the popular seraches
  * @param {string} appName
  */
 // eslint-disable-next-line
-export function getPopularSearches(appName, clickanalytics = true, size = 100, filters) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(
-			`${ACC_API}/_analytics/${getApp(appName)}popular-searches${getQueryParams({
+export function getPopularSearches(appName, clickanalytics = true, size = 100, filters, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}popular-searches${getQueryParams(
+			{
 				size,
 				click_analytics: clickanalytics,
 				...filters,
-			})}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
 			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-				// resolve(data.body.popularSearches);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+			arcVersion,
+		)}`,
+	);
 }
 /**
  * Get the no results seraches
  * @param {string} appName
  */
-export function getNoResultSearches(appName, size = 100, filters) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(
-			`${ACC_API}/_analytics/${getApp(appName)}no-result-searches${getQueryParams({
+export function getNoResultSearches(appName, size = 100, filters, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}no-result-searches${getQueryParams(
+			{
 				size,
 				...filters,
-			})}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
 			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+			arcVersion,
+		)}`,
+	);
 }
 // eslint-disable-next-line
-export function getPopularResults(appName, clickanalytics = true, size = 100, filters) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(
-			`${ACC_API}/_analytics/${getApp(appName)}popular-results${getQueryParams({
-				size,
-				click_analytics: clickanalytics,
-				...filters,
-			})}`,
+export function getPopularResults(appName, clickAnalytics = true, size = 100, filters, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}popular-results${getQueryParams(
 			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
+				size,
+				click_analytics: clickAnalytics,
+				...filters,
 			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+			arcVersion,
+		)}`,
+	);
 }
 /**
  * Get the request distribution
  * @param {string} appName
  */
-export function getRequestDistribution(appName, filters) {
+export function getRequestDistribution(appName, filters, arcVersion) {
 	const ACC_API = getURL();
 	return doGet(
-		`${ACC_API}/_analytics/${getApp(appName)}request-distribution${getQueryParams(filters)}`,
+		`${ACC_API}/_analytics/${getApp(appName)}request-distribution${getQueryParams(
+			filters,
+			arcVersion,
+		)}`,
 	);
 }
 // eslint-disable-next-line
-export function getPopularFilters(appName, clickanalytics = true, size = 100, filters) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		fetch(
-			`${ACC_API}/_analytics/${getApp(appName)}popular-filters${getQueryParams({
-				size,
-				click_analytics: clickanalytics,
-				...filters,
-			})}`,
+export function getPopularFilters(appName, clickAnalytics = true, size = 100, filters, arcVersion) {
+	return doGet(
+		`${getURL()}/_analytics/${getApp(appName)}popular-filters${getQueryParams(
 			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
+				size,
+				click_analytics: clickAnalytics,
+				...filters,
 			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+			arcVersion,
+		)}`,
+	);
 }
-// To fetch request logs
+
+// To fetch the logs
 export function getRequestLogs(
 	appName,
 	queryParams = {
@@ -849,50 +724,30 @@ export function getRequestLogs(
 		endLatency: undefined,
 	},
 	isSearchLogs = false,
+	arcVersion,
 ) {
-	return new Promise((resolve, reject) => {
-		const authToken = getAuthToken();
-		const ACC_API = getURL();
-		const validFilters = ['search', 'success', 'error', 'delete'];
-		fetch(
-			`${ACC_API}/${getApp(appName)}${
-				isSearchLogs ? '_logs/search' : '_logs'
-			}${getQueryParams(
-				// remove undefined
-				JSON.parse(
-					JSON.stringify({
-						size: queryParams.size,
-						from: queryParams.from,
-						start_date: queryParams.startDate,
-						end_date: queryParams.endDate,
-						start_latency: queryParams.startLatency,
-						end_latency: queryParams.endLatency,
-						...(queryParams.filter &&
-							validFilters.includes(queryParams.filter) && {
-								filter: queryParams.filter,
-							}),
-					}),
-				),
-				false,
-			)}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Basic ${authToken}`,
-				},
-			},
-		)
-			// Comment out this line
-			.then((res) => res.json())
-			.then((res) => {
-				// resolve the promise with response
-				resolve(res);
-			})
-			.catch((e) => {
-				reject(e);
-			});
-	});
+	const validFilters = ['search', 'success', 'error', 'delete'];
+	return doGet(
+		`${getURL()}/${getApp(appName)}${isSearchLogs ? '_logs/search' : '_logs'}${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					size: queryParams.size,
+					from: queryParams.from,
+					start_date: queryParams.startDate,
+					end_date: queryParams.endDate,
+					start_latency: queryParams.startLatency,
+					end_latency: queryParams.endLatency,
+					...(queryParams.filter &&
+						validFilters.includes(queryParams.filter) && {
+							filter: queryParams.filter,
+						}),
+				}),
+			),
+			arcVersion,
+			false,
+		)}`,
+	);
 }
 
 /**
@@ -1066,27 +921,33 @@ export const recentResultsFull = (ViewSource) => {
  * Get the recent seraches
  * @param {string} appName
  */
-export function getRecentSearches(appName, size = 100, filters) {
+export function getRecentSearches(appName, filters, arcVersion) {
 	const ACC_API = getURL();
 	return doGet(
-		`${ACC_API}/_analytics/${getApp(appName)}recent-searches${getQueryParams({
-			size,
-			show_global: true,
-			...filters,
-		})}`,
+		`${ACC_API}/_analytics/${getApp(appName)}recent-searches${getQueryParams(
+			{
+				size: 100,
+				show_global: true,
+				...filters,
+			},
+			arcVersion,
+		)}`,
 	);
 }
 /**
  * Get the no recent results
  * @param {string} appName
  */
-export function getRecentResults(appName, size = 100, filters) {
+export function getRecentResults(appName, filters, arcVersion) {
 	const ACC_API = getURL();
 	return doGet(
-		`${ACC_API}/_analytics/${getApp(appName)}recent-results${getQueryParams({
-			size,
-			show_global: true,
-			...filters,
-		})}`,
+		`${ACC_API}/_analytics/${getApp(appName)}recent-results${getQueryParams(
+			{
+				size: 100,
+				show_global: true,
+				...filters,
+			},
+			arcVersion,
+		)}`,
 	);
 }

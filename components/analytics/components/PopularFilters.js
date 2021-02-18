@@ -112,11 +112,11 @@ class PopularFilters extends React.Component {
 	}
 
 	fetchPopularFilters = () => {
-		const { appName, filters } = this.props;
+		const { appName, filters, arcVersion } = this.props;
 		this.setState({
 			isFetching: true,
 		});
-		getPopularFilters(appName, undefined, undefined, filters)
+		getPopularFilters(appName, undefined, undefined, filters, arcVersion)
 			.then((res) => {
 				this.setState({
 					popularFilters: res,
@@ -238,6 +238,7 @@ PopularFilters.propTypes = {
 	filterId: PropTypes.string,
 	filters: PropTypes.object,
 	appName: PropTypes.string.isRequired,
+	arcVersion: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
 	displaySummaryStats: PropTypes.bool,
 	saveState: PropTypes.func.isRequired,
@@ -250,6 +251,7 @@ const mapStateToProps = (state, props) => ({
 	plan: 'growth',
 	appName: get(state, '$getCurrentApp.name'),
 	filters: get(state, `$getSelectedFilters.${props.filterId}`),
+	arcVersion: get(state, `$getAppPlan.results.version`),
 });
 
 const mapDispatchToProps = (dispatch) => ({
