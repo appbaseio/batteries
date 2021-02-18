@@ -32,9 +32,10 @@ const normalizedData = (data = []) => {
 class RequestDistribution extends React.Component {
 	constructor(props) {
 		super(props);
+		this.calculateTicks();
 		this.state = {
 			width: undefined,
-			ticks: this.calculateTicks().monthlyTicks,
+			ticks: this.getClicksByFilters(props.filters),
 		};
 	}
 
@@ -58,22 +59,23 @@ class RequestDistribution extends React.Component {
 
 		if (filters && prevProps.filters !== filters) {
 			fetchAppRequestDistribution();
-			if (get(filters, 'from') && get(filters, 'to')) {
-				const a = moment(get(filters, 'from'));
-				const b = moment(get(filters, 'to'));
-				if (b.diff(a, 'days') <= 7) {
-					// eslint-disable-next-line
-					this.setState({
-						ticks: this.weeklyTicks,
-					});
-				} else {
-					// eslint-disable-next-line
-					this.setState({
-						ticks: this.monthlyTicks,
-					});
-				}
+			// eslint-disable-next-line
+			this.setState({
+				ticks: this.getClicksByFilters(filters),
+			});
+		}
+	}
+
+	getClicksByFilters(filters = this.props) {
+		if (get(filters, 'from') && get(filters, 'to')) {
+			const a = moment(get(filters, 'from'));
+			const b = moment(get(filters, 'to'));
+			if (b.diff(a, 'days') <= 7) {
+				// eslint-disable-next-line
+				return this.weeklyTicks;
 			}
 		}
+		return this.monthlyTicks;
 	}
 
 	getformatedDate(date) {
