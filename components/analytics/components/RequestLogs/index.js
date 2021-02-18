@@ -89,7 +89,6 @@ class RequestLogs extends React.Component {
 		const state = {
 			activeTabKey: this.tabKeys.includes(tab) ? props.tab : this.tabKeys[0],
 			logs: [],
-			isFetching: true,
 			showDetails: false,
 			selectedDate: 'Last 30 days',
 			isDateVisible: false,
@@ -197,70 +196,73 @@ class RequestLogs extends React.Component {
 			arcVersion,
 		} = this.props;
 		// Set loading to true
-		this.setState({
-			[tab]: {
-				...this.state[tab], // eslint-disable-line
-				[currentPage]: {
-					...this.state[tab][currentPage], // eslint-disable-line
+		this.setState(
+			{
+				[tab]: {
+					...this.state[tab], // eslint-disable-line
 					isLoading: true,
 				},
 			},
-		});
-		getRequestLogs(
-			appName,
-			{
-				size: pageSize,
-				from,
-				filter: tab,
-				startDate,
-				endDate,
-				startLatency,
-				endLatency,
-			},
-			displaySearchLogs,
-			arcVersion,
-		)
-			.then((res) => {
-				const { logs } = this.state;
-				const hits = res.logs.map((item, index) => ({
-					_id: `${index}-${new Date().toISOString()}`,
-					...item,
-				}));
-				this.setState({
-					logs: [...hits, ...logs],
-					isFetching: false,
-					[tab]: {
-						currentPage,
-						total: res.total,
-						[currentPage]: {
-							...this.state[tab][currentPage], // eslint-disable-line
-							hits: normalizeData(hits),
-							isLoading: false,
-						},
+			() => {
+				getRequestLogs(
+					appName,
+					{
+						size: pageSize,
+						from,
+						filter: tab,
+						startDate,
+						endDate,
+						startLatency,
+						endLatency,
 					},
-				});
-				// Update the request time locally
-				setInterval(() => {
-					this.setState({
-						[tab]: {
-							...this.state[tab], // eslint-disable-line
-							[currentPage]: {
-								...this.state[tab][currentPage], // eslint-disable-line
-								hits: normalizeData(hits),
+					displaySearchLogs,
+					arcVersion,
+				)
+					.then((res) => {
+						const { logs } = this.state;
+						const hits = res.logs.map((item, index) => ({
+							_id: `${index}-${new Date().toISOString()}`,
+							...item,
+						}));
+						this.setState({
+							logs: [...hits, ...logs],
+							[tab]: {
+								isLoading: false,
+								currentPage,
+								total: res.total,
+								[currentPage]: {
+									...this.state[tab][currentPage], // eslint-disable-line
+									hits: normalizeData(hits),
+								},
 							},
-						},
+						});
+						// Update the request time locally
+						setInterval(() => {
+							this.setState({
+								[tab]: {
+								...this.state[tab], // eslint-disable-line
+									[currentPage]: {
+									...this.state[tab][currentPage], // eslint-disable-line
+										hits: normalizeData(hits),
+									},
+								},
+							});
+						}, 60000);
+					})
+					.catch((e) => {
+						notification.error({
+							message: 'Error',
+							description: get(e, 'responseJSON.message', 'Unable to fetch logs.'),
+						});
+						this.setState({
+							[tab]: {
+							...this.state[tab], // eslint-disable-line
+								isLoading: false,
+							},
+						});
 					});
-				}, 60000);
-			})
-			.catch((e) => {
-				notification.error({
-					message: 'Error',
-					description: get(e, 'responseJSON.message', 'Unable to fetch logs.'),
-				});
-				this.setState({
-					isFetching: false,
-				});
-			});
+			},
+		);
 	};
 
 	handleDate = (filterValue = '') => {
@@ -281,8 +283,9 @@ class RequestLogs extends React.Component {
 
 	renderTable = (tab) => {
 		const { pageSize, displaySearchLogs } = this.props;
-		const { currentPage, total } = this.state[tab]; // eslint-disable-line
+		const { currentPage, total, isLoading  } = this.state[tab]; // eslint-disable-line
 		const { hits } = this.state[tab][currentPage]; // eslint-disable-line
+
 		return (
 			<Table
 				css=".ant-table-row { cursor: pointer }"
@@ -298,12 +301,16 @@ class RequestLogs extends React.Component {
 				onRow={(record) => ({
 					onClick: () => this.handleLogClick(record),
 				})}
+				loading={{
+					spinning: isLoading,
+					indicator: <Loader />,
+				}}
 			/>
 		);
 	};
 
 	render() {
-		const { activeTabKey, isFetching, showDetails, isDateVisible, selectedDate } = this.state;
+		const { activeTabKey, showDetails, isDateVisible, selectedDate } = this.state;
 		const { displayFilter, title, displaySearchLogs, hideRefreshButton } = this.props;
 		return (
 			<Card
@@ -334,54 +341,48 @@ class RequestLogs extends React.Component {
 					</Flex>
 				}
 			>
-				{isFetching ? (
-					<Loader />
-				) : (
-					<React.Fragment>
-						{!displaySearchLogs ? (
-							<Tabs
-								animated={false}
-								onTabClick={this.changeActiveTabKey}
-								activeKey={activeTabKey}
-							>
-								<TabPane tab="ALL" key={this.tabKeys[0]}>
-									{this.renderTable(this.tabKeys[0])}
-								</TabPane>
-								<TabPane tab="SEARCH" key={this.tabKeys[1]}>
-									{this.renderTable(this.tabKeys[1])}
-								</TabPane>
-								<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
-									{this.renderTable(this.tabKeys[2])}
-								</TabPane>
-								<TabPane tab="DELETE" key={this.tabKeys[3]}>
-									{this.renderTable(this.tabKeys[3])}
-								</TabPane>
-								<TabPane tab="ERROR" key={this.tabKeys[4]}>
-									{this.renderTable(this.tabKeys[4])}
-								</TabPane>
-							</Tabs>
-						) : (
-							this.renderTable(this.tabKeys[0])
-						)}
-						{showDetails && this.currentRequest && (
-							<RequestDetails
-								show={showDetails}
-								handleCancel={this.handleCancel}
-								headers={get(this.currentRequest, 'request.header', {})}
-								request={parseData(get(this.currentRequest, 'request.body')) || {}}
-								response={
-									parseData(get(this.currentRequest, 'response.body')) || {}
-								}
-								time={get(this.currentRequest, 'timestamp', '')}
-								method={get(this.currentRequest, 'request.method', '')}
-								url={get(this.currentRequest, 'request.uri', '')}
-								ip={get(this.currentRequest, 'request.header.X-Forwarded-For[0]')}
-								status={get(this.currentRequest, 'response.code', '')}
-								processingTime={get(this.currentRequest, 'response.timetaken', '')}
-							/>
-						)}
-					</React.Fragment>
-				)}
+				<React.Fragment>
+					{!displaySearchLogs ? (
+						<Tabs
+							animated={false}
+							onTabClick={this.changeActiveTabKey}
+							activeKey={activeTabKey}
+						>
+							<TabPane tab="ALL" key={this.tabKeys[0]}>
+								{this.renderTable(this.tabKeys[0])}
+							</TabPane>
+							<TabPane tab="SEARCH" key={this.tabKeys[1]}>
+								{this.renderTable(this.tabKeys[1])}
+							</TabPane>
+							<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
+								{this.renderTable(this.tabKeys[2])}
+							</TabPane>
+							<TabPane tab="DELETE" key={this.tabKeys[3]}>
+								{this.renderTable(this.tabKeys[3])}
+							</TabPane>
+							<TabPane tab="ERROR" key={this.tabKeys[4]}>
+								{this.renderTable(this.tabKeys[4])}
+							</TabPane>
+						</Tabs>
+					) : (
+						this.renderTable(this.tabKeys[0])
+					)}
+					{showDetails && this.currentRequest && (
+						<RequestDetails
+							show={showDetails}
+							handleCancel={this.handleCancel}
+							headers={get(this.currentRequest, 'request.header', {})}
+							request={parseData(get(this.currentRequest, 'request.body')) || {}}
+							response={parseData(get(this.currentRequest, 'response.body')) || {}}
+							time={get(this.currentRequest, 'timestamp', '')}
+							method={get(this.currentRequest, 'request.method', '')}
+							url={get(this.currentRequest, 'request.uri', '')}
+							ip={get(this.currentRequest, 'request.header.X-Forwarded-For[0]')}
+							status={get(this.currentRequest, 'response.code', '')}
+							processingTime={get(this.currentRequest, 'response.timetaken', '')}
+						/>
+					)}
+				</React.Fragment>
 			</Card>
 		);
 	}
