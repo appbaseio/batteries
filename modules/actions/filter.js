@@ -3,7 +3,7 @@ import { createAction } from './utils';
 import AppConstants from '../constants';
 import { doGet } from '../../utils/requestService';
 import { getURL } from '../../../constants/config';
-import { getApp } from '../../components/analytics/utils';
+import { getApp, ANALYTICS_ROOT_FILTER_ID } from '../../components/analytics/utils';
 
 export function setFilterValue(filterId, filterKey, filterValue) {
 	return createAction(AppConstants.APP.FILTER.SET_FILTER_VALUE, {
@@ -11,6 +11,18 @@ export function setFilterValue(filterId, filterKey, filterValue) {
 		filterKey,
 		filterValue,
 	});
+}
+
+export function initializeFilter(filterId, initializerId = ANALYTICS_ROOT_FILTER_ID) {
+	return (dispatch, getState) => {
+		const filterValues = get(getState(), `$getSelectedFilters.${initializerId}`);
+		dispatch(
+			createAction(AppConstants.APP.FILTER.INITIALIZE_FILTER_VALUE, {
+				filterId,
+				filterValue: filterValues,
+			}),
+		);
+	};
 }
 
 export function clearFilterValue(filterId, filterKey) {
