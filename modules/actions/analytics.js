@@ -24,8 +24,9 @@ export function getAppAnalytics(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const arcVersion = get(getState(), `$getAppPlan.results.version`);
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET));
-		return getAnalytics(appName, filters)
+		return getAnalytics(appName, filters, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.ANALYTICS.GET_SUCCESS, res, undefined, {
@@ -42,8 +43,9 @@ export function getAppAnalyticsSummary(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const arcVersion = get(getState(), '$getAppPlan.results.version');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY));
-		return getAnalyticsSummary(appName, filters)
+		return getAnalyticsSummary(appName, filters, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.ANALYTICS.GET_SUMMARY_SUCCESS, res, undefined, {
@@ -61,8 +63,9 @@ export function getAppSearchLatency(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const arcVersion = get(getState(), '$getAppPlan.results.version');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_LATENCY));
-		return getSearchLatency(appName, filters)
+		return getSearchLatency(appName, filters, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.ANALYTICS.GET_LATENCY_SUCCESS, res, undefined, {
@@ -93,8 +96,9 @@ export function getAppQueryOverview(name, filterId, query) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = getFilters(getState(), filterId);
+		const arcVersion = get(getState(), '$getAppPlan.results.version');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_QUERY_VOLUME));
-		return getQueryOverview(appName, filters, query)
+		return getQueryOverview(appName, filters, query, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -119,8 +123,9 @@ export function getAppRequestDistribution(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const arcVersion = get(getState(), '$getAppPlan.results.version');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_REQUEST_DISTRIBUTION));
-		return getRequestDistribution(appName, filters)
+		return getRequestDistribution(appName, filters, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -149,8 +154,9 @@ export function getAppPopularSearches(name, clickAnalytics, size, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const arcVersion = get(getState(), '$getAppPlan.results.version');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_POPULAR_SEARCHES));
-		return getPopularSearches(appName, clickAnalytics, size, filters)
+		return getPopularSearches(appName, clickAnalytics, size, filters, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -179,8 +185,9 @@ export function getAppGeoDistribution(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const arcVersion = get(getState(), '$getAppPlan.results.version');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_GEO_DISTRIBUTION));
-		return getGeoDistribution(appName, filters)
+		return getGeoDistribution(appName, filters, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -286,8 +293,9 @@ export function getAppRecentSearches(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const arcVersion = get(getState(), '$getAppPlan.results.version');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_RECENT_SEARCHES));
-		return getRecentSearches(appName, filters)
+		return getRecentSearches(appName, filters, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -312,8 +320,9 @@ export function getAppRecentResults(name, filterId) {
 	return (dispatch, getState) => {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		const filters = filterId ? get(getState(), `$getSelectedFilters.${filterId}`, {}) : null;
+		const arcVersion = get(getState(), '$getAppPlan.results.version');
 		dispatch(createAction(AppConstants.APP.ANALYTICS.GET_RECENT_RESULTS));
-		return getRecentResults(appName, filters)
+		return getRecentResults(appName, filters, arcVersion)
 			.then((res) =>
 				dispatch(
 					createAction(
