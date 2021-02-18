@@ -125,6 +125,8 @@ class RequestDistribution extends React.Component {
 			total201,
 			total400,
 			total401,
+			total429,
+			total500,
 		} = this.props;
 		const { width, ticks } = this.state;
 		const data = normalizedData(results);
@@ -158,6 +160,14 @@ class RequestDistribution extends React.Component {
 							{
 								label: '401 Requests',
 								value: total401,
+							},
+							{
+								label: '429 Requests',
+								value: total429,
+							},
+							{
+								label: '500 Requests',
+								value: total500,
 							},
 						]}
 					/>
@@ -234,6 +244,20 @@ class RequestDistribution extends React.Component {
 									dataKey="401"
 									stroke="#e82055"
 								/>
+								<Line
+									connectNulls
+									name="429 Rate Limit"
+									type="monotone"
+									dataKey="429"
+									stroke="#ff9999"
+								/>
+								<Line
+									connectNulls
+									name="500 Internal Server"
+									type="monotone"
+									dataKey="500"
+									stroke="#4d0000"
+								/>
 							</LineChart>
 						)
 					)}
@@ -252,6 +276,8 @@ RequestDistribution.defaultProps = {
 	total201: 0,
 	total400: 0,
 	total401: 0,
+	total429: 0,
+	total500: 0,
 };
 
 RequestDistribution.propTypes = {
@@ -270,6 +296,8 @@ RequestDistribution.propTypes = {
 	total201: PropTypes.number,
 	total400: PropTypes.number,
 	total401: PropTypes.number,
+	total429: PropTypes.number,
+	total500: PropTypes.number,
 };
 const mapStateToProps = (state, props) => {
 	const requestDistributionRaw = getAppRequestDistributionByName(state);
@@ -283,6 +311,8 @@ const mapStateToProps = (state, props) => {
 		total201: get(requestDistributionRaw, 'total_201'),
 		total400: get(requestDistributionRaw, 'total_400'),
 		total401: get(requestDistributionRaw, 'total_401'),
+		total429: get(requestDistributionRaw, 'total_429'),
+		total500: get(requestDistributionRaw, 'total_500'),
 		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 	};
 };

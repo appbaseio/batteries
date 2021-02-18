@@ -23,6 +23,32 @@ const appAnalyticsInsights = (state) => get(state, '$getAppAnalyticsInsights.res
 
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
+const calculateRequestDistribution = (collection, key) => {
+	if (collection) {
+		const rawRes = collection[key];
+		const countRequestByCode = (code) => {
+			let count = 0;
+			const requestDistribution = get(rawRes, 'request_distribution');
+			if (requestDistribution) {
+				requestDistribution.forEach((r) => {
+					r.buckets.forEach((i) => {
+						if (i.key === code) {
+							count += i.count;
+						}
+					});
+				});
+			}
+			return count;
+		};
+		return {
+			...rawRes,
+			total_500: countRequestByCode(500),
+			total_429: countRequestByCode(429),
+		};
+	}
+	return null;
+};
+
 const getRawMappingsByAppName = createSelector(rawMappings, appName, getCollectionByKey);
 const getTraversedMappingsByAppName = createSelector(
 	traversedMappings,
@@ -47,7 +73,7 @@ const getAppAnalyticsSummaryByName = createSelector(
 const getAppRequestDistributionByName = createSelector(
 	appRequestDistribution,
 	appName,
-	getCollectionByKey,
+	calculateRequestDistribution,
 );
 const getAppQueryOverviewByName = createSelector(appQueryOverview, appName, getCollectionByKey);
 const getAppPopularSearchesByName = createSelector(appPopularSearches, appName, getCollectionByKey);
