@@ -11,6 +11,8 @@ import { getURL } from '../../../constants/config';
 import { getUrlParams } from '../../../utils/helper';
 import { versionCompare } from '../../utils/helpers';
 
+export const ANALYTICS_ROOT_FILTER_ID = 'analytics_page';
+
 let lastIndex = 0;
 const updateIndex = () => {
 	lastIndex += 1;

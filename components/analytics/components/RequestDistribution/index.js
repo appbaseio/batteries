@@ -32,9 +32,10 @@ const normalizedData = (data = []) => {
 class RequestDistribution extends React.Component {
 	constructor(props) {
 		super(props);
+		this.calculateTicks();
 		this.state = {
 			width: undefined,
-			ticks: this.calculateTicks().monthlyTicks,
+			ticks: this.getClicksByFilters(props.filters),
 		};
 	}
 
@@ -58,22 +59,23 @@ class RequestDistribution extends React.Component {
 
 		if (filters && prevProps.filters !== filters) {
 			fetchAppRequestDistribution();
-			if (get(filters, 'from') && get(filters, 'to')) {
-				const a = moment(get(filters, 'from'));
-				const b = moment(get(filters, 'to'));
-				if (b.diff(a, 'days') <= 7) {
-					// eslint-disable-next-line
-					this.setState({
-						ticks: this.weeklyTicks,
-					});
-				} else {
-					// eslint-disable-next-line
-					this.setState({
-						ticks: this.monthlyTicks,
-					});
-				}
+			// eslint-disable-next-line
+			this.setState({
+				ticks: this.getClicksByFilters(filters),
+			});
+		}
+	}
+
+	getClicksByFilters(filters = this.props) {
+		if (get(filters, 'from') && get(filters, 'to')) {
+			const a = moment(get(filters, 'from'));
+			const b = moment(get(filters, 'to'));
+			if (b.diff(a, 'days') <= 7) {
+				// eslint-disable-next-line
+				return this.weeklyTicks;
 			}
 		}
+		return this.monthlyTicks;
 	}
 
 	getformatedDate(date) {
@@ -125,6 +127,8 @@ class RequestDistribution extends React.Component {
 			total201,
 			total400,
 			total401,
+			total429,
+			total500,
 		} = this.props;
 		const { width, ticks } = this.state;
 		const data = normalizedData(results);
@@ -158,6 +162,14 @@ class RequestDistribution extends React.Component {
 							{
 								label: '401 Requests',
 								value: total401,
+							},
+							{
+								label: '429 Requests',
+								value: total429,
+							},
+							{
+								label: '500 Requests',
+								value: total500,
 							},
 						]}
 					/>
@@ -234,6 +246,20 @@ class RequestDistribution extends React.Component {
 									dataKey="401"
 									stroke="#e82055"
 								/>
+								<Line
+									connectNulls
+									name="429 Rate Limit"
+									type="monotone"
+									dataKey="429"
+									stroke="#ff9999"
+								/>
+								<Line
+									connectNulls
+									name="500 Internal Server"
+									type="monotone"
+									dataKey="500"
+									stroke="#4d0000"
+								/>
 							</LineChart>
 						)
 					)}
@@ -252,6 +278,8 @@ RequestDistribution.defaultProps = {
 	total201: 0,
 	total400: 0,
 	total401: 0,
+	total429: 0,
+	total500: 0,
 };
 
 RequestDistribution.propTypes = {
@@ -270,6 +298,8 @@ RequestDistribution.propTypes = {
 	total201: PropTypes.number,
 	total400: PropTypes.number,
 	total401: PropTypes.number,
+	total429: PropTypes.number,
+	total500: PropTypes.number,
 };
 const mapStateToProps = (state, props) => {
 	const requestDistributionRaw = getAppRequestDistributionByName(state);
@@ -283,6 +313,8 @@ const mapStateToProps = (state, props) => {
 		total201: get(requestDistributionRaw, 'total_201'),
 		total400: get(requestDistributionRaw, 'total_400'),
 		total401: get(requestDistributionRaw, 'total_401'),
+		total429: get(requestDistributionRaw, 'total_429'),
+		total500: get(requestDistributionRaw, 'total_500'),
 		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 	};
 };

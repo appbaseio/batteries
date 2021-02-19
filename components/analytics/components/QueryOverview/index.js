@@ -17,7 +17,7 @@ QueryOverview.defaultProps = {
 QueryOverview.propTypes = {
 	displayFilter: PropTypes.bool,
 	query: PropTypes.string.isRequired,
-	filterId: PropTypes.oneOf([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
+	filterId: PropTypes.string.isRequired,
 };
 
 export default QueryOverview;

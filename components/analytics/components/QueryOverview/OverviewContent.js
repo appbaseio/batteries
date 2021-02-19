@@ -159,7 +159,7 @@ OverviewContent.defaultProps = {
 	filters: undefined,
 };
 OverviewContent.propTypes = {
-	filterId: PropTypes.oneOf([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
+	filterId: PropTypes.string.isRequired,
 	query: PropTypes.string.isRequired,
 	selectFilterValue: PropTypes.func.isRequired,
 	displayFilter: PropTypes.bool,

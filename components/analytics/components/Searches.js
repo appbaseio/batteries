@@ -110,7 +110,7 @@ Searches.defaultProps = {
 	tableProps: {},
 };
 Searches.propTypes = {
-	title: PropTypes.string,
+	title: PropTypes.any,
 	dataSource: PropTypes.array,
 	breakWord: PropTypes.bool,
 	onClickDownload: PropTypes.func,

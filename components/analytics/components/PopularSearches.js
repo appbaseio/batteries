@@ -21,13 +21,16 @@ const headers = {
 	// clickposition: 'Click Position',
 	// conversionrate: 'Conversion Rate',
 };
+
+let popularSearchFilters = null;
 class PopularSearches extends React.Component {
 	componentDidMount() {
 		const { filterId, filters, selectFilterValue, isSuccess, popularSearches } = this.props;
 		if (
 			!isSuccess ||
 			// to handle the index switch
-			popularSearches === null
+			popularSearches === null ||
+			popularSearchFilters !== filters
 		) {
 			applyFilterParams({
 				filters,
@@ -35,6 +38,7 @@ class PopularSearches extends React.Component {
 				callback: this.fetchPopularSearches,
 				applyFilter: selectFilterValue,
 			});
+			popularSearchFilters = filters;
 		}
 	}
 
@@ -42,6 +46,7 @@ class PopularSearches extends React.Component {
 		const { filters } = this.props;
 		if (filters && prevProps.filters !== filters) {
 			this.fetchPopularSearches();
+			popularSearchFilters = filters;
 		}
 	}
 
