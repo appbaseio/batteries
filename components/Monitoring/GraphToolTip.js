@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
 
 const GraphToolTip = ({ active, payload, graphLabel, unit }) => {
 	if (active) {
@@ -13,11 +14,12 @@ const GraphToolTip = ({ active, payload, graphLabel, unit }) => {
 				}}
 			>
 				<div>
-					<b>{graphLabel}:</b> {payload[0].payload.data} {unit}
+					<b>{graphLabel}:</b> {get(payload, '0.payload.data', 'N/A')}{' '}
+					{unit}
 				</div>
 				<div>
 					<b>Time: </b>
-					{payload[0].payload.date}
+					{get(payload, '0.payload.date', 'N/A')}
 				</div>
 			</div>
 		);
