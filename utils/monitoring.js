@@ -339,29 +339,35 @@ export const fetchIndicesData = async (config, timeFilter) => {
 			indices: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.total',
+				0
 			).toLocaleString(),
 			documents: get(
 				responses[1],
 				'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.total.docs.count',
+				0
 			).toLocaleString(),
 			data: formatSizeUnits(
 				get(
 					responses[1],
 					'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.total.store.size.bytes',
+					'0 GB'
 				),
 			),
 			primaryShards: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
+				0
 			).toLocaleString(),
 			replicaShards: (
 				get(
 					responses[0],
 					'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.count',
+					0
 				) -
 				get(
 					responses[0],
 					'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
+					0
 				)
 			).toLocaleString(),
 		};
