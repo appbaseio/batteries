@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
@@ -61,6 +61,47 @@ const Analytics = ({
 	handleReplaySearch,
 	filterId,
 }) => {
+	useEffect(() => {
+		window.addEventListener('scroll', tracker);
+		return () => {
+			window.removeEventListener('scroll', tracker);
+		};
+	}, []);
+
+	const [visibility, setVisibility] = useState({
+		'geo-distribution-component': false,
+		'no-results-searches-component': false,
+		'popular-filters-component': false,
+		'popular-results-component': false,
+		'popular-searches-component': false,
+		'request-distribution-component': false,
+		'search-latency-component': false,
+		'search-volume-component': false,
+		'summary-component': true,
+	});
+
+	const inViewPort = (id) => {
+		if (window && document) {
+			const element = document.getElementById(id);
+			const rect = element.getBoundingClientRect();
+			return (
+				rect.top >= 0 &&
+				rect.left >= 0 &&
+				rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+				rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+			);
+		}
+		return true;
+	};
+
+	const tracker = () => {
+		Object.keys(visibility).forEach((key) => {
+			if (inViewPort(key) && !visibility[key]) {
+				setVisibility((prev) => ({ ...prev, [key]: true }));
+			}
+		});
+	};
+
 	if (loading) {
 		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
@@ -77,86 +118,121 @@ const Analytics = ({
 				}
 				css="margin-bottom: 20px"
 				title="Summary"
+				id="summary-component"
 			>
-				<Summary filterId={filterId} />
+				{visibility['summary-component'] && <Summary filterId={filterId} />}
 			</Card>
-			<SearchVolumeChart height={300} data={searchVolume} />
+			<div id="search-volume-component">
+				{visibility['search-volume-component'] && (
+					<SearchVolumeChart height={300} data={searchVolume} />
+				)}
+			</div>
 			<Flex css={results}>
-				<div css={searchCls}>
-					<Searches
-						href="popular-searches"
-						dataSource={getFilteredResults(popularSearches).map((item) => ({
-							...item,
-							handleReplaySearch,
-						}))}
-						columns={popularSearchesCol(plan, displayReplaySearch)}
-						title="Popular Searches"
-						css="height: 100%"
-						onClickViewAll={(onClickViewAll && onClickViewAll.popularSearches) || null}
-					/>
+				<div css={searchCls} id="popular-searches-component">
+					{visibility['popular-searches-component'] && (
+						<Searches
+							href="popular-searches"
+							dataSource={getFilteredResults(popularSearches).map((item) => ({
+								...item,
+								handleReplaySearch,
+							}))}
+							columns={popularSearchesCol(plan, displayReplaySearch)}
+							title="Popular Searches"
+							css="height: 100%"
+							onClickViewAll={
+								(onClickViewAll && onClickViewAll.popularSearches) || null
+							}
+						/>
+					)}
 				</div>
-				<div css={noResultsCls}>
-					<Searches
-						href="no-results-searches"
-						dataSource={getFilteredResults(noResults).map((item) => ({
-							...item,
-							handleReplaySearch,
-						}))}
-						columns={noResultsFull(plan, displayReplaySearch)}
-						title="No Result Searches"
-						css="height: 100%"
-						onClickViewAll={(onClickViewAll && onClickViewAll.noResultsSearch) || null}
-					/>
+				<div css={noResultsCls} id="no-results-searches-component">
+					{visibility['no-results-searches-component'] && (
+						<Searches
+							href="no-results-searches"
+							dataSource={getFilteredResults(noResults).map((item) => ({
+								...item,
+								handleReplaySearch,
+							}))}
+							columns={noResultsFull(plan, displayReplaySearch)}
+							title="No Result Searches"
+							css="height: 100%"
+							onClickViewAll={
+								(onClickViewAll && onClickViewAll.noResultsSearch) || null
+							}
+						/>
+					)}
 				</div>
 			</Flex>
 			{plan === 'growth' && (
 				<React.Fragment>
 					<Flex css={results}>
-						<div css={searchCls}>
-							<Searches
-								dataSource={getFilteredResults(popularResults).map((item) => ({
-									...item,
-									handleReplaySearch,
-								}))}
-								columns={popularResultsCol(plan, displayReplaySearch)}
-								title="Popular Results"
-								href="popular-results"
-								css="height: 100%"
-								onClickViewAll={
-									(onClickViewAll && onClickViewAll.popularResults) || null
-								}
-								breakWord
-							/>
+						<div css={searchCls} id="popular-results-component">
+							{visibility['popular-results-component'] && (
+								<Searches
+									dataSource={getFilteredResults(popularResults).map((item) => ({
+										...item,
+										handleReplaySearch,
+									}))}
+									columns={popularResultsCol(plan, displayReplaySearch)}
+									title="Popular Results"
+									href="popular-results"
+									css="height: 100%"
+									onClickViewAll={
+										(onClickViewAll && onClickViewAll.popularResults) || null
+									}
+									breakWord
+								/>
+							)}
 						</div>
-						<div css={noResultsCls}>
-							<Searches
-								dataSource={getFilteredResults(popularFilters).map((item) => ({
-									...item,
-									handleReplaySearch,
-								}))}
-								columns={popularFiltersCol(plan, displayReplaySearch)}
-								title="Popular Filters"
-								href="popular-filters"
-								css="height: 100%"
-								onClickViewAll={
-									(onClickViewAll && onClickViewAll.popularFilters) || null
-								}
-								breakWord
-							/>
+						<div css={noResultsCls} id="popular-filters-component">
+							{visibility['popular-filters-component'] && (
+								<Searches
+									dataSource={getFilteredResults(popularFilters).map((item) => ({
+										...item,
+										handleReplaySearch,
+									}))}
+									columns={popularFiltersCol(plan, displayReplaySearch)}
+									title="Popular Filters"
+									href="popular-filters"
+									css="height: 100%"
+									onClickViewAll={
+										(onClickViewAll && onClickViewAll.popularFilters) || null
+									}
+									breakWord
+								/>
+							)}
 						</div>
 					</Flex>
-					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
-						<GeoDistribution filterId={filterId} displayFilter={false} />
+					<Flex
+						flexDirection="column"
+						css="width: 100%;margin-top: 20px"
+						id="geo-distribution-component"
+					>
+						{visibility['geo-distribution-component'] && (
+							<GeoDistribution filterId={filterId} displayFilter={false} />
+						)}
 					</Flex>
-					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
-						<SearchLatency
-							onClickBar={handleClickBar}
-							filterId={filterId}
-							displayFilter={false}
-						/>
+					<Flex
+						flexDirection="column"
+						css="width: 100%;margin-top: 20px"
+						id="search-latency-component"
+					>
+						{visibility['search-latency-component'] && (
+							<SearchLatency
+								onClickBar={handleClickBar}
+								filterId={filterId}
+								displayFilter={false}
+							/>
+						)}
 					</Flex>
-					<Flex flexDirection="column" css="width: 100%;margin-top: 20px">
-						<RequestDistribution filterId={filterId} displayFilter={false} />
+					<Flex
+						flexDirection="column"
+						css="width: 100%;margin-top: 20px"
+						id="request-distribution-component"
+					>
+						{visibility['request-distribution-component'] && (
+							<RequestDistribution filterId={filterId} displayFilter={false} />
+						)}
 					</Flex>
 				</React.Fragment>
 			)}
