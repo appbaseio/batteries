@@ -7,7 +7,6 @@ import Analytics from './components/Analytics';
 import { getAppAnalytics, setSearchState } from '../../modules/actions';
 import Loader from '../shared/Loader/Spinner';
 import { getAppAnalyticsByName } from '../../modules/selectors';
-import RequestLogs from './components/RequestLogs';
 
 let prevProps = {};
 class Main extends React.Component {
@@ -79,24 +78,20 @@ class Main extends React.Component {
 			return <Loader />;
 		}
 		return (
-			<React.Fragment>
-				<Analytics
-					filterId={filterId}
-					noResults={noResults}
-					chartWidth={chartWidth}
-					plan={plan}
-					popularSearches={popularSearches}
-					popularFilters={popularFilters}
-					popularResults={popularResults}
-					searchVolume={searchVolume}
-					onClickViewAll={onClickViewAll}
-					displayReplaySearch={displayReplaySearch}
-					handleReplaySearch={this.handleReplaySearch}
-				/>
-				<div css="margin-top: 20px">
-					<RequestLogs displayFilter={false} appName={appName} />
-				</div>
-			</React.Fragment>
+			<Analytics
+				filterId={filterId}
+				noResults={noResults}
+				chartWidth={chartWidth}
+				plan={plan}
+				popularSearches={popularSearches}
+				popularFilters={popularFilters}
+				popularResults={popularResults}
+				searchVolume={searchVolume}
+				onClickViewAll={onClickViewAll}
+				displayReplaySearch={displayReplaySearch}
+				handleReplaySearch={this.handleReplaySearch}
+				appName={appName}
+			/>
 		);
 	}
 }

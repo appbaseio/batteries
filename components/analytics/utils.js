@@ -646,7 +646,13 @@ export function getAnalyticsSummary(appName, filters, arcVersion) {
  * @param {string} appName
  */
 // eslint-disable-next-line
-export function getPopularSearches(appName, clickanalytics = true, size = 100, filters, arcVersion) {
+export function getPopularSearches(
+	appName,
+	clickanalytics = true,
+	size = 100,
+	filters,
+	arcVersion,
+) {
 	return doGet(
 		`${getURL()}/_analytics/${getApp(appName)}popular-searches${getQueryParams(
 			{
@@ -952,4 +958,17 @@ export function getRecentResults(appName, filters, arcVersion) {
 			arcVersion,
 		)}`,
 	);
+}
+export function inViewPort(id) {
+	if (window && document) {
+		const element = document.getElementById(id);
+		const rect = element.getBoundingClientRect();
+		return (
+			rect.top >= 0 &&
+			rect.left >= 0 &&
+			rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+			rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+		);
+	}
+	return true;
 }

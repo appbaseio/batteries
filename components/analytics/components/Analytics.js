@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
 import Filter from './Filter';
 import Flex from '../../shared/Flex';
-import { popularFiltersCol, popularResultsCol, popularSearchesCol, noResultsFull } from '../utils';
+import {
+	popularFiltersCol,
+	popularResultsCol,
+	popularSearchesCol,
+	noResultsFull,
+	inViewPort,
+} from '../utils';
 import { getFilteredResults } from '../../../utils/helpers';
 import { mediaKey } from '../../../utils/media';
 import Searches from './Searches';
@@ -13,6 +19,7 @@ import SearchLatency from './SearchLatency';
 import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
 import RequestDistribution from './RequestDistribution';
+import RequestLogs from './RequestLogs';
 
 const results = css`
 	width: 100%;
@@ -60,44 +67,49 @@ const Analytics = ({
 	displayReplaySearch,
 	handleReplaySearch,
 	filterId,
+	appName,
 }) => {
 	useEffect(() => {
 		window.addEventListener('scroll', tracker);
+		const initTracker = setTimeout(() => {
+			tracker();
+		}, 0);
 		return () => {
 			window.removeEventListener('scroll', tracker);
+			if (initTracker) {
+				clearTimeout(initTracker);
+			}
 		};
 	}, []);
 
 	const [visibility, setVisibility] = useState({
-		'geo-distribution-component': false,
-		'no-results-searches-component': false,
-		'popular-filters-component': false,
-		'popular-results-component': false,
-		'popular-searches-component': false,
-		'request-distribution-component': false,
-		'search-latency-component': false,
+		'summary-component': false,
 		'search-volume-component': false,
-		'summary-component': true,
+		'popular-searches-component': false,
+		'no-results-searches-component': false,
+		'popular-results-component': false,
+		'popular-filters-component': false,
+		'geo-distribution-component': false,
+		'search-latency-component': false,
+		'request-distribution-component': false,
+		'request-logs-component': false,
 	});
-
-	const inViewPort = (id) => {
-		if (window && document) {
-			const element = document.getElementById(id);
-			const rect = element.getBoundingClientRect();
-			return (
-				rect.top >= 0 &&
-				rect.left >= 0 &&
-				rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-				rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-			);
-		}
-		return true;
-	};
 
 	const tracker = () => {
 		Object.keys(visibility).forEach((key) => {
 			if (inViewPort(key) && !visibility[key]) {
-				setVisibility((prev) => ({ ...prev, [key]: true }));
+				const advancedAnalyticsComponents = {
+					'search-volume-component': true,
+					'popular-searches-component': true,
+					'no-results-searches-component': true,
+					'popular-results-component': true,
+					'popular-filters-component': true,
+				};
+				if (Object.keys(advancedAnalyticsComponents).includes(key)) {
+					setVisibility((prev) => ({ ...prev, ...advancedAnalyticsComponents }));
+				} else {
+					setVisibility((prev) => ({ ...prev, [key]: true }));
+				}
 			}
 		});
 	};
@@ -234,6 +246,15 @@ const Analytics = ({
 							<RequestDistribution filterId={filterId} displayFilter={false} />
 						)}
 					</Flex>
+					<Flex
+						flexDirection="column"
+						css="width: 100%;margin-top: 20px"
+						id="request-logs-component"
+					>
+						{visibility['request-logs-component'] && (
+							<RequestLogs displayFilter={false} appName={appName} />
+						)}
+					</Flex>
 				</React.Fragment>
 			)}
 		</React.Fragment>
@@ -249,6 +270,7 @@ Analytics.defaultProps = {
 	onClickViewAll: null,
 	displayReplaySearch: false,
 	filterId: undefined,
+	appName: undefined,
 };
 Analytics.propTypes = {
 	onClickViewAll: PropTypes.shape({
@@ -267,6 +289,7 @@ Analytics.propTypes = {
 	searchVolume: PropTypes.array,
 	popularResults: PropTypes.array,
 	popularFilters: PropTypes.array,
+	appName: PropTypes.string,
 };
 
 export default Analytics;
