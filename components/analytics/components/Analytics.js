@@ -1,48 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Spin, Icon, Card } from 'antd';
 import PropTypes from 'prop-types';
-import { css } from 'react-emotion';
 import Filter from './Filter';
 import Flex from '../../shared/Flex';
-import {
-	popularFiltersCol,
-	popularResultsCol,
-	popularSearchesCol,
-	noResultsFull,
-	inViewPort,
-} from '../utils';
-import { getFilteredResults } from '../../../utils/helpers';
-import { mediaKey } from '../../../utils/media';
-import Searches from './Searches';
-import SearchVolumeChart from '../../shared/Chart/SearchVolume';
+import { inViewPort } from '../utils';
 import SearchLatency from './SearchLatency';
 import Summary from './Summary';
 import GeoDistribution from './GeoDistribution';
 import RequestDistribution from './RequestDistribution';
 import RequestLogs from './RequestLogs';
-
-const results = css`
-	width: 100%;
-	margin-top: 20px;
-	${mediaKey.small} {
-		flex-direction: column;
-	}
-`;
-const searchCls = css`
-	flex: 50%;
-	margin-right: 10px;
-	${mediaKey.small} {
-		margin-right: 0;
-	}
-`;
-const noResultsCls = css`
-	flex: 50%;
-	margin-left: 10px;
-	${mediaKey.small} {
-		margin-left: 0;
-		margin-top: 20px;
-	}
-`;
+import AdvancedAnalytics from '../AdvancedAnalytics';
 
 const handleClickBar = (payload) => {
 	const startLatency = payload.key;
@@ -84,11 +51,7 @@ const Analytics = ({
 
 	const [visibility, setVisibility] = useState({
 		'summary-component': false,
-		'search-volume-component': false,
-		'popular-searches-component': false,
-		'no-results-searches-component': false,
-		'popular-results-component': false,
-		'popular-filters-component': false,
+		'advanced-analytics-component': false,
 		'geo-distribution-component': false,
 		'search-latency-component': false,
 		'request-distribution-component': false,
@@ -98,18 +61,7 @@ const Analytics = ({
 	const tracker = () => {
 		Object.keys(visibility).forEach((key) => {
 			if (inViewPort(key) && !visibility[key]) {
-				const advancedAnalyticsComponents = {
-					'search-volume-component': true,
-					'popular-searches-component': true,
-					'no-results-searches-component': true,
-					'popular-results-component': true,
-					'popular-filters-component': true,
-				};
-				if (Object.keys(advancedAnalyticsComponents).includes(key)) {
-					setVisibility((prev) => ({ ...prev, ...advancedAnalyticsComponents }));
-				} else {
-					setVisibility((prev) => ({ ...prev, [key]: true }));
-				}
+				setVisibility((prev) => ({ ...prev, [key]: true }));
 			}
 		});
 	};
@@ -134,87 +86,23 @@ const Analytics = ({
 			>
 				{visibility['summary-component'] && <Summary filterId={filterId} />}
 			</Card>
-			<div id="search-volume-component">
-				{visibility['search-volume-component'] && (
-					<SearchVolumeChart height={300} data={searchVolume} />
+			<div id="advanced-analytics-component">
+				{visibility['advanced-analytics-component'] && (
+					<AdvancedAnalytics
+						searchVolume={searchVolume}
+						popularSearches={popularSearches}
+						noResults={noResults}
+						popularResults={popularResults}
+						popularFilters={popularFilters}
+						plan={plan}
+						displayReplaySearch={displayReplaySearch}
+						handleReplaySearch={handleReplaySearch}
+						onClickViewAll={onClickViewAll}
+					/>
 				)}
 			</div>
-			<Flex css={results}>
-				<div css={searchCls} id="popular-searches-component">
-					{visibility['popular-searches-component'] && (
-						<Searches
-							href="popular-searches"
-							dataSource={getFilteredResults(popularSearches).map((item) => ({
-								...item,
-								handleReplaySearch,
-							}))}
-							columns={popularSearchesCol(plan, displayReplaySearch)}
-							title="Popular Searches"
-							css="height: 100%"
-							onClickViewAll={
-								(onClickViewAll && onClickViewAll.popularSearches) || null
-							}
-						/>
-					)}
-				</div>
-				<div css={noResultsCls} id="no-results-searches-component">
-					{visibility['no-results-searches-component'] && (
-						<Searches
-							href="no-results-searches"
-							dataSource={getFilteredResults(noResults).map((item) => ({
-								...item,
-								handleReplaySearch,
-							}))}
-							columns={noResultsFull(plan, displayReplaySearch)}
-							title="No Result Searches"
-							css="height: 100%"
-							onClickViewAll={
-								(onClickViewAll && onClickViewAll.noResultsSearch) || null
-							}
-						/>
-					)}
-				</div>
-			</Flex>
 			{plan === 'growth' && (
 				<React.Fragment>
-					<Flex css={results}>
-						<div css={searchCls} id="popular-results-component">
-							{visibility['popular-results-component'] && (
-								<Searches
-									dataSource={getFilteredResults(popularResults).map((item) => ({
-										...item,
-										handleReplaySearch,
-									}))}
-									columns={popularResultsCol(plan, displayReplaySearch)}
-									title="Popular Results"
-									href="popular-results"
-									css="height: 100%"
-									onClickViewAll={
-										(onClickViewAll && onClickViewAll.popularResults) || null
-									}
-									breakWord
-								/>
-							)}
-						</div>
-						<div css={noResultsCls} id="popular-filters-component">
-							{visibility['popular-filters-component'] && (
-								<Searches
-									dataSource={getFilteredResults(popularFilters).map((item) => ({
-										...item,
-										handleReplaySearch,
-									}))}
-									columns={popularFiltersCol(plan, displayReplaySearch)}
-									title="Popular Filters"
-									href="popular-filters"
-									css="height: 100%"
-									onClickViewAll={
-										(onClickViewAll && onClickViewAll.popularFilters) || null
-									}
-									breakWord
-								/>
-							)}
-						</div>
-					</Flex>
 					<Flex
 						flexDirection="column"
 						css="width: 100%;margin-top: 20px"
