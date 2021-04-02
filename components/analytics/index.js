@@ -5,31 +5,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Analytics from './components/Analytics';
 import { getAppAnalytics, setSearchState } from '../../modules/actions';
-import Loader from '../shared/Loader/Spinner';
-import { getAppAnalyticsByName } from '../../modules/selectors';
 
-let prevProps = {};
 class Main extends React.Component {
-	state = {
-		isLoading: true,
-	};
-
-	static getDerivedStateFromProps(props) {
-		if (prevProps.isFetching && !props.isFetching) {
-			prevProps = props;
-			return {
-				isLoading: false,
-			};
-		}
-		prevProps = props;
-		return null;
-	}
-
-	componentDidMount() {
-		// Comment out the below code to test paid user
-		this.fetchAnalytics();
-	}
-
 	shouldComponentUpdate(oldProps) {
 		const { isInsightsSidebarOpen } = this.props;
 		if (isInsightsSidebarOpen !== oldProps.isInsightsSidebarOpen) {
@@ -62,31 +39,13 @@ class Main extends React.Component {
 	};
 
 	render() {
-		const { isLoading } = this.state;
-		const {
-			noResults,
-			popularSearches,
-			searchVolume,
-			popularResults,
-			popularFilters,
-			onClickViewAll,
-			displayReplaySearch,
-			filterId,
-		} = this.props;
+		const { onClickViewAll, displayReplaySearch, filterId } = this.props;
 		const { appName, chartWidth, plan } = this.props;
-		if (isLoading) {
-			return <Loader />;
-		}
 		return (
 			<Analytics
 				filterId={filterId}
-				noResults={noResults}
 				chartWidth={chartWidth}
 				plan={plan}
-				popularSearches={popularSearches}
-				popularFilters={popularFilters}
-				popularResults={popularResults}
-				searchVolume={searchVolume}
 				onClickViewAll={onClickViewAll}
 				displayReplaySearch={displayReplaySearch}
 				handleReplaySearch={this.handleReplaySearch}
@@ -112,12 +71,6 @@ Main.propTypes = {
 	plan: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
 	fetchAppAnalytics: PropTypes.func.isRequired,
-	popularSearches: PropTypes.array.isRequired,
-	popularResults: PropTypes.array.isRequired,
-	popularFilters: PropTypes.array.isRequired,
-	searchVolume: PropTypes.array.isRequired,
-	noResults: PropTypes.array.isRequired,
-	isFetching: PropTypes.bool.isRequired, //eslint-disable-line
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
@@ -126,25 +79,9 @@ Main.propTypes = {
 	isInsightsSidebarOpen: PropTypes.bool,
 };
 const mapStateToProps = (state, props) => {
-	const analyticsArr = Array.isArray(getAppAnalyticsByName(state))
-		? getAppAnalyticsByName(state)
-		: [];
-	let appAnalytics = {};
-	analyticsArr.forEach((item) => {
-		appAnalytics = {
-			...appAnalytics,
-			...item,
-		};
-	});
 	return {
 		plan: 'growth',
 		appName: get(state, '$getCurrentApp.name'),
-		popularSearches: get(appAnalytics, 'popular_searches', []),
-		popularResults: get(appAnalytics, 'popular_results', []),
-		popularFilters: get(appAnalytics, 'popular_filters', []),
-		searchVolume: get(appAnalytics, 'search_histogram', []),
-		noResults: get(appAnalytics, 'no_results_searches', []),
-		isFetching: get(state, '$getAppAnalytics.isFetching'),
 		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 		isInsightsSidebarOpen: get(state, '$getAppAnalyticsInsights.isOpen', false),
 	};

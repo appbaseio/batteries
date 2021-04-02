@@ -23,11 +23,6 @@ const handleClickBar = (payload) => {
 	window.location.href = newURL;
 };
 const Analytics = ({
-	noResults,
-	popularSearches,
-	searchVolume,
-	popularFilters,
-	popularResults,
 	plan,
 	loading,
 	onClickViewAll,
@@ -89,11 +84,6 @@ const Analytics = ({
 			<div id="advanced-analytics-component">
 				{visibility['advanced-analytics-component'] && (
 					<AdvancedAnalytics
-						searchVolume={searchVolume}
-						popularSearches={popularSearches}
-						noResults={noResults}
-						popularResults={popularResults}
-						popularFilters={popularFilters}
 						plan={plan}
 						displayReplaySearch={displayReplaySearch}
 						handleReplaySearch={handleReplaySearch}
@@ -150,11 +140,6 @@ const Analytics = ({
 };
 Analytics.defaultProps = {
 	loading: false,
-	noResults: [],
-	popularSearches: [],
-	searchVolume: [],
-	popularResults: [],
-	popularFilters: [],
 	onClickViewAll: null,
 	displayReplaySearch: false,
 	filterId: undefined,
@@ -170,13 +155,8 @@ Analytics.propTypes = {
 	filterId: PropTypes.string,
 	loading: PropTypes.bool,
 	displayReplaySearch: PropTypes.bool,
-	noResults: PropTypes.array,
-	popularSearches: PropTypes.array,
 	plan: PropTypes.string.isRequired,
 	handleReplaySearch: PropTypes.func.isRequired,
-	searchVolume: PropTypes.array,
-	popularResults: PropTypes.array,
-	popularFilters: PropTypes.array,
 	appName: PropTypes.string,
 };
 

@@ -1,12 +1,17 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { css } from 'react-emotion';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import get from 'lodash/get';
 import { getFilteredResults } from '../../utils/helpers';
 import { mediaKey } from '../../utils/media';
 import SearchVolumeChart from '../shared/Chart/SearchVolume';
 import Flex from '../shared/Flex';
 import Searches from './components/Searches';
 import { noResultsFull, popularFiltersCol, popularResultsCol, popularSearchesCol } from './utils';
+import { getAppAnalyticsByName } from '../../modules/selectors';
+import { getAppAnalytics } from '../../modules/actions';
+import Loader from '../shared/Loader/Spinner';
 
 const results = css`
 	width: 100%;
@@ -41,13 +46,16 @@ const AdvancedAnalytics = ({
 	displayReplaySearch,
 	handleReplaySearch,
 	onClickViewAll,
+	fetchAppAnalytics,
+	isFetching,
 }) => {
-	// useLayoutEffect(() => {
-	// 	console.log('analytics fetched');
-	// 	// fetchAnalytics();
-	// }, []);
+	useEffect(() => {
+		fetchAppAnalytics();
+	}, []);
 
-	return (
+	return isFetching ? (
+		<Loader />
+	) : (
 		<Fragment>
 			<SearchVolumeChart height={300} data={searchVolume} />
 			<Flex css={results}>
@@ -126,6 +134,8 @@ AdvancedAnalytics.defaultProps = {
 	popularFilters: [],
 	displayReplaySearch: false,
 	onClickViewAll: null,
+	fetchAppAnalytics: null,
+	isFetching: false,
 };
 
 AdvancedAnalytics.propTypes = {
@@ -143,6 +153,32 @@ AdvancedAnalytics.propTypes = {
 		popularSearches: PropTypes.func,
 		noResultsSearch: PropTypes.func,
 	}),
+	fetchAppAnalytics: PropTypes.func,
+	isFetching: PropTypes.bool,
 };
 
-export default React.memo(AdvancedAnalytics);
+const mapStateToProps = (state, props) => {
+	const analyticsArr = Array.isArray(getAppAnalyticsByName(state))
+		? getAppAnalyticsByName(state)
+		: [];
+	let appAnalytics = {};
+	analyticsArr.forEach((item) => {
+		appAnalytics = {
+			...appAnalytics,
+			...item,
+		};
+	});
+	return {
+		popularSearches: get(appAnalytics, 'popular_searches', []),
+		popularResults: get(appAnalytics, 'popular_results', []),
+		popularFilters: get(appAnalytics, 'popular_filters', []),
+		searchVolume: get(appAnalytics, 'search_histogram', []),
+		noResults: get(appAnalytics, 'no_results_searches', []),
+		isFetching: get(state, '$getAppAnalytics.isFetching'),
+	};
+};
+const mapDispatchToProps = (dispatch, props) => ({
+	fetchAppAnalytics: (appName) => dispatch(getAppAnalytics(appName, props.filterId)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdvancedAnalytics);
