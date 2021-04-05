@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Analytics from './components/Analytics';
-import { getAppAnalytics, setSearchState } from '../../modules/actions';
+import { setSearchState } from '../../modules/actions';
 
 class Main extends React.Component {
 	shouldComponentUpdate(oldProps) {
@@ -15,18 +15,6 @@ class Main extends React.Component {
 
 		return true;
 	}
-
-	componentDidUpdate(previousProps) {
-		const { filters } = this.props;
-		if (filters && JSON.stringify(previousProps.filters) !== JSON.stringify(filters)) {
-			this.fetchAnalytics();
-		}
-	}
-
-	fetchAnalytics = () => {
-		const { fetchAppAnalytics } = this.props;
-		fetchAppAnalytics();
-	};
 
 	handleReplaySearch = (searchState) => {
 		const { saveState, history, appName, handleReplayClick } = this.props;
@@ -61,7 +49,6 @@ Main.defaultProps = {
 	onClickViewAll: null,
 	displayReplaySearch: false,
 	filterId: undefined,
-	filters: undefined,
 	isInsightsSidebarOpen: false,
 };
 Main.propTypes = {
@@ -70,24 +57,20 @@ Main.propTypes = {
 	chartWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	plan: PropTypes.string.isRequired,
 	displayReplaySearch: PropTypes.bool,
-	fetchAppAnalytics: PropTypes.func.isRequired,
 	saveState: PropTypes.func.isRequired,
 	handleReplayClick: PropTypes.func,
 	history: PropTypes.object.isRequired,
 	filterId: PropTypes.string,
-	filters: PropTypes.object,
 	isInsightsSidebarOpen: PropTypes.bool,
 };
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
 	return {
 		plan: 'growth',
 		appName: get(state, '$getCurrentApp.name'),
-		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 		isInsightsSidebarOpen: get(state, '$getAppAnalyticsInsights.isOpen', false),
 	};
 };
-const mapDispatchToProps = (dispatch, props) => ({
-	fetchAppAnalytics: (appName) => dispatch(getAppAnalytics(appName, props.filterId)),
+const mapDispatchToProps = (dispatch) => ({
 	saveState: (state) => dispatch(setSearchState(state)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Main));

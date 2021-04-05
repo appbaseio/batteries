@@ -88,6 +88,7 @@ const Analytics = ({
 						displayReplaySearch={displayReplaySearch}
 						handleReplaySearch={handleReplaySearch}
 						onClickViewAll={onClickViewAll}
+						filterId={filterId}
 					/>
 				)}
 			</div>

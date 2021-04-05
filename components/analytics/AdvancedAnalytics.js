@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Component, Fragment } from 'react';
 import { css } from 'react-emotion';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -35,96 +35,109 @@ const noResultsCls = css`
 		margin-top: 20px;
 	}
 `;
-
-const AdvancedAnalytics = ({
-	searchVolume,
-	popularSearches,
-	noResults,
-	popularResults,
-	popularFilters,
-	plan,
-	displayReplaySearch,
-	handleReplaySearch,
-	onClickViewAll,
-	fetchAppAnalytics,
-	isFetching,
-}) => {
-	useEffect(() => {
+class AdvancedAnalytics extends Component {
+	componentDidMount() {
+		const { fetchAppAnalytics } = this.props;
 		fetchAppAnalytics();
-	}, []);
+	}
 
-	return isFetching ? (
-		<Loader />
-	) : (
-		<Fragment>
-			<SearchVolumeChart height={300} data={searchVolume} />
-			<Flex css={results}>
-				<div css={searchCls}>
-					<Searches
-						href="popular-searches"
-						dataSource={getFilteredResults(popularSearches).map((item) => ({
-							...item,
-							handleReplaySearch,
-						}))}
-						columns={popularSearchesCol(plan, displayReplaySearch)}
-						title="Popular Searches"
-						css="height: 100%"
-						onClickViewAll={(onClickViewAll && onClickViewAll.popularSearches) || null}
-					/>
-				</div>
-				<div css={noResultsCls}>
-					<Searches
-						href="no-results-searches"
-						dataSource={getFilteredResults(noResults).map((item) => ({
-							...item,
-							handleReplaySearch,
-						}))}
-						columns={noResultsFull(plan, displayReplaySearch)}
-						title="No Result Searches"
-						css="height: 100%"
-						onClickViewAll={(onClickViewAll && onClickViewAll.noResultsSearch) || null}
-					/>
-				</div>
-			</Flex>
-			{plan === 'growth' && (
+	componentDidUpdate(previousProps) {
+		const { filters, fetchAppAnalytics } = this.props;
+		if (filters && JSON.stringify(previousProps.filters) !== JSON.stringify(filters)) {
+			fetchAppAnalytics();
+		}
+	}
+
+	render() {
+		const {
+			searchVolume,
+			popularSearches,
+			noResults,
+			popularResults,
+			popularFilters,
+			plan,
+			displayReplaySearch,
+			handleReplaySearch,
+			onClickViewAll,
+			isFetching,
+		} = this.props;
+		return isFetching ? (
+			<Loader />
+		) : (
+			<Fragment>
+				<SearchVolumeChart height={300} data={searchVolume} />
 				<Flex css={results}>
 					<div css={searchCls}>
 						<Searches
-							dataSource={getFilteredResults(popularResults).map((item) => ({
+							href="popular-searches"
+							dataSource={getFilteredResults(popularSearches).map((item) => ({
 								...item,
 								handleReplaySearch,
 							}))}
-							columns={popularResultsCol(plan, displayReplaySearch)}
-							title="Popular Results"
-							href="popular-results"
+							columns={popularSearchesCol(plan, displayReplaySearch)}
+							title="Popular Searches"
 							css="height: 100%"
 							onClickViewAll={
-								(onClickViewAll && onClickViewAll.popularResults) || null
+								(onClickViewAll && onClickViewAll.popularSearches) || null
 							}
-							breakWord
 						/>
 					</div>
 					<div css={noResultsCls}>
 						<Searches
-							dataSource={getFilteredResults(popularFilters).map((item) => ({
+							href="no-results-searches"
+							dataSource={getFilteredResults(noResults).map((item) => ({
 								...item,
 								handleReplaySearch,
 							}))}
-							columns={popularFiltersCol(plan, displayReplaySearch)}
-							title="Popular Filters"
-							href="popular-filters"
+							columns={noResultsFull(plan, displayReplaySearch)}
+							title="No Result Searches"
 							css="height: 100%"
 							onClickViewAll={
-								(onClickViewAll && onClickViewAll.popularFilters) || null
+								(onClickViewAll && onClickViewAll.noResultsSearch) || null
 							}
-							breakWord
 						/>
 					</div>
 				</Flex>
-			)}
-		</Fragment>
-	);
-};
+				{plan === 'growth' && (
+					<Flex css={results}>
+						<div css={searchCls}>
+							<Searches
+								dataSource={getFilteredResults(popularResults).map((item) => ({
+									...item,
+									handleReplaySearch,
+								}))}
+								columns={popularResultsCol(plan, displayReplaySearch)}
+								title="Popular Results"
+								href="popular-results"
+								css="height: 100%"
+								onClickViewAll={
+									(onClickViewAll && onClickViewAll.popularResults) || null
+								}
+								breakWord
+							/>
+						</div>
+						<div css={noResultsCls}>
+							<Searches
+								dataSource={getFilteredResults(popularFilters).map((item) => ({
+									...item,
+									handleReplaySearch,
+								}))}
+								columns={popularFiltersCol(plan, displayReplaySearch)}
+								title="Popular Filters"
+								href="popular-filters"
+								css="height: 100%"
+								onClickViewAll={
+									(onClickViewAll && onClickViewAll.popularFilters) || null
+								}
+								breakWord
+							/>
+						</div>
+					</Flex>
+				)}
+			</Fragment>
+		);
+	}
+}
 
 AdvancedAnalytics.defaultProps = {
 	searchVolume: [],
@@ -136,6 +149,8 @@ AdvancedAnalytics.defaultProps = {
 	onClickViewAll: null,
 	fetchAppAnalytics: null,
 	isFetching: false,
+	filterId: undefined,
+	filters: {},
 };
 
 AdvancedAnalytics.propTypes = {
@@ -155,6 +170,9 @@ AdvancedAnalytics.propTypes = {
 	}),
 	fetchAppAnalytics: PropTypes.func,
 	isFetching: PropTypes.bool,
+	// eslint-disable-next-line react/no-unused-prop-types
+	filterId: PropTypes.string,
+	filters: PropTypes.object,
 };
 
 const mapStateToProps = (state, props) => {
@@ -175,6 +193,7 @@ const mapStateToProps = (state, props) => {
 		searchVolume: get(appAnalytics, 'search_histogram', []),
 		noResults: get(appAnalytics, 'no_results_searches', []),
 		isFetching: get(state, '$getAppAnalytics.isFetching'),
+		filters: get(state, `$getSelectedFilters.${props.filterId}`),
 	};
 };
 const mapDispatchToProps = (dispatch, props) => ({
