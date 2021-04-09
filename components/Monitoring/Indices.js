@@ -36,79 +36,44 @@ const Indices = ({ config, timeFilter }) => {
 	return (
 		<CustomCard
 			title={`Indices${
-				get(indicesData, 'data.indices')
-					? `: ${get(indicesData, 'data.indices')}`
-					: ''
+				get(indicesData, 'data.indices') ? `: ${get(indicesData, 'data.indices')}` : ''
 			}`}
 		>
 			{indicesData.loading ? (
 				<Skeleton active />
 			) : (
 				<>
-					<Flex
-						justifyContent="space-between"
-						style={{ paddingTop: 10 }}
-					>
-						<Tooltip
-							title={get(messages, 'tooltips.summaryDocuments')}
-						>
+					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
+						<Tooltip title={get(messages, 'tooltips.summaryDocuments')}>
 							<Title>
 								Documents <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<Value>
-							{get(indicesData, 'data.documents', 'N/A')}
-						</Value>
+						<Value>{get(indicesData, 'data.documents', 'N/A')}</Value>
 					</Flex>
-					<Flex
-						justifyContent="space-between"
-						style={{ paddingTop: 10 }}
-					>
-						<Tooltip
-							title={get(messages, 'tooltips.summaryData', 'N/A')}
-						>
+					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
+						<Tooltip title={get(messages, 'tooltips.summaryData', 'N/A')}>
 							<Title>
 								Data <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
 						<Value>{get(indicesData, 'data.data', 'N/A')}</Value>
 					</Flex>
-					<Flex
-						justifyContent="space-between"
-						style={{ paddingTop: 10 }}
-					>
-						<Tooltip
-							title={get(
-								messages,
-								'tooltips.summaryPrimaryShards',
-								'N/A',
-							)}
-						>
+					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
+						<Tooltip title={get(messages, 'tooltips.summaryPrimaryShards', 'N/A')}>
 							<Title>
 								Primary Shards <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<Value>
-							{get(indicesData, 'data.primaryShards', 'N/A')}
-						</Value>
+						<Value>{get(indicesData, 'data.primaryShards', 'N/A')}</Value>
 					</Flex>
-					<Flex
-						justifyContent="space-between"
-						style={{ paddingTop: 10 }}
-					>
-						<Tooltip
-							title={get(
-								messages,
-								'tooltips.summaryReplicaShards',
-							)}
-						>
+					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
+						<Tooltip title={get(messages, 'tooltips.summaryReplicaShards')}>
 							<Title>
 								Replica Shards <Icon type="info-circle" />
 							</Title>
 						</Tooltip>
-						<Value>
-							{get(indicesData, 'data.replicaShards', 'N/A')}
-						</Value>
+						<Value>{get(indicesData, 'data.replicaShards', 'N/A')}</Value>
 					</Flex>
 					{!indicesData.data && (
 						<Alert
@@ -132,7 +97,7 @@ Indices.propTypes = {
 	timeFilter: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
 	return {
 		config: get(state, '$monitoring.config', {}),
 		timeFilter: get(state, '$monitoring.filter.time', ''),
