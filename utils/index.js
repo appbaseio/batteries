@@ -328,7 +328,7 @@ export const isValidPlan = (tier, override, feature) => {
 		// functions are not available for prod-1
 		case features.FUNCTIONS:
 			const functionPlans = allowedPlans.filter(
-				(plan) => ![CLUSTER_PLANS.PRODUCTION_2019_1].includes(plan),
+				(plan) => ![CLUSTER_PLANS.PRODUCTION_2019_1, CLUSTER_PLANS.PRODUCTION_2021_1].includes(plan),
 			);
 			return tier && functionPlans.includes(tier);
 		case features.SEARCH_RELEVANCY:
