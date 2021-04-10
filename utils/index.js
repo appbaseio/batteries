@@ -130,7 +130,7 @@ const extractFunctionalProps = (props = {}) => ({
 	defaultQuery: props.defaultQuery ? () => props.defaultQuery : null,
 	customQuery: props.customQuery ? () => props.customQuery : null,
 	customHighlight: props.customHighlight ? () => props.customHighlight : null,
-})
+});
 
 export const parseSearchState = (searchState = {}) => {
 	const allComponentsQueries = get(searchState, 'query', []);
@@ -210,7 +210,7 @@ export const parseSearchState = (searchState = {}) => {
 		...extraResultProps,
 		id: 'result',
 		react: { and: ['search', ...aggregations.map((filter) => filter.id)] },
-		...extractFunctionalProps(extraResultProps)
+		...extractFunctionalProps(extraResultProps),
 	};
 
 	return [...aggregations, result, search];
@@ -224,6 +224,9 @@ export const ARC_PLANS = {
 	HOSTED_ARC_BASIC_V2: 'hosted-arc-basic-v2',
 	HOSTED_ARC_STANDARD: 'hosted-arc-standard',
 	HOSTED_ARC_ENTERPRISE: 'hosted-arc-enterprise',
+	// 2021 plans
+	HOSTED_ARC_STANDARD_2021: '2021-hosted-arc-standard',
+	HOSTED_ARC_ENTERPRISE_2021: '2021-hosted-arc-enterprise',
 };
 
 export const CLUSTER_PLANS = {
@@ -236,6 +239,11 @@ export const CLUSTER_PLANS = {
 	SANDBOX_2020: '2020-sandbox',
 	HOBBY_2020: '2020-hobby',
 	STARTER_2020: '2020-starter',
+	// 2021 plans
+	PRODUCTION_2021_1: '2021-production-1',
+	PRODUCTION_2021_2: '2021-production-2',
+	PRODUCTION_2021_3: '2021-production-3',
+	STARTER_2021: '2021-starter',
 };
 
 export const PRICE_BY_PLANS = {
@@ -255,8 +263,16 @@ export const PRICE_BY_PLANS = {
 	[CLUSTER_PLANS.PRODUCTION_2019_1]: 399,
 	[CLUSTER_PLANS.PRODUCTION_2019_2]: 700,
 	[CLUSTER_PLANS.PRODUCTION_2019_3]: 1599,
+	// 2021 plans
+	[CLUSTER_PLANS.PRODUCTION_2021_1]: 999,
+	[CLUSTER_PLANS.PRODUCTION_2021_2]: 1999,
+	[CLUSTER_PLANS.PRODUCTION_2021_3]: 3199,
+	[CLUSTER_PLANS.STARTER_2021]: 299,
+	[ARC_PLANS.HOSTED_ARC_STANDARD_2021]: 99,
+	[ARC_PLANS.HOSTED_ARC_ENTERPRISE_2021]: 799,
 };
 
+// Price per node/hr
 export const EFFECTIVE_PRICE_BY_PLANS = {
 	[ARC_PLANS.ARC_BASIC]: 0.03,
 	[ARC_PLANS.ARC_STANDARD]: 0.08,
@@ -274,14 +290,26 @@ export const EFFECTIVE_PRICE_BY_PLANS = {
 	[CLUSTER_PLANS.PRODUCTION_2019_1]: 0.55,
 	[CLUSTER_PLANS.PRODUCTION_2019_2]: 1.11,
 	[CLUSTER_PLANS.PRODUCTION_2019_3]: 2.22,
+	// 2021 plans
+	[CLUSTER_PLANS.PRODUCTION_2021_1]: 0.463,
+	[CLUSTER_PLANS.PRODUCTION_2021_2]: 0.925,
+	[CLUSTER_PLANS.PRODUCTION_2021_3]: 1.48,
+	[CLUSTER_PLANS.STARTER_2021]: 0.138,
+	[ARC_PLANS.HOSTED_ARC_STANDARD_2021]: 0.137,
+	[ARC_PLANS.HOSTED_ARC_ENTERPRISE_2021]: 1.11,
 };
 
+// Production or enterprise plans
 export const allowedPlans = [
 	ARC_PLANS.ARC_ENTERPRISE,
 	ARC_PLANS.HOSTED_ARC_ENTERPRISE,
+	ARC_PLANS.HOSTED_ARC_ENTERPRISE_2021,
 	CLUSTER_PLANS.PRODUCTION_2019_1,
 	CLUSTER_PLANS.PRODUCTION_2019_2,
 	CLUSTER_PLANS.PRODUCTION_2019_3,
+	CLUSTER_PLANS.PRODUCTION_2021_1,
+	CLUSTER_PLANS.PRODUCTION_2021_2,
+	CLUSTER_PLANS.PRODUCTION_2021_3,
 ];
 
 export const features = {
@@ -289,19 +317,31 @@ export const features = {
 	SEARCH_RELEVANCY: 'SEARCH_RELEVANCY',
 	QUERY_RULES: 'QUERY_RULES',
 	ANALYTICS: 'ANALYTICS',
+	UI_BUILDER: 'UI BUILDER',
 };
 
 export const isValidPlan = (tier, override, feature) => {
 	if (override) {
 		return true;
 	}
-
 	switch (feature) {
+		// functions are not available for prod-1
 		case features.FUNCTIONS:
 			const functionPlans = allowedPlans.filter(
-				(plan) => plan !== CLUSTER_PLANS.PRODUCTION_2019_1,
+				(plan) => ![CLUSTER_PLANS.PRODUCTION_2019_1].includes(plan),
 			);
 			return tier && functionPlans.includes(tier);
+		case features.SEARCH_RELEVANCY:
+		case features.UI_BUILDER:
+			// Allow search relevancy and ui builder for starter and standard 2021 plans
+			return (
+				tier &&
+				[
+					...allowedPlans,
+					CLUSTER_PLANS.STARTER_2021,
+					ARC_PLANS.HOSTED_ARC_STANDARD_2021,
+				].includes(tier)
+			);
 		default:
 			return tier && allowedPlans.includes(tier);
 	}
