@@ -217,86 +217,146 @@ export const parseSearchState = (searchState = {}) => {
 };
 
 export const ARC_PLANS = {
+	// arc basic
 	ARC_BASIC: 'arc-basic',
+
+	// arc standard
 	ARC_STANDARD: 'arc-standard',
+
+	// arc enterprise
 	ARC_ENTERPRISE: 'arc-enterprise',
+
+	// hosted arc basic
 	HOSTED_ARC_BASIC: 'hosted-arc-basic',
 	HOSTED_ARC_BASIC_V2: 'hosted-arc-basic-v2',
+
+	// hosted arc standard
 	HOSTED_ARC_STANDARD: 'hosted-arc-standard',
-	HOSTED_ARC_ENTERPRISE: 'hosted-arc-enterprise',
-	// 2021 plans
 	HOSTED_ARC_STANDARD_2021: '2021-hosted-arc-standard',
+
+	// hosted arc enterprise
+	HOSTED_ARC_ENTERPRISE: 'hosted-arc-enterprise',
 	HOSTED_ARC_ENTERPRISE_2021: '2021-hosted-arc-enterprise',
 };
 
 export const CLUSTER_PLANS = {
+	// cluster sandbox
 	SANDBOX_2019: '2019-sandbox',
-	HOBBY_2019: '2019-hobby',
-	STARTER_2019: '2019-starter',
-	PRODUCTION_2019_1: '2019-production-1',
-	PRODUCTION_2019_2: '2019-production-2',
-	PRODUCTION_2019_3: '2019-production-3',
 	SANDBOX_2020: '2020-sandbox',
+
+	// cluster hobby
+	HOBBY_2019: '2019-hobby',
 	HOBBY_2020: '2020-hobby',
+
+	// cluster starter
+	STARTER_2019: '2019-starter',
 	STARTER_2020: '2020-starter',
-	// 2021 plans
-	PRODUCTION_2021_1: '2021-production-1',
-	PRODUCTION_2021_2: '2021-production-2',
-	PRODUCTION_2021_3: '2021-production-3',
 	STARTER_2021: '2021-starter',
+
+	// cluster production 1
+	PRODUCTION_2019_1: '2019-production-1',
+	PRODUCTION_2021_1: '2021-production-1',
+
+	// cluster production 2
+	PRODUCTION_2019_2: '2019-production-2',
+	PRODUCTION_2021_2: '2021-production-2',
+
+	// cluster production 3
+	PRODUCTION_2019_3: '2019-production-3',
+	PRODUCTION_2021_3: '2021-production-3',
 };
 
 export const PRICE_BY_PLANS = {
+	// self-hosted arc basic plans
 	[ARC_PLANS.ARC_BASIC]: 19,
+	// self-hosted arc standard plans
 	[ARC_PLANS.ARC_STANDARD]: 59,
+	// self-hosted arc enterprise plans
 	[ARC_PLANS.ARC_ENTERPRISE]: 499,
+
+	// hosted arc basic plans
 	[ARC_PLANS.HOSTED_ARC_BASIC]: 39,
 	[ARC_PLANS.HOSTED_ARC_BASIC_V2]: 29,
+
+	// hosted arc standard plans
 	[ARC_PLANS.HOSTED_ARC_STANDARD]: 89,
-	[ARC_PLANS.HOSTED_ARC_ENTERPRISE]: 599,
-	[CLUSTER_PLANS.SANDBOX_2019]: 59,
-	[CLUSTER_PLANS.HOBBY_2019]: 119,
-	[CLUSTER_PLANS.STARTER_2019]: 199,
-	[CLUSTER_PLANS.SANDBOX_2020]: 49,
-	[CLUSTER_PLANS.HOBBY_2020]: 99,
-	[CLUSTER_PLANS.STARTER_2020]: 149,
-	[CLUSTER_PLANS.PRODUCTION_2019_1]: 399,
-	[CLUSTER_PLANS.PRODUCTION_2019_2]: 700,
-	[CLUSTER_PLANS.PRODUCTION_2019_3]: 1599,
-	// 2021 plans
-	[CLUSTER_PLANS.PRODUCTION_2021_1]: 999,
-	[CLUSTER_PLANS.PRODUCTION_2021_2]: 1999,
-	[CLUSTER_PLANS.PRODUCTION_2021_3]: 3199,
-	[CLUSTER_PLANS.STARTER_2021]: 299,
 	[ARC_PLANS.HOSTED_ARC_STANDARD_2021]: 99,
+
+	// hosted arc enterprise plans
+	[ARC_PLANS.HOSTED_ARC_ENTERPRISE]: 599,
 	[ARC_PLANS.HOSTED_ARC_ENTERPRISE_2021]: 799,
+
+	// cluster sandbox
+	[CLUSTER_PLANS.SANDBOX_2019]: 59,
+	[CLUSTER_PLANS.SANDBOX_2020]: 49,
+
+	// cluster hobby
+	[CLUSTER_PLANS.HOBBY_2019]: 119,
+	[CLUSTER_PLANS.HOBBY_2020]: 99,
+
+	// cluster starter
+	[CLUSTER_PLANS.STARTER_2019]: 199,
+	[CLUSTER_PLANS.STARTER_2020]: 149,
+	[CLUSTER_PLANS.STARTER_2021]: 299,
+
+	// cluster production 1
+	[CLUSTER_PLANS.PRODUCTION_2019_1]: 399,
+	[CLUSTER_PLANS.PRODUCTION_2021_1]: 999,
+
+	// cluster production 2
+	[CLUSTER_PLANS.PRODUCTION_2019_2]: 700,
+	[CLUSTER_PLANS.PRODUCTION_2021_2]: 1999,
+
+	// cluster production 3
+	[CLUSTER_PLANS.PRODUCTION_2019_3]: 1599,
+	[CLUSTER_PLANS.PRODUCTION_2021_3]: 3199,
 };
 
 // Price per node/hr
 export const EFFECTIVE_PRICE_BY_PLANS = {
+	// self-hosted arc basic plans
 	[ARC_PLANS.ARC_BASIC]: 0.03,
+	// self-hosted arc standard plans
 	[ARC_PLANS.ARC_STANDARD]: 0.08,
+	// self-hosted arc enterprise plans
 	[ARC_PLANS.ARC_ENTERPRISE]: 0.69,
+
+	// hosted arc basic plans
 	[ARC_PLANS.HOSTED_ARC_BASIC]: 0.05,
 	[ARC_PLANS.HOSTED_ARC_BASIC_V2]: 0.04,
+
+	// hosted arc standard plans
 	[ARC_PLANS.HOSTED_ARC_STANDARD]: 0.12,
-	[ARC_PLANS.HOSTED_ARC_ENTERPRISE]: 0.83,
-	[CLUSTER_PLANS.SANDBOX_2019]: 0.08,
-	[CLUSTER_PLANS.HOBBY_2019]: 0.17,
-	[CLUSTER_PLANS.STARTER_2019]: 0.28,
-	[CLUSTER_PLANS.SANDBOX_2020]: 0.07,
-	[CLUSTER_PLANS.HOBBY_2020]: 0.14,
-	[CLUSTER_PLANS.STARTER_2020]: 0.21,
-	[CLUSTER_PLANS.PRODUCTION_2019_1]: 0.55,
-	[CLUSTER_PLANS.PRODUCTION_2019_2]: 1.11,
-	[CLUSTER_PLANS.PRODUCTION_2019_3]: 2.22,
-	// 2021 plans
-	[CLUSTER_PLANS.PRODUCTION_2021_1]: 0.463,
-	[CLUSTER_PLANS.PRODUCTION_2021_2]: 0.925,
-	[CLUSTER_PLANS.PRODUCTION_2021_3]: 1.48,
-	[CLUSTER_PLANS.STARTER_2021]: 0.138,
 	[ARC_PLANS.HOSTED_ARC_STANDARD_2021]: 0.137,
+
+	// hosted arc enterprise plans
+	[ARC_PLANS.HOSTED_ARC_ENTERPRISE]: 0.83,
 	[ARC_PLANS.HOSTED_ARC_ENTERPRISE_2021]: 1.11,
+
+	// cluster sandbox
+	[CLUSTER_PLANS.SANDBOX_2019]: 0.08,
+	[CLUSTER_PLANS.SANDBOX_2020]: 0.07,
+
+	// cluster hobby
+	[CLUSTER_PLANS.HOBBY_2019]: 0.17,
+	[CLUSTER_PLANS.HOBBY_2020]: 0.14,
+
+	// cluster starter
+	[CLUSTER_PLANS.STARTER_2019]: 0.28,
+	[CLUSTER_PLANS.STARTER_2020]: 0.21,
+	[CLUSTER_PLANS.STARTER_2021]: 0.138,
+
+	// cluster production 1
+	[CLUSTER_PLANS.PRODUCTION_2019_1]: 0.55,
+	[CLUSTER_PLANS.PRODUCTION_2021_1]: 0.463,
+
+	// cluster production 2
+	[CLUSTER_PLANS.PRODUCTION_2019_2]: 1.11,
+	[CLUSTER_PLANS.PRODUCTION_2021_2]: 0.925,
+
+	// cluster production 3
+	[CLUSTER_PLANS.PRODUCTION_2019_3]: 2.22,
+	[CLUSTER_PLANS.PRODUCTION_2021_3]: 1.48,
 };
 
 // Production or enterprise plans
@@ -328,7 +388,10 @@ export const isValidPlan = (tier, override, feature) => {
 		// functions are not available for prod-1
 		case features.FUNCTIONS:
 			const functionPlans = allowedPlans.filter(
-				(plan) => ![CLUSTER_PLANS.PRODUCTION_2019_1, CLUSTER_PLANS.PRODUCTION_2021_1].includes(plan),
+				(plan) =>
+					![CLUSTER_PLANS.PRODUCTION_2019_1, CLUSTER_PLANS.PRODUCTION_2021_1].includes(
+						plan,
+					),
 			);
 			return tier && functionPlans.includes(tier);
 		case features.SEARCH_RELEVANCY:
