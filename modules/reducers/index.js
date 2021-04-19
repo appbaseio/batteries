@@ -114,6 +114,21 @@ export default {
 		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
 		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES_ERROR,
 	),
+	$getCachePreferences: createRequestReducer(
+		AppConstants.APP.CACHE.GET_PREFERENCES,
+		AppConstants.APP.CACHE.GET_PREFERENCES_SUCCESS,
+		AppConstants.APP.CACHE.GET_PREFERENCES_ERROR,
+	),
+	$saveCachePreferences: createRequestReducer(
+		AppConstants.APP.CACHE.SAVE_PREFERENCES,
+		AppConstants.APP.CACHE.SAVE_PREFERENCES_SUCCESS,
+		AppConstants.APP.CACHE.SAVE_PREFERENCES_ERROR,
+	),
+	$evictCache: createRequestReducer(
+		AppConstants.APP.CACHE.EVICT,
+		AppConstants.APP.CACHE.EVICT_SUCCESS,
+		AppConstants.APP.CACHE.EVICT_ERROR,
+	),
 	$validateAppTemplate: createRequestReducer(
 		AppConstants.APP.TEMPLATES.VALIDATE,
 		AppConstants.APP.TEMPLATES.VALIDATE_SUCCESS,

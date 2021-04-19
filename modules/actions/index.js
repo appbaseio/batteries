@@ -12,3 +12,4 @@ export * from './rules';
 export * from './grade';
 export * from './uibuilder';
 export * from './monitoring';
+export * from './cache';
