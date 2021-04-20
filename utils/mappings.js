@@ -382,7 +382,17 @@ export function updateMappingES7(mapping, field, type, usecase) {
  * @returns {{ [key: string]: Array<string> | Array<string> }}
  * For v7 apps it'll return an array of fields instead of an object
  */
-export function traverseMapping(mappings = {}, returnOnlyLeafFields = false, isAggFields = false) {
+export function traverseMapping(
+	mappings = {},
+	returnOnlyLeafFields = false,
+	config = {
+		isAggFields: false,
+		// Helps to filter the fields by type, for example to include fields with `long` defined the `long` property
+		includeTypes: [],
+		// Helps to filter the fields by mapping, for example to include fields with `keyword` mapping defined the `keyword` property
+		includeMappings: [],
+	},
+) {
 	const fieldObject = {};
 	const checkIfPropertyPresent = (m, type) => {
 		fieldObject[type] = [];
@@ -392,17 +402,42 @@ export function traverseMapping(mappings = {}, returnOnlyLeafFields = false, isA
 					if (!returnOnlyLeafFields) {
 						let fieldName = `${prefix}${mpp}`;
 						// Set Keyword field
-						if (isAggFields) {
-							if (
-								mp.properties[mpp].type === 'text' ||
-								mp.properties[mpp].type === 'string'
-							) {
+						if (config.isAggFields) {
+							if (['text', 'string'].includes(mp.properties[mpp].type)) {
 								if (get(mp.properties[mpp], 'fields.keyword')) {
 									fieldName = `${fieldName}.keyword`;
 								}
 							}
 						}
-						fieldObject[type].push(fieldName);
+						if (config.includeTypes && config.includeTypes.length) {
+							if (config.includeTypes.includes(mp.properties[mpp].type)) {
+								fieldObject[type].push(fieldName);
+							}
+						}
+						if (config.includeMappings && config.includeMappings.length) {
+							if (get(mp.properties[mpp], 'fields.keyword')) {
+								fieldName = `${fieldName}.keyword`;
+							}
+							config.includeMappings.every((mapping) => {
+								const fields = Object.keys(get(mp.properties[mpp], 'fields', {}));
+								if (fields.includes(mapping)) {
+									fieldObject[type].push(fieldName);
+									return true;
+								}
+								return false;
+							});
+						}
+						// Add field if filters are not defined
+						if (
+							!(
+								config.includeMappings &&
+								config.includeMappings.length &&
+								config.includeMappings &&
+								config.includeMappings.length
+							)
+						) {
+							fieldObject[type].push(fieldName);
+						}
 					}
 					const field = mp.properties[mpp];
 					if (field && field.properties) {
