@@ -195,6 +195,10 @@ class RequestLogs extends React.Component {
 			endLatency,
 			arcVersion,
 		} = this.props;
+		// Clear interval
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+		}
 		// Set loading to true
 		this.setState(
 			{
@@ -237,16 +241,16 @@ class RequestLogs extends React.Component {
 							},
 						});
 						// Update the request time locally
-						setInterval(() => {
-							this.setState({
+						this.intervalId = setInterval(() => {
+							this.setState((prevState) => ({
 								[tab]: {
-								...this.state[tab], // eslint-disable-line
+								...prevState[tab], // eslint-disable-line
 									[currentPage]: {
-									...this.state[tab][currentPage], // eslint-disable-line
+									...prevState[tab][currentPage], // eslint-disable-line
 										hits: normalizeData(hits),
 									},
 								},
-							});
+							}));
 						}, 60000);
 					})
 					.catch((e) => {
