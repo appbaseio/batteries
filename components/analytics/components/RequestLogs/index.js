@@ -299,6 +299,7 @@ class RequestLogs extends React.Component {
 				pagination={{
 					pageSize,
 					total,
+					current: currentPage,
 					onChange: this.handlePageChange,
 				}}
 				scroll={{ x: 700 }}
