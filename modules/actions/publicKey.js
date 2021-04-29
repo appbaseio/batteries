@@ -35,13 +35,18 @@ export function updatePublicKey(name, key, role) {
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
 		dispatch(createAction(AppConstants.APP.PUBLIC_KEY.UPDATE));
 		return setPublicKey(appName, key, role)
-			.then((res) =>
+			.then((res) => {
 				dispatch(
 					createAction(AppConstants.APP.PUBLIC_KEY.UPDATE_SUCCESS, res, null, {
 						appName,
 					}),
-				),
-			)
+				);
+				dispatch(
+					createAction(AppConstants.APP.PUBLIC_KEY.GET_SUCCESS, res, null, {
+						appName,
+					}),
+				);
+			})
 			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.PUBLIC_KEY.UPDATE_ERROR, null, error)),
 			);
