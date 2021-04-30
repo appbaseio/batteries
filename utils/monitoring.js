@@ -150,19 +150,23 @@ export const fetchOverviewData = async (config, timeFilter) => {
 		let kibanaData = null;
 		if (kibanaURL) {
 			// fetch kibana data
-			const kibanaRes = await fetch(`${kibanaURL}/api/status`, {
-				headers: {
-					Authorization: `Basic ${btoa(
-						`${kibanaUsername}:${kibanaPassword}`,
-					)}`,
-				},
-			});
+			try {
+				const kibanaRes = await fetch(`${kibanaURL}/api/status`, {
+					headers: {
+						Authorization: `Basic ${btoa(
+							`${kibanaUsername}:${kibanaPassword}`,
+						)}`,
+					},
+				});
 
-			kibanaData = await kibanaRes.json();
-			dataToReturn = {
-				...dataToReturn,
-				kibanaStatus: get(kibanaData, 'status.overall.state', null),
-			};
+				kibanaData = await kibanaRes.json();
+				dataToReturn = {
+					...dataToReturn,
+					kibanaStatus: get(kibanaData, 'status.overall.state', null),
+				};
+			} catch (err) {
+				console.log(`error getting kibana status`, err);
+			}
 		}
 		return dataToReturn;
 	} catch (err) {
@@ -339,35 +343,35 @@ export const fetchIndicesData = async (config, timeFilter) => {
 			indices: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.total',
-				0
+				0,
 			).toLocaleString(),
 			documents: get(
 				responses[1],
 				'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.total.docs.count',
-				0
+				0,
 			).toLocaleString(),
 			data: formatSizeUnits(
 				get(
 					responses[1],
 					'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.total.store.size.bytes',
-					'0 GB'
+					'0 GB',
 				),
 			),
 			primaryShards: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
-				0
+				0,
 			).toLocaleString(),
 			replicaShards: (
 				get(
 					responses[0],
 					'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.count',
-					0
+					0,
 				) -
 				get(
 					responses[0],
 					'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
-					0
+					0,
 				)
 			).toLocaleString(),
 		};
