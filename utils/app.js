@@ -170,7 +170,7 @@ export const setPublicKey = (name, key, role) =>
 			.then(async (res) => {
 				const data = await res.json();
 
-				if (data.error && data.status >= 400) {
+				if (data.error || data.status >= 400) {
 					reject(data);
 				}
 				resolve({
