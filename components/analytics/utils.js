@@ -825,9 +825,11 @@ export const getActiveKeyByRoutes = (tab) => {
 	return activeKey;
 };
 
-export const applyFilterParams = ({ filters, callback, filterId, applyFilter }) => {
+export const applyFilterParams = ({ filters = {}, callback, filterId, applyFilter }) => {
 	const urlParams = getUrlParams(window.location.search);
 	if (
+		urlParams &&
+		filters &&
 		urlParams.from &&
 		urlParams.to &&
 		filters.from !== urlParams.from &&
