@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'emotion';
-import { Modal, Button, Tabs } from 'antd';
+import { Modal, Button, Tabs, Icon, Popover } from 'antd';
 import Grid from '../../../shared/Grid';
-import { getTimeDuration, getStringifiedJSON } from '../../utils';
+import { getTimeDuration, getStringifiedJSON, convertToCURL, replayRequest } from '../../utils';
+import Flex from '../../../shared/Flex';
+import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 
 const { TabPane } = Tabs;
 
@@ -12,8 +14,19 @@ const modal = css`
 		width: 580px;
 	}
 `;
-const tab = css`
-	background-color: rgb(190, 245, 255, 0.1);
+const buttonsContainer = css`
+	margin-top: 30px;
+	justify-content: flex-end;
+`;
+const popoverContent = css`
+	overflow-y: auto;
+	overflow-x: auto;
+	word-wrap: break-word;
+	max-width: 250px;
+	max-height: 250px;
+`;
+const button = css`
+	margin-right: 20px;
 `;
 
 const RequestDetails = ({
@@ -50,6 +63,30 @@ const RequestDetails = ({
 			<Grid label="URL" component={url} />
 			<Grid label="IP" component={ip} />
 			<Grid label="Response Code" component={status} />
+			<Flex css={buttonsContainer}>
+				<Flex css={button}>
+					<Popover
+						content={<div css={popoverContent}>Copy cURL request to clipboard</div>}
+						trigger="hover"
+					>
+						<Button onClick={() => convertToCURL(url, method, headers, request)}>
+							<Icon type="copy" />
+							Copy as cURL
+						</Button>
+					</Popover>
+				</Flex>
+				<Flex>
+					<Popover
+						content={<div css={popoverContent}>Replay this exact request again</div>}
+						trigger="hover"
+					>
+						<Button onClick={() => replayRequest(url, method, headers, request)}>
+							<Icon type="reload" />
+							Replay Request
+						</Button>
+					</Popover>
+				</Flex>
+			</Flex>
 			{processingTime && (
 				<Grid
 					label="Processing Time"
@@ -58,15 +95,73 @@ const RequestDetails = ({
 			)}
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
 				<TabPane tab="Response" key="response">
-					<pre css={tab}>{getStringifiedJSON(response)}</pre>
+					<AceEditor
+						mode="json"
+						value={getStringifiedJSON(response)}
+						theme="textmate"
+						readOnly
+						name="query-response"
+						fontSize={14}
+						showPrintMargin={false}
+						style={{
+							width: '100%',
+							borderRadius: 4,
+							border: '1px solid rgba(0,0,0,0.15)',
+							margin: '12px 0',
+						}}
+						showGutter
+						setOptions={{
+							showLineNumbers: false,
+							tabSize: 4,
+						}}
+						editorProps={{ $blockScrolling: true }}
+					/>
 				</TabPane>
 				<TabPane tab="Request" key="request">
-					{/* <p css={tab}>{request}</p> */}
-					{/* <pre css={tab}>{JSON.stringify(request, null, 2)}</pre> */}
-					<pre css={tab}>{getStringifiedJSON(request)}</pre>
+					<AceEditor
+						mode="json"
+						value={getStringifiedJSON(request)}
+						theme="textmate"
+						readOnly
+						name="query-request"
+						fontSize={14}
+						showPrintMargin={false}
+						style={{
+							width: '100%',
+							borderRadius: 4,
+							border: '1px solid rgba(0,0,0,0.15)',
+							margin: '12px 0',
+						}}
+						showGutter
+						setOptions={{
+							showLineNumbers: false,
+							tabSize: 4,
+						}}
+						editorProps={{ $blockScrolling: true }}
+					/>
 				</TabPane>
 				<TabPane tab="Headers" key="headers">
-					<pre css={tab}>{getStringifiedJSON(headers)}</pre>
+					<AceEditor
+						mode="json"
+						value={getStringifiedJSON(headers)}
+						theme="textmate"
+						readOnly
+						name="query-headers"
+						fontSize={14}
+						showPrintMargin={false}
+						style={{
+							width: '100%',
+							borderRadius: 4,
+							border: '1px solid rgba(0,0,0,0.15)',
+							margin: '12px 0',
+						}}
+						showGutter
+						setOptions={{
+							showLineNumbers: false,
+							tabSize: 4,
+						}}
+						editorProps={{ $blockScrolling: true }}
+					/>
 				</TabPane>
 			</Tabs>
 		</Modal>

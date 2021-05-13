@@ -1,7 +1,7 @@
 import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { Link } from 'react-router-dom';
 import get from 'lodash/get';
 // import mockProfile from './components/mockProfile';
@@ -976,4 +976,65 @@ export function inViewPort(id) {
 		return false;
 	}
 	return true;
+}
+
+export function convertToCURL(url, method, headers, requestBody) {
+	const headersToIgnore = [
+		'Content-Length',
+		'Sec-Ch-Ua',
+		'Sec-Ch-Ua-Mobile',
+		'Sec-Fetch-Dest',
+		'User-Agent',
+	];
+	try {
+		let cURlCommand = `curl -X ${method} ${getURL()}${url}`;
+		Object.keys(headers).forEach((key) => {
+			if (headersToIgnore.indexOf(key) < 0 && !key.startsWith('X-')) {
+				cURlCommand += ` -H '${key}: ${headers[key][0]}'`;
+			}
+		});
+		if (method !== 'GET' && method !== 'DELETE') {
+			cURlCommand += ` -d '${JSON.stringify(requestBody)}'`;
+		}
+		navigator.clipboard.writeText(cURlCommand);
+		message.success('Request copied to clipboard.');
+	} catch (e) {
+		message.error("Couldn't copy request. Try again.");
+	}
+}
+
+export function replayRequest(url, method, headers, requestBody) {
+	const headersToIgnore = [
+		'Content-Length',
+		'Sec-Ch-Ua',
+		'Sec-Ch-Ua-Mobile',
+		'Sec-Fetch-Dest',
+		'User-Agent',
+		'Pragma',
+	];
+	const updatedHeaders = {};
+	Object.keys(headers).forEach((key) => {
+		if (headersToIgnore.indexOf(key) < 0 && !key.startsWith('X-')) {
+			// eslint-disable-next-line
+			updatedHeaders[key] = headers[key][0];
+		}
+	});
+
+	const body = method === 'GET' || method === 'DELETE' ? null : JSON.stringify(requestBody);
+	return new Promise((resolve, reject) => {
+		fetch(`${getURL()}${url}`, {
+			method,
+			headers: updatedHeaders,
+			body,
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				message.success('Request replayed successfully. Reload the view to see it.');
+				resolve(res);
+			})
+			.catch((e) => {
+				message.error('Unable to replay the request. Try again.');
+				reject(e);
+			});
+	});
 }
