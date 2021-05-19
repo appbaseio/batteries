@@ -96,10 +96,7 @@ function getAppAnalyticsInsights(state = initialState, action) {
 				};
 			}
 
-			const addDataToInsight = [
-				insight,
-				...get(state, `results.${appName}.${nextStatus}`, []),
-			];
+			const addDataToInsight = [insight, ...get(state, [`results`, appName, nextStatus], [])];
 
 			return {
 				...state,
