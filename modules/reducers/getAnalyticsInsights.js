@@ -1,5 +1,5 @@
-import AppConstants from '../constants';
 import get from 'lodash/get';
+import AppConstants from '../constants';
 
 const initialState = {
 	isOpen: false,
@@ -67,10 +67,10 @@ function getAppAnalyticsInsights(state = initialState, action) {
 		case AppConstants.APP.ANALYTICS.UPDATE_INSIGHTS_STATUS_SUCCESS: {
 			const { appName, currentStatus, nextStatus, id } = action.meta;
 
-			const insight = get(state, `results.${appName}.${currentStatus}`, []).find(
+			const insight = get(state, [`results`, appName, currentStatus], []).find(
 				(item) => item.id === id,
 			);
-			const deleteInsightFrom = get(state, `results.${appName}.${currentStatus}`, []).filter(
+			const deleteInsightFrom = get(state, [`results`, appName, currentStatus], []).filter(
 				(item) => item.id !== id,
 			);
 
@@ -96,10 +96,7 @@ function getAppAnalyticsInsights(state = initialState, action) {
 				};
 			}
 
-			const addDataToInsight = [
-				insight,
-				...get(state, `results.${appName}.${nextStatus}`, []),
-			];
+			const addDataToInsight = [insight, ...get(state, [`results`, appName, nextStatus], [])];
 
 			return {
 				...state,
