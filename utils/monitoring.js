@@ -49,6 +49,12 @@ function sortNode(a, b) {
 }
 
 export const fetchOverviewData = async (config, timeFilter) => {
+	let dataToReturn = {
+		esStatus: null,
+		arcStatus: null,
+		kibanaStatus: null,
+		uptime: [],
+	};
 	try {
 		const {
 			esURL,
@@ -91,20 +97,6 @@ export const fetchOverviewData = async (config, timeFilter) => {
 			arcStatus = 'red';
 		}
 
-		let kibanaData = null;
-		if (kibanaURL) {
-			// fetch kibana data
-			const kibanaRes = await fetch(`${kibanaURL}/api/status`, {
-				headers: {
-					Authorization: `Basic ${btoa(
-						`${kibanaUsername}:${kibanaPassword}`,
-					)}`,
-				},
-			});
-
-			kibanaData = await kibanaRes.json();
-		}
-
 		const currentNodes = get(
 			esData,
 			'responses.2.aggregations.instances.buckets',
@@ -144,18 +136,41 @@ export const fetchOverviewData = async (config, timeFilter) => {
 				};
 			})
 			.filter(item => currentNodes.includes(item.nodeId));
-		return {
+		dataToReturn = {
+			...dataToReturn,
 			esStatus: get(
 				esData,
 				'responses.0.aggregations.status.hits.hits.0._source.elasticsearch.cluster.stats.status',
 				null,
 			),
 			arcStatus,
-			kibanaStatus: get(kibanaData, 'status.overall.state', null),
 			uptime: uptimes.sort(sortNode),
 		};
+
+		let kibanaData = null;
+		if (kibanaURL) {
+			// fetch kibana data
+			try {
+				const kibanaRes = await fetch(`${kibanaURL}/api/status`, {
+					headers: {
+						Authorization: `Basic ${btoa(
+							`${kibanaUsername}:${kibanaPassword}`,
+						)}`,
+					},
+				});
+
+				kibanaData = await kibanaRes.json();
+				dataToReturn = {
+					...dataToReturn,
+					kibanaStatus: get(kibanaData, 'status.overall.state', null),
+				};
+			} catch (err) {
+				console.log(`error getting kibana status`, err);
+			}
+		}
+		return dataToReturn;
 	} catch (err) {
-		throw err;
+		return dataToReturn;
 	}
 };
 
@@ -328,29 +343,35 @@ export const fetchIndicesData = async (config, timeFilter) => {
 			indices: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.total',
+				0,
 			).toLocaleString(),
 			documents: get(
 				responses[1],
 				'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.total.docs.count',
+				0,
 			).toLocaleString(),
 			data: formatSizeUnits(
 				get(
 					responses[1],
 					'aggregations.indices.hits.hits.0._source.elasticsearch.index.summary.total.store.size.bytes',
+					'0 GB',
 				),
 			),
 			primaryShards: get(
 				responses[0],
 				'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
+				0,
 			).toLocaleString(),
 			replicaShards: (
 				get(
 					responses[0],
 					'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.count',
+					0,
 				) -
 				get(
 					responses[0],
 					'aggregations.cluster.hits.hits.0._source.elasticsearch.cluster.stats.indices.shards.primaries',
+					0,
 				)
 			).toLocaleString(),
 		};
