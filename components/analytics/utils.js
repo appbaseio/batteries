@@ -997,9 +997,9 @@ export function convertToCURL(url, method, headers, requestBody) {
 			cURlCommand += ` -d '${JSON.stringify(requestBody)}'`;
 		}
 		navigator.clipboard.writeText(cURlCommand);
-		message.success('Request copied to clipboard.');
+		message.success('Request copied to clipboard');
 	} catch (e) {
-		message.error("Couldn't copy request. Try again.");
+		message.error("Couldn't copy request. Try again");
 	}
 }
 
@@ -1011,6 +1011,9 @@ export function replayRequest(url, method, headers, requestBody) {
 		'Sec-Fetch-Dest',
 		'User-Agent',
 		'Pragma',
+		'Sec-Fetch-Mode',
+		'Sec-Fetch-Site',
+		'Via',
 	];
 	const updatedHeaders = {};
 	Object.keys(headers).forEach((key) => {
@@ -1029,11 +1032,11 @@ export function replayRequest(url, method, headers, requestBody) {
 		})
 			.then((res) => res.json())
 			.then((res) => {
-				message.success('Request replayed successfully. Reload the view to see it.');
+				message.success('Request replayed successfully. Reload the view to see it');
 				resolve(res);
 			})
 			.catch((e) => {
-				message.error('Unable to replay the request. Try again.');
+				message.error('Unable to replay the request. Try again');
 				reject(e);
 			});
 	});
