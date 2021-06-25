@@ -56,15 +56,26 @@ const parseData = (data = '') => {
 			} catch (err) {
 				const removeBackslash = data.split('\n');
 				const formatted = filter(removeBackslash, (o) => o !== '');
-				if (formatted.length) {
-					return (
-						<div>
-							{formatted.map((i, index) => (
-								// eslint-disable-next-line
-								<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
-							))}
-						</div>
-					);
+				try {
+					let formattedResult = {};
+					if (formatted.length) {
+						formatted.forEach((result) => {
+							formattedResult = { ...formattedResult, ...JSON.parse(result) };
+						});
+						return formattedResult;
+					}
+					throw Error;
+				} catch (error) {
+					if (formatted.length) {
+						return (
+							<div>
+								{formatted.map((i, index) => (
+									// eslint-disable-next-line
+									<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
+								))}
+							</div>
+						);
+					}
 				}
 				throw Error;
 			}
@@ -244,9 +255,9 @@ class RequestLogs extends React.Component {
 						this.intervalId = setInterval(() => {
 							this.setState((prevState) => ({
 								[tab]: {
-								...prevState[tab], // eslint-disable-line
+									...prevState[tab], // eslint-disable-line
 									[currentPage]: {
-									...prevState[tab][currentPage], // eslint-disable-line
+										...prevState[tab][currentPage], // eslint-disable-line
 										hits: normalizeData(hits),
 									},
 								},
@@ -260,7 +271,7 @@ class RequestLogs extends React.Component {
 						});
 						this.setState({
 							[tab]: {
-							...this.state[tab], // eslint-disable-line
+								...this.state[tab], // eslint-disable-line
 								isLoading: false,
 							},
 						});
@@ -287,7 +298,7 @@ class RequestLogs extends React.Component {
 
 	renderTable = (tab) => {
 		const { pageSize, displaySearchLogs } = this.props;
-		const { currentPage, total, isLoading  } = this.state[tab]; // eslint-disable-line
+		const { currentPage, total, isLoading } = this.state[tab]; // eslint-disable-line
 		const { hits } = this.state[tab][currentPage]; // eslint-disable-line
 
 		return (
