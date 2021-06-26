@@ -994,7 +994,9 @@ export function convertToCURL(url, method, headers, requestBody) {
 			}
 		});
 		if (method !== 'GET' && method !== 'DELETE') {
-			cURlCommand += ` -d '${JSON.stringify(requestBody)}'`;
+			cURlCommand += ` -d '${
+				isValidJSONFormat(requestBody) ? JSON.stringify(requestBody) : requestBody
+			}'`;
 		}
 		navigator.clipboard.writeText(cURlCommand);
 		message.success('Request copied to clipboard');
@@ -1023,7 +1025,9 @@ export function replayRequest(url, method, headers, requestBody) {
 		}
 	});
 
-	const body = method === 'GET' || method === 'DELETE' ? null : JSON.stringify(requestBody);
+	const updatedRequestBody =
+		requestBody && isValidJSONFormat(requestBody) ? JSON.stringify(requestBody) : requestBody;
+	const body = method === 'GET' || method === 'DELETE' ? null : updatedRequestBody;
 	return new Promise((resolve, reject) => {
 		fetch(`${getURL()}${url}`, {
 			method,
@@ -1041,3 +1045,21 @@ export function replayRequest(url, method, headers, requestBody) {
 			});
 	});
 }
+
+export const isValidJSONFormat = (input) => {
+	if (typeof input === 'string') {
+		try {
+			JSON.parse(input);
+			return true;
+		} catch (error) {
+			return false;
+		}
+	} else {
+		try {
+			JSON.stringify(input);
+			return true;
+		} catch (error) {
+			return false;
+		}
+	}
+};

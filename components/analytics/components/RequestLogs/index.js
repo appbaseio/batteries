@@ -10,6 +10,7 @@ import {
 	getRequestLogs,
 	getRequestLogsColumns,
 	getTimeDuration,
+	isValidJSONFormat,
 	requestLogsDateRanges,
 } from '../../utils';
 import RequestDetails from './RequestDetails';
@@ -56,29 +57,18 @@ const parseData = (data = '') => {
 			} catch (err) {
 				const removeBackslash = data.split('\n');
 				const formatted = filter(removeBackslash, (o) => o !== '');
-				try {
-					let formattedResult = {};
-					if (formatted.length) {
-						formatted.forEach((result) => {
-							formattedResult = { ...formattedResult, ...JSON.parse(result) };
-						});
-						return formattedResult;
-					}
-					throw Error;
-				} catch (error) {
-					if (formatted.length) {
-						return (
-							<div>
-								{formatted.map((i, index) => (
-									// eslint-disable-next-line
-									<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
-								))}
-							</div>
-						);
-					}
+				if (formatted.length) {
+					return (
+						<div>
+							{formatted.map((i, index) => (
+								// eslint-disable-next-line
+								<pre key={index}>{JSON.stringify(JSON.parse(i), 0, 2)}</pre>
+							))}
+						</div>
+					);
 				}
-				throw Error;
 			}
+			throw Error;
 		} catch (error) {
 			return data;
 		}
@@ -388,7 +378,11 @@ class RequestLogs extends React.Component {
 							show={showDetails}
 							handleCancel={this.handleCancel}
 							headers={get(this.currentRequest, 'request.header', {})}
-							request={parseData(get(this.currentRequest, 'request.body')) || {}}
+							request={
+								isValidJSONFormat(get(this.currentRequest, 'request.body'))
+									? parseData(get(this.currentRequest, 'request.body')) || {}
+									: get(this.currentRequest, 'request.body')
+							}
 							response={parseData(get(this.currentRequest, 'response.body')) || {}}
 							time={get(this.currentRequest, 'timestamp', '')}
 							method={get(this.currentRequest, 'request.method', '')}
