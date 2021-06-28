@@ -3,7 +3,13 @@ import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import { Modal, Button, Tabs, Icon, Popover } from 'antd';
 import Grid from '../../../shared/Grid';
-import { getTimeDuration, getStringifiedJSON, convertToCURL, replayRequest } from '../../utils';
+import {
+	getTimeDuration,
+	getStringifiedJSON,
+	convertToCURL,
+	replayRequest,
+	isValidJSONFormat,
+} from '../../utils';
 import Flex from '../../../shared/Flex';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 
@@ -119,8 +125,8 @@ const RequestDetails = ({
 				</TabPane>
 				<TabPane tab="Request" key="request">
 					<AceEditor
-						mode="json"
-						value={getStringifiedJSON(request)}
+						mode={isValidJSONFormat(request) ? 'json' : 'javascript'}
+						value={isValidJSONFormat(request) ? getStringifiedJSON(request) : request}
 						theme="textmate"
 						readOnly
 						name="query-request"

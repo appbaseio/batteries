@@ -13,8 +13,11 @@ const Editor = (props) => {
 			case 'css':
 				require('brace/mode/css'); // eslint-disable-line
 				break;
+			case 'javascript':
+				require('brace/mode/javascript'); // eslint-disable-line
+				break;
 			default:
-			require('brace/mode/json'); // eslint-disable-line
+				require('brace/mode/json'); // eslint-disable-line
 		}
 		require('brace/theme/monokai'); // eslint-disable-line
 		return <AceEditor {...props} />;
@@ -27,7 +30,7 @@ Editor.defaultProps = {
 };
 
 Editor.propTypes = {
-	mode: oneOf(['html', 'css', 'json']),
+	mode: oneOf(['html', 'css', 'json', 'javascript']),
 };
 
 /* eslint-disable */
@@ -61,7 +64,7 @@ Ace.defaultProps = {
 };
 
 Ace.propTypes = {
-	mode: oneOf(['html', 'css', 'json']),
+	mode: oneOf(['html', 'css', 'json', 'javascript']),
 };
 
 export default Ace;
