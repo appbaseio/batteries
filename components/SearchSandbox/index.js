@@ -324,7 +324,7 @@ class SearchSandbox extends Component {
 							react: '16.3.2',
 							'react-dom': '16.3.2',
 							antd: '^3.6.6',
-							'@appbaseio/reactivesearch': '3.18.1',
+							'@appbaseio/reactivesearch': '3.21.0',
 							'react-expand-collapse': 'latest',
 						},
 					},
