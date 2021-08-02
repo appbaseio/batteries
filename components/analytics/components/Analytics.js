@@ -71,7 +71,7 @@ const Analytics = ({
 			{filterId && <Filter filterId={filterId} />}
 			<Card
 				extra={
-					<a href="https://docs.appbase.io/docs/analytics/Overview/">
+					<a href="https://docs.appbase.io/docs/analytics/Overview/" target="_blank">
 						Read More about these stats
 					</a>
 				}

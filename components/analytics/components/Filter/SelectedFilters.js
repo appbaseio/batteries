@@ -17,6 +17,14 @@ const hiddenFilters = [
 	'clickanalytics',
 ];
 
+const filterKeyMap = {
+	companyIds: 'company ids',
+	companyId: 'company id',
+	user_segment: 'user segment',
+	user_id: 'user id',
+};
+
+
 const SelectedFilters = ({ selectedFilters, clearFilterValue: onClear }) => {
 	const filteredFilters = Object.keys(selectedFilters).reduce(
 		(obj = {}, filter) => ({
@@ -29,16 +37,17 @@ const SelectedFilters = ({ selectedFilters, clearFilterValue: onClear }) => {
 		}),
 		{},
 	);
+
 	return (
 		<Flex style={{ flexWrap: 'wrap' }}>
 			{Object.keys(filteredFilters).map((filter) => (
 				<Tag color="#108ee9" key={filter} closable onClose={() => onClear(filter)}>
-					{filter} : {filteredFilters[filter]}
+					{filterKeyMap[filter] || filter} : {filteredFilters[filter]}
 				</Tag>
 			))}
 			{Object.keys(filteredFilters).length ? (
 				<Tag color="blue" closable onClose={() => onClear('')}>
-					Clear all
+					clear all
 				</Tag>
 			) : null}
 		</Flex>
