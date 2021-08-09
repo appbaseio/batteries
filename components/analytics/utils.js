@@ -685,6 +685,7 @@ export function getPopularResults(appName, clickAnalytics = true, size = 100, fi
 		`${getURL()}/_analytics/${getApp(appName)}popular-results${getQueryParams(
 			{
 				size,
+				show_global: true,
 				click_analytics: clickAnalytics,
 				...filters,
 			},
