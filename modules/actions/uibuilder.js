@@ -3,13 +3,16 @@ import { createAction } from './utils';
 import AppConstants from '../constants';
 import { getURL } from '../../../constants/config';
 import { doGet, doPut, doDelete } from '../../utils/requestService';
+import { X_SEARCH_CLIENT } from '../../../constants';
 
 export function getSearchPreferences(name) {
 	return (dispatch, getState) => {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET));
 		const ACC_API = getURL();
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		return doGet(`${ACC_API}/_uibuilder/${appName}/search`)
+		return doGet(`${ACC_API}/_uibuilder/${appName}/search`, {
+			'x-search-client': X_SEARCH_CLIENT,
+		})
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -39,7 +42,9 @@ export function saveSearchPreferences(payload, name) {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.SAVE));
 		const ACC_API = getURL();
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		return doPut(`${ACC_API}/_uibuilder/${appName}/search`, payload)
+		return doPut(`${ACC_API}/_uibuilder/${appName}/search`, payload, {
+			'x-search-client': X_SEARCH_CLIENT,
+		})
 			.then((res) => {
 				dispatch(
 					createAction(
@@ -80,7 +85,9 @@ export function deleteSearchPreferences(defaultPreferences, name) {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE));
 		const ACC_API = getURL();
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		return doDelete(`${ACC_API}/_uibuilder/${appName}/search`)
+		return doDelete(`${ACC_API}/_uibuilder/${appName}/search`, {
+			'x-search-client': X_SEARCH_CLIENT,
+		})
 			.then((res) => {
 				dispatch(
 					createAction(
@@ -120,7 +127,9 @@ export function getRecommendationsPreferences(name) {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET));
 		const ACC_API = getURL();
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		return doGet(`${ACC_API}/_uibuilder/${appName}/recommendations`)
+		return doGet(`${ACC_API}/_uibuilder/${appName}/recommendations`, {
+			'x-search-client': X_SEARCH_CLIENT,
+		})
 			.then((res) =>
 				dispatch(
 					createAction(
@@ -150,7 +159,9 @@ export function saveRecommendationsPreferences(payload, name) {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.SAVE));
 		const ACC_API = getURL();
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		return doPut(`${ACC_API}/_uibuilder/${appName}/recommendations`, payload)
+		return doPut(`${ACC_API}/_uibuilder/${appName}/recommendations`, payload, {
+			'x-search-client': X_SEARCH_CLIENT,
+		})
 			.then((res) => {
 				dispatch(
 					createAction(
@@ -190,7 +201,9 @@ export function deleteRecommendationsPreferences(defaultPreferences, name) {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE));
 		const ACC_API = getURL();
 		const appName = name || get(getState(), '$getCurrentApp.name', 'default');
-		return doDelete(`${ACC_API}/_uibuilder/${appName}/recommendations`)
+		return doDelete(`${ACC_API}/_uibuilder/${appName}/recommendations`, {
+			'x-search-client': X_SEARCH_CLIENT,
+		})
 			.then((res) => {
 				dispatch(
 					createAction(

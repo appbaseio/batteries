@@ -7,6 +7,7 @@ import get from 'lodash/get';
 // import mockProfile from './components/mockProfile';
 import { doGet, doPut } from '../../utils/requestService';
 import Flex from '../shared/Flex';
+import { X_SEARCH_CLIENT } from '../../../constants';
 import { getURL } from '../../../constants/config';
 import { getUrlParams } from '../../../utils/helper';
 import { versionCompare } from '../../utils/helpers';
@@ -586,6 +587,9 @@ export function getAnalytics(appName, filters, arcVersion) {
 			},
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 /**
@@ -599,6 +603,9 @@ export function getSearchLatency(appName, filters, arcVersion) {
 			arcVersion,
 			false,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 
@@ -618,6 +625,9 @@ export function getQueryOverview(appName, filters, query, arcVersion) {
 			},
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 /**
@@ -630,6 +640,9 @@ export function getGeoDistribution(appName, filters, arcVersion) {
 			filters,
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 /**
@@ -639,6 +652,9 @@ export function getGeoDistribution(appName, filters, arcVersion) {
 export function getAnalyticsSummary(appName, filters, arcVersion) {
 	return doGet(
 		`${getURL()}/_analytics/${getApp(appName)}summary${getQueryParams(filters, arcVersion)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 /**
@@ -662,6 +678,9 @@ export function getPopularSearches(
 			},
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 /**
@@ -677,6 +696,9 @@ export function getNoResultSearches(appName, size = 100, filters, arcVersion) {
 			},
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 // eslint-disable-next-line
@@ -691,6 +713,9 @@ export function getPopularResults(appName, clickAnalytics = true, size = 100, fi
 			},
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 /**
@@ -704,6 +729,9 @@ export function getRequestDistribution(appName, filters, arcVersion) {
 			filters,
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 // eslint-disable-next-line
@@ -717,6 +745,9 @@ export function getPopularFilters(appName, clickAnalytics = true, size = 100, fi
 			},
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 
@@ -756,6 +787,9 @@ export function getRequestLogs(
 			arcVersion,
 			false,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 
@@ -765,7 +799,9 @@ export function getRequestLogs(
  */
 export function getAnalyticsInsights(appName) {
 	const ACC_API = getURL();
-	return doGet(`${ACC_API}/_analytics/${getApp(appName)}insights`);
+	return doGet(`${ACC_API}/_analytics/${getApp(appName)}insights`, {
+		'x-search-client': X_SEARCH_CLIENT,
+	});
 }
 
 /**
@@ -776,10 +812,16 @@ export function getAnalyticsInsights(appName) {
  */
 export function updateAnalyticsInsights({ id, status, appName }) {
 	const ACC_API = getURL();
-	return doPut(`${ACC_API}/_analytics/${getApp(appName)}insight-status`, {
-		id,
-		status,
-	});
+	return doPut(
+		`${ACC_API}/_analytics/${getApp(appName)}insight-status`,
+		{
+			id,
+			status,
+		},
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
+	);
 }
 
 // Banner messages
@@ -943,6 +985,9 @@ export function getRecentSearches(appName, filters, arcVersion) {
 			},
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 /**
@@ -960,6 +1005,9 @@ export function getRecentResults(appName, filters, arcVersion) {
 			},
 			arcVersion,
 		)}`,
+		{
+			'x-search-client': X_SEARCH_CLIENT,
+		},
 	);
 }
 export function inViewPort(id) {

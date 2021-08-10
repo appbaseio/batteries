@@ -2,6 +2,7 @@ import get from 'lodash/get';
 import { doDelete, doPatch, doGet, doPost, doPut } from './requestService';
 import { getApp } from '../components/analytics/utils';
 import { getURL } from '../../constants/config';
+import { X_SEARCH_CLIENT } from '../../constants';
 
 export const transferOwnership = (appId, info) => {
 	const ACC_API = getURL();
@@ -328,6 +329,7 @@ export const getSearchSettings = (name) => {
 	return doGet(`${ACC_API}/_searchrelevancy/${name}`, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
+		'x-search-client': X_SEARCH_CLIENT,
 	});
 };
 
@@ -337,6 +339,7 @@ export const getDefaultSearchSettings = () => {
 	return doGet(`${ACC_API}/_searchrelevancy/_default`, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
+		'x-search-client': X_SEARCH_CLIENT,
 	});
 };
 
@@ -346,13 +349,17 @@ export const putSearchSettings = (name, payload) => {
 	return doPut(`${ACC_API}/_searchrelevancy/${name}`, payload, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
+		'x-search-client': X_SEARCH_CLIENT,
 	});
 };
 
 export const deleteSearchSettings = (name) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();
-	return doDelete(`${ACC_API}/_searchrelevancy/${name}`, { Authorization: `Basic ${authToken}` });
+	return doDelete(`${ACC_API}/_searchrelevancy/${name}`, {
+		Authorization: `Basic ${authToken}`,
+		'x-search-client': X_SEARCH_CLIENT,
+	});
 };
 
 export const getGradeMetrics = (indices, page) => {

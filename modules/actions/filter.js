@@ -4,6 +4,7 @@ import AppConstants from '../constants';
 import { doGet } from '../../utils/requestService';
 import { getURL } from '../../../constants/config';
 import { getApp, ANALYTICS_ROOT_FILTER_ID } from '../../components/analytics/utils';
+import { X_SEARCH_CLIENT } from '../../../constants';
 
 export function setFilterValue(filterId, filterKey, filterValue) {
 	return createAction(AppConstants.APP.FILTER.SET_FILTER_VALUE, {
@@ -36,7 +37,9 @@ export function getFilterLabels() {
 	return (dispatch) => {
 		const ACC_API = getURL();
 		dispatch(createAction(AppConstants.APP.FILTER.GET_LABEL));
-		return doGet(`${ACC_API}/_analytics/filter-labels`)
+		return doGet(`${ACC_API}/_analytics/filter-labels`, {
+			'x-search-client': X_SEARCH_CLIENT,
+		})
 			.then((res) => dispatch(createAction(AppConstants.APP.FILTER.GET_LABEL_SUCCESS, res)))
 			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.FILTER.GET_LABEL_ERROR, null, error)),
@@ -53,6 +56,9 @@ export function getFilterValues(label, prefix = '', name) {
 			`${ACC_API}/_analytics/${getApp(appName)}filter-values/${label}${
 				prefix.trim() ? `?prefix=${encodeURIComponent(prefix)}` : ''
 			}`,
+			{
+				'x-search-client': X_SEARCH_CLIENT,
+			},
 		)
 			.then((res) =>
 				dispatch(
