@@ -13,3 +13,4 @@ export * from './grade';
 export * from './uibuilder';
 export * from './monitoring';
 export * from './cache';
+export * from './storedQueries';
