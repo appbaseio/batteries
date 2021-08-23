@@ -37,6 +37,8 @@ export function saveAppStoredQuery(storedQueryId, payload, validate, execute) {
 		return doPut(`${ACC_API}/_storedquery/${storedQueryId}`, savePayload)
 			.then((res) => {
 				dispatch(createAction(AppConstants.APP.STORED_QUERIES.UPDATE_SUCCESS, res));
+				getAppStoredQueries()(dispatch);
+				clearAppStoredQueries(validate, execute)(dispatch);
 				if (validate) {
 					const validatePayload = { params: payload.params };
 					validateAppStoredQuery(storedQueryId, validatePayload, dispatch);
@@ -57,9 +59,10 @@ export function deleteAppStoredQuery(storedQueryId) {
 		dispatch(createAction(AppConstants.APP.STORED_QUERIES.DELETE));
 		const ACC_API = getURL();
 		return doDelete(`${ACC_API}/_storedquery/${storedQueryId}`)
-			.then((res) =>
-				dispatch(createAction(AppConstants.APP.STORED_QUERIES.DELETE_SUCCESS, res)),
-			)
+			.then((res) => {
+				dispatch(createAction(AppConstants.APP.STORED_QUERIES.DELETE_SUCCESS, res));
+				getAppStoredQueries()(dispatch);
+			})
 			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.STORED_QUERIES.DELETE_ERROR, null, error)),
 			);
@@ -79,8 +82,15 @@ export function validateAppStoredQuery(storedQueryId, payload, dispatch) {
 		);
 }
 
-export function clearAppStoredQueries() {
-	return createAction(AppConstants.APP.STORED_QUERIES.CLEAR_VALIDATE);
+export function clearAppStoredQueries(validate, execute) {
+	return (dispatch) => {
+		if (validate) {
+			dispatch(createAction(AppConstants.APP.STORED_QUERIES.CLEAR_EXECUTE));
+		}
+		if (execute) {
+			dispatch(createAction(AppConstants.APP.STORED_QUERIES.CLEAR_VALIDATE));
+		}
+	};
 }
 
 export function executeAppStoredQuery(storedQueryId, payload, dispatch) {
