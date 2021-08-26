@@ -846,6 +846,10 @@ export const applyFilterParams = ({ filters = {}, callback, filterId, applyFilte
 };
 
 export const dateRanges = {
+	'Last 30 minutes': {
+		from: moment().subtract(30, 'minute').format(),
+		to: moment().format(),
+	},
 	'This week': {
 		from: moment().startOf('week').format('YYYY/MM/DD'),
 		to: moment().format('YYYY/MM/DD'),
@@ -858,10 +862,17 @@ export const dateRanges = {
 		from: moment().startOf('month').format('YYYY/MM/DD'),
 		to: moment().format('YYYY/MM/DD'),
 	},
+
 	'Last Month': {
 		from: moment().subtract(1, 'months').startOf('month').format('YYYY/MM/DD'),
 		to: moment().subtract(1, 'months').endOf('month').format('YYYY/MM/DD'),
 	},
+
+	'Last day': {
+		from: moment().subtract(1, 'days').format('YYYY/MM/DD'),
+		to: moment().format('YYYY/MM/DD'),
+	},
+
 	'Last 7 days': {
 		from: moment().subtract(7, 'days').format('YYYY/MM/DD'),
 		to: moment().format('YYYY/MM/DD'),
@@ -892,7 +903,7 @@ export const requestLogsDateRanges = {
 	...dateRanges,
 };
 
-export const dateRangesColumn = (dates = dateRanges, columnItems = 4) =>
+export const dateRangesColumn = (dates = dateRanges, columnItems = 6) =>
 	Object.keys(dates).reduce((agg, item, index) => {
 		const columnIndex = `col_${Math.floor(index / columnItems)}`;
 		return {
