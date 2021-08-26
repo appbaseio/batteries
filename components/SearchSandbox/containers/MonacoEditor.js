@@ -47,6 +47,7 @@ const Monaco = ({
 
 	const handleEditorDidMount = (editor) => {
 		// console.log({ monaco });
+		editor.getModel().setValue(value);
 		editorRef.current = editor;
 		setTimeout(() => {
 			tidyCode(editor);
@@ -71,7 +72,7 @@ const Monaco = ({
 				}}
 				onMount={handleEditorDidMount}
 				language={language}
-				value={value}
+				// value={JSON.stringify(JSON.parse(value), 0, 4)}
 				onChange={onChange}
 				height="100%"
 				width="100%"
