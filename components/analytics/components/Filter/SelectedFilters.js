@@ -18,7 +18,6 @@ const hiddenFilters = [
 ];
 
 const filterKeyMap = {
-	companyIds: 'company ids',
 	companyId: 'company id',
 	user_segment: 'user segment',
 	user_id: 'user id',
