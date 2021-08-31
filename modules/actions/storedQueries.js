@@ -62,7 +62,7 @@ export function validateAppStoredQuery(storedQueryId, payload) {
 		dispatch(createAction(AppConstants.APP.STORED_QUERIES.VALIDATE));
 		const ACC_API = getURL();
 		const url = `${ACC_API}/_storedquery/${storedQueryId}/validate`;
-		return doPost(url, payload, undefined, undefined, [404, 400])
+		return doPost(url, payload, undefined, undefined, [404, 400], true)
 			.then((res) =>
 				dispatch(createAction(AppConstants.APP.STORED_QUERIES.VALIDATE_SUCCESS, res)),
 			)
@@ -84,7 +84,7 @@ export function executeAppStoredQuery(payload) {
 		dispatch(createAction(AppConstants.APP.STORED_QUERIES.EXECUTE));
 		const ACC_API = getURL();
 		const url = `${ACC_API}/_storedquery/execute`;
-		return doPost(url, payload, undefined, undefined, [404, 400])
+		return doPost(url, payload, undefined, undefined, [404, 400], true)
 			.then((res) =>
 				dispatch(createAction(AppConstants.APP.STORED_QUERIES.EXECUTE_SUCCESS, res)),
 			)
