@@ -67,6 +67,7 @@ const Monaco = ({
 				defaultValue={defaultValue}
 				options={{
 					...options,
+					readOnly,
 				}}
 				onMount={handleEditorDidMount}
 				language={language}
@@ -74,7 +75,6 @@ const Monaco = ({
 				onChange={onChange}
 				height="100%"
 				width="100%"
-				readOnly={readOnly}
 				loading={loading}
 			/>
 		</div>
