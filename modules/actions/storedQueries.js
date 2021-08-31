@@ -79,11 +79,11 @@ export function clearAppStoredQueries() {
 	};
 }
 
-export function executeAppStoredQuery(storedQueryId, payload) {
+export function executeAppStoredQuery(payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.STORED_QUERIES.EXECUTE));
 		const ACC_API = getURL();
-		const url = `${ACC_API}/_storedquery/${storedQueryId}/execute`;
+		const url = `${ACC_API}/_storedquery/execute`;
 		return doPost(url, payload, undefined, undefined, [404, 400])
 			.then((res) =>
 				dispatch(createAction(AppConstants.APP.STORED_QUERIES.EXECUTE_SUCCESS, res)),
