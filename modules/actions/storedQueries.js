@@ -60,7 +60,6 @@ export function deleteAppStoredQuery(storedQueryId) {
 export function validateAppStoredQuery(storedQueryId, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.STORED_QUERIES.VALIDATE));
-		clearAppStoredQueries()(dispatch);
 		const ACC_API = getURL();
 		const url = `${ACC_API}/_storedquery/${storedQueryId}/validate`;
 		return doPost(url, payload, undefined, undefined, [404, 400])
@@ -83,7 +82,6 @@ export function clearAppStoredQueries() {
 export function executeAppStoredQuery(storedQueryId, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.STORED_QUERIES.EXECUTE));
-		clearAppStoredQueries()(dispatch);
 		const ACC_API = getURL();
 		const url = `${ACC_API}/_storedquery/${storedQueryId}/execute`;
 		return doPost(url, payload, undefined, undefined, [404, 400])
