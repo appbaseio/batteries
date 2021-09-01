@@ -104,6 +104,26 @@ export default {
 		AppConstants.APP.TEMPLATES.DELETE_SUCCESS,
 		AppConstants.APP.TEMPLATES.DELETE_ERROR,
 	),
+	$getAppStoredQueries: createRequestReducer(
+		AppConstants.APP.STORED_QUERIES.GET_ALL,
+		AppConstants.APP.STORED_QUERIES.GET_ALL_SUCCESS,
+		AppConstants.APP.STORED_QUERIES.GET_ALL_ERROR,
+	),
+	$getAppStoredQuery: createRequestReducer(
+		AppConstants.APP.STORED_QUERIES.GET,
+		AppConstants.APP.STORED_QUERIES.GET_SUCCESS,
+		AppConstants.APP.STORED_QUERIES.GET_ERROR,
+	),
+	$saveAppStoredQuery: createRequestReducer(
+		AppConstants.APP.STORED_QUERIES.UPDATE,
+		AppConstants.APP.STORED_QUERIES.UPDATE_SUCCESS,
+		AppConstants.APP.STORED_QUERIES.UPDATE_ERROR,
+	),
+	$deleteAppStoredQuery: createRequestReducer(
+		AppConstants.APP.STORED_QUERIES.DELETE,
+		AppConstants.APP.STORED_QUERIES.DELETE_SUCCESS,
+		AppConstants.APP.STORED_QUERIES.DELETE_ERROR,
+	),
 	$getSuggestionsPreferences: createRequestReducer(
 		AppConstants.APP.SUGGESTIONS.GET_PREFERENCES,
 		AppConstants.APP.SUGGESTIONS.GET_PREFERENCES_SUCCESS,
@@ -136,6 +156,22 @@ export default {
 		undefined,
 		undefined,
 		AppConstants.APP.TEMPLATES.CLEAR_VALIDATE,
+	),
+	$validateAppStoredQuery: createRequestReducer(
+		AppConstants.APP.STORED_QUERIES.VALIDATE,
+		AppConstants.APP.STORED_QUERIES.VALIDATE_SUCCESS,
+		AppConstants.APP.STORED_QUERIES.VALIDATE_ERROR,
+		undefined,
+		undefined,
+		AppConstants.APP.STORED_QUERIES.CLEAR_VALIDATE,
+	),
+	$executeAppStoredQuery: createRequestReducer(
+		AppConstants.APP.STORED_QUERIES.EXECUTE,
+		AppConstants.APP.STORED_QUERIES.EXECUTE_SUCCESS,
+		AppConstants.APP.STORED_QUERIES.EXECUTE_ERROR,
+		undefined,
+		undefined,
+		AppConstants.APP.STORED_QUERIES.CLEAR_EXECUTE,
 	),
 	$getSearchPreferences: createRequestReducer(
 		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET,
