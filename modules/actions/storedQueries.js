@@ -57,11 +57,11 @@ export function deleteAppStoredQuery(storedQueryId) {
 	};
 }
 
-export function validateAppStoredQuery(storedQueryId, payload) {
+export function validateAppStoredQuery(payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.STORED_QUERIES.VALIDATE));
 		const ACC_API = getURL();
-		const url = `${ACC_API}/_storedquery/${storedQueryId}/validate`;
+		const url = `${ACC_API}/_storedquery/validate`;
 		return doPost(url, payload, undefined, undefined, undefined, true)
 			.then((res) =>
 				dispatch(createAction(AppConstants.APP.STORED_QUERIES.VALIDATE_SUCCESS, res)),
