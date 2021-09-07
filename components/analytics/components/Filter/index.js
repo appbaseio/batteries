@@ -114,7 +114,7 @@ class Filter extends React.Component {
 	};
 
 	handleFilterValueChange = (filterValue = '') => {
-		const { filterKey } = this.state;
+		let { filterKey } = this.state;
 		const { selectFilterValue, filterId } = this.props;
 		selectFilterValue(filterId, filterKey, filterValue);
 	};
@@ -237,7 +237,7 @@ class Filter extends React.Component {
 						)}
 					</Flex>
 					<Flex>
-						<Tooltip placement="topLeft" title="Refresh data.">
+						<Tooltip placement="topLeft" title="Refresh data">
 							<Button onClick={this.handleRefresh} icon="redo" />
 						</Tooltip>
 						<DateFilter
@@ -245,6 +245,7 @@ class Filter extends React.Component {
 							toggleVisible={this.handleDateRangePopover}
 							label={selectedDateRange}
 							visible={dateRangePopover}
+							columnItems={5}
 						/>
 						{hideInsightsButton ? null : (
 							<Button onClick={toggleInsights} style={{ marginLeft: 15 }}>
