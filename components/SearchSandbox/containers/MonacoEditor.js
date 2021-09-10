@@ -42,11 +42,16 @@ const Monaco = ({
 	width,
 	readOnly,
 	loading,
+	onBlur,
 }) => {
 	const editorRef = useRef(null);
 
 	const handleEditorDidMount = (editor) => {
 		editorRef.current = editor;
+		editor.onDidBlurEditorWidget(() => {
+			onBlur();
+		});
+
 		setTimeout(() => {
 			tidyCode(editor);
 		}, 2000);
@@ -86,6 +91,7 @@ Monaco.defaultProps = {
 	value: '',
 	defaultValue: '',
 	onChange: undefined,
+	onBlur: undefined,
 	options: {},
 	theme: 'light',
 	height: '100%',
@@ -100,6 +106,7 @@ Monaco.propTypes = {
 	value: string,
 	defaultValue: string,
 	onChange: func,
+	onBlur: func,
 	options: object,
 	height: string,
 	width: string,
