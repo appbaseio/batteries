@@ -7,6 +7,29 @@ const initialState = {
 	settings: {},
 };
 
+const indexSuggestionsInitialState = {
+	showDistinctSuggestions: false,
+	enablePredictiveSuggestions: false,
+	maxPredictedWords: 0,
+	applyStopwords: false,
+	customStopwords: [],
+	enableSynonyms: false,
+	size: 0,
+	includeFields: [],
+	excludeFields: [],
+	categoryField: '',
+	customQuery: '',
+};
+
+const popularSuggestionsInitialState = {
+
+};
+
+const recentSuggestionsInitialState = {
+	minHits: 0,
+	size: 0,
+}
+
 function getAppSettings(state = initialState, action) {
 	switch (action.type) {
 		case AppConstants.APP.SEARCH_SETTINGS.GET:
@@ -19,7 +42,12 @@ function getAppSettings(state = initialState, action) {
 				...state,
 				isFetching: false,
 				settings: Object.assign({}, state.settings, {
-					[action.meta.appName]: action.payload,
+					[action.meta.appName]: {
+						...action.payload,
+						indexSuggestions: {...indexSuggestionsInitialState},
+						recentSuggestions: {...recentSuggestionsInitialState},
+						popularSuggestions: {...popularSuggestionsInitialState}
+					},
 				}),
 				success: true,
 			};
@@ -57,7 +85,13 @@ function getAppSettings(state = initialState, action) {
 				...state,
 				isUpdating: false,
 				settings: Object.assign({}, state.settings, {
-					[action.meta.name]: action.payload,
+
+					[action.meta.name]: {
+						...action.payload,
+						indexSuggestions: {...indexSuggestionsInitialState},
+						recentSuggestions: {...recentSuggestionsInitialState},
+						popularSuggestions: {...popularSuggestionsInitialState}
+					}
 				}),
 				success: true,
 			};
