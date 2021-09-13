@@ -22,7 +22,13 @@ const indexSuggestionsInitialState = {
 };
 
 const popularSuggestionsInitialState = {
-
+	numberOfDays: 0,
+	minHits: 0,
+	minCount: 0,
+	minCharacters: 0,
+	transformDiacritics: false,
+	blacklist: '',
+	size: 0,
 };
 
 const recentSuggestionsInitialState = {
