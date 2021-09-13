@@ -134,6 +134,11 @@ export default {
 		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
 		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES_ERROR,
 	),
+	$getUsageStats: createRequestReducer(
+		AppConstants.APP.USAGE_STATS.GET,
+		AppConstants.APP.USAGE_STATS.GET_SUCCESS,
+		AppConstants.APP.USAGE_STATS.GET_ERROR,
+	),
 	$getCachePreferences: createRequestReducer(
 		AppConstants.APP.CACHE.GET_PREFERENCES,
 		AppConstants.APP.CACHE.GET_PREFERENCES_SUCCESS,
