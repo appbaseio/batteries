@@ -5,3 +5,4 @@ export * from './analytics';
 export * from './publicKey';
 export * from './templates';
 export * from './monitoring';
+export * from './queryRules';

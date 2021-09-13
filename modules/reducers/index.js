@@ -172,4 +172,9 @@ export default {
 		AppConstants.ACCOUNT.PAYMENT.UPDATE_ERROR,
 	),
 	$monitoring: monitoring,
+	$getUsageStats: createRequestReducer(
+		AppConstants.APP.USAGE_STATS.GET,
+		AppConstants.APP.USAGE_STATS.GET_SUCCESS,
+		AppConstants.APP.USAGE_STATS.GET_ERROR,
+	),
 };
