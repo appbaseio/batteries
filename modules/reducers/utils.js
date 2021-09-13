@@ -53,11 +53,13 @@ export const computeAppMappingState = (action, state) => ({
 	}),
 });
 
-export const computeStateByAppName = (action, state) => ({
-	results: Object.assign({}, state.results, {
-		[action.meta.appName]: action.payload,
-	}),
-});
+export const computeStateByAppName = (action, state) => {
+	return ({
+		results: Object.assign({}, state.results, {
+			[action.meta.appName]: action.payload,
+		}),
+	})
+}
 
 export const computeAppPermissionState = (action, state) => {
 	if (action.meta.source === 'user_apps') {
