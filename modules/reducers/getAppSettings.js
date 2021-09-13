@@ -27,7 +27,7 @@ const popularSuggestionsInitialState = {
 	minCount: 0,
 	minCharacters: 0,
 	transformDiacritics: false,
-	blacklist: '',
+	blacklist: [],
 	size: 0,
 };
 

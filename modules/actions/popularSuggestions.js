@@ -11,7 +11,7 @@ const popRes = {
   "minCharacters": 3,
   "transformDiacritics": false,
   "size": 5,
-  "blacklist": [],
+  "blacklist": ['movie'],
   "externalSuggestions": '',
 }
 export function getPopularSuggestionsPreferences() {
