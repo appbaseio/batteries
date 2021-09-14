@@ -8,32 +8,35 @@ const initialState = {
 };
 
 const indexSuggestionsInitialState = {
-	showDistinctSuggestions: false,
-	enablePredictiveSuggestions: false,
-	maxPredictedWords: 0,
-	applyStopwords: false,
-	customStopwords: [],
-	enableSynonyms: false,
-	size: 0,
-	includeFields: [],
-	excludeFields: [],
-	categoryField: '',
-	customQuery: '',
+	showDistinctSuggestions: true,
+	enablePredictiveSuggestions: true,
+	maxPredictedWords: 2,
+	applyStopwords: true,
+	customStopwords: ['the','a'],
+	enableSynonyms: true,
+	size: 5,
+	includeFields: ['body_html','image'],
+	excludeFields: ['bathrooms'],
+	categoryField: 'body_html',
+	customQuery: 'efe',
+	indices: ['airbeds-test-app'],
 };
 
 const popularSuggestionsInitialState = {
-	numberOfDays: 0,
-	minHits: 0,
-	minCount: 0,
-	minCharacters: 0,
-	transformDiacritics: false,
-	blacklist: [],
-	size: 0,
+	indices: ['airbeds-test-app'],
+	numberOfDays: 2,
+	minHits: 3,
+	minCount: 3,
+	minCharacters: 3,
+	transformDiacritics: true,
+	blacklist: ['movie'],
+	size: 5,
 };
 
 const recentSuggestionsInitialState = {
-	minHits: 0,
-	size: 0,
+	minHits: 1,
+	size: 5,
+	indices: ['airbeds-test-app'],
 }
 
 function getAppSettings(state = initialState, action) {
