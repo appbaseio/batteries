@@ -5,16 +5,16 @@ import { doGet, doPut } from '../../utils/requestService';
 
 const indexRes = {
 	"indices": ['airbeds-test-app'],
-	"showDistinctSuggestions": false, // true / false
+	"showDistinctSuggestions": true, // true / false
 	"enablePredictiveSuggestions": true, // true / false
-	"maxPredictedWords": 2,  // Max predicted words either as a suffix or prefix
+	"maxPredictedWords": 5,  // Max predicted words either as a suffix or prefix
 	"applyStopwords": true,
 	"customStopwords": ['the','a'], // An array of string of custom stopwords, refer to language settings (text area with csv)
 	"enableSynonyms": true, // true / false
 	"categoryField": 'body_html',   // single select dropdown
 	"size": 5, // number input, [0, 100]
 	"includeFields": ['body_html','image'],  // refer to result settings
-	"excludeFields": ['handle'],  // refer to result settings
+	"excludeFields": ['bathrooms'],  // refer to result settings
 	"customQuery": "efe",    // Specify a stored query id to execute a custom query, use GET /_storedqueries
 }
 
@@ -30,12 +30,12 @@ export function getIndexSuggestionsPreferences() {
 				),
 			)
 			.catch((error) =>
-				dispatch(
-					createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
-				),
 				// dispatch(
-				// 	createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_SUCCESS, indexRes, null),
+				// 	createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
 				// ),
+				dispatch(
+					createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_SUCCESS, indexRes, null),
+				),
 			);
 	};
 }

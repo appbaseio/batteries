@@ -9,10 +9,10 @@ const popRes = {
   "minCount": 3,
   "minHits": 3,
   "minCharacters": 3,
-  "transformDiacritics": false,
+  "transformDiacritics": true,
   "size": 5,
   "blacklist": ['movie'],
-  "externalSuggestions": '',
+  "externalSuggestions": '[]',
 }
 export function getPopularSuggestionsPreferences() {
 	return (dispatch) => {
@@ -25,12 +25,12 @@ export function getPopularSuggestionsPreferences() {
 				),
 			)
 			.catch((error) =>
-				dispatch(
-					createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
-				),
 				// dispatch(
-				// 	createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_SUCCESS, popRes, null),
+				// 	createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
 				// ),
+				dispatch(
+					createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_SUCCESS, popRes, null),
+				),
 			);
 	};
 }

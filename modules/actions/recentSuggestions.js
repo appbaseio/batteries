@@ -20,12 +20,12 @@ export function getRecentSuggestionsPreferences() {
 				),
 			)
 			.catch((error) =>
-				dispatch(
-					createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
-				),
 				// dispatch(
-				// 	createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_SUCCESS, recentRes, null),
+				// 	createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
 				// ),
+				dispatch(
+					createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_SUCCESS, recentRes, null),
+				),
 			);
 	};
 }
@@ -38,7 +38,6 @@ export function saveRecentSuggestionsPreferences(payload) {
 			.then((res) => {
                 console.log(res);
             }
-
 				// dispatch(createAction(AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS, res)),
 			)
 			.catch((error) => {
