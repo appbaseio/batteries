@@ -42,13 +42,13 @@ class RecentResults extends React.Component {
 
 	getResults = () => {
 		const { appName, recentResults } = this.props;
+		let results = [];
 		if (recentResults && recentResults[appName]) {
-			return recentResults[appName];
+			results = recentResults[appName];
+		} else if (recentResults && recentResults.default) {
+			results = recentResults.default;
 		}
-		if (recentResults && recentResults.default) {
-			return recentResults.default;
-		}
-		return [];
+		return Array.isArray(results) ? results : [];
 	};
 
 	render() {
