@@ -59,14 +59,16 @@ const Monaco = ({
 
 	return (
 		<div className={editorContainer} style={{ width, height }}>
-			<button
-				type="button"
-				onClick={() => {
-					tidyCode(editorRef.current);
-				}}
-			>
-				Beautify
-			</button>
+			{!readOnly && (
+				<button
+					type="button"
+					onClick={() => {
+						tidyCode(editorRef.current);
+					}}
+				>
+					Beautify
+				</button>
+			)}
 			<Editor
 				theme={theme}
 				defaultValue={defaultValue}
