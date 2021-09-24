@@ -328,6 +328,11 @@ export default {
             EXECUTE_SUCCESS: '$EXECUTE_APP_STORED_QUERY_SUCCESS',
             EXECUTE_ERROR: '$EXECUTE_APP_STORED_QUERY_ERROR',
         },
+        USAGE_STATS: {
+            GET: '$GET_USAGE_STATS',
+            GET_SUCCESS: '$GET_USAGE_STATS_SUCCESS',
+            GET_ERROR: '$GET_USAGE_STATS_ERROR',
+        }
     },
     MONITORING: {
         SET_CONFIG: 'SET_CONFIG',

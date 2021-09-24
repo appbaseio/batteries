@@ -17,3 +17,4 @@ export * from './storedQueries';
 export * from './popularSuggestions';
 export * from './recentSuggestions';
 export * from './indexSuggestions';
+export * from './queryRules';
