@@ -102,9 +102,11 @@ export function getStoredQueriesUsage() {
 			.then((res) => {
 				const usageStats = {};
 
-				res.storedqueries.forEach((storedQuery) => {
-					usageStats[storedQuery.key] = { ...storedQuery };
-				});
+				if (Array.isArray(res.storedqueries)) {
+					res.storedqueries.forEach((storedQuery) => {
+						usageStats[storedQuery.key] = { ...storedQuery };
+					});
+				}
 
 				dispatch(
 					createAction(
