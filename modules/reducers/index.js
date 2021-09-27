@@ -124,6 +124,11 @@ export default {
 		AppConstants.APP.STORED_QUERIES.DELETE_SUCCESS,
 		AppConstants.APP.STORED_QUERIES.DELETE_ERROR,
 	),
+	$getAppStoredQueriesUsage: createRequestReducer(
+		AppConstants.APP.STORED_QUERIES.GET_USAGE,
+		AppConstants.APP.STORED_QUERIES.GET_USAGE_SUCCESS,
+		AppConstants.APP.STORED_QUERIES.GET_USAGE_ERROR,
+	),
 	$getSuggestionsPreferences: createRequestReducer(
 		AppConstants.APP.SUGGESTIONS.GET_PREFERENCES,
 		AppConstants.APP.SUGGESTIONS.GET_PREFERENCES_SUCCESS,
