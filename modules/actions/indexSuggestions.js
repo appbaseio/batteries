@@ -26,16 +26,16 @@ export function getIndexSuggestionsPreferences() {
 		return doGet(`${ACC_API}/_index_suggestions/preferences`)
 			.then((res) =>
 				dispatch(
-					createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_SUCCESS, indexRes, null),
+					createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_SUCCESS, res, null),
 				),
 			)
 			.catch((error) =>
-				// dispatch(
-				// 	createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
-				// ),
 				dispatch(
-					createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_SUCCESS, indexRes, null),
+					createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
 				),
+				// dispatch(
+				// 	createAction(AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_SUCCESS, indexRes, null),
+				// ),
 			);
 	};
 }

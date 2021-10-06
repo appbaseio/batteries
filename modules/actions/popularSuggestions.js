@@ -3,17 +3,6 @@ import AppConstants from '../constants';
 import { getURL } from '../../../constants/config';
 import { doGet, doPut } from '../../utils/requestService';
 
-const popRes = {
-  "indices": ['airbeds-test-app'],
-  "numberOfDays": 2,
-  "minCount": 3,
-  "minHits": 3,
-  "minCharacters": 3,
-  "transformDiacritics": true,
-  "size": 5,
-  "blacklist": ['movie'],
-  "externalSuggestions": '[]',
-}
 export function getPopularSuggestionsPreferences() {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES));
@@ -25,11 +14,8 @@ export function getPopularSuggestionsPreferences() {
 				),
 			)
 			.catch((error) =>
-				// dispatch(
-				// 	createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
-				// ),
 				dispatch(
-					createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_SUCCESS, popRes, null),
+					createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
 				),
 			);
 	};
