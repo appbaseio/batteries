@@ -123,3 +123,9 @@ export function putRule(rule) {
 			);
 	};
 }
+
+export function updateQueryRule(rule) {
+	return(dispatch) => {
+		dispatch(createAction(AppConstants.APP.RULES.UPDATE_RULE, { ...rule }));
+	}
+}
