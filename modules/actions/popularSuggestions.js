@@ -7,7 +7,7 @@ export function getPopularSuggestionsPreferences() {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES));
 		const ACC_API = getURL();
-		return doGet(`${ACC_API}/_popular_suggestions/preferences`)
+		return doGet(`http://localhost:8000/_popular_suggestions/preferences`)
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_SUCCESS, res, null),
@@ -25,20 +25,12 @@ export function savePopularSuggestionsPreferences(payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES));
 		const ACC_API = getURL();
-		return doPut(`${ACC_API}/_popular_suggestions/preferences`, payload)
-			.then((res) => {
-                console.log(res);
-            }
-
-				// dispatch(createAction(AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS, res)),
-			)
-			.catch((error) => {
-                console.error(err)
-            }
-				// dispatch(
-                //     console.error(error)
-				// 	// createAction(AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES_ERROR, null, error),
-				// ),
-			);
+		return doPut(`http://localhost:8000/_popular_suggestions/preferences`, payload)
+			.then((res) =>
+                dispatch(createAction(AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS, res)),
+            )
+			.catch((error) =>
+                dispatch(createAction(AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES_ERROR, null, error)),
+            );
 	};
 }
