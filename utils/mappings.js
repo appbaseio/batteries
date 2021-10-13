@@ -28,7 +28,7 @@ export function getAuthHeaders(credentials) {
 export function getMappings(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
 		// If index is not defined then use pattern to eliminate the system indices
-		fetch(`${url}/${appName || '*,-.*'}/_mapping`, {
+		fetch(`${url}/${appName || '*,-.*,-metricbeat*'}/_mapping`, {
 			method: 'GET',
 			headers: {
 				...getAuthHeaders(credentials),

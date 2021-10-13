@@ -93,3 +93,33 @@ export function executeAppStoredQuery(payload) {
 			);
 	};
 }
+
+export function getStoredQueriesUsage() {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.STORED_QUERIES.GET_USAGE));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_analytics/storedqueries/usage`)
+			.then((res) => {
+				const usageStats = {};
+
+				if (Array.isArray(res.storedqueries)) {
+					res.storedqueries.forEach((storedQuery) => {
+						usageStats[storedQuery.key] = { ...storedQuery };
+					});
+				}
+
+				dispatch(
+					createAction(
+						AppConstants.APP.STORED_QUERIES.GET_USAGE_SUCCESS,
+						usageStats,
+						null,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(AppConstants.APP.STORED_QUERIES.GET_USAGE_ERROR, null, error),
+				),
+			);
+	};
+}
