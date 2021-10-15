@@ -8,6 +8,15 @@ class ErrorToaster extends React.Component {
 		hasError: false,
 	};
 
+	eventId = null;
+
+	componentDidMount() {
+		window.addEventListener('error', event => {
+            const errorId = Sentry.lastEventId();
+            this.eventId = errorId;
+        });
+	}
+
 	retry = () => {
 		this.setState({
 			hasError: false,
@@ -50,6 +59,19 @@ class ErrorToaster extends React.Component {
 								<Icon type="reload" />
 								Retry
 							</Button>
+							<Button
+								size="large"
+								type="danger"
+								css={{ marginLeft: '8' }}
+								onClick={() => {
+									Sentry.showReportDialog({
+										eventId: this.eventId,
+									});
+								}}
+							>
+								<Icon type="info-circle" />
+								Report this problem
+							</Button>
 						</React.Fragment>
 					}
 					type="error"
@@ -81,6 +103,17 @@ class ErrorToaster extends React.Component {
 								<Button type="primary" onClick={this.retry}>
 									<Icon type="reload" />
 									Retry
+								</Button>
+								<Button
+									size="large"
+									type="danger"
+									css={{ marginLeft: '8' }}
+									onClick={() => {
+										Sentry.showReportDialog();
+									}}
+								>
+									<Icon type="info-circle" />
+									Report this problem
 								</Button>
 							</React.Fragment>
 						}
