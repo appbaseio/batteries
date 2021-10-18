@@ -13,7 +13,7 @@ export function getRecentSuggestionsPreferences() {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES));
 		const ACC_API = getURL();
-		return doGet(`http://localhost:8000/_recent_suggestions/preferences`)
+		return doGet(`${ACC_API}/_recent_suggestions/preferences`)
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_SUCCESS, res, null),
@@ -31,7 +31,7 @@ export function saveRecentSuggestionsPreferences(payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES));
 		const ACC_API = getURL();
-		return doPut(`http://localhost:8000/_recent_suggestions/preferences`, payload)
+		return doPut(`${ACC_API}/_recent_suggestions/preferences`, payload)
 			.then((res) =>
 				dispatch(createAction(AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS, res)),
 			)
