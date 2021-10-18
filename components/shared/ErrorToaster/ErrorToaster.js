@@ -60,7 +60,7 @@ class ErrorToaster extends React.Component {
 								Retry
 							</Button>
 							<Button
-								size="large"
+								size="small"
 								type="danger"
 								css={{ marginLeft: '8' }}
 								onClick={() => {
@@ -105,9 +105,7 @@ class ErrorToaster extends React.Component {
 									Retry
 								</Button>
 								<Button
-									size="large"
 									type="danger"
-									css={{ marginLeft: '8' }}
 									onClick={() => {
 										Sentry.showReportDialog();
 									}}
