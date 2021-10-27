@@ -7,38 +7,6 @@ const initialState = {
 	settings: {},
 };
 
-const indexSuggestionsInitialState = {
-	showDistinctSuggestions: true,
-	enablePredictiveSuggestions: true,
-	maxPredictedWords: 2,
-	applyStopwords: true,
-	customStopwords: ['the','a'],
-	enableSynonyms: true,
-	size: 5,
-	includeFields: ['body_html','image'],
-	excludeFields: ['bathrooms'],
-	categoryField: 'body_html',
-	customQuery: 'efe',
-	indices: ['airbeds-test-app'],
-};
-
-const popularSuggestionsInitialState = {
-	indices: ['airbeds-test-app'],
-	numberOfDays: 2,
-	minHits: 3,
-	minCount: 3,
-	minCharacters: 3,
-	transformDiacritics: true,
-	blacklist: ['movie'],
-	size: 5,
-};
-
-const recentSuggestionsInitialState = {
-	minHits: 1,
-	size: 5,
-	indices: ['airbeds-test-app'],
-}
-
 function getAppSettings(state = initialState, action) {
 	switch (action.type) {
 		case AppConstants.APP.SEARCH_SETTINGS.GET:
@@ -53,9 +21,6 @@ function getAppSettings(state = initialState, action) {
 				settings: Object.assign({}, state.settings, {
 					[action.meta.appName]: {
 						...action.payload,
-						indexSuggestions: {...indexSuggestionsInitialState},
-						recentSuggestions: {...recentSuggestionsInitialState},
-						popularSuggestions: {...popularSuggestionsInitialState}
 					},
 				}),
 				success: true,
