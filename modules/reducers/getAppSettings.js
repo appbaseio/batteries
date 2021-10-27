@@ -19,9 +19,7 @@ function getAppSettings(state = initialState, action) {
 				...state,
 				isFetching: false,
 				settings: Object.assign({}, state.settings, {
-					[action.meta.appName]: {
-						...action.payload,
-					},
+					[action.meta.name]: action.payload,
 				}),
 				success: true,
 			};
