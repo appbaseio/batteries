@@ -3,12 +3,6 @@ import AppConstants from '../constants';
 import { getURL } from '../../../constants/config';
 import { doGet, doPut } from '../../utils/requestService';
 
-const recentRes = {
-	"indices": ['airbeds-test-app'], // `index pattern` -> Supports a single index, comma separated indexes or wildcard indexes.
-	"minHits": 1,   // Only return recent suggestions if the hits returned are > 0.
-	"size": 5 // number input, [0, 100]
-  }
-
 export function getRecentSuggestionsPreferences() {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES));
@@ -21,7 +15,7 @@ export function getRecentSuggestionsPreferences() {
 			)
 			.catch((error) =>
 				dispatch(
-					createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_SUCCESS, recentRes, null),
+					createAction(AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_ERROR, null, error),
 				),
 			);
 	};
