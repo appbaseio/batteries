@@ -19,7 +19,7 @@ function getAppSettings(state = initialState, action) {
 				...state,
 				isFetching: false,
 				settings: Object.assign({}, state.settings, {
-					[action.meta.name]: action.payload,
+					[action.meta.appName]: action.payload,
 				}),
 				success: true,
 			};
@@ -57,13 +57,7 @@ function getAppSettings(state = initialState, action) {
 				...state,
 				isUpdating: false,
 				settings: Object.assign({}, state.settings, {
-
-					[action.meta.name]: {
-						...action.payload,
-						indexSuggestions: {...indexSuggestionsInitialState},
-						recentSuggestions: {...recentSuggestionsInitialState},
-						popularSuggestions: {...popularSuggestionsInitialState}
-					}
+					[action.meta.name]: action.payload,
 				}),
 				success: true,
 			};
