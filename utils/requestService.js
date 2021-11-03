@@ -32,6 +32,7 @@ const createRequest = (
 				...(credentials && { credentials: 'include' }),
 				headers: {
 					...headers,
+					'x-search-client': 'Appbase Dashboard',
 					...(!credentials && { Authorization: `Basic ${authToken}` }),
 				},
 				body: body ? JSON.stringify(body) : undefined,
