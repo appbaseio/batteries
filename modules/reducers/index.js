@@ -184,6 +184,16 @@ export default {
 		AppConstants.APP.CACHE.SAVE_PREFERENCES_SUCCESS,
 		AppConstants.APP.CACHE.SAVE_PREFERENCES_ERROR,
 	),
+	$getSyncPreferences: createRequestReducer(
+		AppConstants.APP.SYNC_PREFERENCES.GET_PREFERENCES,
+		AppConstants.APP.SYNC_PREFERENCES.GET_PREFERENCES_SUCCESS,
+		AppConstants.APP.SYNC_PREFERENCES.GET_PREFERENCES_ERROR,
+	),
+	$saveSyncPreferences: createRequestReducer(
+		AppConstants.APP.SYNC_PREFERENCES.SAVE_PREFERENCES,
+		AppConstants.APP.SYNC_PREFERENCES.SAVE_PREFERENCES_SUCCESS,
+		AppConstants.APP.SYNC_PREFERENCES.SAVE_PREFERENCES_ERROR,
+	),
 	$evictCache: createRequestReducer(
 		AppConstants.APP.CACHE.EVICT,
 		AppConstants.APP.CACHE.EVICT_SUCCESS,
