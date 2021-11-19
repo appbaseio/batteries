@@ -34,7 +34,7 @@ const Banner = ({
 			<Col
 				md={6}
 				css={{
-					display: 'flex',
+					display: 'flex !important',
 					flexDirection: 'column-reverse',
 					paddingBottom: 20,
 				}}
