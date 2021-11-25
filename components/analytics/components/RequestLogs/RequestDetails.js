@@ -116,7 +116,7 @@ const RequestDetails = ({
 											<div style={{marginLeft: 5}}>
 												<Link to={`/cluster/rules/${rule.id}`}>
 													<Button type="primary" size="small" ghost>
-														Edit Rule <Icon type="rise" theme="outlined" />
+														Edit Rule ↗
 													</Button>
 
 												</Link>
