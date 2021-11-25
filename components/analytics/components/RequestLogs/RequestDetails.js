@@ -77,7 +77,7 @@ const RequestDetails = ({
 	}, [rules]);
 
 	function getRuleData(ruleIds) {
-		if(ruleIds && ruleIds.length && rules && rules.length) {
+		if(ruleIds && ruleIds.length) {
 			// fetch rule data for corresponding Ids
 			setRulesData(rules.filter((rule) => ruleIds.includes(rule.id)));
 		}
@@ -272,10 +272,7 @@ const mapStateToProps = (state) => ({
 	rules: get(state, '$getAppRules.results'),
 	isLoading: get(state, '$getAppRules.isFetching'),
 	hasError: get(state, '$getAppRules.error'),
-	reordering: get(state, '$getAppRules.reordering'),
-	deleted: get(state, '$getAppRules.deleted'),
 	tier: get(state, '$getAppPlan.results.tier'),
-	appName: get(state, '$getCurrentApp.name'),
 	featureRules: get(state, '$getAppPlan.results.feature_rules', false),
 });
 
