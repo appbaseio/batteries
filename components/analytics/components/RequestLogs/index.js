@@ -77,7 +77,7 @@ const parseData = (data = '') => {
 class RequestLogs extends React.Component {
 	constructor(props) {
 		super(props);
-		this.tabKeys = ['all', 'search', 'success', 'delete', 'error'];
+		this.tabKeys = ['all', 'search', 'suggstion', 'index', 'delete', 'error'];
 		const { tab } = this.props;
 		const defaultTabState = {
 			currentPage: 0,
@@ -360,14 +360,20 @@ class RequestLogs extends React.Component {
 							<TabPane tab="SEARCH" key={this.tabKeys[1]}>
 								{this.renderTable(this.tabKeys[1])}
 							</TabPane>
-							<TabPane tab="SUCCESS" key={this.tabKeys[2]}>
+							<TabPane tab="SUGGESTION" key={this.tabKeys[2]}>
 								{this.renderTable(this.tabKeys[2])}
 							</TabPane>
-							<TabPane tab="DELETE" key={this.tabKeys[3]}>
+							<TabPane tab="INDEX" key={this.tabKeys[3]}>
 								{this.renderTable(this.tabKeys[3])}
 							</TabPane>
-							<TabPane tab="ERROR" key={this.tabKeys[4]}>
+							{/* <TabPane tab="SUCCESS" key={this.tabKeys[2]}>
+								{this.renderTable(this.tabKeys[2])}
+							</TabPane> */}
+							<TabPane tab="DELETE" key={this.tabKeys[4]}>
 								{this.renderTable(this.tabKeys[4])}
+							</TabPane>
+							<TabPane tab="ERROR" key={this.tabKeys[5]}>
+								{this.renderTable(this.tabKeys[5])}
 							</TabPane>
 						</Tabs>
 					) : (
