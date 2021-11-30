@@ -344,7 +344,7 @@ class Mappings extends Component {
 
 		const { deletedPaths, activeType, esVersion, shards, replicas } = this.state;
 
-		const { appId, credentials, enableNgram } = this.props;
+		const { appId, credentials, enableNgram, enableAutoSuggestion } = this.props;
 
 		let { mapping } = this.state;
 
@@ -380,6 +380,7 @@ class Mappings extends Component {
 			credentials,
 			settings: appSettings,
 			enableNgram,
+			enableAutoSuggestion,
 		})
 			.then(async () => {
 				if (callback && typeof callback === 'function') {
@@ -805,6 +806,7 @@ Mappings.propTypes = {
 	onDeleteField: func,
 	deleteLabel: string,
 	enableNgram: bool,
+	enableAutoSuggestion: bool,
 };
 
 Mappings.defaultProps = {
@@ -834,6 +836,7 @@ Mappings.defaultProps = {
 	onUsecaseChange: null,
 	deleteLabel: '',
 	enableNgram: true,
+	enableAutoSuggestion: true,
 };
 
 const mapStateToProps = (state, props) => {
@@ -855,6 +858,11 @@ const mapStateToProps = (state, props) => {
 				'indexSettings.enableNgram',
 				true,
 			),
+		enableAutoSuggestion: get(
+			get(state, ['$getAppSettings', 'settings', appName], defaultSettings),
+			'indexSettings.enableAutoSuggestion',
+			true,
+		),
 	};
 };
 
