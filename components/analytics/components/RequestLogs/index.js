@@ -77,7 +77,7 @@ const parseData = (data = '') => {
 class RequestLogs extends React.Component {
 	constructor(props) {
 		super(props);
-		this.tabKeys = ['all', 'search', 'suggstion', 'index', 'delete', 'error'];
+		this.tabKeys = ['all', 'search', 'suggestion', 'index', 'delete', 'error'];
 		const { tab } = this.props;
 		const defaultTabState = {
 			currentPage: 0,
