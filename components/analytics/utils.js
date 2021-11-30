@@ -735,7 +735,7 @@ export function getRequestLogs(
 	isSearchLogs = false,
 	arcVersion,
 ) {
-	const validFilters = ['search', 'success', 'error', 'delete'];
+	const validFilters = ['search', 'success', 'error', 'delete', 'suggestion', 'index'];
 	return doGet(
 		`${getURL()}/${getApp(appName)}${isSearchLogs ? '_logs/search' : '_logs'}${getQueryParams(
 			// remove undefined
