@@ -93,7 +93,7 @@ Monaco.defaultProps = {
 	value: '',
 	defaultValue: '',
 	onChange: undefined,
-	onBlur: undefined,
+	onBlur: () => {},
 	options: {},
 	theme: 'light',
 	height: '100%',
