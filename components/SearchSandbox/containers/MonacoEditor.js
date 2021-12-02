@@ -49,7 +49,9 @@ const Monaco = ({
 	const handleEditorDidMount = (editor) => {
 		editorRef.current = editor;
 		editor.onDidBlurEditorWidget(() => {
-			onBlur();
+			if (typeof onBlur === 'function') {
+				onBlur();
+			}
 		});
 
 		setTimeout(() => {
