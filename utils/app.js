@@ -13,6 +13,7 @@ const getAuthToken = () => {
 	try {
 		token = sessionStorage.getItem('authToken');
 	} catch (e) {
+		// eslint-disable-next-line
 		console.error(e);
 	}
 	return token;

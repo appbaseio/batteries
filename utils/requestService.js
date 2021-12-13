@@ -24,6 +24,7 @@ const createRequest = (
 		try {
 			authToken = sessionStorage.getItem('authToken');
 		} catch (e) {
+			// eslint-disable-next-line
 			console.error(e);
 		}
 		const requestOptions = JSON.parse(
