@@ -5,6 +5,8 @@ import {
 	updateRule,
 	deleteRule as removeRule,
 	createRule,
+	getScriptRule as fetchScriptRule,
+	validateScriptRule,
 } from '../../utils/app';
 
 export function getRules() {
@@ -16,6 +18,32 @@ export function getRules() {
 			})
 			.catch((error) => {
 				dispatch(createAction(AppConstants.APP.RULES.GET_ERROR, null, error));
+			});
+	};
+}
+
+export function getScriptRule(scriptId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET));
+		return fetchScriptRule(scriptId)
+			.then((res) => {
+				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_SUCCESS, res, null));
+			})
+			.catch((error) => {
+				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_ERROR, null, error));
+			});
+	};
+}
+
+export function validateScript(requestBody) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE));
+		return validateScriptRule(requestBody)
+			.then((res) => {
+				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_SUCCESS, res, null));
+			})
+			.catch((error) => {
+				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_ERROR, null, error));
 			});
 	};
 }

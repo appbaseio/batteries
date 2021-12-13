@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { oneOf, string, func, object, bool, element } from 'prop-types';
 
-import Editor from '@monaco-editor/react';
+import Editor, { useMonaco } from '@monaco-editor/react';
 import { css } from 'emotion';
+/* eslint-disable */
 
 const editorContainer = css`
 	position: relative;
@@ -43,9 +44,49 @@ const Monaco = ({
 	readOnly,
 	loading,
 	onBlur,
+	customizeMonacoInstance,
 }) => {
 	const editorRef = useRef(null);
+	const monaco = useMonaco();
 
+	useEffect(() => {
+		// or make sure that it exists by other ways
+		if (monaco) {
+			// custom formatter for javascript
+			// source: https://titanwolf.org/Network/Articles/Article?AID=552978cd-21c5-4f1d-ade1-f52439200ef8
+			if (language === 'javascript') {
+				monaco.languages.registerDocumentFormattingEditProvider('javascript', {
+					async provideDocumentFormattingEdits(model) {
+						/* eslint-disable */
+						const prettier = await import('prettier');
+						const babylon = await import('prettier/parser-babel');
+						const text = prettier.format(model.getValue(), {
+							parser: 'babel',
+
+							plugins: [babylon],
+
+							singleQuote: true,
+							tabWidth: 4,
+						});
+						/* eslint-enable */
+						return [
+							{
+								range: model.getFullModelRange(),
+
+								text,
+							},
+						];
+					},
+				});
+			}
+			if (typeof customizeMonacoInstance === 'function') {
+				customizeMonacoInstance(monaco, editorRef?.current);
+			}
+		}
+	}, [monaco]);
+	useEffect(() => {
+		tidyCode(editorRef.current);
+	}, [value]);
 	const handleEditorDidMount = (editor) => {
 		editorRef.current = editor;
 		editor.onDidBlurEditorWidget(() => {
@@ -56,7 +97,7 @@ const Monaco = ({
 
 		setTimeout(() => {
 			tidyCode(editor);
-		}, 2000);
+		}, 1000);
 	};
 
 	return (
@@ -102,6 +143,7 @@ Monaco.defaultProps = {
 	width: '100%',
 	readOnly: false,
 	loading: <h3>take a deep breath...</h3>,
+	customizeMonacoInstance: undefined,
 };
 
 Monaco.propTypes = {
@@ -116,6 +158,7 @@ Monaco.propTypes = {
 	width: string,
 	readOnly: bool,
 	loading: element,
+	customizeMonacoInstance: func,
 };
 
 export default Monaco;

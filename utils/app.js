@@ -322,6 +322,33 @@ export const createRule = (rule) => {
 	});
 };
 
+export const getScriptRule = (srciptId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_rule/${srciptId}/script`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const validateScriptRule = (requestBody) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doPost(
+		`${ACC_API}/_script/validate`,
+		requestBody,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+		undefined,
+		undefined,
+		true,
+	);
+};
+
 export const getSearchSettings = (name) => {
 	const ACC_API = getURL();
 	const authToken = getAuthToken();

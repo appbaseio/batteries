@@ -26,7 +26,7 @@ function getAppRules(state = initialAppState, action) {
 
 		case AppConstants.APP.RULES.REORDER: {
 			const { toBePromoted, toBeDemoted } = action.payload;
-			const reorderedRules = state.results.map(rule => {
+			const reorderedRules = state.results.map((rule) => {
 				if (rule.id === toBePromoted.id) {
 					return {
 						...rule,
@@ -54,7 +54,7 @@ function getAppRules(state = initialAppState, action) {
 		}
 		case AppConstants.APP.RULES.REORDER_ERROR: {
 			const { toBePromoted, toBeDemoted } = action.payload;
-			const revertedRules = state.results.map(rule => {
+			const revertedRules = state.results.map((rule) => {
 				if (rule.id === toBePromoted.id) {
 					return {
 						...rule,
@@ -78,7 +78,7 @@ function getAppRules(state = initialAppState, action) {
 		}
 
 		case AppConstants.APP.RULES.DELETE: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -92,7 +92,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.DELETE_SUCCESS: {
-			const filteredResults = state.results.filter(item => item.id !== action.payload.id);
+			const filteredResults = state.results.filter((item) => item.id !== action.payload.id);
 			return {
 				...state,
 				results: filteredResults,
@@ -100,7 +100,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.DELETE_ERROR: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -116,7 +116,7 @@ function getAppRules(state = initialAppState, action) {
 		}
 
 		case AppConstants.APP.RULES.TOGGLE_STATUS: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -130,7 +130,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.TOGGLE_STATUS_SUCCESS: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -145,7 +145,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.TOGGLE_STATUS_ERROR: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -161,7 +161,7 @@ function getAppRules(state = initialAppState, action) {
 		}
 
 		case AppConstants.APP.RULES.UPDATE_RULE: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -178,7 +178,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.UPDATE_RULE_SUCCESS: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -196,7 +196,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.UPDATE_RULE_ERROR: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -246,7 +246,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.CLONE: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
@@ -260,7 +260,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.CLONE_SUCCESS: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.meta.id
 					? {
 							...item,
@@ -274,7 +274,7 @@ function getAppRules(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.RULES.CLONE_ERROR: {
-			const updatedResults = state.results.map(item =>
+			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
 							...item,
