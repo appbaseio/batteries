@@ -30,7 +30,6 @@ const tidyCode = (editor: any) => {
 		editor.trigger('', 'editor.action.formatDocument');
 	}
 };
-
 /* eslint-enable */
 const Monaco = ({
 	language,
@@ -84,9 +83,7 @@ const Monaco = ({
 			}
 		}
 	}, [monaco]);
-	useEffect(() => {
-		tidyCode(editorRef.current);
-	}, [value]);
+
 	const handleEditorDidMount = (editor) => {
 		editorRef.current = editor;
 		editor.onDidBlurEditorWidget(() => {
