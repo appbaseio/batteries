@@ -44,6 +44,7 @@ const Monaco = ({
 	loading,
 	onBlur,
 	customizeMonacoInstance,
+	wrapperClass,
 }) => {
 	const editorRef = useRef(null);
 	const monaco = useMonaco();
@@ -98,7 +99,7 @@ const Monaco = ({
 	};
 
 	return (
-		<div className={editorContainer} style={{ width, height }}>
+		<div css={editorContainer} className={wrapperClass} style={{ width, height }}>
 			{!readOnly && (
 				<button
 					type="button"
@@ -141,6 +142,7 @@ Monaco.defaultProps = {
 	readOnly: false,
 	loading: <h3>take a deep breath...</h3>,
 	customizeMonacoInstance: undefined,
+	wrapperClass: '',
 };
 
 Monaco.propTypes = {
@@ -156,6 +158,7 @@ Monaco.propTypes = {
 	readOnly: bool,
 	loading: element,
 	customizeMonacoInstance: func,
+	wrapperClass: string,
 };
 
 export default Monaco;
