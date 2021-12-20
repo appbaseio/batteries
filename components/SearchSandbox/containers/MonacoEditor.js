@@ -57,7 +57,7 @@ const Monaco = ({
 			if (language === 'javascript') {
 				monaco.languages.registerDocumentFormattingEditProvider('javascript', {
 					async provideDocumentFormattingEdits(model) {
-						/* eslint-disable */
+						/* eslint-disable import/no-extraneous-dependencies */
 						const prettier = await import('prettier');
 						const babylon = await import('prettier/parser-babel');
 						const text = prettier.format(model.getValue(), {
@@ -68,7 +68,7 @@ const Monaco = ({
 							singleQuote: true,
 							tabWidth: 4,
 						});
-						/* eslint-enable */
+						/* eslint-enable import/no-extraneous-dependencies */
 						return [
 							{
 								range: model.getFullModelRange(),
