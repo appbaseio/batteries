@@ -2,6 +2,9 @@ import { createSelector } from 'reselect';
 import get from 'lodash/get';
 
 const appName = (state, name) => name || get(state, '$getCurrentApp.name') || 'default';
+const preferenceId = (state, id) => {
+	return id;
+};
 const rawMappings = (state) => get(state, '$getAppMappings.rawMappings');
 const traversedMappings = (state) => get(state, '$getAppMappings.traversedMappings');
 const appPlan = (state) => get(state, '$getAppPlan.results');
@@ -20,9 +23,14 @@ const appRules = (state) => get(state, '$getAppRules.results');
 const searchPreferences = (state) => get(state, '$getSearchPreferences.results');
 const recommendationPreferences = (state) => get(state, '$getRecommendationsPreferences.results');
 const appAnalyticsInsights = (state) => get(state, '$getAppAnalyticsInsights.results', {});
-
+const searchPreferencesN = (state) => get(state, '$getSearchPreferencesN.results', []);
+const recommendationPreferencesN = (state) =>
+	get(state, '$getRecommendationsPreferencesN.results', []);
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
+const getPreferenceById = (collection = [], id) => {
+	return collection.find((o) => o.id === id);
+};
 const calculateRequestDistribution = (collection, key) => {
 	if (collection) {
 		const rawRes = collection[key];
@@ -88,7 +96,15 @@ const getRecommendationsPreferencesByName = createSelector(
 	appName,
 	getCollectionByKey,
 );
+const getSearchPreferenceById = createSelector(searchPreferencesN, preferenceId, getPreferenceById);
+const getRecommendationPreferenceById = createSelector(
+	recommendationPreferencesN,
+	preferenceId,
+	getPreferenceById,
+);
 export {
+	getSearchPreferenceById,
+	getRecommendationPreferenceById,
 	getSearchPreferencesByName,
 	getRecommendationsPreferencesByName,
 	getRawMappingsByAppName,

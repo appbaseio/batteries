@@ -139,36 +139,36 @@ export default {
 		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
 		AppConstants.APP.SUGGESTIONS.SAVE_PREFERENCES_ERROR,
 	),
-    $getPopularSuggestionsPreferences: createRequestReducer(
-        AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES,
-        AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_SUCCESS,
-        AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_ERROR,
-    ),
-    $savePopularSuggestionsPreferences: createRequestReducer(
-        AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES,
-        AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
-        AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES_ERROR,
-    ),
-    $getRecentSuggestionsPreferences: createRequestReducer(
-        AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES,
-        AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_SUCCESS,
-        AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_ERROR,
-    ),
-    $saveRecentSuggestionsPreferences: createRequestReducer(
-        AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES,
-        AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
-        AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES_ERROR,
-    ),
-    $getIndexSuggestionsPreferences: createRequestReducer(
-        AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES,
-        AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_SUCCESS,
-        AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_ERROR,
-    ),
-    $saveIndexSuggestionsPreferences: createRequestReducer(
-        AppConstants.APP.INDEX_SUGGESTIONS.SAVE_PREFERENCES,
-        AppConstants.APP.INDEX_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
-        AppConstants.APP.INDEX_SUGGESTIONS.SAVE_PREFERENCES_ERROR,
-    ),
+	$getPopularSuggestionsPreferences: createRequestReducer(
+		AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES,
+		AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_SUCCESS,
+		AppConstants.APP.POPULAR_SUGGESTIONS.GET_PREFERENCES_ERROR,
+	),
+	$savePopularSuggestionsPreferences: createRequestReducer(
+		AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES,
+		AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
+		AppConstants.APP.POPULAR_SUGGESTIONS.SAVE_PREFERENCES_ERROR,
+	),
+	$getRecentSuggestionsPreferences: createRequestReducer(
+		AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES,
+		AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_SUCCESS,
+		AppConstants.APP.RECENT_SUGGESTIONS.GET_PREFERENCES_ERROR,
+	),
+	$saveRecentSuggestionsPreferences: createRequestReducer(
+		AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES,
+		AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
+		AppConstants.APP.RECENT_SUGGESTIONS.SAVE_PREFERENCES_ERROR,
+	),
+	$getIndexSuggestionsPreferences: createRequestReducer(
+		AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES,
+		AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_SUCCESS,
+		AppConstants.APP.INDEX_SUGGESTIONS.GET_PREFERENCES_ERROR,
+	),
+	$saveIndexSuggestionsPreferences: createRequestReducer(
+		AppConstants.APP.INDEX_SUGGESTIONS.SAVE_PREFERENCES,
+		AppConstants.APP.INDEX_SUGGESTIONS.SAVE_PREFERENCES_SUCCESS,
+		AppConstants.APP.INDEX_SUGGESTIONS.SAVE_PREFERENCES_ERROR,
+	),
 	$getUsageStats: createRequestReducer(
 		AppConstants.APP.USAGE_STATS.GET,
 		AppConstants.APP.USAGE_STATS.GET_SUCCESS,
@@ -258,6 +258,37 @@ export default {
 		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE_SUCCESS,
 		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE_ERROR,
 		computeStateByAppName,
+	),
+	// New UI builder routes
+	$getSearchPreferencesN: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET,
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET_ERROR,
+	),
+	$getRecommendationsPreferencesN: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET,
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET_ERROR,
+	),
+	$saveSearchPreferenceN: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.SAVE,
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.SAVE_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.SAVE_ERROR,
+	),
+	$saveRecommendationPreferenceN: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.SAVE,
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.SAVE_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.SAVE_ERROR,
+	),
+	$deleteSearchPreferenceN: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.DELETE,
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.DELETE_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.DELETE_ERROR,
+	),
+	$deleteRecommendationPreferenceN: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE,
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE_ERROR,
 	),
 	$getAppAnalytics: createRequestReducer(
 		AppConstants.APP.ANALYTICS.GET,
