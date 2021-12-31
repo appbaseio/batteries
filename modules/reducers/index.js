@@ -396,6 +396,16 @@ export default {
 	),
 	$getAppFunctions: getAppFunction,
 	$getAppRules: getAppRules,
+	$getAppScriptRules: createRequestReducer(
+		AppConstants.APP.SCRIPT_RULES.GET,
+		AppConstants.APP.SCRIPT_RULES.GET_SUCCESS,
+		AppConstants.APP.SCRIPT_RULES.GET_ERROR,
+	),
+	$validateAppScriptRules: createRequestReducer(
+		AppConstants.APP.SCRIPT_RULES.VALIDATE,
+		AppConstants.APP.SCRIPT_RULES.VALIDATE_SUCCESS,
+		AppConstants.APP.SCRIPT_RULES.VALIDATE_ERROR,
+	),
 	$getAppRegistries: privateRegistries,
 	$updateAppPublicKey: createRequestReducer(
 		AppConstants.APP.PUBLIC_KEY.UPDATE,

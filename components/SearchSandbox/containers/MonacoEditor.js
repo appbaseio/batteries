@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { oneOf, string, func, object, bool, element } from 'prop-types';
 
-import Editor from '@monaco-editor/react';
+import Editor, { useMonaco } from '@monaco-editor/react';
 import { css } from 'emotion';
+/* eslint-disable */
 
 const editorContainer = css`
 	position: relative;
@@ -29,7 +30,6 @@ const tidyCode = (editor: any) => {
 		editor.trigger('', 'editor.action.formatDocument');
 	}
 };
-
 /* eslint-enable */
 const Monaco = ({
 	language,
@@ -43,11 +43,50 @@ const Monaco = ({
 	readOnly,
 	loading,
 	onBlur,
+	customizeMonacoInstance,
+	wrapperClass,
 }) => {
 	const editorRef = useRef(null);
+	const monaco = useMonaco();
+
+	useEffect(() => {
+		// or make sure that it exists by other ways
+		if (monaco) {
+			// custom formatter for javascript
+			// source: https://titanwolf.org/Network/Articles/Article?AID=552978cd-21c5-4f1d-ade1-f52439200ef8
+			if (language === 'javascript') {
+				monaco.languages.registerDocumentFormattingEditProvider('javascript', {
+					async provideDocumentFormattingEdits(model) {
+						/* eslint-disable import/no-extraneous-dependencies */
+						const prettier = await import('prettier');
+						const babylon = await import('prettier/parser-babel');
+						const text = prettier.format(model.getValue(), {
+							parser: 'babel',
+
+							plugins: [babylon],
+
+							singleQuote: true,
+							tabWidth: 4,
+						});
+						/* eslint-enable import/no-extraneous-dependencies */
+						return [
+							{
+								range: model.getFullModelRange(),
+
+								text,
+							},
+						];
+					},
+				});
+			}
+		}
+	}, [monaco]);
 
 	const handleEditorDidMount = (editor) => {
 		editorRef.current = editor;
+		if (typeof customizeMonacoInstance === 'function') {
+			customizeMonacoInstance(monaco, editorRef?.current);
+		}
 		editor.onDidBlurEditorWidget(() => {
 			if (typeof onBlur === 'function') {
 				onBlur();
@@ -56,11 +95,11 @@ const Monaco = ({
 
 		setTimeout(() => {
 			tidyCode(editor);
-		}, 2000);
+		}, 1000);
 	};
 
 	return (
-		<div className={editorContainer} style={{ width, height }}>
+		<div css={editorContainer} className={wrapperClass} style={{ width, height }}>
 			{!readOnly && (
 				<button
 					type="button"
@@ -102,6 +141,8 @@ Monaco.defaultProps = {
 	width: '100%',
 	readOnly: false,
 	loading: <h3>take a deep breath...</h3>,
+	customizeMonacoInstance: undefined,
+	wrapperClass: '',
 };
 
 Monaco.propTypes = {
@@ -116,6 +157,8 @@ Monaco.propTypes = {
 	width: string,
 	readOnly: bool,
 	loading: element,
+	customizeMonacoInstance: func,
+	wrapperClass: string,
 };
 
 export default Monaco;
