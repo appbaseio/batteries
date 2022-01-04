@@ -22,6 +22,7 @@ const VersionController = ({ version, arcVersion, children, title, style }) => {
 };
 VersionController.defaultProps = {
 	title: 'Upgrade Appbase.io Version',
+	style: null,
 };
 VersionController.propTypes = {
 	// User props
