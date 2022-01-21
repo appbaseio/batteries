@@ -79,14 +79,14 @@ const Monaco = ({
 					},
 				});
 			}
+			if (typeof customizeMonacoInstance === 'function') {
+				customizeMonacoInstance(monaco, editorRef?.current);
+			}
 		}
 	}, [monaco]);
 
 	const handleEditorDidMount = (editor) => {
 		editorRef.current = editor;
-		if (typeof customizeMonacoInstance === 'function') {
-			customizeMonacoInstance(monaco, editorRef?.current);
-		}
 		editor.onDidBlurEditorWidget(() => {
 			if (typeof onBlur === 'function') {
 				onBlur();
@@ -97,7 +97,6 @@ const Monaco = ({
 			tidyCode(editor);
 		}, 1000);
 	};
-
 	return (
 		<div css={editorContainer} className={wrapperClass} style={{ width, height }}>
 			{!readOnly && (
