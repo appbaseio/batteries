@@ -83,7 +83,7 @@ const Monaco = ({
 				customizeMonacoInstance(monaco, editorRef?.current);
 			}
 		}
-	}, [monaco]);
+	}, [monaco, editorRef.current]);
 
 	const handleEditorDidMount = (editor) => {
 		editorRef.current = editor;
