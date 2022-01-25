@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import { isValidPlan } from '../../../../utils';
 import { getRules } from '../../../../modules/actions';
 import ActionView from '../../../../../pages/QueryRules/components/ActionView';
+import RequestDiff from './RequestDiff';
 
 const { TabPane } = Tabs;
 
@@ -58,6 +59,7 @@ const RequestDetails = ({
 	featureRules,
 	fetchRules,
 	isLoading,
+	responseChanges
 }) => {
 	const [rulesData, setRulesData] = useState([]);
 	const timeDuration = getTimeDuration(processingTime);
@@ -177,7 +179,11 @@ const RequestDetails = ({
 			)}
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
 				<TabPane tab="Response" key="response">
-					<AceEditor
+					<RequestDiff
+						response={response}
+						responseChanges={responseChanges}
+					/>
+					{/* <AceEditor
 						mode="json"
 						value={getStringifiedJSON(response)}
 						theme="textmate"
@@ -197,7 +203,7 @@ const RequestDetails = ({
 							tabSize: 4,
 						}}
 						editorProps={{ $blockScrolling: true }}
-					/>
+					/> */}
 				</TabPane>
 				<TabPane tab="Request" key="request">
 					<AceEditor
@@ -266,6 +272,8 @@ RequestDetails.propTypes = {
 	headers: PropTypes.object.isRequired,
 	request: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
 	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.array]).isRequired,
+	responseChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
+	requestChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
 };
 
 const mapStateToProps = (state) => ({
