@@ -20,6 +20,7 @@ import { isValidPlan } from '../../../../utils';
 import { getRules } from '../../../../modules/actions';
 import ActionView from '../../../../../pages/QueryRules/components/ActionView';
 import RequestDiff from './RequestDiff';
+import ResponseDiff from './ResponseDiff';
 
 const { TabPane } = Tabs;
 
@@ -59,7 +60,8 @@ const RequestDetails = ({
 	featureRules,
 	fetchRules,
 	isLoading,
-	responseChanges
+	responseChanges,
+	requestChanges,
 }) => {
 	const [rulesData, setRulesData] = useState([]);
 	const timeDuration = getTimeDuration(processingTime);
@@ -179,53 +181,21 @@ const RequestDetails = ({
 			)}
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
 				<TabPane tab="Response" key="response">
-					<RequestDiff
-						response={response}
+					{/* <ResponseDiff
+						responseBody={response}
+						url={url}
+						headers={headers}
+						method={method}
 						responseChanges={responseChanges}
-					/>
-					{/* <AceEditor
-						mode="json"
-						value={getStringifiedJSON(response)}
-						theme="textmate"
-						readOnly
-						name="query-response"
-						fontSize={14}
-						showPrintMargin={false}
-						style={{
-							width: '100%',
-							borderRadius: 4,
-							border: '1px solid rgba(0,0,0,0.15)',
-							margin: '12px 0',
-						}}
-						showGutter
-						setOptions={{
-							showLineNumbers: false,
-							tabSize: 4,
-						}}
-						editorProps={{ $blockScrolling: true }}
 					/> */}
 				</TabPane>
 				<TabPane tab="Request" key="request">
-					<AceEditor
-						mode={isValidJSONFormat(request) ? 'json' : 'javascript'}
-						value={isValidJSONFormat(request) ? getStringifiedJSON(request) : request}
-						theme="textmate"
-						readOnly
-						name="query-request"
-						fontSize={14}
-						showPrintMargin={false}
-						style={{
-							width: '100%',
-							borderRadius: 4,
-							border: '1px solid rgba(0,0,0,0.15)',
-							margin: '12px 0',
-						}}
-						showGutter
-						setOptions={{
-							showLineNumbers: false,
-							tabSize: 4,
-						}}
-						editorProps={{ $blockScrolling: true }}
+					<RequestDiff
+						requestBody={request}
+						url={url}
+						headers={headers}
+						method={method}
+						requestChanges={requestChanges}
 					/>
 				</TabPane>
 				<TabPane tab="Headers" key="headers">

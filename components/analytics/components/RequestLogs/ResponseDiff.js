@@ -19,14 +19,14 @@ const popoverContent = css`
 
 const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
-const RequestDiff = ({
-    requestBody,
-    requestChanges,
+const ResponseDiff = ({
+    responseBody,
+    responseChanges,
     method,
     headers,
     url
 }) => {
-    const decodeRequestChange = (decodedData, originalData) => {
+    const decodeResponseChange = (decodedData, originalData) => {
         if(decodedData && originalData) {
             var dmp = new diff_match_patch();
             const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
@@ -41,7 +41,7 @@ const RequestDiff = ({
 
     return (
         <div>
-            <Card title="Stage: Original Request" style={{marginBottom: 20}}>
+            <Card title="Stage: Original response" style={{marginBottom: 20}}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex' }}>
                         <div>{method}</div>
@@ -74,10 +74,10 @@ const RequestDiff = ({
                 </div>
                 <AceEditor
                     mode="json"
-                    value={getStringifiedJSON(requestBody)}
+                    value={getStringifiedJSON(responseBody)}
                     theme="textmate"
                     readOnly
-                    name="query-request"
+                    name="query-response"
                     fontSize={14}
                     showPrintMargin={false}
                     style={{
@@ -95,16 +95,16 @@ const RequestDiff = ({
                 />
             </Card>
             {
-                requestChanges.map((requestChange) => {
+                responseChanges.map((responseChange) => {
                     return (
-                        <Card title={`Stage: ${requestChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {requestChange.took}ms</div>}>
+                        <Card title={`Stage: ${responseChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {responseChange.took}ms</div>}>
                             <Icon
                                 type="copy"
-                                onClick={() => convertToCURL(url, method, headers, requestChange.body)}
+                                onClick={() => convertToCURL(url, method, headers, responseChange.body)}
                             />
                             <ReactDiffViewer
-                                oldValue={JSON.stringify(requestBody, null, 2)}
-                                newValue={decodeRequestChange(requestChange.body, JSON.stringify(requestBody, null, 2))}
+                                oldValue={JSON.stringify(responseBody, null, 2)}
+                                newValue={decodeResponseChange(responseChange.body, JSON.stringify(responseBody, null, 2))}
                                 splitView
                                 hideLineNumbers={false}
                                 showDiffOnly={false}
@@ -127,4 +127,4 @@ const RequestDiff = ({
     );
 }
 
-export default RequestDiff;
+export default ResponseDiff;
