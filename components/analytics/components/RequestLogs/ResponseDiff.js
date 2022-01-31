@@ -43,10 +43,7 @@ const ResponseDiff = ({
         <div>
             <Card title="Stage: Original response" style={{marginBottom: 20}}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex' }}>
-                        <div>{method}</div>
-                        <div>{url}</div>
-                    </div>
+                    <div>{method}{': '}{url}</div>
                     {headers && (
                         <div style={{ display: 'flex' }}>
                             <div>Headers</div>
@@ -94,35 +91,34 @@ const ResponseDiff = ({
                     editorProps={{ $blockScrolling: true }}
                 />
             </Card>
-            {
-                responseChanges.map((responseChange) => {
-                    return (
-                        <Card title={`Stage: ${responseChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {responseChange.took}ms</div>}>
-                            <Icon
-                                type="copy"
-                                onClick={() => convertToCURL(url, method, headers, responseChange.body)}
-                            />
-                            <ReactDiffViewer
-                                oldValue={JSON.stringify(responseBody, null, 2)}
-                                newValue={decodeResponseChange(responseChange.body, JSON.stringify(responseBody, null, 2))}
-                                splitView
-                                hideLineNumbers={false}
-                                showDiffOnly={false}
-                                leftTitle="Old Value"
-                                rightTitle="New Value"
-                                styles={{
-                                    content: {
-                                        fontSize: '10px',
-                                    },
-                                    gutter: {
-                                        padding: '0px',
-                                    },
-                                }}
-                            />
-                        </Card>
-                    )
-                })
-            }
+            {responseChanges?.slice(1).map((responseChange) => {
+                console.log(responseChange);
+                return (
+                    <Card title={`Stage: ${responseChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {responseChange.took}ms</div>}>
+                        <Icon
+                            type="copy"
+                            onClick={() => convertToCURL(url, method, headers, responseChange.body)}
+                        />
+                        <ReactDiffViewer
+                            oldValue={JSON.stringify(responseBody, null, 2)}
+                            newValue={decodeResponseChange(responseChange.body, JSON.stringify(responseBody, null, 2))}
+                            splitView
+                            hideLineNumbers={false}
+                            showDiffOnly={false}
+                            leftTitle="Old Value"
+                            rightTitle="New Value"
+                            styles={{
+                                content: {
+                                    fontSize: '10px',
+                                },
+                                gutter: {
+                                    padding: '0px',
+                                },
+                            }}
+                        />
+                    </Card>
+                )
+            })}
         </div>
     );
 }

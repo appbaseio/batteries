@@ -9,12 +9,14 @@ import diff_match_patch from "diff-match-patch";
 import JsonView from '../../../../../components/JsonView';
 import { convertToCURL } from '../../utils';
 
-const popoverContent = css`
-	overflow-y: auto;
-	overflow-x: auto;
-	word-wrap: break-word;
-	max-width: 300px;
-	max-height: 300px;
+const diffContainer = css`
+    .popover-container {
+        overflow-y: auto;
+        overflow-x: auto;
+        word-wrap: break-word;
+        max-width: 300px;
+        max-height: 300px;
+    }
 `;
 
 const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
@@ -29,28 +31,26 @@ const RequestDiff = ({
     const decodeRequestChange = (delta, text1) => {
         if(delta && text1) {
             var dmp = new diff_match_patch();
-            const diffs = dmp.diff_fromDelta(text1, delta);           
+            const diffs = dmp.diff_fromDelta(text1, delta);
             const patches = dmp.patch_make(text1, diffs);
             const [text2, results] = dmp.patch_apply(patches, text1);
+            // return JSON.stringify(JSON.parse(text2), null, 2);
             return text2;
         }
        return '';
     }
 
     return (
-        <div>
+        <div css={diffContainer}>
             <Card title="Stage: Original Request" style={{marginBottom: 20}}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex' }}>
-                        <div>{method}</div>
-                        <div>{url}</div>
-                    </div>
+                    <div>{method}{': '}{url}</div>
                     {headers && (
                         <div style={{ display: 'flex' }}>
                             <div>Headers</div>
                             <Popover
                                 content={
-                                    <div css={popoverContent}>
+                                    <div className='popover-container'>
                                         <JsonView json={headers} />
                                     </div>
                                 }
@@ -92,35 +92,39 @@ const RequestDiff = ({
                     editorProps={{ $blockScrolling: true }}
                 />
             </Card>
-            {
-                requestChanges.map((requestChange) => {
-                    return (
-                        <Card title={`Stage: ${requestChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {requestChange.took}ms</div>}>
+            {requestChanges.slice(1).map((requestChange) => {
+                return (
+                    <Card title={`Stage: ${requestChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {requestChange.took}ms</div>}>
+                        <Popover
+                            content='Copy cURL request to clipboard'
+                            trigger="hover"
+                        >
                             <Icon
                                 type="copy"
+                                style={{ marginLeft: '100%', marginBottom: '20px' }}
                                 onClick={() => convertToCURL(url, method, headers, requestChange.body)}
                             />
-                            <ReactDiffViewer
-                                oldValue={JSON.stringify(requestBody, null, 2)}
-                                newValue={decodeRequestChange(requestChange.body, JSON.stringify(requestBody, null, 2))}
-                                splitView
-                                hideLineNumbers={false}
-                                showDiffOnly={false}
-                                leftTitle="Old Value"
-                                rightTitle="New Value"
-                                styles={{
-                                    content: {
-                                        fontSize: '10px',
-                                    },
-                                    gutter: {
-                                        padding: '0px',
-                                    },
-                                }}
-                            />
-                        </Card>
-                    )
-                })
-            }
+                        </Popover>
+
+                        <ReactDiffViewer
+                            // oldValue={JSON.stringify(requestBody, null, 2)}
+                            oldValue={JSON.stringify(requestBody)}
+                            newValue={decodeRequestChange(requestChange.body, JSON.stringify(requestBody))}
+                            splitView={false}
+                            hideLineNumbers
+                            showDiffOnly={false}
+                            styles={{
+                                content: {
+                                    fontSize: '10px',
+                                },
+                                gutter: {
+                                    padding: '0px',
+                                },
+                            }}
+                        />
+                    </Card>
+                )
+            })}
         </div>
     );
 }
