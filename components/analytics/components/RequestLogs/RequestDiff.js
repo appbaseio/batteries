@@ -9,14 +9,12 @@ import diff_match_patch from "diff-match-patch";
 import JsonView from '../../../../../components/JsonView';
 import { convertToCURL } from '../../utils';
 
-const diffContainer = css`
-    .popover-container {
-        overflow-y: auto;
-        overflow-x: auto;
-        word-wrap: break-word;
-        max-width: 300px;
-        max-height: 300px;
-    }
+const popoverContent = css`
+	overflow-y: auto;
+	overflow-x: auto;
+	word-wrap: break-word;
+	max-width: 300px;
+	max-height: 300px;
 `;
 
 const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
@@ -41,7 +39,7 @@ const RequestDiff = ({
     }
 
     return (
-        <div css={diffContainer}>
+        <div>
             <Card title="Stage: Original Request" style={{marginBottom: 20}}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>{method}{': '}{url}</div>
@@ -50,7 +48,7 @@ const RequestDiff = ({
                             <div>Headers</div>
                             <Popover
                                 content={
-                                    <div className='popover-container'>
+                                    <div css={popoverContent}>
                                         <JsonView json={headers} />
                                     </div>
                                 }
@@ -69,6 +67,15 @@ const RequestDiff = ({
                             </Popover>
                         </div>
                     )}
+                    <Popover
+                        content='Copy cURL request to clipboard'
+                        trigger="hover"
+                    >
+                        <Icon
+                            type="copy"
+                            onClick={() => convertToCURL(url, method, headers, requestChange.body)}
+                        />
+                    </Popover>
                 </div>
                 <AceEditor
                     mode="json"

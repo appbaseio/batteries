@@ -42,7 +42,7 @@ const ResponseDiff = ({
     return (
         <div>
             <Card title="Stage: Original response" style={{marginBottom: 20}}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>{method}{': '}{url}</div>
                     {headers && (
                         <div style={{ display: 'flex' }}>
@@ -68,6 +68,15 @@ const ResponseDiff = ({
                             </Popover>
                         </div>
                     )}
+                    <Popover
+                        content='Copy cURL request to clipboard'
+                        trigger="hover"
+                    >
+                        <Icon
+                            type="copy"
+                            onClick={() => convertToCURL(url, method, headers, responseChange.body)}
+                        />
+                    </Popover>
                 </div>
                 <AceEditor
                     mode="json"
@@ -95,10 +104,16 @@ const ResponseDiff = ({
                 console.log(responseChange);
                 return (
                     <Card title={`Stage: ${responseChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {responseChange.took}ms</div>}>
-                        <Icon
-                            type="copy"
-                            onClick={() => convertToCURL(url, method, headers, responseChange.body)}
-                        />
+                        <Popover
+                            content='Copy cURL request to clipboard'
+                            trigger="hover"
+                        >
+                            <Icon
+                                type="copy"
+                                style={{ marginLeft: '100%', marginBottom: '20px' }}
+                                onClick={() => convertToCURL(url, method, headers, responseChange.body)}
+                            />
+                        </Popover>
                         <ReactDiffViewer
                             oldValue={JSON.stringify(responseBody, null, 2)}
                             newValue={decodeResponseChange(responseChange.body, JSON.stringify(responseBody, null, 2))}
