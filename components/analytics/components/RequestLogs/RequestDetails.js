@@ -181,13 +181,13 @@ const RequestDetails = ({
 			)}
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
 				<TabPane tab="Response" key="response">
-					{/* <ResponseDiff
+					<ResponseDiff
 						responseBody={response}
 						url={url}
 						headers={headers}
 						method={method}
 						responseChanges={responseChanges}
-					/> */}
+					/>
 				</TabPane>
 				<TabPane tab="Request" key="request">
 					<RequestDiff

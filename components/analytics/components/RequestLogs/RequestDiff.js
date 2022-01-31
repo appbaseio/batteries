@@ -26,14 +26,12 @@ const RequestDiff = ({
     headers,
     url
 }) => {
-    const decodeRequestChange = (decodedData, originalData) => {
-        if(decodedData && originalData) {
+    const decodeRequestChange = (delta, text1) => {
+        if(delta && text1) {
             var dmp = new diff_match_patch();
-            const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
-            const [text2, results] = dmp.patch_apply(
-                dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
-                originalData
-            );
+            const diffs = dmp.diff_fromDelta(text1, delta);           
+            const patches = dmp.patch_make(text1, diffs);
+            const [text2, results] = dmp.patch_apply(patches, text1);
             return text2;
         }
        return '';
