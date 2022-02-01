@@ -2,7 +2,6 @@ import React from 'react';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
 import { Card, Popover, Icon } from 'antd';
-import ReactDiffViewer from 'react-diff-viewer';
 import { getStringifiedJSON } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 import diff_match_patch from "diff-match-patch";
