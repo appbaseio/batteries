@@ -26,14 +26,15 @@ const RequestDiff = ({
     headers,
     url
 }) => {
-    const decodeRequestChange = (delta, text1) => {
-        if(delta && text1) {
+    const decodeRequestChange = (decodedData, originalData) => {
+        if(decodedData && originalData) {
             var dmp = new diff_match_patch();
-            const diffs = dmp.diff_fromDelta(text1, delta);
-            const patches = dmp.patch_make(text1, diffs);
-            const [text2, results] = dmp.patch_apply(patches, text1);
-            // return JSON.stringify(JSON.parse(text2), null, 2);
-            return text2;
+            const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
+            const [text2, results] = dmp.patch_apply(
+                dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
+                originalData
+            );
+            return JSON.stringify(JSON.parse(text2), null, 2);
         }
        return '';
     }
@@ -99,7 +100,7 @@ const RequestDiff = ({
                     editorProps={{ $blockScrolling: true }}
                 />
             </Card>
-            {requestChanges.slice(1).map((requestChange) => {
+            {requestChanges.filter(i => i.stage !== 'searchrelevancy').map((requestChange) => {
                 return (
                     <Card title={`Stage: ${requestChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {requestChange.took}ms</div>}>
                         <Popover
@@ -112,22 +113,26 @@ const RequestDiff = ({
                                 onClick={() => convertToCURL(url, method, headers, requestChange.body)}
                             />
                         </Popover>
-
-                        <ReactDiffViewer
-                            // oldValue={JSON.stringify(requestBody, null, 2)}
-                            oldValue={JSON.stringify(requestBody)}
-                            newValue={decodeRequestChange(requestChange.body, JSON.stringify(requestBody))}
-                            splitView={false}
-                            hideLineNumbers
-                            showDiffOnly={false}
-                            styles={{
-                                content: {
-                                    fontSize: '10px',
-                                },
-                                gutter: {
-                                    padding: '0px',
-                                },
+                        <AceEditor
+                            mode="json"
+                            value={decodeRequestChange(requestChange.body, JSON.stringify(requestBody))}
+                            theme="textmate"
+                            readOnly
+                            name="query-request"
+                            fontSize={14}
+                            showPrintMargin={false}
+                            style={{
+                                width: '100%',
+                                borderRadius: 4,
+                                border: '1px solid rgba(0,0,0,0.15)',
+                                margin: '12px 0',
                             }}
+                            showGutter
+                            setOptions={{
+                                showLineNumbers: false,
+                                tabSize: 4,
+                            }}
+                            editorProps={{ $blockScrolling: true }}
                         />
                     </Card>
                 )

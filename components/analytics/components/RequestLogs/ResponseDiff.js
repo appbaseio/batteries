@@ -114,22 +114,26 @@ const ResponseDiff = ({
                                 onClick={() => convertToCURL(url, method, headers, responseChange.body)}
                             />
                         </Popover>
-                        <ReactDiffViewer
-                            oldValue={JSON.stringify(responseBody, null, 2)}
-                            newValue={decodeResponseChange(responseChange.body, JSON.stringify(responseBody, null, 2))}
-                            splitView
-                            hideLineNumbers={false}
-                            showDiffOnly={false}
-                            leftTitle="Old Value"
-                            rightTitle="New Value"
-                            styles={{
-                                content: {
-                                    fontSize: '10px',
-                                },
-                                gutter: {
-                                    padding: '0px',
-                                },
+                        <AceEditor
+                            mode="json"
+                            value={decodeResponseChange(responseChange.body, JSON.stringify(responseBody))}
+                            theme="textmate"
+                            readOnly
+                            name="query-request"
+                            fontSize={14}
+                            showPrintMargin={false}
+                            style={{
+                                width: '100%',
+                                borderRadius: 4,
+                                border: '1px solid rgba(0,0,0,0.15)',
+                                margin: '12px 0',
                             }}
+                            showGutter
+                            setOptions={{
+                                showLineNumbers: false,
+                                tabSize: 4,
+                            }}
+                            editorProps={{ $blockScrolling: true }}
                         />
                     </Card>
                 )
