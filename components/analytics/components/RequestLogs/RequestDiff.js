@@ -41,7 +41,7 @@ const RequestDiff = ({
     return (
         <div>
             <Card title="Stage: Original Request" style={{marginBottom: 20}}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>{method}{': '}{url}</div>
                     {headers && (
                         <div style={{ display: 'flex' }}>
