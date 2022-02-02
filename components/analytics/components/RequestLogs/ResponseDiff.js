@@ -20,23 +20,54 @@ const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'elli
 
 const ResponseDiff = ({
     responseBody,
+    response,
     responseChanges,
     method,
     headers,
     url
 }) => {
-    const decodeResponseChange = (decodedData, originalData) => {
-        if(decodedData && originalData) {
-            var dmp = new diff_match_patch();
-            const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
-            const [text2, results] = dmp.patch_apply(
-                dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
-                originalData
-            );
-            return text2;
+    const inverseOp = (currentOp) => {
+        switch (currentOp) {
+            case diff_match_patch.DIFF_DELETE:
+                return diff_match_patch.DIFF_INSERT;
+            case diff_match_patch.DIFF_INSERT:
+                return diff_match_patch.DIFF_DELETE;
+            default:
+                return currentOp;
+        }
+    }
+
+    const decodeResponseChange = (decodedData, text1) => {
+        if(decodedData && text1) {
+            try {
+                var dmp = new diff_match_patch();
+                const delta = decodedData.replace(/^=\d+/g, `=${text1.length}`)
+                const diffs = dmp.diff_fromDelta(text1, delta);
+                diffs.forEach((diff) => {
+                    diff[0] = inverseOp(diff[0]);
+                });
+
+                const patches = dmp.patch_make(text1, diffs);
+                const [text2, results] = dmp.patch_apply(patches, text1);
+                return JSON.stringify(JSON.parse(text2), null, 2);
+            } catch(err) {
+                console.error(err);
+            }
         }
        return '';
     }
+    // const decodeResponseChange = (decodedData, originalData) => {
+    //     if(decodedData && originalData) {
+    //         var dmp = new diff_match_patch();
+    //         const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
+    //         const [text2, results] = dmp.patch_apply(
+    //             dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
+    //             originalData
+    //         );
+    //         return JSON.stringify(JSON.parse(text2), null, 2);
+    //     }
+    //    return '';
+    // }
 
     return (
         <div>
@@ -79,7 +110,8 @@ const ResponseDiff = ({
                 </div>
                 <AceEditor
                     mode="json"
-                    value={getStringifiedJSON(responseBody)}
+                    // value=''
+                    value={getStringifiedJSON(response)}
                     theme="textmate"
                     readOnly
                     name="query-response"
@@ -99,8 +131,9 @@ const ResponseDiff = ({
                     editorProps={{ $blockScrolling: true }}
                 />
             </Card>
-            {responseChanges?.slice(1).map((responseChange) => {
-                console.log(responseChange);
+            {responseChanges.filter(i => i.stage !== 'searchrelevancy').map((responseChange) => {
+                const value = decodeResponseChange(responseChange.body, responseBody);
+                console.log(value);
                 return (
                     <Card title={`Stage: ${responseChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {responseChange.took}ms</div>}>
                         <Popover
@@ -115,7 +148,8 @@ const ResponseDiff = ({
                         </Popover>
                         <AceEditor
                             mode="json"
-                            value={decodeResponseChange(responseChange.body, JSON.stringify(responseBody))}
+                            value={value}
+                            value=''
                             theme="textmate"
                             readOnly
                             name="query-request"

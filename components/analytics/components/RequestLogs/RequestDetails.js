@@ -62,6 +62,7 @@ const RequestDetails = ({
 	isLoading,
 	responseChanges,
 	requestChanges,
+	responseBody,
 }) => {
 	const [rulesData, setRulesData] = useState([]);
 	const timeDuration = getTimeDuration(processingTime);
@@ -182,7 +183,8 @@ const RequestDetails = ({
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
 				<TabPane tab="Response" key="response">
 					<ResponseDiff
-						responseBody={response}
+						responseBody={responseBody}
+						response={response}
 						url={url}
 						headers={headers}
 						method={method}

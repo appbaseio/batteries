@@ -398,6 +398,7 @@ class RequestLogs extends React.Component {
 							processingTime={get(this.currentRequest, 'response.timetaken', '')}
 							responseChanges={get(this.currentRequest, 'responseChanges', [])}
 							requestChanges={get(this.currentRequest, 'requestChanges', [])}
+							responseBody={get(this.currentRequest, 'response.body', '')}
 						/>
 					)}
 				</React.Fragment>
