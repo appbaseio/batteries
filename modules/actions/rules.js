@@ -51,6 +51,7 @@ export function validateScript(requestBody) {
 export function clearValidatedScriptRule() {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_SUCCESS, '', null));
+		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_ERROR, '', null));
 	};
 }
 
