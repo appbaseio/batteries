@@ -34,7 +34,7 @@ const RequestDiff = ({
                     dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
                     originalData
                 );
-                return JSON.stringify(JSON.parse(text2), null, 2);
+                return text2;
             } catch(err) {
                 console.error(err)
             }
@@ -109,6 +109,8 @@ const RequestDiff = ({
                 />
             </Card>
             {requestChanges.filter(i => i.stage !== 'searchrelevancy').map((requestChange) => {
+                const value = decodeRequestChange(requestChange.body, JSON.stringify(requestBody));
+                console.log(value);
                 return (
                     <Card
                         title={
@@ -117,7 +119,7 @@ const RequestDiff = ({
                                 <p>{requestChange.stage}</p>
                                 <Button
                                     style={{ marginLeft: '20px'}}
-                                    onClick={() => convertToCURL(url, method, headers, requestChange.body)}
+                                    onClick={() => convertToCURL(url, method, headers, JSON.parse(value))}
                                 >
                                     <Icon type="copy" />
                                     Copy as cURL
@@ -129,7 +131,7 @@ const RequestDiff = ({
                     >
                         <AceEditor
                             mode="json"
-                            value={decodeRequestChange(requestChange.body, JSON.stringify(requestBody))}
+                            value={JSON.stringify(JSON.parse(value), null, 2)}
                             theme="textmate"
                             readOnly
                             name="query-request"
