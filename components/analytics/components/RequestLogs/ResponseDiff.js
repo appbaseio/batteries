@@ -149,7 +149,6 @@ const ResponseDiff = ({
                         <AceEditor
                             mode="json"
                             value={value}
-                            value=''
                             theme="textmate"
                             readOnly
                             name="query-request"
