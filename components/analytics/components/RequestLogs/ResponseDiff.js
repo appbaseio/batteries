@@ -56,18 +56,7 @@ const ResponseDiff = ({
         }
        return '';
     }
-    // const decodeResponseChange = (decodedData, originalData) => {
-    //     if(decodedData && originalData) {
-    //         var dmp = new diff_match_patch();
-    //         const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
-    //         const [text2, results] = dmp.patch_apply(
-    //             dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
-    //             originalData
-    //         );
-    //         return JSON.stringify(JSON.parse(text2), null, 2);
-    //     }
-    //    return '';
-    // }
+
 
     return (
         <div>
@@ -110,7 +99,6 @@ const ResponseDiff = ({
                 </div>
                 <AceEditor
                     mode="json"
-                    // value=''
                     value={getStringifiedJSON(response)}
                     theme="textmate"
                     readOnly
