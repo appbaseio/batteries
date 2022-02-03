@@ -151,17 +151,6 @@ const RequestDetails = ({
 				))
 			}
 			<Flex css={buttonsContainer}>
-				<Flex css={button}>
-					<Popover
-						content={<div css={popoverContent}>Copy cURL request to clipboard</div>}
-						trigger="hover"
-					>
-						<Button onClick={() => convertToCURL(url, method, headers, request)}>
-							<Icon type="copy" />
-							Copy as cURL
-						</Button>
-					</Popover>
-				</Flex>
 				<Flex>
 					<Popover
 						content={<div css={popoverContent}>Replay this exact request again</div>}

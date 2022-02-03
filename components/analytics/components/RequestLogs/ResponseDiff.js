@@ -60,9 +60,12 @@ const ResponseDiff = ({
 
     return (
         <div>
-            <Card title="Stage: Original response" style={{marginBottom: 20}}>
+            <Card
+                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original response</p></div>}
+                style={{marginBottom: 20}}
+            >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>{method}{': '}{url}</div>
+                    <div>{method}{' '}{url}</div>
                     {headers && (
                         <div style={{ display: 'flex' }}>
                             <div>Headers</div>
@@ -87,15 +90,6 @@ const ResponseDiff = ({
                             </Popover>
                         </div>
                     )}
-                    <Popover
-                        content='Copy cURL request to clipboard'
-                        trigger="hover"
-                    >
-                        <Icon
-                            type="copy"
-                            onClick={() => convertToCURL(url, method, headers, responseBody)}
-                        />
-                    </Popover>
                 </div>
                 <AceEditor
                     mode="json"
@@ -123,17 +117,11 @@ const ResponseDiff = ({
                 const value = decodeResponseChange(responseChange.body, responseBody);
 
                 return (
-                    <Card title={`Stage: ${responseChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {responseChange.took}ms</div>}>
-                        <Popover
-                            content='Copy cURL request to clipboard'
-                            trigger="hover"
-                        >
-                            <Icon
-                                type="copy"
-                                style={{ marginLeft: '100%', marginBottom: '20px' }}
-                                onClick={() => convertToCURL(url, method, headers, responseChange.body)}
-                            />
-                        </Popover>
+                    <Card
+                        title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>{responseChange.stage}</p></div>}
+                        style={{marginBottom: 20}}
+                        extra={<div>Took {responseChange.took}ms</div>}
+                    >
                         <AceEditor
                             mode="json"
                             value={value}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
-import { Card, Popover, Icon } from 'antd';
+import { Card, Popover, Icon, Button } from 'antd';
 import { getStringifiedJSON } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 import diff_match_patch from "diff-match-patch";
@@ -44,9 +44,12 @@ const RequestDiff = ({
 
     return (
         <div>
-            <Card title="Stage: Original Request" style={{marginBottom: 20}}>
+            <Card
+                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original response</p></div>}
+                style={{marginBottom: 20}}
+            >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>{method}{': '}{url}</div>
+                    <div>{method}{' '}{url}</div>
                     {headers && (
                         <div style={{ display: 'flex' }}>
                             <div>Headers</div>
@@ -75,10 +78,12 @@ const RequestDiff = ({
                         content='Copy cURL request to clipboard'
                         trigger="hover"
                     >
-                        <Icon
-                            type="copy"
+                        <Button
                             onClick={() => convertToCURL(url, method, headers, requestBody)}
-                        />
+                        >
+                            <Icon type="copy" />
+                            Copy as cURL
+                        </Button>
                     </Popover>
                 </div>
                 <AceEditor
@@ -105,17 +110,23 @@ const RequestDiff = ({
             </Card>
             {requestChanges.filter(i => i.stage !== 'searchrelevancy').map((requestChange) => {
                 return (
-                    <Card title={`Stage: ${requestChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {requestChange.took}ms</div>}>
-                        <Popover
-                            content='Copy cURL request to clipboard'
-                            trigger="hover"
-                        >
-                            <Icon
-                                type="copy"
-                                style={{ marginLeft: '100%', marginBottom: '20px' }}
-                                onClick={() => convertToCURL(url, method, headers, requestChange.body)}
-                            />
-                        </Popover>
+                    <Card
+                        title={
+                            <div style={{ display: 'flex'}}>
+                                <p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p>
+                                <p>{requestChange.stage}</p>
+                                <Button
+                                    style={{ marginLeft: '20px'}}
+                                    onClick={() => convertToCURL(url, method, headers, requestChange.body)}
+                                >
+                                    <Icon type="copy" />
+                                    Copy as cURL
+                                </Button>
+                            </div>
+                        }
+                        style={{marginBottom: 20}}
+                        extra={<div>Took {requestChange.took}ms</div>}
+                    >
                         <AceEditor
                             mode="json"
                             value={decodeRequestChange(requestChange.body, JSON.stringify(requestBody))}
