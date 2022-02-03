@@ -27,13 +27,17 @@ const RequestDiff = ({
 }) => {
     const decodeRequestChange = (decodedData, originalData) => {
         if(decodedData && originalData) {
-            var dmp = new diff_match_patch();
-            const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
-            const [text2, results] = dmp.patch_apply(
-                dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
-                originalData
-            );
-            return JSON.stringify(JSON.parse(text2), null, 2);
+            try {
+                var dmp = new diff_match_patch();
+                const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
+                const [text2, results] = dmp.patch_apply(
+                    dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
+                    originalData
+                );
+                return JSON.stringify(JSON.parse(text2), null, 2);
+            } catch(err) {
+                console.error(err)
+            }
         }
        return '';
     }
@@ -73,7 +77,7 @@ const RequestDiff = ({
                     >
                         <Icon
                             type="copy"
-                            onClick={() => convertToCURL(url, method, headers, requestChange.body)}
+                            onClick={() => convertToCURL(url, method, headers, requestBody)}
                         />
                     </Popover>
                 </div>

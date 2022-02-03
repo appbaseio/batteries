@@ -93,7 +93,7 @@ const ResponseDiff = ({
                     >
                         <Icon
                             type="copy"
-                            onClick={() => convertToCURL(url, method, headers, responseChange.body)}
+                            onClick={() => convertToCURL(url, method, headers, responseBody)}
                         />
                     </Popover>
                 </div>
