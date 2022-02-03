@@ -133,7 +133,7 @@ const ResponseDiff = ({
             </Card>
             {responseChanges.filter(i => i.stage !== 'searchrelevancy').map((responseChange) => {
                 const value = decodeResponseChange(responseChange.body, responseBody);
-                console.log(value);
+
                 return (
                     <Card title={`Stage: ${responseChange.stage}`} style={{marginBottom: 20}} extra={<div>Took {responseChange.took}ms</div>}>
                         <Popover
