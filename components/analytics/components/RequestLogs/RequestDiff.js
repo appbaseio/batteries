@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
 import { Card, Popover, Icon, Button } from 'antd';
+import ReactDiffViewer from 'react-diff-viewer';
 import { getStringifiedJSON } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 import diff_match_patch from "diff-match-patch";
@@ -27,19 +28,47 @@ const RequestDiff = ({
 }) => {
     const decodeRequestChange = (decodedData, originalData) => {
         if(decodedData && originalData) {
+            var dmp = new diff_match_patch();
             try {
-                var dmp = new diff_match_patch();
-                const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}\t`);
+                const delta = decodedData;
                 const [text2, results] = dmp.patch_apply(
                     dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
                     originalData
                 );
                 return text2;
             } catch(err) {
-                console.error(err)
+                try {
+                    const delta = decodedData.replace(/^=\d+/g, `=${originalData.length}`);
+                    const [text2, results] = dmp.patch_apply(
+                        dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
+                        originalData
+                    );
+                    return text2;
+                } catch(err) {
+                    try {
+                        const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}`);
+                        const [text2, results] = dmp.patch_apply(
+                            dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
+                            originalData
+                        );
+                        return text2;
+                    } catch(err) {
+                        console.error(err);
+                        return '';
+                    }
+                }
             }
         }
        return '';
+    }
+
+    const IsJsonString = (str) => {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
     }
 
     return (
@@ -109,8 +138,8 @@ const RequestDiff = ({
                 />
             </Card>
             {requestChanges.filter(i => i.stage !== 'searchrelevancy').map((requestChange) => {
-                const value = decodeRequestChange(requestChange.body, JSON.stringify(requestBody));
-                console.log(value);
+                const request = decodeRequestChange(requestChange.body, JSON.stringify(requestBody));
+                console.log(request);
                 return (
                     <Card
                         title={
@@ -119,7 +148,7 @@ const RequestDiff = ({
                                 <p>{requestChange.stage}</p>
                                 <Button
                                     style={{ marginLeft: '20px'}}
-                                    onClick={() => convertToCURL(url, method, headers, JSON.parse(value))}
+                                    onClick={() => convertToCURL(url, method, headers, IsJsonString(request) ? JSON.parse(request) : request)}
                                 >
                                     <Icon type="copy" />
                                     Copy as cURL
@@ -129,27 +158,48 @@ const RequestDiff = ({
                         style={{marginBottom: 20}}
                         extra={<div>Took {requestChange.took}ms</div>}
                     >
-                        <AceEditor
-                            mode="json"
-                            value={JSON.stringify(JSON.parse(value), null, 2)}
-                            theme="textmate"
-                            readOnly
-                            name="query-request"
-                            fontSize={14}
-                            showPrintMargin={false}
-                            style={{
-                                width: '100%',
-                                borderRadius: 4,
-                                border: '1px solid rgba(0,0,0,0.15)',
-                                margin: '12px 0',
-                            }}
-                            showGutter
-                            setOptions={{
-                                showLineNumbers: false,
-                                tabSize: 4,
-                            }}
-                            editorProps={{ $blockScrolling: true }}
-                        />
+                        {IsJsonString(request) ? (
+                            <AceEditor
+                                mode="json"
+                                value={IsJsonString(request) ? JSON.stringify(JSON.parse(request), null, 2) : request}
+                                theme="textmate"
+                                readOnly
+                                name="query-request"
+                                fontSize={14}
+                                showPrintMargin={false}
+                                style={{
+                                    width: '100%',
+                                    borderRadius: 4,
+                                    border: '1px solid rgba(0,0,0,0.15)',
+                                    margin: '12px 0',
+                                }}
+                                showGutter
+                                setOptions={{
+                                    showLineNumbers: false,
+                                    tabSize: 4,
+                                }}
+                                editorProps={{ $blockScrolling: true }}
+                            />
+                        ) : (
+                            <ReactDiffViewer
+                                oldValue=''
+                                newValue={request}
+                                splitView={false}
+                                hideLineNumbers
+                                showDiffOnly={false}
+                                leftTitle={undefined}
+                                rightTitle={undefined}
+                                styles={{
+                                    content: {
+                                        fontSize: '10px',
+                                    },
+                                    gutter: {
+                                        padding: '0px',
+                                    },
+                                }}
+                            />
+                        )}
+
                     </Card>
                 )
             })}

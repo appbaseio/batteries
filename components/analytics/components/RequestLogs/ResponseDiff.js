@@ -39,9 +39,9 @@ const ResponseDiff = ({
 
     const decodeResponseChange = (decodedData, text1) => {
         if(decodedData && text1) {
+            var dmp = new diff_match_patch();
             try {
-                var dmp = new diff_match_patch();
-                const delta = decodedData.replace(/^=\d+/g, `=${text1.length}`)
+                const delta = decodedData
                 const diffs = dmp.diff_fromDelta(text1, delta);
                 diffs.forEach((diff) => {
                     diff[0] = inverseOp(diff[0]);
@@ -51,7 +51,32 @@ const ResponseDiff = ({
                 const [text2, results] = dmp.patch_apply(patches, text1);
                 return JSON.stringify(JSON.parse(text2), null, 2);
             } catch(err) {
-                console.error(err);
+                try {
+                    const delta = decodedData.replace(/^=\d+/g, `=${text1.length}`)
+                    const diffs = dmp.diff_fromDelta(text1, delta);
+                    diffs.forEach((diff) => {
+                        diff[0] = inverseOp(diff[0]);
+                    });
+
+                    const patches = dmp.patch_make(text1, diffs);
+                    const [text2, results] = dmp.patch_apply(patches, text1);
+                    return JSON.stringify(JSON.parse(text2), null, 2);
+                } catch(err) {
+                    try {
+                        const delta = decodedData.replace(/^=.+\t/g, `=${text1.length}`)
+                        const diffs = dmp.diff_fromDelta(text1, delta);
+                        diffs.forEach((diff) => {
+                            diff[0] = inverseOp(diff[0]);
+                        });
+
+                        const patches = dmp.patch_make(text1, diffs);
+                        const [text2, results] = dmp.patch_apply(patches, text1);
+                        return JSON.stringify(JSON.parse(text2), null, 2);
+                    } catch(err) {
+                        console.error(err);
+                        return '';
+                    }
+                }
             }
         }
        return '';
