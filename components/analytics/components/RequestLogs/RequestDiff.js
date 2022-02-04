@@ -45,7 +45,7 @@ const RequestDiff = ({
     return (
         <div>
             <Card
-                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original response</p></div>}
+                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original request</p></div>}
                 style={{marginBottom: 20}}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
