@@ -71,6 +71,7 @@ const RequestDiff = ({
         return true;
     }
 
+    let request = JSON.stringify(requestBody);
     return (
         <div>
             <Card
@@ -138,8 +139,7 @@ const RequestDiff = ({
                 />
             </Card>
             {requestChanges.filter(i => i.stage !== 'searchrelevancy').map((requestChange) => {
-                const request = decodeRequestChange(requestChange.body, JSON.stringify(requestBody));
-                console.log(request);
+                request = decodeRequestChange(requestChange.body, request);
                 return (
                     <Card
                         title={
