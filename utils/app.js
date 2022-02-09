@@ -390,3 +390,13 @@ export const getGradeMetrics = (indices, page) => {
 		page,
 	});
 };
+
+export const getPipelines = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_pipelines`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
