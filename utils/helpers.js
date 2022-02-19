@@ -75,3 +75,34 @@ export function versionCompare(v1 = '', v2 = '', options) {
 
 	return 0;
 }
+
+export const generatePipelinePayload = (
+	pipelineYaml,
+	scriptRefsMap,
+	scriptValKey = 'scriptValue',
+) => {
+	const formData = new FormData();
+
+	formData.append(
+		'pipeline',
+		JSON.stringify({
+			content: pipelineYaml || '',
+			extension: 'yaml',
+		}),
+	);
+	const scriptRefs = Object.keys(scriptRefsMap);
+	if (scriptRefs.length) {
+		scriptRefs.forEach((ref) => {
+			if (scriptRefsMap[ref][scriptValKey]) {
+				formData.append(
+					ref,
+					JSON.stringify({
+						content: scriptRefsMap[ref][scriptValKey] || '',
+						extension: 'js',
+					}),
+				);
+			}
+		});
+	}
+	return formData;
+};
