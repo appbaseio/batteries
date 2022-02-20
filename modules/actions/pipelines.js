@@ -8,6 +8,7 @@ import {
 	updatePipeline,
 	createPipeline,
 	getPipelineScript,
+	validatePipeline as validatePipelineFunc,
 } from '../../utils/app';
 import { generatePipelinePayload } from '../../utils/helpers';
 
@@ -212,6 +213,27 @@ export function reorderPipelines({ id, priority }) {
 			.catch((error) =>
 				dispatch(
 					createAction(AppConstants.APP.PIPELINES.REORDER_ERROR, { id, priority }, error),
+				),
+			);
+	};
+}
+
+export function validatePipeline(pipelinePayload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.PIPELINES.VALIDATE_PIPELINE, null));
+		return validatePipelineFunc(pipelinePayload)
+			.then((data) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.PIPELINES.VALIDATE_PIPELINE_SUCCESS,
+						{ ...data },
+						null,
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(AppConstants.APP.PIPELINES.VALIDATE_PIPELINE_ERROR, null, error),
 				),
 			);
 	};

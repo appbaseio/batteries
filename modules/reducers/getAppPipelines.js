@@ -297,7 +297,27 @@ function getAppPipelines(state = initialAppState, action) {
 				error: action.error,
 			};
 		}
-
+		case AppConstants.APP.PIPELINES.VALIDATE_PIPELINE: {
+			return {
+				...state,
+				validationResponse: '',
+				validating: true,
+			};
+		}
+		case AppConstants.APP.PIPELINES.VALIDATE_PIPELINE_SUCCESS: {
+			return {
+				...state,
+				validating: false,
+				validationResponse: action.payload,
+			};
+		}
+		case AppConstants.APP.PIPELINES.VALIDATE_PIPELINE_ERROR: {
+			return {
+				...state,
+				validating: false,
+				validationError: action.error,
+			};
+		}
 		default:
 			return state;
 	}
