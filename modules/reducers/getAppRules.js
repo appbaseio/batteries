@@ -55,12 +55,6 @@ function getAppRules(state = initialAppState, action) {
 						order: toBeDemoted.order,
 					};
 				}
-				// if (rule.id === toBeDemoted.id) {
-				// 	return {
-				// 		...rule,
-				// 		order: toBePromoted.order,
-				// 	};
-				// }
 				return rule;
 			});
 			return {
