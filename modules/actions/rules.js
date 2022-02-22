@@ -57,15 +57,14 @@ export function clearValidatedScriptRule() {
 
 export function reorderRules({ toBePromoted, toBeDemoted }) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.RULES.REORDER, { toBePromoted, toBeDemoted }));
+		dispatch(createAction(AppConstants.APP.RULES.REORDER, { toBePromoted }));
 		const promotePromise = updateRule(toBePromoted);
-		const demotePromise = updateRule(toBeDemoted);
-		return Promise.all([promotePromise, demotePromise])
+		return Promise.all([promotePromise])
 			.then(() => {
 				dispatch(
 					createAction(
 						AppConstants.APP.RULES.REORDER_SUCCESS,
-						{ toBePromoted, toBeDemoted },
+						{ toBePromoted },
 						null,
 					),
 				);
