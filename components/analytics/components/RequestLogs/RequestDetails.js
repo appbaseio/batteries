@@ -19,6 +19,8 @@ import { connect } from 'react-redux';
 import { isValidPlan } from '../../../../utils';
 import { getRules } from '../../../../modules/actions';
 import ActionView from '../../../../../pages/QueryRules/components/ActionView';
+import RequestDiff from './RequestDiff';
+import ResponseDiff from './ResponseDiff';
 
 const { TabPane } = Tabs;
 
@@ -58,6 +60,9 @@ const RequestDetails = ({
 	featureRules,
 	fetchRules,
 	isLoading,
+	responseChanges,
+	requestChanges,
+	responseBody,
 }) => {
 	const [rulesData, setRulesData] = useState([]);
 	const timeDuration = getTimeDuration(processingTime);
@@ -146,17 +151,6 @@ const RequestDetails = ({
 				))
 			}
 			<Flex css={buttonsContainer}>
-				<Flex css={button}>
-					<Popover
-						content={<div css={popoverContent}>Copy cURL request to clipboard</div>}
-						trigger="hover"
-					>
-						<Button onClick={() => convertToCURL(url, method, headers, request)}>
-							<Icon type="copy" />
-							Copy as cURL
-						</Button>
-					</Popover>
-				</Flex>
 				<Flex>
 					<Popover
 						content={<div css={popoverContent}>Replay this exact request again</div>}
@@ -177,49 +171,22 @@ const RequestDetails = ({
 			)}
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
 				<TabPane tab="Response" key="response">
-					<AceEditor
-						mode="json"
-						value={getStringifiedJSON(response)}
-						theme="textmate"
-						readOnly
-						name="query-response"
-						fontSize={14}
-						showPrintMargin={false}
-						style={{
-							width: '100%',
-							borderRadius: 4,
-							border: '1px solid rgba(0,0,0,0.15)',
-							margin: '12px 0',
-						}}
-						showGutter
-						setOptions={{
-							showLineNumbers: false,
-							tabSize: 4,
-						}}
-						editorProps={{ $blockScrolling: true }}
+					<ResponseDiff
+						responseBody={responseBody}
+						response={response}
+						url={url}
+						headers={headers}
+						method={method}
+						responseChanges={responseChanges}
 					/>
 				</TabPane>
 				<TabPane tab="Request" key="request">
-					<AceEditor
-						mode={isValidJSONFormat(request) ? 'json' : 'javascript'}
-						value={isValidJSONFormat(request) ? getStringifiedJSON(request) : request}
-						theme="textmate"
-						readOnly
-						name="query-request"
-						fontSize={14}
-						showPrintMargin={false}
-						style={{
-							width: '100%',
-							borderRadius: 4,
-							border: '1px solid rgba(0,0,0,0.15)',
-							margin: '12px 0',
-						}}
-						showGutter
-						setOptions={{
-							showLineNumbers: false,
-							tabSize: 4,
-						}}
-						editorProps={{ $blockScrolling: true }}
+					<RequestDiff
+						requestBody={request}
+						url={url}
+						headers={headers}
+						method={method}
+						requestChanges={requestChanges}
 					/>
 				</TabPane>
 				<TabPane tab="Headers" key="headers">
@@ -266,6 +233,8 @@ RequestDetails.propTypes = {
 	headers: PropTypes.object.isRequired,
 	request: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
 	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.array]).isRequired,
+	responseChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
+	requestChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
 };
 
 const mapStateToProps = (state) => ({

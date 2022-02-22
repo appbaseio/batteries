@@ -396,6 +396,9 @@ class RequestLogs extends React.Component {
 							ip={get(this.currentRequest, 'request.header.X-Forwarded-For[0]')}
 							status={get(this.currentRequest, 'response.code', '')}
 							processingTime={get(this.currentRequest, 'response.timetaken', '')}
+							responseChanges={get(this.currentRequest, 'responseChanges', [])}
+							requestChanges={get(this.currentRequest, 'requestChanges', [])}
+							responseBody={get(this.currentRequest, 'response.body', '')}
 						/>
 					)}
 				</React.Fragment>
