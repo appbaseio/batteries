@@ -27,10 +27,10 @@ export function getScriptRule(scriptId) {
 		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET));
 		return fetchScriptRule(scriptId)
 			.then((res) => {
-				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_SUCCESS, res, null));
+				return dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_SUCCESS, res, null));
 			})
 			.catch((error) => {
-				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_ERROR, null, error));
+				return dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_ERROR, null, error));
 			});
 	};
 }
@@ -40,10 +40,14 @@ export function validateScript(requestBody) {
 		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE));
 		return validateScriptRule(requestBody)
 			.then((res) => {
-				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_SUCCESS, res, null));
+				return dispatch(
+					createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_SUCCESS, res, null),
+				);
 			})
 			.catch((error) => {
-				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_ERROR, null, error));
+				return dispatch(
+					createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_ERROR, null, error),
+				);
 			});
 	};
 }
