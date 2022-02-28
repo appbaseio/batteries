@@ -146,9 +146,16 @@ const ResponseDiff = ({
 
                 return (
                     <Card
-                        title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>{capitalizeFirstLetter(responseChange.stage)}</p></div>}
+                        title={
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                <div style={{ display: 'flex'}}>
+                                    <div style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</div>
+                                    <div>{capitalizeFirstLetter(responseChange.stage)}</div>
+                                </div>
+                                <div>Took {responseChange.took}ms</div>
+                            </div>
+                        }
                         style={{marginBottom: 20}}
-                        extra={<div>Took {responseChange.took}ms</div>}
                     >
                         <AceEditor
                             mode="json"

@@ -147,20 +147,21 @@ const RequestDiff = ({
                 return (
                     <Card
                         title={
-                            <div style={{ display: 'flex'}}>
-                                <p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p>
-                                <p>{capitalizeFirstLetter(requestChange.stage)}</p>
-                                <Button
-                                    style={{ marginLeft: '20px'}}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex'}}>
+                                    <div style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</div>
+                                    <div>{capitalizeFirstLetter(requestChange.stage)}</div>
+                                </div>
+                                {/* <Button
                                     onClick={() => convertToCURL(url, method, headers, IsJsonString(request) ? JSON.parse(request) : request)}
                                 >
                                     <Icon type="copy" />
                                     Copy as cURL
-                                </Button>
+                                </Button> */}
+                                <div>Took {requestChange.took}ms</div>
                             </div>
                         }
                         style={{marginBottom: 20}}
-                        extra={<div>Took {requestChange.took}ms</div>}
                     >
                         {IsJsonString(request) ? (
                             <AceEditor
