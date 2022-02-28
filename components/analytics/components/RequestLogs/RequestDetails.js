@@ -169,17 +169,7 @@ const RequestDetails = ({
 					component={`${timeDuration.time} ${timeDuration.formattedUnit}`}
 				/>
 			)}
-			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
-				<TabPane tab="Response" key="response">
-					<ResponseDiff
-						responseBody={responseBody}
-						response={response}
-						url={url}
-						headers={headers}
-						method={method}
-						responseChanges={responseChanges}
-					/>
-				</TabPane>
+			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="request">
 				<TabPane tab="Request" key="request">
 					<RequestDiff
 						requestBody={request}
@@ -189,27 +179,14 @@ const RequestDetails = ({
 						requestChanges={requestChanges}
 					/>
 				</TabPane>
-				<TabPane tab="Headers" key="headers">
-					<AceEditor
-						mode="json"
-						value={getStringifiedJSON(headers)}
-						theme="textmate"
-						readOnly
-						name="query-headers"
-						fontSize={14}
-						showPrintMargin={false}
-						style={{
-							width: '100%',
-							borderRadius: 4,
-							border: '1px solid rgba(0,0,0,0.15)',
-							margin: '12px 0',
-						}}
-						showGutter
-						setOptions={{
-							showLineNumbers: false,
-							tabSize: 4,
-						}}
-						editorProps={{ $blockScrolling: true }}
+				<TabPane tab="Response" key="response">
+					<ResponseDiff
+						responseBody={responseBody}
+						response={response}
+						url={url}
+						headers={headers}
+						method={method}
+						responseChanges={responseChanges}
 					/>
 				</TabPane>
 			</Tabs>

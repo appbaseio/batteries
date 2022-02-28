@@ -82,11 +82,14 @@ const ResponseDiff = ({
        return '';
     }
 
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
     return (
         <div>
             <Card
-                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original response</p></div>}
+                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Final Response</p></div>}
                 style={{marginBottom: 20}}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -143,7 +146,7 @@ const ResponseDiff = ({
 
                 return (
                     <Card
-                        title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>{responseChange.stage}</p></div>}
+                        title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>{capitalizeFirstLetter(responseChange.stage)}</p></div>}
                         style={{marginBottom: 20}}
                         extra={<div>Took {responseChange.took}ms</div>}
                     >

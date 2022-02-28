@@ -71,11 +71,15 @@ const RequestDiff = ({
         return true;
     }
 
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     let request = JSON.stringify(requestBody);
     return (
         <div>
             <Card
-                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original request</p></div>}
+                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original Request</p></div>}
                 style={{marginBottom: 20}}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -145,7 +149,7 @@ const RequestDiff = ({
                         title={
                             <div style={{ display: 'flex'}}>
                                 <p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p>
-                                <p>{requestChange.stage}</p>
+                                <p>{capitalizeFirstLetter(requestChange.stage)}</p>
                                 <Button
                                     style={{ marginLeft: '20px'}}
                                     onClick={() => convertToCURL(url, method, headers, IsJsonString(request) ? JSON.parse(request) : request)}
