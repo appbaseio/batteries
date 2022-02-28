@@ -184,7 +184,6 @@ const RequestDetails = ({
 						responseBody={responseBody}
 						response={response}
 						url={url}
-						headers={headers}
 						method={method}
 						responseChanges={responseChanges}
 					/>

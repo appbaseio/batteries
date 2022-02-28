@@ -1,12 +1,14 @@
 import React from 'react';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
 import { Card, Popover, Icon } from 'antd';
 import { getStringifiedJSON } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 import diff_match_patch from "diff-match-patch";
 import JsonView from '../../../../../components/JsonView';
 import { convertToCURL } from '../../utils';
+import { parseData } from '.';
 
 const popoverContent = css`
 	overflow-y: auto;
@@ -23,7 +25,6 @@ const ResponseDiff = ({
     response,
     responseChanges,
     method,
-    headers,
     url
 }) => {
     const inverseOp = (currentOp) => {
@@ -86,6 +87,7 @@ const ResponseDiff = ({
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
+    const headers = get(response, 'Headers', {});
     return (
         <div>
             <Card
@@ -121,7 +123,7 @@ const ResponseDiff = ({
                 </div>
                 <AceEditor
                     mode="json"
-                    value={getStringifiedJSON(response)}
+                    value={getStringifiedJSON(parseData(get(response, 'body', {})))}
                     theme="textmate"
                     readOnly
                     name="query-response"
