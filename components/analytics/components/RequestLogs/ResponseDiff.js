@@ -140,7 +140,8 @@ const ResponseDiff = ({
                         showLineNumbers: false,
                         tabSize: 4,
                     }}
-                    editorProps={{ $blockScrolling: true }}
+                    minLines={1}
+                    maxLines={30}
                 />
             </Card>
             {responseChanges.filter(i => i.stage !== 'searchrelevancy').map((responseChange) => {
@@ -178,6 +179,8 @@ const ResponseDiff = ({
                                 showLineNumbers: false,
                                 tabSize: 4,
                             }}
+                            minLines={1}
+                            maxLines={30}
                             editorProps={{ $blockScrolling: true }}
                         />
                     </Card>

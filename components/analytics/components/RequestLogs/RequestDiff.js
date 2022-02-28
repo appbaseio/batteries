@@ -139,6 +139,8 @@ const RequestDiff = ({
                         showLineNumbers: false,
                         tabSize: 4,
                     }}
+                    minLines={1}
+                    maxLines={30}
                     editorProps={{ $blockScrolling: true }}
                 />
             </Card>
@@ -183,6 +185,8 @@ const RequestDiff = ({
                                     showLineNumbers: false,
                                     tabSize: 4,
                                 }}
+                                minLines={1}
+                                maxLines={30}
                                 editorProps={{ $blockScrolling: true }}
                             />
                         ) : (
