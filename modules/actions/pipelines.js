@@ -9,6 +9,7 @@ import {
 	createPipeline,
 	getPipelineScript,
 	validatePipeline as validatePipelineFunc,
+	getPipelinesUsageStats as fetchPipelinesUsageStats,
 } from '../../utils/app';
 import { generatePipelinePayload } from '../../utils/helpers';
 
@@ -83,6 +84,24 @@ export function getPipelines() {
 			.catch((error) => {
 				console.log(error);
 				dispatch(createAction(AppConstants.APP.PIPELINES.GET_ERROR, null, error));
+			});
+	};
+}
+
+export function getPipelinesUsageStats() {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.PIPELINES.GET_USAGE_STATS));
+		return fetchPipelinesUsageStats()
+			.then((res) => {
+				dispatch(getPipelinesScripts(res));
+				return dispatch(
+					createAction(AppConstants.APP.PIPELINES.GET_USAGE_STATS_SUCCESS, res, null),
+				);
+			})
+			.catch((error) => {
+				dispatch(
+					createAction(AppConstants.APP.PIPELINES.GET_USAGE_STATS_ERROR, null, error),
+				);
 			});
 	};
 }

@@ -398,6 +398,11 @@ export default {
 	$getAppFunctions: getAppFunction,
 	$getAppRules: getAppRules,
 	$getAppPipelines: getAppPipelines,
+	$getPipelinesUsageStats: createRequestReducer(
+		AppConstants.APP.PIPELINES.GET_USAGE_STATS,
+		AppConstants.APP.PIPELINES.GET_USAGE_STATS_SUCCESS,
+		AppConstants.APP.PIPELINES.GET_USAGE_STATS_ERROR,
+	),
 	$getAppScriptRules: createRequestReducer(
 		AppConstants.APP.SCRIPT_RULES.GET,
 		AppConstants.APP.SCRIPT_RULES.GET_SUCCESS,
