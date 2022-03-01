@@ -25,18 +25,12 @@ function getAppRules(state = initialAppState, action) {
 			};
 
 		case AppConstants.APP.RULES.REORDER: {
-			const { toBePromoted, toBeDemoted } = action.payload;
+			const { toBePromoted } = action.payload;
 			const reorderedRules = state.results.map((rule) => {
 				if (rule.id === toBePromoted.id) {
 					return {
 						...rule,
 						order: toBePromoted.order,
-					};
-				}
-				if (rule.id === toBeDemoted.id) {
-					return {
-						...rule,
-						order: toBeDemoted.order,
 					};
 				}
 				return rule;
@@ -59,12 +53,6 @@ function getAppRules(state = initialAppState, action) {
 					return {
 						...rule,
 						order: toBeDemoted.order,
-					};
-				}
-				if (rule.id === toBeDemoted.id) {
-					return {
-						...rule,
-						order: toBePromoted.order,
 					};
 				}
 				return rule;
