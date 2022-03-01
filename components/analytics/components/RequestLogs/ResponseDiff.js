@@ -1,12 +1,14 @@
 import React from 'react';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
 import { Card, Popover, Icon } from 'antd';
 import { getStringifiedJSON } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 import diff_match_patch from "diff-match-patch";
 import JsonView from '../../../../../components/JsonView';
 import { convertToCURL } from '../../utils';
+import { parseData } from '.';
 
 const popoverContent = css`
 	overflow-y: auto;
@@ -23,7 +25,6 @@ const ResponseDiff = ({
     response,
     responseChanges,
     method,
-    headers,
     url
 }) => {
     const inverseOp = (currentOp) => {
@@ -82,11 +83,15 @@ const ResponseDiff = ({
        return '';
     }
 
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
+    const headers = get(response, 'Headers', {});
     return (
         <div>
             <Card
-                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original response</p></div>}
+                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Final Response</p></div>}
                 style={{marginBottom: 20}}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -118,7 +123,7 @@ const ResponseDiff = ({
                 </div>
                 <AceEditor
                     mode="json"
-                    value={getStringifiedJSON(response)}
+                    value={getStringifiedJSON(parseData(get(response, 'body', {})))}
                     theme="textmate"
                     readOnly
                     name="query-response"
@@ -135,7 +140,8 @@ const ResponseDiff = ({
                         showLineNumbers: false,
                         tabSize: 4,
                     }}
-                    editorProps={{ $blockScrolling: true }}
+                    minLines={1}
+                    maxLines={30}
                 />
             </Card>
             {responseChanges.filter(i => i.stage !== 'searchrelevancy').map((responseChange) => {
@@ -143,9 +149,16 @@ const ResponseDiff = ({
 
                 return (
                     <Card
-                        title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>{responseChange.stage}</p></div>}
+                        title={
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                <div style={{ display: 'flex'}}>
+                                    <div style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</div>
+                                    <div>{capitalizeFirstLetter(responseChange.stage)}</div>
+                                </div>
+                                <div>Took {responseChange.took}ms</div>
+                            </div>
+                        }
                         style={{marginBottom: 20}}
-                        extra={<div>Took {responseChange.took}ms</div>}
                     >
                         <AceEditor
                             mode="json"
@@ -166,6 +179,8 @@ const ResponseDiff = ({
                                 showLineNumbers: false,
                                 tabSize: 4,
                             }}
+                            minLines={1}
+                            maxLines={30}
                             editorProps={{ $blockScrolling: true }}
                         />
                     </Card>

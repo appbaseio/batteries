@@ -71,11 +71,15 @@ const RequestDiff = ({
         return true;
     }
 
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     let request = JSON.stringify(requestBody);
     return (
         <div>
             <Card
-                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original request</p></div>}
+                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original Request</p></div>}
                 style={{marginBottom: 20}}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -135,6 +139,8 @@ const RequestDiff = ({
                         showLineNumbers: false,
                         tabSize: 4,
                     }}
+                    minLines={1}
+                    maxLines={30}
                     editorProps={{ $blockScrolling: true }}
                 />
             </Card>
@@ -143,20 +149,21 @@ const RequestDiff = ({
                 return (
                     <Card
                         title={
-                            <div style={{ display: 'flex'}}>
-                                <p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p>
-                                <p>{requestChange.stage}</p>
-                                <Button
-                                    style={{ marginLeft: '20px'}}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex'}}>
+                                    <div style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</div>
+                                    <div>{capitalizeFirstLetter(requestChange.stage)}</div>
+                                </div>
+                                {/* <Button
                                     onClick={() => convertToCURL(url, method, headers, IsJsonString(request) ? JSON.parse(request) : request)}
                                 >
                                     <Icon type="copy" />
                                     Copy as cURL
-                                </Button>
+                                </Button> */}
+                                <div>Took {requestChange.took}ms</div>
                             </div>
                         }
                         style={{marginBottom: 20}}
-                        extra={<div>Took {requestChange.took}ms</div>}
                     >
                         {IsJsonString(request) ? (
                             <AceEditor
@@ -178,6 +185,8 @@ const RequestDiff = ({
                                     showLineNumbers: false,
                                     tabSize: 4,
                                 }}
+                                minLines={1}
+                                maxLines={30}
                                 editorProps={{ $blockScrolling: true }}
                             />
                         ) : (
