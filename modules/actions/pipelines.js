@@ -42,15 +42,17 @@ export function getPipelinesScripts(pipelines) {
 					.then((values) => {
 						const scriptContents = {};
 						values.forEach((val) => {
-							scriptContents[val.value.id] = {
-								...(scriptContents[val.value.id]
-									? scriptContents[val.value.id]
-									: {}),
-								[val.value.key]: {
-									content: val.value.content,
-									extension: val.value.extension,
-								},
-							};
+							if (val.status === 'fulfilled') {
+								scriptContents[val.value.id] = {
+									...(scriptContents[val.value.id]
+										? scriptContents[val.value.id]
+										: {}),
+									[val.value.key]: {
+										content: val.value.content,
+										extension: val.value.extension,
+									},
+								};
+							}
 						});
 						return dispatch(
 							createAction(
