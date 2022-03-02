@@ -27,10 +27,10 @@ export function getScriptRule(scriptId) {
 		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET));
 		return fetchScriptRule(scriptId)
 			.then((res) => {
-				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_SUCCESS, res, null));
+				return dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_SUCCESS, res, null));
 			})
 			.catch((error) => {
-				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_ERROR, null, error));
+				return dispatch(createAction(AppConstants.APP.SCRIPT_RULES.GET_ERROR, null, error));
 			});
 	};
 }
@@ -40,10 +40,14 @@ export function validateScript(requestBody) {
 		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE));
 		return validateScriptRule(requestBody)
 			.then((res) => {
-				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_SUCCESS, res, null));
+				return dispatch(
+					createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_SUCCESS, res, null),
+				);
 			})
 			.catch((error) => {
-				dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_ERROR, null, error));
+				return dispatch(
+					createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_ERROR, null, error),
+				);
 			});
 	};
 }
@@ -51,20 +55,20 @@ export function validateScript(requestBody) {
 export function clearValidatedScriptRule() {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_SUCCESS, '', null));
+		dispatch(createAction(AppConstants.APP.SCRIPT_RULES.VALIDATE_ERROR, '', null));
 	};
 }
 
 export function reorderRules({ toBePromoted, toBeDemoted }) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.RULES.REORDER, { toBePromoted, toBeDemoted }));
+		dispatch(createAction(AppConstants.APP.RULES.REORDER, { toBePromoted }));
 		const promotePromise = updateRule(toBePromoted);
-		const demotePromise = updateRule(toBeDemoted);
-		return Promise.all([promotePromise, demotePromise])
+		return Promise.all([promotePromise])
 			.then(() => {
 				dispatch(
 					createAction(
 						AppConstants.APP.RULES.REORDER_SUCCESS,
-						{ toBePromoted, toBeDemoted },
+						{ toBePromoted },
 						null,
 					),
 				);
