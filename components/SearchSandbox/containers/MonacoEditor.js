@@ -135,7 +135,7 @@ Monaco.defaultProps = {
 	onChange: undefined,
 	onBlur: () => {},
 	options: {},
-	theme: 'light',
+	theme: 'vs-dark',
 	height: '100%',
 	width: '100%',
 	readOnly: false,
@@ -145,7 +145,7 @@ Monaco.defaultProps = {
 };
 
 Monaco.propTypes = {
-	language: oneOf(['html', 'css', 'json', 'javascript']),
+	language: oneOf(['html', 'css', 'json', 'javascript', 'yaml']),
 	theme: oneOf(['light', 'vs-dark', 'hc-dark']),
 	value: string,
 	defaultValue: string,

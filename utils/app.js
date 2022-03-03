@@ -390,3 +390,58 @@ export const getGradeMetrics = (indices, page) => {
 		page,
 	});
 };
+
+export const getPipelines = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_pipelines`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const updatePipeline = (pipeline) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	const { id, ...payload } = pipeline;
+	return doPut(`${ACC_API}/_pipeline/${id}`, payload.pipelinePayload, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const deletePipeline = (pipelineId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_pipeline/${pipelineId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const createPipeline = (pipeline) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_pipeline`, pipeline, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getPipelineScript = (pipelineId, scriptRefKey) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_pipeline/${pipelineId}/scriptRef/${scriptRefKey}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const validatePipeline = (formdata) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_pipeline/validate`, formdata, {
+		Authorization: `Basic ${authToken}`,
+	});
+};

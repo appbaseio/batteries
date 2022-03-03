@@ -20,6 +20,7 @@ import localMappingReducer from './localMapping';
 import getAdvanceSearchState from './getAdvanceSearchState';
 import reIndexingTasks from './reIndexingTasks';
 import monitoring from './monitoring';
+import getAppPipelines from './getAppPipelines';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -396,6 +397,7 @@ export default {
 	),
 	$getAppFunctions: getAppFunction,
 	$getAppRules: getAppRules,
+	$getAppPipelines: getAppPipelines,
 	$getAppScriptRules: createRequestReducer(
 		AppConstants.APP.SCRIPT_RULES.GET,
 		AppConstants.APP.SCRIPT_RULES.GET_SUCCESS,
