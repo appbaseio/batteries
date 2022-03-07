@@ -3,10 +3,11 @@ import { oneOf } from 'prop-types';
 import { injectGlobal } from 'react-emotion';
 
 const Editor = (props) => {
+	const { mode } = props;
 	if (typeof window !== 'undefined') {
 		const AceEditor = require('react-ace').default; // eslint-disable-line
 		require('brace').default; // eslint-disable-line
-		switch (props.mode) {
+		switch (mode) {
 			case 'html':
 				require('brace/mode/html'); // eslint-disable-line
 				break;
