@@ -81,7 +81,7 @@ const ResponseDiff = ({ responseBody, response, responseChanges, method, url }) 
 		return string.charAt(0).toUpperCase() + string.slice(1);
 	};
 
-	const headers = get(response, 'Headers', {});
+	const headers = get(response, 'Headers', null) || get(response, 'headers', null) || {};
 	return (
 		<div>
 			<Card
