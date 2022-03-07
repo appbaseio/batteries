@@ -42,6 +42,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 				} catch (err) {
 					try {
 						const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}`);
+
 						const [text2] = dmp.patch_apply(
 							dmp.patch_make(
 								originalData,
@@ -75,6 +76,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 
 	let request =
 		requestBody && typeof requestBody === 'object' ? JSON.stringify(requestBody) : requestBody;
+
 	return (
 		<div>
 			<Card
@@ -154,7 +156,9 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 			{requestChanges
 				.filter((i) => i.stage !== 'searchrelevancy')
 				.map((requestChange) => {
-					request = decodeRequestChange(requestChange.body, request);
+					const requestChangeBody = requestChange.body || requestChange.context;
+
+					request = decodeRequestChange(requestChangeBody, request);
 					return (
 						<Card
 							title={
@@ -169,7 +173,11 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 										<div style={{ fontWeight: 'bold', marginRight: 5 }}>
 											Stage{' '}
 										</div>
-										<div>{capitalizeFirstLetter(requestChange.stage)}</div>
+										<div>
+											{capitalizeFirstLetter(
+												requestChange.stage || requestChange.id,
+											)}
+										</div>
 									</div>
 									<div>Took {requestChange.took}ms</div>
 								</div>
