@@ -2,12 +2,10 @@ import React from 'react';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
 import { Card, Popover, Icon, Button } from 'antd';
-import ReactDiffViewer from 'react-diff-viewer';
-import { getStringifiedJSON } from '../../utils';
+import DiffMatchPatch from 'diff-match-patch';
+import { getStringifiedJSON, convertToCURL } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
-import diff_match_patch from "diff-match-patch";
 import JsonView from '../../../../../components/JsonView';
-import { convertToCURL } from '../../utils';
 
 const popoverContent = css`
 	overflow-y: auto;
@@ -19,201 +17,212 @@ const popoverContent = css`
 
 const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
-const RequestDiff = ({
-    requestBody,
-    requestChanges,
-    method,
-    headers,
-    url
-}) => {
-    const decodeRequestChange = (decodedData, originalData) => {
-        if(decodedData && originalData) {
-            var dmp = new diff_match_patch();
-            try {
-                const delta = decodedData;
-                const [text2, results] = dmp.patch_apply(
-                    dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
-                    originalData
-                );
-                return text2;
-            } catch(err) {
-                try {
-                    const delta = decodedData.replace(/^=\d+/g, `=${originalData.length}`);
-                    const [text2, results] = dmp.patch_apply(
-                        dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
-                        originalData
-                    );
-                    return text2;
-                } catch(err) {
-                    try {
-                        const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}`);
-                        const [text2, results] = dmp.patch_apply(
-                            dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
-                            originalData
-                        );
-                        return text2;
-                    } catch(err) {
-                        console.error(err);
-                        return '';
-                    }
-                }
-            }
-        }
-       return '';
-    }
+const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
+	const decodeRequestChange = (decodedData, originalData) => {
+		if (decodedData && originalData) {
+			const dmp = new DiffMatchPatch();
+			try {
+				const delta = decodedData;
+				const [text2] = dmp.patch_apply(
+					dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
+					originalData,
+				);
+				return text2;
+			} catch (er) {
+				try {
+					const delta = decodedData.replace(/^=\d+/g, `=${originalData.length}`);
+					const [text2] = dmp.patch_apply(
+						dmp.patch_make(
+							originalData,
+							dmp.diff_fromDelta(originalData, unescape(delta)),
+						),
+						originalData,
+					);
+					return text2;
+				} catch (err) {
+					try {
+						const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}`);
+						const [text2] = dmp.patch_apply(
+							dmp.patch_make(
+								originalData,
+								dmp.diff_fromDelta(originalData, unescape(delta)),
+							),
+							originalData,
+						);
+						return text2;
+					} catch (error) {
+						console.error(error);
+						return '';
+					}
+				}
+			}
+		}
+		return '';
+	};
 
-    const IsJsonString = (str) => {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
+	const IsJsonString = (str) => {
+		try {
+			JSON.parse(str);
+		} catch (e) {
+			return false;
+		}
+		return true;
+	};
 
-    const capitalizeFirstLetter = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
+	const capitalizeFirstLetter = (string) => {
+		return string.charAt(0).toUpperCase() + string.slice(1);
+	};
 
-    let request = JSON.stringify(requestBody);
-    return (
-        <div>
-            <Card
-                title={<div style={{ display: 'flex'}}><p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</p><p>Original Request</p></div>}
-                style={{marginBottom: 20}}
-            >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>{method}{' '}{url}</div>
-                    {headers && (
-                        <div style={{ display: 'flex' }}>
-                            <div>Headers</div>
-                            <Popover
-                                content={
-                                    <div css={popoverContent}>
-                                        <JsonView json={headers} />
-                                    </div>
-                                }
-                                trigger="click"
-                            >
-                                <div
-                                    css={{
-                                        cursor: 'pointer',
-                                        margin: '0 7px',
-                                        maxWidth: '95%',
-                                        ...overflow,
-                                    }}
-                                >
-                                    {` {...} `}
-                                </div>
-                            </Popover>
-                        </div>
-                    )}
-                    <Popover
-                        content='Copy cURL request to clipboard'
-                        trigger="hover"
-                    >
-                        <Button
-                            onClick={() => convertToCURL(url, method, headers, requestBody)}
-                        >
-                            <Icon type="copy" />
-                            Copy as cURL
-                        </Button>
-                    </Popover>
-                </div>
-                <AceEditor
-                    mode="json"
-                    value={getStringifiedJSON(requestBody)}
-                    theme="textmate"
-                    readOnly
-                    name="query-request"
-                    fontSize={14}
-                    showPrintMargin={false}
-                    style={{
-                        width: '100%',
-                        borderRadius: 4,
-                        border: '1px solid rgba(0,0,0,0.15)',
-                        margin: '12px 0',
-                    }}
-                    showGutter
-                    setOptions={{
-                        showLineNumbers: false,
-                        tabSize: 4,
-                    }}
-                    minLines={1}
-                    maxLines={30}
-                    editorProps={{ $blockScrolling: true }}
-                />
-            </Card>
-            {requestChanges.filter(i => i.stage !== 'searchrelevancy').map((requestChange) => {
-                request = decodeRequestChange(requestChange.body, request);
-                return (
-                    <Card
-                        title={
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <div style={{ display: 'flex'}}>
-                                    <div style={{ fontWeight: 'bold', marginRight: 5 }}>Stage {' '}</div>
-                                    <div>{capitalizeFirstLetter(requestChange.stage)}</div>
-                                </div>
-                                {/* <Button
-                                    onClick={() => convertToCURL(url, method, headers, IsJsonString(request) ? JSON.parse(request) : request)}
-                                >
-                                    <Icon type="copy" />
-                                    Copy as cURL
-                                </Button> */}
-                                <div>Took {requestChange.took}ms</div>
-                            </div>
-                        }
-                        style={{marginBottom: 20}}
-                    >
-                        {IsJsonString(request) ? (
-                            <AceEditor
-                                mode="json"
-                                value={IsJsonString(request) ? JSON.stringify(JSON.parse(request), null, 2) : request}
-                                theme="textmate"
-                                readOnly
-                                name="query-request"
-                                fontSize={14}
-                                showPrintMargin={false}
-                                style={{
-                                    width: '100%',
-                                    borderRadius: 4,
-                                    border: '1px solid rgba(0,0,0,0.15)',
-                                    margin: '12px 0',
-                                }}
-                                showGutter
-                                setOptions={{
-                                    showLineNumbers: false,
-                                    tabSize: 4,
-                                }}
-                                minLines={1}
-                                maxLines={30}
-                                editorProps={{ $blockScrolling: true }}
-                            />
-                        ) : (
-                            <ReactDiffViewer
-                                oldValue=''
-                                newValue={request}
-                                splitView={false}
-                                hideLineNumbers
-                                showDiffOnly={false}
-                                leftTitle={undefined}
-                                rightTitle={undefined}
-                                styles={{
-                                    content: {
-                                        fontSize: '10px',
-                                    },
-                                    gutter: {
-                                        padding: '0px',
-                                    },
-                                }}
-                            />
-                        )}
+	let request =
+		requestBody && typeof requestBody === 'object' ? JSON.stringify(requestBody) : requestBody;
+	return (
+		<div>
+			<Card
+				title={
+					<div style={{ display: 'flex' }}>
+						<p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage </p>
+						<p>Original Request</p>
+					</div>
+				}
+				style={{ marginBottom: 20 }}
+			>
+				<div
+					style={{
+						display: 'flex',
+						justifyContent: 'space-between',
+						alignItems: 'center',
+					}}
+				>
+					<div>
+						{method} {url}
+					</div>
+					{headers && (
+						<div style={{ display: 'flex' }}>
+							<div>Headers</div>
+							<Popover
+								content={
+									<div css={popoverContent}>
+										<JsonView json={headers} />
+									</div>
+								}
+								trigger="click"
+							>
+								<div
+									css={{
+										cursor: 'pointer',
+										margin: '0 7px',
+										maxWidth: '95%',
+										...overflow,
+									}}
+								>
+									{` {...} `}
+								</div>
+							</Popover>
+						</div>
+					)}
+					<Popover content="Copy cURL request to clipboard" trigger="hover">
+						<Button onClick={() => convertToCURL(url, method, headers, requestBody)}>
+							<Icon type="copy" />
+							Copy as cURL
+						</Button>
+					</Popover>
+				</div>
+				<AceEditor
+					mode="json"
+					value={getStringifiedJSON(requestBody)}
+					theme="textmate"
+					readOnly
+					name="query-request"
+					fontSize={14}
+					showPrintMargin={false}
+					style={{
+						width: '100%',
+						borderRadius: 4,
+						border: '1px solid rgba(0,0,0,0.15)',
+						margin: '12px 0',
+					}}
+					showGutter
+					setOptions={{
+						showLineNumbers: false,
+						tabSize: 4,
+					}}
+					minLines={1}
+					maxLines={30}
+					editorProps={{ $blockScrolling: true }}
+				/>
+			</Card>
+			{requestChanges
+				.filter((i) => i.stage !== 'searchrelevancy')
+				.map((requestChange) => {
+					request = decodeRequestChange(requestChange.body, request);
+					return (
+						<Card
+							title={
+								<div
+									style={{
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'space-between',
+									}}
+								>
+									<div style={{ display: 'flex' }}>
+										<div style={{ fontWeight: 'bold', marginRight: 5 }}>
+											Stage{' '}
+										</div>
+										<div>{capitalizeFirstLetter(requestChange.stage)}</div>
+									</div>
+									<div>Took {requestChange.took}ms</div>
+								</div>
+							}
+							style={{ marginBottom: 20 }}
+						>
+							<AceEditor
+								mode={IsJsonString(request) ? 'json' : 'text'}
+								value={
+									IsJsonString(request)
+										? JSON.stringify(JSON.parse(request), null, 2)
+										: request
+								}
+								theme="textmate"
+								readOnly
+								name="query-request"
+								fontSize={14}
+								showPrintMargin={false}
+								style={{
+									width: '100%',
+									borderRadius: 4,
+									border: '1px solid rgba(0,0,0,0.15)',
+									margin: '12px 0',
+								}}
+								showGutter
+								setOptions={{
+									showLineNumbers: false,
+									tabSize: 4,
+								}}
+								minLines={1}
+								maxLines={30}
+								editorProps={{ $blockScrolling: true }}
+							/>
+						</Card>
+					);
+				})}
+		</div>
+	);
+};
 
-                    </Card>
-                )
-            })}
-        </div>
-    );
-}
+RequestDiff.defaultProps = {
+	requestChanges: [],
+	requestBody: {},
+	method: '',
+	url: '',
+	headers: {},
+};
+RequestDiff.propTypes = {
+	requestChanges: PropTypes.array,
+	requestBody: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+	method: PropTypes.string,
+	headers: PropTypes.object,
+	url: PropTypes.string,
+};
 
 export default RequestDiff;
