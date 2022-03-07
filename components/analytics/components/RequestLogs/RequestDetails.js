@@ -2,25 +2,20 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import get from 'lodash/get';
-import { Modal, Button, Tabs, Icon, Popover, Alert } from 'antd';
-import Grid from '../../../shared/Grid';
+import { Button, Tabs, Icon, Popover, Alert } from 'antd';
 import { Link } from 'react-router-dom';
-import {
-	getTimeDuration,
-	getStringifiedJSON,
-	convertToCURL,
-	replayRequest,
-	isValidJSONFormat,
-} from '../../utils';
-import Flex from '../../../shared/Flex';
-import AceEditor from '../../../SearchSandbox/containers/AceEditor';
-import { ruleStyle } from '../../../../../pages/SandboxPage/components/Result/styles';
 import { connect } from 'react-redux';
+import Grid from '../../../shared/Grid';
+import { getTimeDuration, replayRequest } from '../../utils';
+import Flex from '../../../shared/Flex';
+import { ruleStyle } from '../../../../../pages/SandboxPage/components/Result/styles';
 import { isValidPlan } from '../../../../utils';
 import { getRules } from '../../../../modules/actions';
 import ActionView from '../../../../../pages/QueryRules/components/ActionView';
 import RequestDiff from './RequestDiff';
+// eslint-disable-next-line import/no-cycle
 import ResponseDiff from './ResponseDiff';
+import Container from '../../../../../components/Container';
 
 const { TabPane } = Tabs;
 
@@ -35,17 +30,12 @@ const popoverContent = css`
 	max-width: 250px;
 	max-height: 250px;
 `;
-const button = css`
-	margin-right: 20px;
-`;
 
 const section = css`
 	margin-bottom: 10px;
 `;
 
 const RequestDetails = ({
-	show,
-	handleCancel,
 	time,
 	method,
 	url,
@@ -76,29 +66,20 @@ const RequestDetails = ({
 	}, []);
 
 	useEffect(() => {
-		if(!isLoading && rules && rules.length) {
+		if (!isLoading && rules && rules.length) {
 			getRuleData(response.settings?.queryRules);
 		}
 	}, [rules]);
 
 	function getRuleData(ruleIds) {
-		if(ruleIds && ruleIds.length) {
+		if (ruleIds && ruleIds.length) {
 			// fetch rule data for corresponding Ids
 			setRulesData(rules.filter((rule) => ruleIds.includes(rule.id)));
 		}
 	}
 
 	return (
-		<Modal
-			width="70%"
-			footer={[
-				<Button key="back" onClick={handleCancel}>
-					Cancel
-				</Button>,
-			]}
-			visible={show}
-			onCancel={handleCancel}
-		>
+		<Container style={{ background: 'white' }}>
 			<span css="font-weight: 500;color: black;font-size: 16px;">Log Details</span>
 			<Grid label="Time" component={time} />
 			<Grid label="Method" component={method.toUpperCase()} />
@@ -106,8 +87,8 @@ const RequestDetails = ({
 			<Grid label="IP" component={ip} />
 			<Grid label="Response Code" component={status} />
 			{/* Banner for QueryRules */}
-			{
-				response.settings?.queryRules && rulesData.map((rule) => (
+			{response.settings?.queryRules &&
+				rulesData.map((rule) => (
 					<Alert
 						type="info"
 						icon="info"
@@ -118,18 +99,16 @@ const RequestDetails = ({
 									<div>
 										<div style={{ display: 'flex' }}>
 											<p className="name">{rule.name}</p>
-											<div style={{marginLeft: 5}}>
+											<div style={{ marginLeft: 5 }}>
 												<Link to={`/cluster/rules/${rule.id}`}>
 													<Button type="primary" size="small" ghost>
 														Edit Rule ↗
 													</Button>
-
 												</Link>
 											</div>
 										</div>
 										<p className="expression">
-											{rule.trigger &&
-												rule.trigger.expression}
+											{rule.trigger && rule.trigger.expression}
 										</p>
 									</div>
 									<div>
@@ -137,9 +116,7 @@ const RequestDetails = ({
 											<div key={action.type} className={section}>
 												<ActionView
 													action={action}
-													ruleId={
-														rule.id || rule.name
-													}
+													ruleId={rule.id || rule.name}
 												/>
 											</div>
 										))}
@@ -148,8 +125,7 @@ const RequestDetails = ({
 							</React.Fragment>
 						}
 					/>
-				))
-			}
+				))}
 			<Flex css={buttonsContainer}>
 				<Flex>
 					<Popover
@@ -189,17 +165,16 @@ const RequestDetails = ({
 					/>
 				</TabPane>
 			</Tabs>
-		</Modal>
+		</Container>
 	);
 };
 RequestDetails.defaultProps = {
 	ip: '_',
-	show: false,
-	handleCancel: () => null,
+	responseBody: '',
+	responseChanges: [],
+	isLoading: false,
 };
 RequestDetails.propTypes = {
-	show: PropTypes.bool,
-	handleCancel: PropTypes.func,
 	time: PropTypes.string.isRequired,
 	method: PropTypes.string.isRequired,
 	url: PropTypes.string.isRequired,
@@ -209,12 +184,18 @@ RequestDetails.propTypes = {
 	headers: PropTypes.object.isRequired,
 	request: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
 	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.array]).isRequired,
-	responseChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
+	responseChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 	requestChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
+	rules: PropTypes.array.isRequired,
+	tier: PropTypes.string.isRequired,
+	featureRules: PropTypes.bool.isRequired,
+	fetchRules: PropTypes.func.isRequired,
+	isLoading: PropTypes.bool,
+	responseBody: PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({
-	rules: get(state, '$getAppRules.results'),
+	rules: get(state, '$getAppRules.results') || [],
 	isLoading: get(state, '$getAppRules.isFetching'),
 	hasError: get(state, '$getAppRules.error'),
 	tier: get(state, '$getAppPlan.results.tier'),
