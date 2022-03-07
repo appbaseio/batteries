@@ -1103,7 +1103,11 @@ export function replayRequest(url, method, headers, requestBody) {
 		})
 			.then((res) => res.json())
 			.then((res) => {
-				message.success('Request replayed successfully. Reload the view to see it');
+				if (res.error) {
+					message.error(res.error.message || 'Unable to replay the request. Try again');
+				} else {
+					message.success('Request replayed successfully. Reload the view to see it');
+				}
 				resolve(res);
 			})
 			.catch((e) => {
