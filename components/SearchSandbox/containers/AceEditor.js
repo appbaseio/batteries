@@ -64,7 +64,7 @@ Ace.defaultProps = {
 };
 
 Ace.propTypes = {
-	mode: oneOf(['html', 'css', 'json', 'javascript']),
+	mode: oneOf(['html', 'css', 'json', 'javascript', 'text']),
 };
 
 export default Ace;
