@@ -93,7 +93,7 @@ export const generatePipelinePayload = (
 	const scriptRefs = Object.keys(scriptRefsMap);
 	if (scriptRefs.length) {
 		scriptRefs.forEach((ref) => {
-			if (scriptRefsMap[ref][scriptValKey]) {
+			if (scriptRefsMap[ref]) {
 				formData.append(
 					ref,
 					JSON.stringify({
