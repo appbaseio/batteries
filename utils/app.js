@@ -455,3 +455,13 @@ export const validatePipeline = (formdata) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getPipelineSchema = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_pipeline/schema`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
