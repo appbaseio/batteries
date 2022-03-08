@@ -77,7 +77,7 @@ export function versionCompare(v1 = '', v2 = '', options) {
 }
 
 export const generatePipelinePayload = (
-	pipelineYaml,
+	pipelineJSON,
 	scriptRefsMap,
 	scriptValKey = 'scriptValue',
 ) => {
@@ -86,8 +86,8 @@ export const generatePipelinePayload = (
 	formData.append(
 		'pipeline',
 		JSON.stringify({
-			content: pipelineYaml || '',
-			extension: 'yaml',
+			content: pipelineJSON || '',
+			extension: 'json',
 		}),
 	);
 	const scriptRefs = Object.keys(scriptRefsMap);
