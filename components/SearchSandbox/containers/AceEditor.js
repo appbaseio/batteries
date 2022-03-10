@@ -31,7 +31,7 @@ Editor.defaultProps = {
 };
 
 Editor.propTypes = {
-	mode: oneOf(['html', 'css', 'json', 'javascript']),
+	mode: oneOf(['html', 'css', 'json', 'javascript', 'text']),
 };
 
 /* eslint-disable */
