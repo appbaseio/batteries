@@ -27,18 +27,31 @@ const createRequest = (
 			// eslint-disable-next-line
 			console.error(e);
 		}
-		const requestOptions = JSON.parse(
-			JSON.stringify({
-				method,
-				...(credentials && { credentials: 'include' }),
-				headers: {
-					...headers,
-					'x-search-client': 'Appbase Dashboard',
+		let requestBody;
+		let requestOptions;
+		if (body) {
+			if (body instanceof FormData) {
+				requestBody = body;
+				requestOptions = {
+					method,
+					body: requestBody,
 					...(!credentials && { Authorization: `Basic ${authToken}` }),
-				},
-				body: body ? JSON.stringify(body) : undefined,
-			}),
-		);
+				};
+			} else {
+				requestBody = JSON.stringify(body);
+			}
+		}
+
+		requestOptions = {
+			method,
+			...(credentials && { credentials: 'include' }),
+			headers: {
+				...headers,
+				'x-search-client': 'Appbase Dashboard',
+				...(!credentials && { Authorization: `Basic ${authToken}` }),
+			},
+			body: requestBody,
+		};
 		fetch(url, requestOptions)
 			.then((res) => {
 				if (allowRawResponse) {
