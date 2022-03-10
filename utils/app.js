@@ -351,7 +351,8 @@ export const validateScriptRule = (requestBody) => {
 };
 
 export const getSearchSettings = (name) => {
-	const ACC_API = getURL();
+	const ACC_API = 'http://localhost:8000/';
+	// getURL();
 	const authToken = getAuthToken();
 	return doGet(`${ACC_API}/_searchrelevancy/${name}`, {
 		'Content-Type': 'application/json',
@@ -360,7 +361,8 @@ export const getSearchSettings = (name) => {
 };
 
 export const getDefaultSearchSettings = () => {
-	const ACC_API = getURL();
+	const ACC_API = 'http://localhost:8000/';
+	// getURL();
 	const authToken = getAuthToken();
 	return doGet(`${ACC_API}/_searchrelevancy/_default`, {
 		'Content-Type': 'application/json',
@@ -369,7 +371,8 @@ export const getDefaultSearchSettings = () => {
 };
 
 export const putSearchSettings = (name, payload) => {
-	const ACC_API = getURL();
+	const ACC_API = 'http://localhost:8000/';
+	// getURL();
 	const authToken = getAuthToken();
 	return doPut(`${ACC_API}/_searchrelevancy/${name}`, payload, {
 		'Content-Type': 'application/json',
