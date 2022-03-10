@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import get from 'lodash/get';
-import { Button, Tabs, Icon, Popover, Alert } from 'antd';
+import { Button, Tabs, Icon, Popover, Alert, Card } from 'antd';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import AceEditor from 'react-ace';
 import Grid from '../../../shared/Grid';
-import { getTimeDuration, replayRequest } from '../../utils';
+import { getStringifiedJSON, getTimeDuration, replayRequest } from '../../utils';
 import Flex from '../../../shared/Flex';
 import { ruleStyle } from '../../../../../pages/SandboxPage/components/Result/styles';
 import { isValidPlan } from '../../../../utils';
@@ -16,6 +17,7 @@ import RequestDiff from './RequestDiff';
 // eslint-disable-next-line import/no-cycle
 import ResponseDiff from './ResponseDiff';
 import Container from '../../../../../components/Container';
+import JsonView from '../../../../../components/JsonView';
 
 const { TabPane } = Tabs;
 
@@ -35,6 +37,7 @@ const section = css`
 	margin-bottom: 10px;
 `;
 
+const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 const RequestDetails = ({
 	time,
 	method,
@@ -54,6 +57,7 @@ const RequestDetails = ({
 	requestChanges,
 	responseBody,
 	latency,
+	pipelineMode,
 }) => {
 	const [rulesData, setRulesData] = useState([]);
 	const timeDuration = getTimeDuration(processingTime);
@@ -78,7 +82,7 @@ const RequestDetails = ({
 			setRulesData(rules.filter((rule) => ruleIds.includes(rule.id)));
 		}
 	}
-
+	const responseHeaders = get(response, 'Headers', null) || get(response, 'headers', null) || {};
 	return (
 		<Container style={{ background: 'white' }}>
 			<span css="font-weight: 500;color: black;font-size: 16px;">Log Details</span>
@@ -148,7 +152,7 @@ const RequestDetails = ({
 				/>
 			)}
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="request">
-				<TabPane tab="Request" key="request">
+				<TabPane tab={pipelineMode ? 'Stage Changes' : 'Request'} key="request">
 					<RequestDiff
 						requestBody={request}
 						url={url}
@@ -156,16 +160,88 @@ const RequestDetails = ({
 						method={method}
 						requestChanges={requestChanges}
 					/>
+					{pipelineMode && (
+						<Card
+							title={
+								<div style={{ display: 'flex' }}>
+									<p style={{ fontWeight: 'bold', marginRight: 5 }}>Stage </p>
+									<p>Final Response</p>
+								</div>
+							}
+							style={{ marginBottom: 20 }}
+						>
+							<div
+								style={{
+									display: 'flex',
+									justifyContent: 'space-between',
+									alignItems: 'center',
+								}}
+							>
+								<div>
+									{method} {url}
+								</div>
+								{responseHeaders && (
+									<div style={{ display: 'flex' }}>
+										<div>Headers</div>
+										<Popover
+											content={
+												<div css={popoverContent}>
+													<JsonView json={responseHeaders} />
+												</div>
+											}
+											trigger="click"
+										>
+											<div
+												css={{
+													cursor: 'pointer',
+													margin: '0 7px',
+													maxWidth: '95%',
+													...overflow,
+												}}
+											>
+												{` {...} `}
+											</div>
+										</Popover>
+									</div>
+								)}
+							</div>
+							<AceEditor
+								mode="json"
+								value={getStringifiedJSON(responseBody)}
+								theme="textmate"
+								readOnly
+								name="query-request"
+								fontSize={14}
+								showPrintMargin={false}
+								style={{
+									width: '100%',
+									borderRadius: 4,
+									border: '1px solid rgba(0,0,0,0.15)',
+									margin: '12px 0',
+								}}
+								showGutter
+								setOptions={{
+									showLineNumbers: false,
+									tabSize: 4,
+								}}
+								minLines={1}
+								maxLines={30}
+								editorProps={{ $blockScrolling: true }}
+							/>
+						</Card>
+					)}
 				</TabPane>
-				<TabPane tab="Response" key="response">
-					<ResponseDiff
-						responseBody={responseBody}
-						response={response}
-						url={url}
-						method={method}
-						responseChanges={responseChanges}
-					/>
-				</TabPane>
+				{!pipelineMode && (
+					<TabPane tab="Response" key="response">
+						<ResponseDiff
+							responseBody={responseBody}
+							response={response}
+							url={url}
+							method={method}
+							responseChanges={responseChanges}
+						/>
+					</TabPane>
+				)}
 			</Tabs>
 		</Container>
 	);
@@ -176,6 +252,8 @@ RequestDetails.defaultProps = {
 	responseChanges: [],
 	isLoading: false,
 	latency: -1,
+	pipelineMode: false,
+	response: {},
 };
 RequestDetails.propTypes = {
 	time: PropTypes.string.isRequired,
@@ -186,7 +264,7 @@ RequestDetails.propTypes = {
 	processingTime: PropTypes.string.isRequired,
 	headers: PropTypes.object.isRequired,
 	request: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
-	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.array]).isRequired,
+	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.array]),
 	responseChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 	requestChanges: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
 	rules: PropTypes.array.isRequired,
@@ -196,6 +274,7 @@ RequestDetails.propTypes = {
 	isLoading: PropTypes.bool,
 	responseBody: PropTypes.string,
 	latency: PropTypes.number,
+	pipelineMode: PropTypes.bool,
 };
 
 const mapStateToProps = (state) => ({

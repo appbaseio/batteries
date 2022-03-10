@@ -250,7 +250,7 @@ class RequestLogs extends React.Component {
 					.then((res) => {
 						const { logs } = this.state;
 						const hits = res.logs.map((item, index) => ({
-							_id: `${index}-${new Date().toISOString()}`,
+							_id: `${index}-${new Date().getTime()}`,
 							...item,
 						}));
 						this.setState({
