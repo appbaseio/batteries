@@ -11,7 +11,7 @@ export const transferOwnership = (appId, info) => {
 const getAuthToken = () => {
 	let token = null;
 	try {
-		token = sessionStorage.getItem('authToken');
+		token = localStorage.getItem('authToken');
 	} catch (e) {
 		// eslint-disable-next-line
 		console.error(e);
