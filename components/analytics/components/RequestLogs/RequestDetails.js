@@ -53,6 +53,7 @@ const RequestDetails = ({
 	responseChanges,
 	requestChanges,
 	responseBody,
+	latency,
 }) => {
 	const [rulesData, setRulesData] = useState([]);
 	const timeDuration = getTimeDuration(processingTime);
@@ -86,6 +87,7 @@ const RequestDetails = ({
 			<Grid label="URL" component={url} />
 			<Grid label="IP" component={ip} />
 			<Grid label="Response Code" component={status} />
+			{latency !== -1 && <Grid label="Latency" component={latency} />}
 			{/* Banner for QueryRules */}
 			{response.settings?.queryRules &&
 				rulesData.map((rule) => (
@@ -173,6 +175,7 @@ RequestDetails.defaultProps = {
 	responseBody: '',
 	responseChanges: [],
 	isLoading: false,
+	latency: -1,
 };
 RequestDetails.propTypes = {
 	time: PropTypes.string.isRequired,
@@ -192,6 +195,7 @@ RequestDetails.propTypes = {
 	fetchRules: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool,
 	responseBody: PropTypes.string,
+	latency: PropTypes.number,
 };
 
 const mapStateToProps = (state) => ({
