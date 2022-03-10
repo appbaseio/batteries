@@ -87,7 +87,7 @@ const RequestDetails = ({
 			<Grid label="URL" component={url} />
 			<Grid label="IP" component={ip} />
 			<Grid label="Response Code" component={status} />
-			{latency !== -1 && <Grid label="Latency" component={latency} />}
+			{latency !== -1 && <Grid label="Latency (in ms)" component={latency} />}
 			{/* Banner for QueryRules */}
 			{response.settings?.queryRules &&
 				rulesData.map((rule) => (
