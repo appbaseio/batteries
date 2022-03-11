@@ -38,7 +38,7 @@ const MonitoringContainer = ({
 		let isMounted = true;
 		const getData = async () => {
 			try {
-				const res = await fetch(`${esURL}/metricbeat-*`, {
+				const res = await fetch(`${esURL}/metricbeat-*,.ds-metricbeat-*`, {
 					headers: {
 						Authorization: `Basic ${btoa(
 							`${esUsername}:${esPassword}`,
