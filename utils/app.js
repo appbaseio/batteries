@@ -401,6 +401,16 @@ export const getPipelines = () => {
 	});
 };
 
+export const getPipelinesUsageStats = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_analytics/pipelines/usage`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
 export const updatePipeline = (pipeline) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
