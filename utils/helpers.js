@@ -90,19 +90,21 @@ export const generatePipelinePayload = (
 			extension: 'json',
 		}),
 	);
-	const scriptRefs = Object.keys(scriptRefsMap);
-	if (scriptRefs.length) {
-		scriptRefs.forEach((ref) => {
-			if (scriptRefsMap[ref]) {
-				formData.append(
-					ref,
-					JSON.stringify({
-						content: scriptRefsMap[ref][scriptValKey] || '',
-						extension: 'js',
-					}),
-				);
-			}
-		});
+	if (scriptRefsMap) {
+		const scriptRefs = Object.keys(scriptRefsMap);
+		if (scriptRefs.length) {
+			scriptRefs.forEach((ref) => {
+				if (scriptRefsMap[ref]) {
+					formData.append(
+						ref,
+						JSON.stringify({
+							content: scriptRefsMap[ref][scriptValKey] || '',
+							extension: 'js',
+						}),
+					);
+				}
+			});
+		}
 	}
 	return formData;
 };
