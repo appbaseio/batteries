@@ -211,7 +211,7 @@ export function reorderPipelines({ id, priority }) {
 		const state = getState();
 		const pipeline = get(state, '$getAppPipelines.results').find((item) => item.id === id);
 		const pipelineScripts = get(state, '$getAppPipelines.scriptResults')?.[pipeline.id];
-		const modifiedPipelineValue = yamlToJson.dump({
+		const modifiedPipelineValue = JSON.stringify({
 			...yamlToJson.load(pipeline.content),
 			priority,
 		});
