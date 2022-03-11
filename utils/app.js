@@ -443,7 +443,7 @@ export const getPipelineScript = (pipelineId, scriptRefKey) => {
 	const ACC_API = getURL();
 
 	return doGet(
-		`${ACC_API}/_pipeline/${pipelineId}/scriptRef/${encodeURIComponent(scriptRefKey)}`,
+		`${ACC_API}/_pipeline/${pipelineId}/scriptRef?key=${encodeURIComponent(scriptRefKey)}`,
 		{
 			'Content-Type': 'application/json',
 			Authorization: `Basic ${authToken}`,
