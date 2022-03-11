@@ -45,6 +45,7 @@ const Monaco = ({
 	onBlur,
 	customizeMonacoInstance,
 	wrapperClass,
+	path,
 }) => {
 	const editorRef = useRef(null);
 	const monaco = useMonaco();
@@ -110,6 +111,7 @@ const Monaco = ({
 				</button>
 			)}
 			<Editor
+				path={path}
 				theme={theme}
 				defaultValue={defaultValue}
 				options={{
@@ -142,6 +144,7 @@ Monaco.defaultProps = {
 	loading: <h3>take a deep breath...</h3>,
 	customizeMonacoInstance: undefined,
 	wrapperClass: '',
+	path: undefined,
 };
 
 Monaco.propTypes = {
@@ -158,6 +161,7 @@ Monaco.propTypes = {
 	loading: element,
 	customizeMonacoInstance: func,
 	wrapperClass: string,
+	path: string,
 };
 
 export default Monaco;
