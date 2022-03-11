@@ -442,10 +442,13 @@ export const getPipelineScript = (pipelineId, scriptRefKey) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 
-	return doGet(`${ACC_API}/_pipeline/${pipelineId}/scriptRef/${scriptRefKey}`, {
-		'Content-Type': 'application/json',
-		Authorization: `Basic ${authToken}`,
-	});
+	return doGet(
+		`${ACC_API}/_pipeline/${pipelineId}/scriptRef/${encodeURIComponent(scriptRefKey)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
 };
 
 export const validatePipeline = (formdata) => {
