@@ -510,38 +510,24 @@ export const popularFiltersFull = (plan, displayReplaySearch, isSubTable) => {
 	];
 };
 
-export const getRequestLogsColumns = (displaySearchLogs, isPipeMode = false) => [
+export const getRequestLogsColumns = (displaySearchLogs) => [
 	{
-		title: isPipeMode ? 'Route' : 'Operation',
+		title: 'Operation',
 		dataIndex: 'operation',
-		render: (operation) => {
-			return (
-				<div>
-					<Flex>
-						<div css="width: 100px;margin-top: 5px;word-break: keep-all;">
-							<span css={requestOpt}>{operation.method}</span>
-						</div>
-						<div css="margin-left: 5px;">
-							<span css="color: #74A2FF;">
-								{operation[isPipeMode ? 'route' : 'uri']}
-							</span>
-						</div>
-					</Flex>
-				</div>
-			);
-		},
+		render: (operation) => (
+			<div>
+				<Flex>
+					<div css="width: 100px;margin-top: 5px;word-break: keep-all;">
+						<span css={requestOpt}>{operation.method}</span>
+					</div>
+					<div css="margin-left: 5px;">
+						<span css="color: #74A2FF;">{operation.uri}</span>
+					</div>
+				</Flex>
+			</div>
+		),
 		key: `operation${updateIndex()}`,
 	},
-	...(isPipeMode
-		? [
-				{
-					title: 'Latency (in ms)',
-					width: '150px',
-					key: `type${updateIndex()}`,
-					dataIndex: 'took',
-				},
-		  ]
-		: []),
 	...(displaySearchLogs
 		? [
 				{
@@ -734,8 +720,6 @@ export function getPopularFilters(appName, clickAnalytics = true, size = 100, fi
 	);
 }
 
-const validTabFilters = ['search', 'success', 'error', 'delete', 'suggestion', 'index'];
-
 // To fetch the logs
 export function getRequestLogs(
 	appName,
@@ -751,6 +735,7 @@ export function getRequestLogs(
 	isSearchLogs = false,
 	arcVersion,
 ) {
+	const validFilters = ['search', 'success', 'error', 'delete', 'suggestion', 'index'];
 	return doGet(
 		`${getURL()}/${getApp(appName)}${isSearchLogs ? '_logs/search' : '_logs'}${getQueryParams(
 			// remove undefined
@@ -763,7 +748,7 @@ export function getRequestLogs(
 					start_latency: queryParams.startLatency,
 					end_latency: queryParams.endLatency,
 					...(queryParams.filter &&
-						validTabFilters.includes(queryParams.filter) && {
+						validFilters.includes(queryParams.filter) && {
 							filter: queryParams.filter,
 						}),
 				}),
@@ -774,46 +759,6 @@ export function getRequestLogs(
 	);
 }
 
-// to fetch the request log details by log id
-export function getRequestLogDetails(logId) {
-	return doGet(`${getURL()}/_log/${logId}`);
-}
-
-// To fetch the pipeline logs
-export function getPipelineLogs(
-	pipelineId,
-	queryParams = {
-		size: 10,
-		from: 0,
-		startDate: undefined,
-		endDate: undefined,
-		category: '',
-	},
-	arcVersion,
-) {
-	return doGet(
-		`${getURL()}/_pipeline/${pipelineId}/logs${getQueryParams(
-			// remove undefined
-			JSON.parse(
-				JSON.stringify({
-					size: queryParams.size,
-					from: queryParams.from,
-					...(queryParams.category &&
-						validTabFilters.includes(queryParams.category) && {
-							category: queryParams.category,
-						}),
-				}),
-			),
-			arcVersion,
-			false,
-		)}`,
-	);
-}
-
-// to fetch the pipeline lod details
-export function getPipelineLogDetails(logId) {
-	return doGet(`${getURL()}/_pipelines/log/${logId}`);
-}
 /**
  * Get the analytics insights
  * @param {string} appName
@@ -1103,11 +1048,7 @@ export function replayRequest(url, method, headers, requestBody) {
 		})
 			.then((res) => res.json())
 			.then((res) => {
-				if (res.error) {
-					message.error(res.error.message || 'Unable to replay the request. Try again');
-				} else {
-					message.success('Request replayed successfully. Reload the view to see it');
-				}
+				message.success('Request replayed successfully. Reload the view to see it');
 				resolve(res);
 			})
 			.catch((e) => {
