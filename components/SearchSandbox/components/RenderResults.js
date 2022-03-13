@@ -1,4 +1,5 @@
 import React from 'react';
+import createDOMPurify from 'dompurify';
 import { Tree, Row, Col, Button } from 'antd';
 import Appbase from 'appbase-js';
 import ExpandCollapse from 'react-expand-collapse';
@@ -9,6 +10,7 @@ import { listItem, resultItem } from '../styles';
 import { SandboxContext } from '../index';
 import getNestedValue from '../utils';
 
+const DOMPurify = createDOMPurify(window);
 const { TreeNode } = Tree;
 
 const RenderResults = props => (
@@ -38,7 +40,12 @@ class RenderResultsConsumer extends React.Component {
 					<div>
 						<span>{item}:</span>
 						&nbsp;
-						<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+						<span
+							// eslint-disable-next-line react/no-danger
+							dangerouslySetInnerHTML={{
+								__html: DOMPurify.sanitize(res[item]),
+							}}
+						/>
 					</div>
 				);
 				return <TreeNode title={title} key={`${key}-${index + 1}`} />;
@@ -114,12 +121,16 @@ class RenderResultsConsumer extends React.Component {
 						>
 							<h3
 								style={{ fontWeight: '600' }}
-								dangerouslySetInnerHTML={{ __html: title }}
+								// eslint-disable-next-line react/no-danger
+								dangerouslySetInnerHTML={{
+									__html: DOMPurify.sanitize(title),
+								}}
 							/>
 							<p
 								style={{ fontSize: '1em' }}
+								// eslint-disable-next-line react/no-danger
 								dangerouslySetInnerHTML={{
-									__html: description,
+									__html: DOMPurify.sanitize(description),
 								}}
 							/>
 						</Col>

@@ -1,4 +1,5 @@
 import React from 'react';
+import createDOMPurify from 'dompurify';
 import {
 	Modal,
 	Dropdown,
@@ -17,6 +18,7 @@ import { ReactiveList } from '@appbaseio/reactivesearch';
 import { css } from 'emotion';
 import getNestedValue from '../utils';
 
+const DOMPurify = createDOMPurify(window);
 const { Paragraph } = Typography;
 const { TreeNode } = Tree;
 
@@ -74,7 +76,12 @@ class PreviewList extends React.Component {
 					<div>
 						<span>{item}:</span>
 						&nbsp;
-						<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+						<span
+							// eslint-disable-next-line react/no-danger
+							dangerouslySetInnerHTML={{
+								__html: DOMPurify.sanitize(res[item]),
+							}}
+						/>
 					</div>
 				);
 				return <TreeNode title={title} key={`${key}-${index + 1}`} />;

@@ -1,7 +1,10 @@
 import React from 'react';
+import createDOMPurify from 'dompurify';
 import { listLabel } from '../styles';
 import RenderResults from '../components/RenderResults';
 import { generateFieldWeights, generateDataField } from './dataField';
+
+const DOMPurify = createDOMPurify(window);
 
 function getDataSearchProps({ componentProps, mappings, version }) {
 	componentProps.fuzziness = componentProps.fuzziness ? Number(componentProps.fuzziness) : 0;
@@ -98,7 +101,12 @@ export default function getComponentProps({
 				dataField: generateDataField('MultiList', componentProps.dataField, mappings),
 				renderItem: (label, count) => (
 					<div className={listLabel}>
-						<div dangerouslySetInnerHTML={{ __html: label }} />
+						<div
+							// eslint-disable-next-line react/no-danger
+							dangerouslySetInnerHTML={{
+								__html: DOMPurify.sanitize(label),
+							}}
+						/>
 						{componentProps.showCount === false ? null : (
 							<span style={{ width: 'auto' }}>{count}</span>
 						)}

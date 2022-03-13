@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import createDOMPurify from 'dompurify';
 import { Row, Col, Card, Button, Modal, Form, message } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
@@ -16,6 +17,7 @@ import {
 	ToggleInput,
 } from '../../shared/Input';
 
+const DOMPurify = createDOMPurify(window);
 export default class Editor extends Component {
 	constructor(props) {
 		super(props);
@@ -335,8 +337,11 @@ export default class Editor extends Component {
 												key={component}
 											>
 												<span
+													// eslint-disable-next-line react/no-danger
 													dangerouslySetInnerHTML={{
-														__html: value,
+														__html: DOMPurify.sanitize(
+															value,
+														),
 													}}
 												/>
 												<span>&nbsp; &#x2715;</span>
