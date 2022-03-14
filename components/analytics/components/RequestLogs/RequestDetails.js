@@ -58,6 +58,7 @@ const RequestDetails = ({
 	responseBody,
 	latency,
 	pipelineMode,
+	context,
 }) => {
 	const [rulesData, setRulesData] = useState([]);
 	const timeDuration = getTimeDuration(processingTime);
@@ -154,7 +155,7 @@ const RequestDetails = ({
 			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="request">
 				<TabPane tab={pipelineMode ? 'Stage Changes' : 'Request'} key="request">
 					<RequestDiff
-						requestBody={request}
+						requestBody={pipelineMode ? context : request}
 						url={url}
 						headers={headers}
 						method={method}
@@ -254,6 +255,7 @@ RequestDetails.defaultProps = {
 	latency: -1,
 	pipelineMode: false,
 	response: {},
+	context: {},
 };
 RequestDetails.propTypes = {
 	time: PropTypes.string.isRequired,
@@ -275,6 +277,7 @@ RequestDetails.propTypes = {
 	responseBody: PropTypes.string,
 	latency: PropTypes.number,
 	pipelineMode: PropTypes.bool,
+	context: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
