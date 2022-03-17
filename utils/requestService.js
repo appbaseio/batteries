@@ -22,7 +22,7 @@ const createRequest = (
 		let status;
 		let authToken = null;
 		try {
-			authToken = sessionStorage.getItem('authToken');
+			authToken = localStorage.getItem('authToken');
 		} catch (e) {
 			// eslint-disable-next-line
 			console.error(e);
