@@ -155,12 +155,14 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 			</Card>
 			{requestChanges
 				.filter((i) => i.stage !== 'searchrelevancy')
-				.map((requestChange) => {
+				.map((requestChange, index) => {
 					const requestChangeBody = requestChange.body || requestChange.context;
 
 					request = decodeRequestChange(requestChangeBody, request);
 					return (
 						<Card
+							// eslint-disable-next-line react/no-array-index-key
+							key={String(request) + index}
 							title={
 								<div
 									style={{
