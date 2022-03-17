@@ -401,6 +401,16 @@ export const getPipelines = () => {
 	});
 };
 
+export const getPipelinesUsageStats = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_analytics/pipelines/usage`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
 export const updatePipeline = (pipeline) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
@@ -432,16 +442,29 @@ export const getPipelineScript = (pipelineId, scriptRefKey) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 
-	return doGet(`${ACC_API}/_pipeline/${pipelineId}/scriptRef/${scriptRefKey}`, {
-		'Content-Type': 'application/json',
-		Authorization: `Basic ${authToken}`,
-	});
+	return doGet(
+		`${ACC_API}/_pipeline/${pipelineId}/scriptRef?key=${encodeURIComponent(scriptRefKey)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
 };
 
 export const validatePipeline = (formdata) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 	return doPost(`${ACC_API}/_pipeline/validate`, formdata, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getPipelineSchema = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_pipeline/schema`, {
+		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
 	});
 };

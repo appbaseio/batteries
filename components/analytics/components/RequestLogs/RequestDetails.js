@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import get from 'lodash/get';
 import { Modal, Button, Tabs, Icon, Popover, Alert } from 'antd';
-import Grid from '../../../shared/Grid';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import Grid from '../../../shared/Grid';
 import {
 	getTimeDuration,
 	getStringifiedJSON,
@@ -15,7 +16,6 @@ import {
 import Flex from '../../../shared/Flex';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 import { ruleStyle } from '../../../../../pages/SandboxPage/components/Result/styles';
-import { connect } from 'react-redux';
 import { isValidPlan } from '../../../../utils';
 import { getRules } from '../../../../modules/actions';
 import ActionView from '../../../../../pages/QueryRules/components/ActionView';
@@ -76,13 +76,13 @@ const RequestDetails = ({
 	}, []);
 
 	useEffect(() => {
-		if(!isLoading && rules && rules.length) {
+		if (!isLoading && rules && rules.length) {
 			getRuleData(response.settings?.queryRules);
 		}
 	}, [rules]);
 
 	function getRuleData(ruleIds) {
-		if(ruleIds && ruleIds.length) {
+		if (ruleIds && ruleIds.length) {
 			// fetch rule data for corresponding Ids
 			setRulesData(rules.filter((rule) => ruleIds.includes(rule.id)));
 		}
@@ -106,8 +106,8 @@ const RequestDetails = ({
 			<Grid label="IP" component={ip} />
 			<Grid label="Response Code" component={status} />
 			{/* Banner for QueryRules */}
-			{
-				response.settings?.queryRules && rulesData.map((rule) => (
+			{response.settings?.queryRules &&
+				rulesData.map((rule) => (
 					<Alert
 						type="info"
 						icon="info"
@@ -118,18 +118,16 @@ const RequestDetails = ({
 									<div>
 										<div style={{ display: 'flex' }}>
 											<p className="name">{rule.name}</p>
-											<div style={{marginLeft: 5}}>
+											<div style={{ marginLeft: 5 }}>
 												<Link to={`/cluster/rules/${rule.id}`}>
 													<Button type="primary" size="small" ghost>
 														Edit Rule ↗
 													</Button>
-
 												</Link>
 											</div>
 										</div>
 										<p className="expression">
-											{rule.trigger &&
-												rule.trigger.expression}
+											{rule.trigger && rule.trigger.expression}
 										</p>
 									</div>
 									<div>
@@ -137,9 +135,7 @@ const RequestDetails = ({
 											<div key={action.type} className={section}>
 												<ActionView
 													action={action}
-													ruleId={
-														rule.id || rule.name
-													}
+													ruleId={rule.id || rule.name}
 												/>
 											</div>
 										))}
@@ -148,8 +144,7 @@ const RequestDetails = ({
 							</React.Fragment>
 						}
 					/>
-				))
-			}
+				))}
 			<Flex css={buttonsContainer}>
 				<Flex>
 					<Popover

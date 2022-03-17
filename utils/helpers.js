@@ -77,7 +77,7 @@ export function versionCompare(v1 = '', v2 = '', options) {
 }
 
 export const generatePipelinePayload = (
-	pipelineYaml,
+	pipelineJSON,
 	scriptRefsMap,
 	scriptValKey = 'scriptValue',
 ) => {
@@ -86,23 +86,25 @@ export const generatePipelinePayload = (
 	formData.append(
 		'pipeline',
 		JSON.stringify({
-			content: pipelineYaml || '',
-			extension: 'yaml',
+			content: pipelineJSON || '',
+			extension: 'json',
 		}),
 	);
-	const scriptRefs = Object.keys(scriptRefsMap);
-	if (scriptRefs.length) {
-		scriptRefs.forEach((ref) => {
-			if (scriptRefsMap[ref][scriptValKey]) {
-				formData.append(
-					ref,
-					JSON.stringify({
-						content: scriptRefsMap[ref][scriptValKey] || '',
-						extension: 'js',
-					}),
-				);
-			}
-		});
+	if (scriptRefsMap) {
+		const scriptRefs = Object.keys(scriptRefsMap);
+		if (scriptRefs.length) {
+			scriptRefs.forEach((ref) => {
+				if (scriptRefsMap[ref]) {
+					formData.append(
+						ref,
+						JSON.stringify({
+							content: scriptRefsMap[ref][scriptValKey] || '',
+							extension: 'js',
+						}),
+					);
+				}
+			});
+		}
 	}
 	return formData;
 };

@@ -188,14 +188,8 @@ class RequestLogs extends React.Component {
 		startDate = get(requestLogsDateRanges, `${this.state.selectedDate}.from`), // eslint-disable-line
 		endDate = get(requestLogsDateRanges, `${this.state.selectedDate}.to`), // eslint-disable-line
 	) => {
-		const {
-			appName,
-			pageSize,
-			displaySearchLogs,
-			startLatency,
-			endLatency,
-			arcVersion,
-		} = this.props;
+		const { appName, pageSize, displaySearchLogs, startLatency, endLatency, arcVersion } =
+			this.props;
 		// Clear interval
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
