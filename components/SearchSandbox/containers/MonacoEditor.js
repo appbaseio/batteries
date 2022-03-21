@@ -25,7 +25,7 @@ const editorContainer = css`
 	}
 `;
 
-const tidyCode = (editor: any) => {
+const tidyCode = (editor) => {
 	if (editor) {
 		editor.trigger('', 'editor.action.formatDocument');
 	}

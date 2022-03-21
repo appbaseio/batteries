@@ -9,6 +9,7 @@ import {
 	createPipeline,
 	getPipelineScript,
 	validatePipeline as validatePipelineFunc,
+	getPipelinesUsageStats as fetchPipelinesUsageStats,
 } from '../../utils/app';
 import { generatePipelinePayload } from '../../utils/helpers';
 
@@ -41,15 +42,17 @@ export function getPipelinesScripts(pipelines) {
 					.then((values) => {
 						const scriptContents = {};
 						values.forEach((val) => {
-							scriptContents[val.value.id] = {
-								...(scriptContents[val.value.id]
-									? scriptContents[val.value.id]
-									: {}),
-								[val.value.key]: {
-									content: val.value.content,
-									extension: val.value.extension,
-								},
-							};
+							if (val.status === 'fulfilled') {
+								scriptContents[val.value.id] = {
+									...(scriptContents[val.value.id]
+										? scriptContents[val.value.id]
+										: {}),
+									[val.value.key]: {
+										content: val.value.content,
+										extension: val.value.extension,
+									},
+								};
+							}
 						});
 						return dispatch(
 							createAction(
@@ -83,6 +86,24 @@ export function getPipelines() {
 			.catch((error) => {
 				console.log(error);
 				dispatch(createAction(AppConstants.APP.PIPELINES.GET_ERROR, null, error));
+			});
+	};
+}
+
+export function getPipelinesUsageStats() {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.PIPELINES.GET_USAGE_STATS));
+		return fetchPipelinesUsageStats()
+			.then((res) => {
+				dispatch(getPipelinesScripts(res));
+				return dispatch(
+					createAction(AppConstants.APP.PIPELINES.GET_USAGE_STATS_SUCCESS, res, null),
+				);
+			})
+			.catch((error) => {
+				dispatch(
+					createAction(AppConstants.APP.PIPELINES.GET_USAGE_STATS_ERROR, null, error),
+				);
 			});
 	};
 }
@@ -190,7 +211,7 @@ export function reorderPipelines({ id, priority }) {
 		const state = getState();
 		const pipeline = get(state, '$getAppPipelines.results').find((item) => item.id === id);
 		const pipelineScripts = get(state, '$getAppPipelines.scriptResults')?.[pipeline.id];
-		const modifiedPipelineValue = yamlToJson.dump({
+		const modifiedPipelineValue = JSON.stringify({
 			...yamlToJson.load(pipeline.content),
 			priority,
 		});

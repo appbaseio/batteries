@@ -67,7 +67,7 @@ export function getReadCredentialsFromPermissions(permissions = []) {
 const getAuthToken = () => {
 	let token = null;
 	try {
-		token = sessionStorage.getItem('authToken');
+		token = localStorage.getItem('authToken');
 	} catch (e) {
 		console.error(e);
 	}

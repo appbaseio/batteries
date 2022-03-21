@@ -11,7 +11,7 @@ export const transferOwnership = (appId, info) => {
 const getAuthToken = () => {
 	let token = null;
 	try {
-		token = sessionStorage.getItem('authToken');
+		token = localStorage.getItem('authToken');
 	} catch (e) {
 		// eslint-disable-next-line
 		console.error(e);
@@ -442,16 +442,29 @@ export const getPipelineScript = (pipelineId, scriptRefKey) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 
-	return doGet(`${ACC_API}/_pipeline/${pipelineId}/scriptRef/${scriptRefKey}`, {
-		'Content-Type': 'application/json',
-		Authorization: `Basic ${authToken}`,
-	});
+	return doGet(
+		`${ACC_API}/_pipeline/${pipelineId}/scriptRef?key=${encodeURIComponent(scriptRefKey)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
 };
 
 export const validatePipeline = (formdata) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 	return doPost(`${ACC_API}/_pipeline/validate`, formdata, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getPipelineSchema = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_pipeline/schema`, {
+		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
 	});
 };
