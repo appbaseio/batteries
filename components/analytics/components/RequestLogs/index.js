@@ -341,7 +341,8 @@ class RequestLogs extends React.Component {
 
 	render() {
 		const { activeTabKey, isDateVisible, selectedDate } = this.state;
-		const { displayFilter, title, displaySearchLogs, hideRefreshButton } = this.props;
+		const { displayFilter, title, displaySearchLogs, hideRefreshButton, pipelineLogsMode } =
+			this.props;
 		return (
 			<Card
 				title={title}
@@ -358,7 +359,10 @@ class RequestLogs extends React.Component {
 							/>
 						) : null}
 						{!hideRefreshButton ? (
-							<Tooltip placement="topLeft" title="Refresh request logs.">
+							<Tooltip
+								placement="topLeft"
+								title={`Refresh ${pipelineLogsMode ? 'pipeline' : 'request'} logs.`}
+							>
 								<Button
 									style={{ marginLeft: 8 }}
 									onClick={() => {
