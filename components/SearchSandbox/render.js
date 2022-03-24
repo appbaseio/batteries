@@ -23,9 +23,12 @@ import 'antd/dist/antd.css';
 `;
 
 export const renderAsTree = () => `
+import createDOMPurify from 'dompurify';
 import ExpandCollapse from 'react-expand-collapse';
 
 import './styles.css';
+
+const DOMPurify = createDOMPurify(window);
 
 const { TreeNode } = Tree;
 
@@ -40,7 +43,7 @@ const renderAsTree = (res, key = '0') => {
 					title={
 						<div>
 							<span>{item}:</span>&nbsp;
-							<span dangerouslySetInnerHTML={{ __html: res[item] }} />
+							<span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(res[item]) }} />
 						</div>
 					}
 					key={key + "-" + (index + 1)}
@@ -79,6 +82,10 @@ function renderItem(res, triggerClickAnalytics) {
 `;
 
 export const renderWithOnData = config => `
+import createDOMPurify from 'dompurify';
+
+const DOMPurify = createDOMPurify(window);
+
 function getNestedValue(obj, path) {
 	const keys = path.split('.');
 	const currentObject = obj;
@@ -106,8 +113,8 @@ function renderItem(res, triggerClickAnalytics) {
 				{image &&  <img src={image} alt={title} /> }
 			</Col>
 			<Col span={image ? 18 : 24}>
-				<h3 style={{ fontWeight: '600' }} dangerouslySetInnerHTML={{__html: title || 'Choose a valid Title Field'}}/>
-				<p style={{ fontSize: '1em' }} dangerouslySetInnerHTML={{__html: description || 'Choose a valid Description Field'}}/>
+				<h3 style={{ fontWeight: '600' }} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(title || 'Choose a valid Title Field') }}/>
+				<p style={{ fontSize: '1em' }} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(description || 'Choose a valid Description Field')}}/>
 			</Col>
 			<div style={{padding:'20px'}}>
 				{url ? <Button shape="circle" icon="link" style={{ marginRight: '5px' }} onClick={() => window.open(url, '_blank')} />

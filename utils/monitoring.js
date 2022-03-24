@@ -11,7 +11,7 @@ export const TIME_FILTER = {
 };
 
 export const getMonitoringSearchConfig = ({ username, password, url }) => ({
-	url: `${url}/metricbeat-*/_msearch`,
+	url: `${url}/metricbeat-*,.ds-metricbeat-*/_msearch`,
 	method: 'POST',
 	headers: {
 		Authorization: `Basic ${btoa(`${username}:${password}`)}`,
