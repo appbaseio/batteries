@@ -541,7 +541,7 @@ export const getRequestLogsColumns = (displaySearchLogs) => [
 				{
 					title: 'Type',
 					dataIndex: 'classifier',
-					width: '150px',
+					width: '170px',
 					key: `type${updateIndex()}`,
 				},
 		  ]),
