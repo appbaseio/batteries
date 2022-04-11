@@ -17,7 +17,7 @@ const popoverContent = css`
 
 const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
-const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
+const RequestDiff = ({ requestBody, requestChanges, method, headers, url, shouldDecode }) => {
 	const decodeRequestChange = (decodedData, originalData) => {
 		if (decodedData && originalData) {
 			const dmp = new DiffMatchPatch();
@@ -158,7 +158,15 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 				.map((requestChange, index) => {
 					const requestChangeBody = requestChange.body || requestChange.context;
 
-					request = decodeRequestChange(requestChangeBody, request);
+					if (shouldDecode) {
+						request = decodeRequestChange(requestChangeBody, request);
+					} else if (!shouldDecode) {
+						if (typeof requestChange === 'object') {
+							request = JSON.stringify(requestChange.context);
+						} else {
+							request = requestChange.context;
+						}
+					}
 					return (
 						<Card
 							// eslint-disable-next-line react/no-array-index-key
@@ -226,6 +234,7 @@ RequestDiff.defaultProps = {
 	method: '',
 	url: '',
 	headers: {},
+	shouldDecode: true,
 };
 RequestDiff.propTypes = {
 	requestChanges: PropTypes.array,
@@ -233,6 +242,7 @@ RequestDiff.propTypes = {
 	method: PropTypes.string,
 	headers: PropTypes.object,
 	url: PropTypes.string,
+	shouldDecode: PropTypes.bool,
 };
 
 export default RequestDiff;

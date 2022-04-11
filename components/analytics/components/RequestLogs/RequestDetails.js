@@ -160,6 +160,7 @@ const RequestDetails = ({
 						headers={headers}
 						method={method}
 						requestChanges={requestChanges}
+						shouldDecode={!pipelineMode}
 					/>
 					{pipelineMode && (
 						<Card
