@@ -776,7 +776,7 @@ export function getRequestLogs(
 
 // to fetch the request log details by log id
 export function getRequestLogDetails(logId) {
-	return doGet(`${getURL()}/_log/${logId}`);
+	return doGet(`${getURL()}/_log/${logId}?verbose=false`);
 }
 
 // To fetch the pipeline logs
@@ -812,7 +812,7 @@ export function getPipelineLogs(
 
 // to fetch the pipeline log details
 export function getPipelineLogDetails(logId) {
-	return doGet(`${getURL()}/_pipelines/log/${logId}`);
+	return doGet(`${getURL()}/_pipelines/log/${logId}?verbose=true`);
 }
 /**
  * Get the analytics insights
