@@ -252,4 +252,8 @@ export const CLUSTER_PLANS = {
 	SANDBOX_2020: '2020-sandbox',
 	HOBBY_2020: '2020-hobby',
 	STARTER_2020: '2020-starter',
+	STARTER_2021: '2021-starter',
+	PRODUCTION_2021_1: '2021-production-1',
+	PRODUCTION_2021_2: '2021-production-2',
+	PRODUCTION_2021_3: '2021-production-3',
 };
