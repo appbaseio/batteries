@@ -3,7 +3,7 @@ import { css } from 'emotion';
 import PropTypes from 'prop-types';
 import { Card, Popover, Icon, Button } from 'antd';
 import DiffMatchPatch from 'diff-match-patch';
-import { getStringifiedJSON, convertToCURL } from '../../utils';
+import { getStringifiedJSON, convertToCURL, isValidJSONFormat } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 import JsonView from '../../../../../components/JsonView';
 
@@ -161,11 +161,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 					if (shouldDecode) {
 						request = decodeRequestChange(requestChangeBody, request);
 					} else if (!shouldDecode) {
-						if (typeof requestChange === 'object') {
-							request = JSON.stringify(requestChange.context);
-						} else {
-							request = requestChange.context;
-						}
+						request = requestChange.context;
 					}
 					return (
 						<Card
@@ -195,11 +191,11 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 							style={{ marginBottom: 20 }}
 						>
 							<AceEditor
-								mode={IsJsonString(request) ? 'json' : 'text'}
+								mode={isValidJSONFormat(request) ? 'json' : 'text'}
 								value={
 									IsJsonString(request)
 										? JSON.stringify(JSON.parse(request), null, 2)
-										: request
+										: JSON.stringify(request, null, 2)
 								}
 								theme="textmate"
 								readOnly

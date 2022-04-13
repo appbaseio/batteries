@@ -208,11 +208,10 @@ const RequestDetails = ({
 								)}
 							</div>
 							<AceEditor
-								mode="json"
 								value={getStringifiedJSON(responseBody)}
 								theme="textmate"
 								readOnly
-								name="query-request"
+								name="query-response"
 								fontSize={14}
 								showPrintMargin={false}
 								style={{
