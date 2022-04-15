@@ -2,9 +2,8 @@ import React from 'react';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
 import { Card, Popover, Icon, Button } from 'antd';
-import ReactDiffViewer from 'react-diff-viewer';
-import diff_match_patch from 'diff-match-patch';
-import { getStringifiedJSON, convertToCURL } from '../../utils';
+import DiffMatchPatch from 'diff-match-patch';
+import { getStringifiedJSON, convertToCURL, isValidJSONFormat } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
 import JsonView from '../../../../../components/JsonView';
 
@@ -18,21 +17,21 @@ const popoverContent = css`
 
 const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
-const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
+const RequestDiff = ({ requestBody, requestChanges, method, headers, url, shouldDecode }) => {
 	const decodeRequestChange = (decodedData, originalData) => {
 		if (decodedData && originalData) {
-			const dmp = new diff_match_patch();
+			const dmp = new DiffMatchPatch();
 			try {
 				const delta = decodedData;
-				const [text2, results] = dmp.patch_apply(
+				const [text2] = dmp.patch_apply(
 					dmp.patch_make(originalData, dmp.diff_fromDelta(originalData, unescape(delta))),
 					originalData,
 				);
 				return text2;
-			} catch (err) {
+			} catch (er) {
 				try {
 					const delta = decodedData.replace(/^=\d+/g, `=${originalData.length}`);
-					const [text2, results] = dmp.patch_apply(
+					const [text2] = dmp.patch_apply(
 						dmp.patch_make(
 							originalData,
 							dmp.diff_fromDelta(originalData, unescape(delta)),
@@ -43,7 +42,8 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 				} catch (err) {
 					try {
 						const delta = decodedData.replace(/^=.+\t/g, `=${originalData.length}`);
-						const [text2, results] = dmp.patch_apply(
+
+						const [text2] = dmp.patch_apply(
 							dmp.patch_make(
 								originalData,
 								dmp.diff_fromDelta(originalData, unescape(delta)),
@@ -51,8 +51,8 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 							originalData,
 						);
 						return text2;
-					} catch (err) {
-						console.error(err);
+					} catch (error) {
+						console.error(error);
 						return '';
 					}
 				}
@@ -74,7 +74,9 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 		return string.charAt(0).toUpperCase() + string.slice(1);
 	};
 
-	let request = JSON.stringify(requestBody);
+	let request =
+		requestBody && typeof requestBody === 'object' ? JSON.stringify(requestBody) : requestBody;
+
 	return (
 		<div>
 			<Card
@@ -153,10 +155,18 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 			</Card>
 			{requestChanges
 				.filter((i) => i.stage !== 'searchrelevancy')
-				.map((requestChange) => {
-					request = decodeRequestChange(requestChange.body, request);
+				.map((requestChange, index) => {
+					const requestChangeBody = requestChange.body || requestChange.context;
+
+					if (shouldDecode) {
+						request = decodeRequestChange(requestChangeBody, request);
+					} else if (!shouldDecode) {
+						request = requestChange.context;
+					}
 					return (
 						<Card
+							// eslint-disable-next-line react/no-array-index-key
+							key={String(request) + index}
 							title={
 								<div
 									style={{
@@ -169,71 +179,66 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url }) => {
 										<div style={{ fontWeight: 'bold', marginRight: 5 }}>
 											Stage{' '}
 										</div>
-										<div>{capitalizeFirstLetter(requestChange.stage)}</div>
+										<div>
+											{capitalizeFirstLetter(
+												requestChange.stage || requestChange.id,
+											)}
+										</div>
 									</div>
-									{/* <Button
-                                    onClick={() => convertToCURL(url, method, headers, IsJsonString(request) ? JSON.parse(request) : request)}
-                                >
-                                    <Icon type="copy" />
-                                    Copy as cURL
-                                </Button> */}
 									<div>Took {requestChange.took}ms</div>
 								</div>
 							}
 							style={{ marginBottom: 20 }}
 						>
-							{IsJsonString(request) ? (
-								<AceEditor
-									mode="json"
-									value={
-										IsJsonString(request)
-											? JSON.stringify(JSON.parse(request), null, 2)
-											: request
-									}
-									theme="textmate"
-									readOnly
-									name="query-request"
-									fontSize={14}
-									showPrintMargin={false}
-									style={{
-										width: '100%',
-										borderRadius: 4,
-										border: '1px solid rgba(0,0,0,0.15)',
-										margin: '12px 0',
-									}}
-									showGutter
-									setOptions={{
-										showLineNumbers: false,
-										tabSize: 4,
-									}}
-									minLines={1}
-									maxLines={30}
-									editorProps={{ $blockScrolling: true }}
-								/>
-							) : (
-								<ReactDiffViewer
-									oldValue=""
-									newValue={request}
-									splitView={false}
-									hideLineNumbers
-									showDiffOnly={false}
-									leftTitle={undefined}
-									rightTitle={undefined}
-									styles={{
-										content: {
-											fontSize: '10px',
-										},
-										gutter: {
-											padding: '0px',
-										},
-									}}
-								/>
-							)}
+							<AceEditor
+								mode={isValidJSONFormat(request) ? 'json' : 'text'}
+								value={
+									IsJsonString(request)
+										? JSON.stringify(JSON.parse(request), null, 2)
+										: JSON.stringify(request, null, 2)
+								}
+								theme="textmate"
+								readOnly
+								name="query-request"
+								fontSize={14}
+								showPrintMargin={false}
+								style={{
+									width: '100%',
+									borderRadius: 4,
+									border: '1px solid rgba(0,0,0,0.15)',
+									margin: '12px 0',
+								}}
+								showGutter
+								setOptions={{
+									showLineNumbers: false,
+									tabSize: 4,
+								}}
+								minLines={1}
+								maxLines={30}
+								editorProps={{ $blockScrolling: true }}
+							/>
 						</Card>
 					);
 				})}
 		</div>
 	);
+};
+
+RequestDiff.defaultProps = {
+	requestChanges: [],
+	requestBody: {},
+	method: '',
+	url: '',
+	headers: {},
+	shouldDecode: true,
+};
+RequestDiff.propTypes = {
+	requestChanges: PropTypes.array,
+	requestBody: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+	method: PropTypes.string,
+	headers: PropTypes.object,
+	url: PropTypes.string,
+	shouldDecode: PropTypes.bool,
 };
 
 export default RequestDiff;

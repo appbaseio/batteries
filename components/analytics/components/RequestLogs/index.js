@@ -1,5 +1,4 @@
 import React from 'react';
-import find from 'lodash/find';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import filter from 'lodash/filter';
@@ -7,13 +6,12 @@ import { Card, Tabs, Table, notification, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import Parser from 'partial-json-parser';
 import {
+	getPipelineLogs,
 	getRequestLogs,
 	getRequestLogsColumns,
 	getTimeDuration,
-	isValidJSONFormat,
 	requestLogsDateRanges,
 } from '../../utils';
-import RequestDetails from './RequestDetails';
 import Loader from '../../../shared/Loader/Spinner';
 import Flex from '../../../shared/Flex';
 import DateFilter from '../Filter/DateFilter';
@@ -22,23 +20,29 @@ import { withErrorToaster } from '../../../shared/ErrorToaster/ErrorToaster';
 
 const { TabPane } = Tabs;
 
-const normalizeData = (data) =>
+const normalizeData = (data, isPipeMode = false) =>
 	data.map((i) => {
 		const timeDuration = getTimeDuration(get(i, 'timestamp'));
 		const timeTaken =
 			timeDuration.time > 0
 				? `${timeDuration.time} ${timeDuration.formattedUnit} ago`
 				: 'some time ago';
+
+		let took = get(i, 'response.took');
+		const id = get(i, 'id') || get(i, '_id');
+		const operation = { method: get(i, 'request.method'), uri: get(i, 'request.uri') };
+		if (isPipeMode) {
+			took = get(i, 'took');
+			operation.route = get(i, 'route');
+		}
 		return {
-			id: get(i, '_id'),
-			operation: {
-				method: get(i, 'request.method'),
-				uri: get(i, 'request.uri'),
-			},
+			id,
+			operation,
 			classifier: get(i, 'category', '').toUpperCase(),
 			timeTaken,
 			status: get(i, 'response.code'),
-			took: get(i, 'response.took'),
+			took,
+			isIdMissing: !get(i, 'id'),
 		};
 	});
 
@@ -90,7 +94,6 @@ class RequestLogs extends React.Component {
 		const state = {
 			activeTabKey: this.tabKeys.includes(tab) ? props.tab : this.tabKeys[0],
 			logs: [],
-			showDetails: false,
 			selectedDate: 'Last 30 days',
 			isDateVisible: false,
 		};
@@ -162,17 +165,19 @@ class RequestLogs extends React.Component {
 	};
 
 	handleLogClick = (record) => {
-		const { logs } = this.state;
-		this.currentRequest = logs && find(logs, (o) => get(o, '_id') === record.id);
-		this.setState({
-			showDetails: true,
-		});
-	};
+		try {
+			const { pipelineLogsMode, appName } = this.props;
 
-	handleCancel = () => {
-		this.setState({
-			showDetails: false,
-		});
+			if (pipelineLogsMode) {
+				window.location.href = `logs/${record.id}`;
+			} else {
+				window.location.href = appName
+					? `/app/${appName}/request-logs/${record.id}`
+					: `request-logs/${String(record.id)}`;
+			}
+		} catch (e) {
+			console.log('Error', e);
+		}
 	};
 
 	handlePageChange = (page) => {
@@ -188,8 +193,16 @@ class RequestLogs extends React.Component {
 		startDate = get(requestLogsDateRanges, `${this.state.selectedDate}.from`), // eslint-disable-line
 		endDate = get(requestLogsDateRanges, `${this.state.selectedDate}.to`), // eslint-disable-line
 	) => {
-		const { appName, pageSize, displaySearchLogs, startLatency, endLatency, arcVersion } =
-			this.props;
+		const {
+			appName,
+			pageSize,
+			displaySearchLogs,
+			startLatency,
+			endLatency,
+			arcVersion,
+			pipelineLogsMode,
+			pipelineId,
+		} = this.props;
 		// Clear interval
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
@@ -203,24 +216,41 @@ class RequestLogs extends React.Component {
 				},
 			},
 			() => {
-				getRequestLogs(
-					appName,
-					{
-						size: pageSize,
-						from,
-						filter: tab,
-						startDate,
-						endDate,
-						startLatency,
-						endLatency,
-					},
-					displaySearchLogs,
-					arcVersion,
-				)
+				let requestPromise;
+				if (pipelineLogsMode) {
+					requestPromise = getPipelineLogs(
+						pipelineId,
+						{
+							size: pageSize,
+							from,
+							startDate,
+							endDate,
+							category: tab,
+						},
+						arcVersion,
+					);
+				} else {
+					requestPromise = getRequestLogs(
+						appName,
+						{
+							size: pageSize,
+							from,
+							filter: tab,
+							startDate,
+							endDate,
+							startLatency,
+							endLatency,
+						},
+						displaySearchLogs,
+						arcVersion,
+					);
+				}
+
+				requestPromise
 					.then((res) => {
 						const { logs } = this.state;
 						const hits = res.logs.map((item, index) => ({
-							_id: `${index}-${new Date().toISOString()}`,
+							_id: `${index}-${new Date().getTime()}`,
 							...item,
 						}));
 						this.setState({
@@ -231,7 +261,7 @@ class RequestLogs extends React.Component {
 								total: res.total,
 								[currentPage]: {
 									...this.state[tab][currentPage], // eslint-disable-line
-									hits: normalizeData(hits),
+									hits: normalizeData(hits, pipelineLogsMode),
 								},
 							},
 						});
@@ -242,7 +272,7 @@ class RequestLogs extends React.Component {
 									...prevState[tab], // eslint-disable-line
 									[currentPage]: {
 										...prevState[tab][currentPage], // eslint-disable-line
-										hits: normalizeData(hits),
+										hits: normalizeData(hits, pipelineLogsMode),
 									},
 								},
 							}));
@@ -281,7 +311,7 @@ class RequestLogs extends React.Component {
 	};
 
 	renderTable = (tab) => {
-		const { pageSize, displaySearchLogs } = this.props;
+		const { pageSize, displaySearchLogs, pipelineLogsMode } = this.props;
 		const { currentPage, total, isLoading } = this.state[tab]; // eslint-disable-line
 		const { hits } = this.state[tab][currentPage]; // eslint-disable-line
 
@@ -290,7 +320,7 @@ class RequestLogs extends React.Component {
 				css=".ant-table-row { cursor: pointer }"
 				rowKey={(record) => record.id}
 				dataSource={hits}
-				columns={getRequestLogsColumns(displaySearchLogs)}
+				columns={getRequestLogsColumns(displaySearchLogs, pipelineLogsMode)}
 				pagination={{
 					pageSize,
 					total,
@@ -310,8 +340,9 @@ class RequestLogs extends React.Component {
 	};
 
 	render() {
-		const { activeTabKey, showDetails, isDateVisible, selectedDate } = this.state;
-		const { displayFilter, title, displaySearchLogs, hideRefreshButton } = this.props;
+		const { activeTabKey, isDateVisible, selectedDate } = this.state;
+		const { displayFilter, title, displaySearchLogs, hideRefreshButton, pipelineLogsMode } =
+			this.props;
 		return (
 			<Card
 				title={title}
@@ -328,7 +359,10 @@ class RequestLogs extends React.Component {
 							/>
 						) : null}
 						{!hideRefreshButton ? (
-							<Tooltip placement="topLeft" title="Refresh request logs.">
+							<Tooltip
+								placement="topLeft"
+								title={`Refresh ${pipelineLogsMode ? 'pipeline' : 'request'} logs.`}
+							>
 								<Button
 									style={{ marginLeft: 8 }}
 									onClick={() => {
@@ -373,28 +407,6 @@ class RequestLogs extends React.Component {
 					) : (
 						this.renderTable(this.tabKeys[0])
 					)}
-					{showDetails && this.currentRequest && (
-						<RequestDetails
-							show={showDetails}
-							handleCancel={this.handleCancel}
-							headers={get(this.currentRequest, 'request.header', {})}
-							request={
-								isValidJSONFormat(get(this.currentRequest, 'request.body'))
-									? parseData(get(this.currentRequest, 'request.body')) || {}
-									: get(this.currentRequest, 'request.body')
-							}
-							response={parseData(get(this.currentRequest, 'response')) || {}}
-							time={get(this.currentRequest, 'timestamp', '')}
-							method={get(this.currentRequest, 'request.method', '')}
-							url={get(this.currentRequest, 'request.uri', '')}
-							ip={get(this.currentRequest, 'request.header.X-Forwarded-For[0]')}
-							status={get(this.currentRequest, 'response.code', '')}
-							processingTime={get(this.currentRequest, 'response.timetaken', '')}
-							responseChanges={get(this.currentRequest, 'responseChanges', [])}
-							requestChanges={get(this.currentRequest, 'requestChanges', [])}
-							responseBody={get(this.currentRequest, 'response.body', '')}
-						/>
-					)}
 				</React.Fragment>
 			</Card>
 		);
@@ -414,6 +426,8 @@ RequestLogs.defaultProps = {
 	startDate: undefined,
 	endDate: undefined,
 	hideRefreshButton: false,
+	pipelineLogsMode: false,
+	pipelineId: '',
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
@@ -430,6 +444,8 @@ RequestLogs.propTypes = {
 	endLatency: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 	startDate: PropTypes.string,
 	endDate: PropTypes.string,
+	pipelineLogsMode: PropTypes.bool,
+	pipelineId: PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({
