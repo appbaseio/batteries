@@ -588,7 +588,10 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 	});
 
 	let { responses } = await esRes.json();
-	if (responses.length > 1 && responses[1].status === 400) {
+	if (
+		responses.length > 1 &&
+		get(responses[0], 'aggregations.time_intervals.buckets').length === 0
+	) {
 		const esResFallback = await fetch(esSearchConfig.url, {
 			method: esSearchConfig.method,
 			headers: esSearchConfig.headers,
