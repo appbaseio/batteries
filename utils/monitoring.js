@@ -75,7 +75,7 @@ export const fetchOverviewData = async (config, timeFilter) => {
 
 		const liveNodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const liveNodesFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const liveNodesFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
@@ -219,16 +219,14 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 		});
 
 		let { responses } = await esRes.json();
-		if (
-			responses.responses.length > 1 &&
-			responses.responses[1].status === 400
-		) {
+
+		if (responses.length > 1 && responses[1].status === 400) {
 			const esResFallback = await fetch(esSearchConfig.url, {
 				method: esSearchConfig.method,
 				headers: esSearchConfig.headers,
 				body: `{"preference": "cpu_usage"}\n${cpuUsageFallback}\n{"preference": "jvm_heap"}\n${jvmHeapFallback}\n{"preference": "memory"}\n${memoryFallback}\n{"preference": "disk"}\n${diskFallback}\n`,
 			});
-			responses = await esResFallback.json();
+			({ responses } = await esResFallback.json());
 		}
 
 		const instanceBuckets = get(
@@ -448,16 +446,13 @@ export const fetchNodeStats = async (config, timeFilter) => {
 		});
 
 		let { responses } = await esRes.json();
-		if (
-			responses.responses.length > 1 &&
-			responses.responses[1].status === 400
-		) {
+		if (responses.length > 1 && responses[1].status === 400) {
 			const esResFallback = await fetch(esSearchConfig.url, {
 				method: esSearchConfig.method,
 				headers: esSearchConfig.headers,
 				body: `{"preference": "node_count"}\n${nodesFallback}\n{"preference": "cpu_usage"}\n${cpuUsageFallback}\n{"preference": "jvm_heap"}\n${jvmHeapFallback}\n{"preference": "memory"}\n${memoryFallback}\n{"preference": "disk"}\n${diskFallback}\n{"preference": "indices"}\n`,
 			});
-			responses = await esResFallback.json();
+			({ responses } = await esResFallback.json());
 		}
 
 		const nodeBucket = get(responses[0], 'aggregations.instances.buckets');
@@ -593,16 +588,13 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 	});
 
 	let { responses } = await esRes.json();
-	if (
-		responses.responses.length > 1 &&
-		responses.responses[1].status === 400
-	) {
+	if (responses.length > 1 && responses[1].status === 400) {
 		const esResFallback = await fetch(esSearchConfig.url, {
 			method: esSearchConfig.method,
 			headers: esSearchConfig.headers,
 			body: `{"preference": "cpuSet"}\n${cpuSetFallback}\n{"preference": "nodeSet"}\n${nodeSetFallback}\n{"preference": "memorySet"}\n${memorySetFallback}\n`,
 		});
-		responses = await esResFallback.json();
+		({ responses } = await esResFallback.json());
 	}
 
 	const getDateIntervalValue = dateValue => {
