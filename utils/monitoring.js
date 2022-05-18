@@ -71,7 +71,11 @@ export const fetchOverviewData = async (config, timeFilter) => {
 
 		const uptime = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*", "cloud.instance.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"now-1h","lte":"now"}}}]}}}`;
 
+		const uptimeFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*", "cloud.instance.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"now-1h","lte":"now"}}}]}}}`;
+
 		const liveNodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const liveNodesFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
@@ -85,7 +89,15 @@ export const fetchOverviewData = async (config, timeFilter) => {
 			body: `{"preference": "cluster_health"}\n${esStatus}\n{"preference": "uptime"}\n${uptime}\n{"preference": "live_nodes"}\n${liveNodes}\n`,
 		});
 
-		const esData = await esRes.json();
+		let esData = await esRes.json();
+		if (esData.responses.length > 1 && esData.responses[1].status === 400) {
+			const esFallbackRes = await fetch(esSearchConfig.url, {
+				method: esSearchConfig.method,
+				headers: esSearchConfig.headers,
+				body: `{"preference": "cluster_health"}\n${esStatus}\n{"preference": "uptime"}\n${uptimeFallback}\n{"preference": "live_nodes"}\n${liveNodesFallback}\n`,
+			});
+			esData = await esFallbackRes.json();
+		}
 		let arcFetchEndpoint = `${esURL}/arc/plan`;
 		if (!isAppbase) {
 			arcFetchEndpoint = `${arcURL}/arc/plan`;
@@ -180,11 +192,19 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 
 		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
+		const cpuUsageFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
 		const jvmHeap = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const jvmHeapFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
+		const memoryFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
 		const disk = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.fs.summary*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const diskFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.fs.summary*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
@@ -198,7 +218,19 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 			body: `{"preference": "cpu_usage"}\n${cpuUsage}\n{"preference": "jvm_heap"}\n${jvmHeap}\n{"preference": "memory"}\n${memory}\n{"preference": "disk"}\n${disk}\n`,
 		});
 
-		const { responses } = await esRes.json();
+		let { responses } = await esRes.json();
+		if (
+			responses.responses.length > 1 &&
+			responses.responses[1].status === 400
+		) {
+			const esResFallback = await fetch(esSearchConfig.url, {
+				method: esSearchConfig.method,
+				headers: esSearchConfig.headers,
+				body: `{"preference": "cpu_usage"}\n${cpuUsageFallback}\n{"preference": "jvm_heap"}\n${jvmHeapFallback}\n{"preference": "memory"}\n${memoryFallback}\n{"preference": "disk"}\n${diskFallback}\n`,
+			});
+			responses = await esResFallback.json();
+		}
+
 		const instanceBuckets = get(
 			responses[0],
 			'aggregations.instances.buckets',
@@ -386,13 +418,23 @@ export const fetchNodeStats = async (config, timeFilter) => {
 
 		const nodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp", "cloud.instance*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
+		const nodesFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp", "cloud.instance*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
 		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const cpuUsageFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const jvmHeap = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
+		const jvmHeapFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
 		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory.actual*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
+		const memoryFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory.actual*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
 		const disk = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+
+		const diskFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
@@ -404,7 +446,19 @@ export const fetchNodeStats = async (config, timeFilter) => {
 			headers: esSearchConfig.headers,
 			body: `{"preference": "node_count"}\n${nodes}\n{"preference": "cpu_usage"}\n${cpuUsage}\n{"preference": "jvm_heap"}\n${jvmHeap}\n{"preference": "memory"}\n${memory}\n{"preference": "disk"}\n${disk}\n{"preference": "indices"}\n`,
 		});
-		const { responses } = await esRes.json();
+
+		let { responses } = await esRes.json();
+		if (
+			responses.responses.length > 1 &&
+			responses.responses[1].status === 400
+		) {
+			const esResFallback = await fetch(esSearchConfig.url, {
+				method: esSearchConfig.method,
+				headers: esSearchConfig.headers,
+				body: `{"preference": "node_count"}\n${nodesFallback}\n{"preference": "cpu_usage"}\n${cpuUsageFallback}\n{"preference": "jvm_heap"}\n${jvmHeapFallback}\n{"preference": "memory"}\n${memoryFallback}\n{"preference": "disk"}\n${diskFallback}\n{"preference": "indices"}\n`,
+			});
+			responses = await esResFallback.json();
+		}
 
 		const nodeBucket = get(responses[0], 'aggregations.instances.buckets');
 
@@ -495,17 +549,35 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		'1h',
 	)}"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"cpu"}}]}}}`;
 
+	const cpuSetFallback = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"cpu"}}]}}}`;
+
 	const nodeSet = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
 		TIME_FILTER,
 		`${timeFilter}.interval`,
 		'1h',
 	)}"},"aggs":{"node_stats":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"node_stats"}}]}}}`;
 
+	const nodeSetFallback = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"node_stats":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"node_stats"}}]}}}`;
+
 	const memorySet = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
 		TIME_FILTER,
 		`${timeFilter}.interval`,
 		'1h',
 	)}"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"memory"}}]}}}`;
+
+	const memorySetFallback = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"memory"}}]}}}`;
 
 	const { esURL, esUsername, esPassword } = config;
 
@@ -520,7 +592,18 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		body: `{"preference": "cpuSet"}\n${cpuSet}\n{"preference": "nodeSet"}\n${nodeSet}\n{"preference": "memorySet"}\n${memorySet}\n`,
 	});
 
-	const { responses } = await esRes.json();
+	let { responses } = await esRes.json();
+	if (
+		responses.responses.length > 1 &&
+		responses.responses[1].status === 400
+	) {
+		const esResFallback = await fetch(esSearchConfig.url, {
+			method: esSearchConfig.method,
+			headers: esSearchConfig.headers,
+			body: `{"preference": "cpuSet"}\n${cpuSetFallback}\n{"preference": "nodeSet"}\n${nodeSetFallback}\n{"preference": "memorySet"}\n${memorySetFallback}\n`,
+		});
+		responses = await esResFallback.json();
+	}
 
 	const getDateIntervalValue = dateValue => {
 		const isDayInterval = timeFilter === 'now-7d';
