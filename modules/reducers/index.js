@@ -21,6 +21,7 @@ import getAdvanceSearchState from './getAdvanceSearchState';
 import reIndexingTasks from './reIndexingTasks';
 import monitoring from './monitoring';
 import getAppPipelines from './getAppPipelines';
+import getAppFeaturedSuggestions from './getAppFeaturedSuggestions';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -437,4 +438,5 @@ export default {
 	$getAdvanceSearchState: getAdvanceSearchState,
 	$reIndexingTasks: reIndexingTasks,
 	$monitoring: monitoring,
+	$getFeaturedSuggestions: getAppFeaturedSuggestions,
 };

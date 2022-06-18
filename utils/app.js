@@ -468,3 +468,31 @@ export const getPipelineSchema = () => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const deleteFeaturedSuggestions = (id) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_featured_suggestions_group/${id}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const createFeaturedSuggestions = (suggestionsGroupId, payload) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPut(`${ACC_API}/_featured_suggestions_group/${suggestionsGroupId}`, payload, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const fetchFeaturedSuggestions = (suggestionGroupId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_featured_suggestions_group/${suggestionGroupId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
