@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import { createAction } from './utils';
 import AppConstants from '../constants';
 import { getURL } from '../../../constants/config';
-import { doGet, doPut, doDelete } from '../../utils/requestService';
+import { doGet, doPut, doDelete, doPost, doPatch } from '../../utils/requestService';
 
 export function getSearchPreferences(name) {
 	return (dispatch, getState) => {
@@ -217,6 +217,144 @@ export function deleteRecommendationsPreferences(defaultPreferences, name) {
 				dispatch(
 					createAction(
 						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function fetchAuth0Preferences() {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES));
+		const ACC_API = getURL();
+
+		return doGet(`${ACC_API}/_uibuilder/auth_preferences`)
+			.then((res) => {
+				if (res.client_id) dispatch(fetchAuth0Client(res.client_id));
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function putAuth0Preferences(payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.SET_AUTH0_PREFERENCES));
+		const ACC_API = getURL();
+
+		return doPut(`${ACC_API}/_uibuilder/auth_preferences`, payload)
+			.then((res) => {
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.SET_AUTH0_PREFERENCES_SUCCESS,
+						res,
+					),
+				);
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES_SUCCESS,
+						payload,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.SET_AUTH0_PREFERENCES_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function postAuth0Client(payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT));
+		const ACC_API = getURL();
+		return doPost(`${ACC_API}/_uibuilder/authentication`, payload)
+			.then((res) => {
+				dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
+				);
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function fetchAuth0Client(clientId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT));
+		const ACC_API = getURL();
+
+		return doGet(`${ACC_API}/_uibuilder/authentication/${clientId}`)
+			.then((res) => {
+				dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function patchAuth0Client(clientId, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT));
+		const ACC_API = getURL();
+		return doPatch(`${ACC_API}/_uibuilder/authentication/${clientId}`, payload)
+			.then((res) => {
+				dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
+				);
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_ERROR,
 						null,
 						error,
 					),
