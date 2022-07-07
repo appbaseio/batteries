@@ -362,3 +362,28 @@ export function patchAuth0Client(clientId, payload) {
 			);
 	};
 }
+
+export function getAuth0ClientConnections(clientId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/authentication/${clientId}`)
+			.then((res) => {
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
