@@ -412,3 +412,54 @@ export function putAuth0ClientConnections(clientId, payload) {
 			);
 	};
 }
+
+export function postAuth0ClientConnection(payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION));
+		const ACC_API = getURL();
+		return doPost(`${ACC_API}/_uibuilder/auth_connection`, payload)
+			.then((res) => {
+				getAuth0ClientConnections(payload.name); // payload.name contains the _client_id
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function getAuth0ClientConnection(connectionId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTION));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_uibuilder/auth_connection/${connectionId}`)
+			.then((res) => {
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTION_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTION_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
