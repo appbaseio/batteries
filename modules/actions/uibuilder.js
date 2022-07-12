@@ -388,11 +388,11 @@ export function getAuth0ClientConnections(clientId) {
 	};
 }
 
-export function patchAuth0ClientConnections(clientId, payload) {
+export function putAuth0ClientConnections(clientId, payload) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.SAVE_AUTH0_CLIENT_CONNECTIONS));
 		const ACC_API = getURL();
-		return doPatch(`${ACC_API}/_uibuilder/auth_connection_state/${clientId}`, payload)
+		return doPut(`${ACC_API}/_uibuilder/auth_connection_state/${clientId}`, payload)
 			.then((res) => {
 				return dispatch(
 					createAction(
