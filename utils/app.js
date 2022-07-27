@@ -496,3 +496,42 @@ export const fetchFeaturedSuggestions = (suggestionGroupId) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getSearchBoxes = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_uibuilder/searchboxes`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getSearchBox = (searchBoxId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_uibuilder/searchbox/${searchBoxId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const updateSearchBox = (payload) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	const { id, ...rest } = payload;
+	return doPut(`${ACC_API}/_uibuilder/searchbox/${id}`, rest.searchBoxConfig, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const deleteSearchBox = (searchBoxId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_uibuilder/searchbox/${searchBoxId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
