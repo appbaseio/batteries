@@ -21,3 +21,4 @@ export * from './indexSuggestions';
 export * from './queryRules';
 export * from './pipelines';
 export * from './featuredSuggestions';
+export * from './searchboxes';
