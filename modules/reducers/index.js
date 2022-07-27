@@ -292,6 +292,26 @@ export default {
 		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE_SUCCESS,
 		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE_ERROR,
 	),
+	$getSearchBoxes: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET,
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET_ERROR,
+	),
+	$getSearchBox: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.GET,
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.GET_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.GET_ERROR,
+	),
+	$saveSearchBox: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE,
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_ERROR,
+	),
+	$deleteSearchBox: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE,
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_ERROR,
+	),
 	$getAppAnalytics: createRequestReducer(
 		AppConstants.APP.ANALYTICS.GET,
 		AppConstants.APP.ANALYTICS.GET_SUCCESS,
