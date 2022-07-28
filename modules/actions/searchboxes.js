@@ -24,6 +24,39 @@ export function saveSearchBox(id, payload) {
 	};
 }
 
+export function cloneSearchBox(refSearchBox) {
+	return (dispatch) => {
+		const cloneId = `${refSearchBox.id}_clone_${new Date().getTime()}`;
+		console.log('cloneId', cloneId);
+		console.log('refSearchBox', refSearchBox);
+		const { id, ...payload } = refSearchBox;
+		dispatch(
+			createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE, {
+				id,
+			}),
+		);
+		return updateSearchBox({ id: cloneId, searchBoxConfig: payload })
+			.then((data) => {
+				console.log('data cloned', data);
+				dispatch(fetchSearchBoxes());
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE_SUCCESS,
+						{ id: cloneId, ...payload },
+						null,
+						{ id },
+					),
+				);
+			})
+			.catch((error) => {
+				console.log('data cloned error', error);
+				return dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE_ERROR, null, error),
+				);
+			});
+	};
+}
+
 export function fetchSearchBoxes() {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET));
@@ -72,14 +105,15 @@ export function removeSearchBox(id) {
 					),
 				);
 			})
-			.catch((error) =>
-				dispatch(
+			.catch((error) => {
+				console.log('error', error);
+				return dispatch(
 					createAction(
 						AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_ERROR,
 						{ id },
 						error,
 					),
-				),
-			);
+				);
+			});
 	};
 }
