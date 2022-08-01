@@ -463,3 +463,29 @@ export function getAuth0ClientConnection(connectionId) {
 			);
 	};
 }
+
+export function patchAuth0ClientConnection(connectionId, payload, clientId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION));
+		const ACC_API = getURL();
+		return doPatch(`${ACC_API}/_uibuilder/auth_connection/${connectionId}`, payload)
+			.then((res) => {
+				getAuth0ClientConnections(clientId); // payload.name contains the _client_id
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
