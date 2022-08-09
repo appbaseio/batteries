@@ -55,8 +55,8 @@ function getAppSearchBoxes(state = initialAppState, action) {
 		}
 
 		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE: {
-			const updatedResults = state.results.map((item) =>
-				item.id === action.payload.id
+			const updatedResults = state.results.map((item) => {
+				return item.id === action.payload.id
 					? {
 							...item,
 							update: {
@@ -64,8 +64,8 @@ function getAppSearchBoxes(state = initialAppState, action) {
 								error: null,
 							},
 					  }
-					: item,
-			);
+					: item;
+			});
 			return {
 				...state,
 				results: updatedResults,

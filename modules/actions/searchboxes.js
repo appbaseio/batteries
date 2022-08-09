@@ -4,7 +4,7 @@ import { getSearchBoxes, getSearchBox, deleteSearchBox, updateSearchBox } from '
 
 export function saveSearchBox(id, payload, shouldFetchSearchboxes = true) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE, { ...payload }));
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE, { id, ...payload }));
 		return updateSearchBox({ id, searchBoxConfig: payload })
 			.then((data) => {
 				if (shouldFetchSearchboxes) {
