@@ -468,3 +468,70 @@ export const getPipelineSchema = () => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const deleteFeaturedSuggestions = (id) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_featured_suggestions_group/${id}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const createFeaturedSuggestions = (suggestionsGroupId, payload) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPut(`${ACC_API}/_featured_suggestions_group/${suggestionsGroupId}`, payload, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const fetchFeaturedSuggestions = (suggestionGroupId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_featured_suggestions_group/${suggestionGroupId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getSearchBoxes = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_uibuilder/searchboxes`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getSearchBox = (searchBoxId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_uibuilder/searchbox/${searchBoxId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const updateSearchBox = (payload) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	const { id, ...rest } = payload;
+	return doPut(`${ACC_API}/_uibuilder/searchbox/${id}`, rest.searchBoxConfig, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const deleteSearchBox = (searchBoxId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_uibuilder/searchbox/${searchBoxId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
