@@ -93,12 +93,14 @@ export function fetchSearchBox(id) {
 	};
 }
 
-export function removeSearchBox(id) {
+export function removeSearchBox(id, shouldRefetchSearchboxes = true) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE, { id }));
 		return deleteSearchBox(id)
 			.then(() => {
-				dispatch(fetchSearchBoxes());
+				if (shouldRefetchSearchboxes) {
+					dispatch(fetchSearchBoxes());
+				}
 				return dispatch(
 					createAction(
 						AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_SUCCESS,
@@ -108,7 +110,6 @@ export function removeSearchBox(id) {
 				);
 			})
 			.catch((error) => {
-				console.log('error', error);
 				return dispatch(
 					createAction(
 						AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_ERROR,
