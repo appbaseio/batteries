@@ -29,8 +29,6 @@ export function saveSearchBox(id, payload, shouldFetchSearchboxes = true) {
 export function cloneSearchBox(refSearchBox) {
 	return (dispatch) => {
 		const cloneId = `${refSearchBox.id}_clone_${new Date().getTime()}`;
-		console.log('cloneId', cloneId);
-		console.log('refSearchBox', refSearchBox);
 		const { id, ...payload } = refSearchBox;
 		dispatch(
 			createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE, {
@@ -38,8 +36,7 @@ export function cloneSearchBox(refSearchBox) {
 			}),
 		);
 		return updateSearchBox({ id: cloneId, searchBoxConfig: payload })
-			.then((data) => {
-				console.log('data cloned', data);
+			.then(() => {
 				dispatch(fetchSearchBoxes());
 				return dispatch(
 					createAction(
