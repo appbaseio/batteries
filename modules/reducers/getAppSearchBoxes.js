@@ -122,7 +122,6 @@ function getAppSearchBoxes(state = initialAppState, action) {
 			};
 		}
 		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_SUCCESS: {
-			console.log('state.results', state.results);
 			const filteredResults = state.results.filter((item) => item.id !== action.payload.id);
 			return {
 				...state,
