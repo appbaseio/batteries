@@ -24,6 +24,64 @@ function getAppPipelines(state = initialAppState, action) {
 				error: action.payload,
 			};
 
+		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS: {
+			const { id } = action.payload;
+			const pipelines = state.results.map((pipeline) => {
+				if (pipeline.id === id) {
+					return {
+						...pipeline,
+						isFetchingVersions: true,
+						isFetchingVersionsError: false,
+						versions: null,
+					};
+				}
+
+				return pipeline;
+			});
+			return {
+				...state,
+				results: pipelines,
+			};
+		}
+		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS_SUCCESS: {
+			const { id, versions } = action.payload;
+			const pipelines = state.results.map((pipeline) => {
+				if (pipeline.id === id) {
+					return {
+						...pipeline,
+						isFetchingVersions: false,
+						versions,
+						isFetchingVersionsError: false,
+					};
+				}
+
+				return pipeline;
+			});
+			return {
+				...state,
+				results: pipelines,
+			};
+		}
+		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS_ERROR: {
+			const { id, error } = action.payload;
+			const pipelines = state.results.map((pipeline) => {
+				if (pipeline.id === id) {
+					return {
+						...pipeline,
+						isFetchingVersions: false,
+						versions: [],
+						isFetchingVersionsError: error,
+					};
+				}
+
+				return pipeline;
+			});
+			return {
+				...state,
+				results: pipelines,
+			};
+		}
+
 		case AppConstants.APP.PIPELINES.GET_SCRIPTS:
 			return {
 				...state,
