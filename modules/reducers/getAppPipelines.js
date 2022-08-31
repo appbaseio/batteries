@@ -376,6 +376,79 @@ function getAppPipelines(state = initialAppState, action) {
 				validationError: action.error,
 			};
 		}
+
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_LIVE_STATUS: {
+			const updatedResults = state.results.map((item) => {
+				const newItem = { ...item };
+
+				if (newItem.id === action.payload.id && newItem?.versions) {
+					const newVersions = newItem.versions.map((versionItem) => {
+						return {
+							...versionItem,
+							updatingLiveStatus: versionItem._version === action.payload.versionId,
+						};
+					});
+
+					return {
+						...newItem,
+						versions: newVersions,
+					};
+				}
+				return newItem;
+			});
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_LIVE_STATUS_SUCCESS: {
+			const updatedResults = state.results.map((item) => {
+				const newItem = { ...item };
+
+				if (newItem.id === action.payload.id && newItem?.versions) {
+					const newVersions = newItem.versions.map((versionItem) => {
+						return {
+							...versionItem,
+							is_live: versionItem._version === action.payload.versionId,
+						};
+					});
+
+					return {
+						...newItem,
+						versions: newVersions,
+					};
+				}
+				return newItem;
+			});
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_LIVE_STATUS_ERROR: {
+			const updatedResults = state.results.map((item) => {
+				const newItem = { ...item };
+
+				if (newItem.id === action.payload.id && newItem?.versions) {
+					const newVersions = newItem.versions.map((versionItem) => {
+						return {
+							...versionItem,
+							updatingLiveStatus: false,
+						};
+					});
+
+					return {
+						...newItem,
+						versions: newVersions,
+					};
+				}
+				return newItem;
+			});
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
 		default:
 			return state;
 	}
