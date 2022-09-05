@@ -13,6 +13,7 @@ import {
 	getPipelineVersions as fetchPipelineVersions,
 	makePipelineVersionLive as updatePipelineVersionLive,
 	createPipelineVersion as postPipelineVersion,
+	updatePipelineVersion as putPipelineVersion,
 } from '../../utils/app';
 import { generatePipelinePayload } from '../../utils/helpers';
 
@@ -300,6 +301,7 @@ export function makePipelineVersionLive(pipelineId, versionId) {
 		);
 		return updatePipelineVersionLive(pipelineId, versionId)
 			.then((res) => {
+				dispatch(getPipelines());
 				return dispatch(
 					createAction(
 						AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_LIVE_STATUS_SUCCESS,
@@ -352,6 +354,46 @@ export function createPipelineVersion(pipelineId, payload) {
 			})
 			.finally(() => {
 				dispatch(getPipelineVersions(pipelineId));
+			});
+	};
+}
+
+export function updateCurrentActiveVersion(pipelineId, version) {
+	return (dispatch) => {
+		dispatch(
+			createAction(AppConstants.APP.PIPELINES.UPDATE_CURRENT_ACTIVE_VERSION, {
+				id: pipelineId,
+				version,
+			}),
+		);
+	};
+}
+
+export function updatePipelineVersion(pipelineId, versionId, payload) {
+	return (dispatch) => {
+		dispatch(
+			createAction(AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION, {
+				id: pipelineId,
+			}),
+		);
+		return putPipelineVersion(pipelineId, versionId, payload)
+			.then((res) => {
+				return dispatch(
+					createAction(
+						AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_SUCCESS,
+						{ id: pipelineId, ...res },
+						null,
+					),
+				);
+			})
+			.catch((error) => {
+				return dispatch(
+					createAction(
+						AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_ERROR,
+						{ id: pipelineId },
+						error,
+					),
+				);
 			});
 	};
 }

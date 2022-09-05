@@ -15,7 +15,10 @@ function getAppPipelines(state = initialAppState, action) {
 				isFetching: false,
 				success: true,
 				error: false,
-				results: action.payload,
+				results: action.payload.map((pipeline) => ({
+					...pipeline,
+					activeVersion: pipeline._version,
+				})),
 			};
 		case AppConstants.APP.PIPELINES.GET_ERROR:
 			return {
@@ -23,6 +26,25 @@ function getAppPipelines(state = initialAppState, action) {
 				success: false,
 				error: action.payload,
 			};
+		case AppConstants.APP.PIPELINES.UPDATE_CURRENT_ACTIVE_VERSION: {
+			const newPipelines = state.results.map((pipeline) => {
+				if (pipeline.id === action.payload.id) {
+					return {
+						...pipeline,
+						activeVersion: action.payload.version,
+					};
+				}
+				return pipeline;
+			});
+			return {
+				...state,
+				results: newPipelines,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_CURRENT_ACTIVE_VERSION_SUCCESS:
+			return state;
+		case AppConstants.APP.PIPELINES.UPDATE_CURRENT_ACTIVE_VERSION_ERROR:
+			return state;
 
 		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS: {
 			const { id } = action.payload;
@@ -230,7 +252,58 @@ function getAppPipelines(state = initialAppState, action) {
 				results: updatedResults,
 			};
 		}
-
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION: {
+			const updatedResults = state.results.map((item) =>
+				item.id === action.payload.id
+					? {
+							...item,
+							update: {
+								isLoading: true,
+								error: null,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_SUCCESS: {
+			const updatedResults = state.results.map((item) =>
+				item.id === action.payload.id
+					? {
+							...item,
+							...action.payload,
+							update: {
+								isLoading: false,
+								error: null,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_ERROR: {
+			const updatedResults = state.results.map((item) =>
+				item.id === action.payload.id
+					? {
+							...item,
+							update: {
+								isLoading: false,
+								error: action.error,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
 		case AppConstants.APP.PIPELINES.DELETE: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
