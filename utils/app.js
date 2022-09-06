@@ -579,3 +579,13 @@ export const getPipelinesAvgTimeTakeInsights = (pipelineId) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getPipelinesErrorRateInsights = (pipelineId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_analytics/pipeline/${pipelineId}/error-rate`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
