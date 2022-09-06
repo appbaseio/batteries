@@ -570,7 +570,7 @@ export const updatePipelineVersion = (pipelineId, versionId, pipeline) => {
 	});
 };
 
-export const getPipelinesAvgTimeTakeInsights = (pipelineId) => {
+export const getPipelinesAvgTimeTakenInsights = (pipelineId) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 
@@ -585,6 +585,16 @@ export const getPipelinesErrorRateInsights = (pipelineId) => {
 	const ACC_API = getURL();
 
 	return doGet(`${ACC_API}/_analytics/pipeline/${pipelineId}/error-rate`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getPipelinesAvgTimeTakenPerVersion = (pipelineId, versionId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_analytics/pipeline/${pipelineId}/version/${versionId}/time-taken`, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
 	});
