@@ -599,3 +599,12 @@ export const getPipelinesAvgTimeTakenPerVersion = (pipelineId, versionId) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+export const getPipelinesErrorRateInsightsPerVersion = (pipelineId, versionId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_analytics/pipeline/${pipelineId}/version/${versionId}/error-rate`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
