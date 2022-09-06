@@ -167,10 +167,10 @@ export function deletePipeline(id) {
 	};
 }
 
-export function togglePipelineStatus(pipeline) {
+export function togglePipelineStatus(pipelineId, versionId, pipeline) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PIPELINES.TOGGLE_STATUS, { ...pipeline }));
-		return updatePipeline(pipeline)
+		return putPipelineVersion(pipelineId, versionId, pipeline)
 			.then(() => {
 				return dispatch(
 					createAction(
@@ -210,7 +210,7 @@ export function clonePipeline(pipeline, newPipeline) {
 	};
 }
 
-export function reorderPipelines({ id, priority }) {
+export function reorderPipelines(id, versionId, priority) {
 	return (dispatch, getState) => {
 		const state = getState();
 		const pipeline = get(state, '$getAppPipelines.results').find((item) => item.id === id);
@@ -225,7 +225,7 @@ export function reorderPipelines({ id, priority }) {
 			'content',
 		);
 		dispatch(createAction(AppConstants.APP.PIPELINES.REORDER, { id, priority }));
-		return updatePipeline({ id, pipelinePayload })
+		return putPipelineVersion(id, versionId, pipelinePayload)
 			.then(() => {
 				dispatch(
 					createAction(
