@@ -170,7 +170,7 @@ export function deletePipeline(id) {
 export function togglePipelineStatus(pipelineId, versionId, pipeline) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PIPELINES.TOGGLE_STATUS, { ...pipeline }));
-		return putPipelineVersion(pipelineId, versionId, pipeline)
+		return putPipelineVersion(pipelineId, versionId, pipeline.pipelinePayload)
 			.then(() => {
 				return dispatch(
 					createAction(
