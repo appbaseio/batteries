@@ -569,3 +569,13 @@ export const updatePipelineVersion = (pipelineId, versionId, pipeline) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getPipelinesAvgTimeTakeInsights = (pipelineId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_analytics/pipeline/${pipelineId}/time-taken`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
