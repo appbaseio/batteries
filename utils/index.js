@@ -1,6 +1,7 @@
 import get from 'lodash/get';
 import { doGet, doPost } from './requestService';
 import { getURL } from '../../constants/config';
+import { ALLOWED_ACTIONS } from '../../constants';
 
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
