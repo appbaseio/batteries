@@ -563,3 +563,32 @@ export function patchAuth0UserSettings(userId, payload) {
 			);
 	};
 }
+
+export function deleteAuthUser(userId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER));
+		const ACC_API = getURL();
+
+		return doDelete(`${ACC_API}/_uibuilder/auth_user/${userId}`)
+			.then((res) => {
+				console.log('delete res', res);
+
+				return dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER_SUCCESS, res),
+				);
+			})
+			.catch((error) => {
+				console.log('delete error', error);
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER_ERROR,
+						null,
+						error,
+					),
+				);
+			})
+			.finally(() => {
+				dispatch(getAuth0Users());
+			});
+	};
+}
