@@ -514,12 +514,17 @@ export function getAuth0Users() {
 }
 
 export function createAuth0User(payload) {
-	return (dispatch) => {
+	return (dispatch, getState) => {
 		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER));
 
 		const ACC_API = getURL();
-
-		return doPost(`${ACC_API}/_uibuilder/auth_user`, payload)
+		const clientId = getState().$getAuth0Preferences.results._client_id;
+		return doPost(`${ACC_API}/_uibuilder/auth_user`, {
+			...payload,
+			app_metadata: {
+				[clientId]: true,
+			},
+		})
 			.then((res) => {
 				dispatch(getAuth0Users());
 				return dispatch(
