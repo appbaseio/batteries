@@ -537,3 +537,29 @@ export function createAuth0User(payload) {
 			);
 	};
 }
+
+export function patchAuth0UserSettings(userId, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS));
+		const ACC_API = getURL();
+		return doPatch(`${ACC_API}/_uibuilder/auth_user/${userId}`, payload)
+			.then((res) => {
+				dispatch(getAuth0Users());
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
