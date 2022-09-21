@@ -512,3 +512,28 @@ export function getAuth0Users() {
 			);
 	};
 }
+
+export function createAuth0User(payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER));
+
+		const ACC_API = getURL();
+
+		return doPost(`${ACC_API}/_uibuilder/auth_user`, payload)
+			.then((res) => {
+				dispatch(getAuth0Users());
+				return dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER_SUCCESS, res),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
