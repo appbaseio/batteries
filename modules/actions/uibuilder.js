@@ -489,3 +489,26 @@ export function patchAuth0ClientConnection(connectionId, payload, clientId) {
 			);
 	};
 }
+
+export function getAuth0Users() {
+	return (dispatch, getState) => {
+		const clientId = getState().$getAuth0Preferences.results._client_id;
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_uibuilder/auth_users?q=app_metadata.${clientId}=true`)
+			.then((res) => {
+				return dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS_SUCCESS, res),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}

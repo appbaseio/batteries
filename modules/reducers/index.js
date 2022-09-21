@@ -312,6 +312,11 @@ export default {
 		AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTION_SUCCESS,
 		AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTION_ERROR,
 	),
+	$getAuth0Users: createRequestReducer(
+		AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS,
+		AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS_SUCCESS,
+		AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS_ERROR,
+	),
 	// New UI builder routes
 	$getSearchPreferencesN: createRequestReducer(
 		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET,
