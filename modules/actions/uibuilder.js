@@ -571,14 +571,11 @@ export function deleteAuthUser(userId) {
 
 		return doDelete(`${ACC_API}/_uibuilder/auth_user/${userId}`)
 			.then((res) => {
-				console.log('delete res', res);
-
 				return dispatch(
 					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER_SUCCESS, res),
 				);
 			})
 			.catch((error) => {
-				console.log('delete error', error);
 				return dispatch(
 					createAction(
 						AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER_ERROR,
