@@ -15,7 +15,10 @@ function getAppPipelines(state = initialAppState, action) {
 				isFetching: false,
 				success: true,
 				error: false,
-				results: action.payload,
+				results: action.payload.map((pipeline) => ({
+					...pipeline,
+					activeVersion: pipeline._version,
+				})),
 			};
 		case AppConstants.APP.PIPELINES.GET_ERROR:
 			return {
@@ -23,6 +26,83 @@ function getAppPipelines(state = initialAppState, action) {
 				success: false,
 				error: action.payload,
 			};
+		case AppConstants.APP.PIPELINES.UPDATE_CURRENT_ACTIVE_VERSION: {
+			const newPipelines = state.results.map((pipeline) => {
+				if (pipeline.id === action.payload.id) {
+					return {
+						...pipeline,
+						activeVersion: action.payload.version,
+					};
+				}
+				return pipeline;
+			});
+			return {
+				...state,
+				results: newPipelines,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_CURRENT_ACTIVE_VERSION_SUCCESS:
+			return state;
+		case AppConstants.APP.PIPELINES.UPDATE_CURRENT_ACTIVE_VERSION_ERROR:
+			return state;
+
+		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS: {
+			const { id } = action.payload;
+			const pipelines = state.results.map((pipeline) => {
+				if (pipeline.id === id) {
+					return {
+						...pipeline,
+						isFetchingVersions: true,
+						isFetchingVersionsError: false,
+						versions: null,
+					};
+				}
+
+				return pipeline;
+			});
+			return {
+				...state,
+				results: pipelines,
+			};
+		}
+		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS_SUCCESS: {
+			const { id, versions } = action.payload;
+			const pipelines = state.results.map((pipeline) => {
+				if (pipeline.id === id) {
+					return {
+						...pipeline,
+						isFetchingVersions: false,
+						versions,
+						isFetchingVersionsError: false,
+					};
+				}
+
+				return pipeline;
+			});
+			return {
+				...state,
+				results: pipelines,
+			};
+		}
+		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS_ERROR: {
+			const { id, error } = action.payload;
+			const pipelines = state.results.map((pipeline) => {
+				if (pipeline.id === id) {
+					return {
+						...pipeline,
+						isFetchingVersions: false,
+						versions: [],
+						isFetchingVersionsError: error,
+					};
+				}
+
+				return pipeline;
+			});
+			return {
+				...state,
+				results: pipelines,
+			};
+		}
 
 		case AppConstants.APP.PIPELINES.GET_SCRIPTS:
 			return {
@@ -172,7 +252,58 @@ function getAppPipelines(state = initialAppState, action) {
 				results: updatedResults,
 			};
 		}
-
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION: {
+			const updatedResults = state.results.map((item) =>
+				item.id === action.payload.id
+					? {
+							...item,
+							update: {
+								isLoading: true,
+								error: null,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_SUCCESS: {
+			const updatedResults = state.results.map((item) =>
+				item.id === action.payload.id
+					? {
+							...item,
+							...action.payload,
+							update: {
+								isLoading: false,
+								error: null,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_ERROR: {
+			const updatedResults = state.results.map((item) =>
+				item.id === action.payload.id
+					? {
+							...item,
+							update: {
+								isLoading: false,
+								error: action.error,
+							},
+					  }
+					: item,
+			);
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
 		case AppConstants.APP.PIPELINES.DELETE: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
@@ -316,6 +447,79 @@ function getAppPipelines(state = initialAppState, action) {
 				...state,
 				validating: false,
 				validationError: action.error,
+			};
+		}
+
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_LIVE_STATUS: {
+			const updatedResults = state.results.map((item) => {
+				const newItem = { ...item };
+
+				if (newItem.id === action.payload.id && newItem?.versions) {
+					const newVersions = newItem.versions.map((versionItem) => {
+						return {
+							...versionItem,
+							updatingLiveStatus: versionItem._version === action.payload.versionId,
+						};
+					});
+
+					return {
+						...newItem,
+						versions: newVersions,
+					};
+				}
+				return newItem;
+			});
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_LIVE_STATUS_SUCCESS: {
+			const updatedResults = state.results.map((item) => {
+				const newItem = { ...item };
+
+				if (newItem.id === action.payload.id && newItem?.versions) {
+					const newVersions = newItem.versions.map((versionItem) => {
+						return {
+							...versionItem,
+							is_live: versionItem._version === action.payload.versionId,
+						};
+					});
+
+					return {
+						...newItem,
+						versions: newVersions,
+					};
+				}
+				return newItem;
+			});
+			return {
+				...state,
+				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.UPDATE_PIPELINE_VERSION_LIVE_STATUS_ERROR: {
+			const updatedResults = state.results.map((item) => {
+				const newItem = { ...item };
+
+				if (newItem.id === action.payload.id && newItem?.versions) {
+					const newVersions = newItem.versions.map((versionItem) => {
+						return {
+							...versionItem,
+							updatingLiveStatus: false,
+						};
+					});
+
+					return {
+						...newItem,
+						versions: newVersions,
+					};
+				}
+				return newItem;
+			});
+			return {
+				...state,
+				results: updatedResults,
 			};
 		}
 		default:
