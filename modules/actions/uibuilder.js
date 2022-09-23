@@ -489,3 +489,108 @@ export function patchAuth0ClientConnection(connectionId, payload, clientId) {
 			);
 	};
 }
+
+export function getAuth0Users() {
+	return (dispatch, getState) => {
+		const clientId = getState().$getAuth0Preferences.results._client_id;
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_uibuilder/auth_users?q=app_metadata.${clientId}=true`)
+			.then((res) => {
+				return dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS_SUCCESS, res),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function createAuth0User(payload) {
+	return (dispatch, getState) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER));
+
+		const ACC_API = getURL();
+		const clientId = getState().$getAuth0Preferences.results._client_id;
+		return doPost(`${ACC_API}/_uibuilder/auth_user`, {
+			...payload,
+			app_metadata: {
+				[clientId]: true,
+			},
+		})
+			.then((res) => {
+				dispatch(getAuth0Users());
+				return dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER_SUCCESS, res),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function patchAuth0UserSettings(userId, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS));
+		const ACC_API = getURL();
+		return doPatch(`${ACC_API}/_uibuilder/auth_user/${userId}`, payload)
+			.then((res) => {
+				dispatch(getAuth0Users());
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS_SUCCESS,
+						res,
+					),
+				);
+			})
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function deleteAuthUser(userId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER));
+		const ACC_API = getURL();
+
+		return doDelete(`${ACC_API}/_uibuilder/auth_user/${userId}`)
+			.then((res) => {
+				return dispatch(
+					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER_SUCCESS, res),
+				);
+			})
+			.catch((error) => {
+				return dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER_ERROR,
+						null,
+						error,
+					),
+				);
+			})
+			.finally(() => {
+				dispatch(getAuth0Users());
+			});
+	};
+}

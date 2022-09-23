@@ -65,6 +65,11 @@ const createRequest = (
 						message: 'Something went wrong!',
 					};
 				}
+				if (status === 204) {
+					return {
+						message: 'Success!',
+					};
+				}
 				return res.json();
 			})
 			.then((data) => {
