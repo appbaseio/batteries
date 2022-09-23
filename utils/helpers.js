@@ -80,6 +80,7 @@ export const generatePipelinePayload = (
 	pipelineJSON,
 	scriptRefsMap,
 	scriptValKey = 'scriptValue',
+	versionDescription,
 ) => {
 	const formData = new FormData();
 
@@ -105,6 +106,9 @@ export const generatePipelinePayload = (
 				}
 			});
 		}
+	}
+	if (versionDescription) {
+		formData.append('versionDescription', versionDescription);
 	}
 	return formData;
 };

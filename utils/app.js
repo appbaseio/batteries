@@ -535,3 +535,37 @@ export const deleteSearchBox = (searchBoxId) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const createPipelineVersion = (pipelineId, pipeline) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_pipeline/${pipelineId}/version`, pipeline, {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const makePipelineVersionLive = (pipelineId, versionId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_pipeline/${pipelineId}/version/${versionId}/live`, new FormData(), {
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getPipelineVersions = (pipelineId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_pipeline/${pipelineId}/versions`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const updatePipelineVersion = (pipelineId, versionId, pipeline) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPut(`${ACC_API}/_pipeline/${pipelineId}/version/${versionId}`, pipeline, {
+		Authorization: `Basic ${authToken}`,
+	});
+};

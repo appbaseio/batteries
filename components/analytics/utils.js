@@ -1134,3 +1134,116 @@ export const isValidJSONFormat = (input) => {
 		}
 	}
 };
+
+export const getPipelinesAvgTimeTakenInsights = (
+	pipelineId,
+	queryParams = {
+		from_timestamp: undefined,
+		to_timestamp: undefined,
+	},
+) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(
+		`${ACC_API}/_analytics/pipeline/${pipelineId}/time-taken${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					...queryParams,
+				}),
+			),
+			undefined,
+			false,
+		)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
+};
+
+export const getPipelinesErrorRateInsights = (
+	pipelineId,
+	queryParams = {
+		from_timestamp: undefined,
+		to_timestamp: undefined,
+	},
+) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(
+		`${ACC_API}/_analytics/pipeline/${pipelineId}/error-rate${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					...queryParams,
+				}),
+			),
+			undefined,
+			false,
+		)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
+};
+
+export const getPipelinesAvgTimeTakenPerVersion = (
+	pipelineId,
+	versionId,
+	queryParams = {
+		from_timestamp: undefined,
+		to_timestamp: undefined,
+	},
+) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(
+		`${ACC_API}/_analytics/pipeline/${pipelineId}/version/${versionId}/time-taken${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					...queryParams,
+				}),
+			),
+			undefined,
+			false,
+		)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
+};
+export const getPipelinesErrorRateInsightsPerVersion = (
+	pipelineId,
+	versionId,
+	queryParams = {
+		from_timestamp: undefined,
+		to_timestamp: undefined,
+	},
+) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(
+		`${ACC_API}/_analytics/pipeline/${pipelineId}/version/${versionId}/error-rate${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					...queryParams,
+				}),
+			),
+			undefined,
+			false,
+		)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
+};
