@@ -459,6 +459,7 @@ export const ALLOWED_ACTIONS_BY_BACKEND = {
 	[BACKENDS.FUSION.name]: [
 		...Object.values(ALLOWED_ACTIONS).filter(
 			(action) =>
+				action !== ALLOWED_ACTIONS.OVERVIEW &&
 				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
 				action !== ALLOWED_ACTIONS.DEVELOP &&
 				action !== ALLOWED_ACTIONS.SPEED,
@@ -467,6 +468,7 @@ export const ALLOWED_ACTIONS_BY_BACKEND = {
 	[BACKENDS.MONGODB.name]: [
 		...Object.values(ALLOWED_ACTIONS).filter(
 			(action) =>
+				action !== ALLOWED_ACTIONS.OVERVIEW &&
 				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
 				action !== ALLOWED_ACTIONS.DEVELOP &&
 				action !== ALLOWED_ACTIONS.SPEED,
