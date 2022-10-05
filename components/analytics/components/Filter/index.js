@@ -114,7 +114,7 @@ class Filter extends React.Component {
 	};
 
 	handleFilterValueChange = (filterValue = '') => {
-		let { filterKey } = this.state;
+		const { filterKey } = this.state;
 		const { selectFilterValue, filterId } = this.props;
 		selectFilterValue(filterId, filterKey, filterValue);
 	};
@@ -166,6 +166,7 @@ class Filter extends React.Component {
 			toggleInsights,
 			hideInsightsButton,
 			hideCustomEvents,
+			dateFilterProps,
 		} = this.props;
 		if (!isValidPlan(tier, featureCustomEvents)) {
 			return null;
@@ -246,6 +247,7 @@ class Filter extends React.Component {
 							label={selectedDateRange}
 							visible={dateRangePopover}
 							columnItems={5}
+							{...dateFilterProps}
 						/>
 						{hideInsightsButton ? null : (
 							<Button onClick={toggleInsights} style={{ marginLeft: 15 }}>
@@ -267,6 +269,7 @@ Filter.defaultProps = {
 	filterLabels: [],
 	hideInsightsButton: false,
 	hideCustomEvents: false,
+	dateFilterProps: {},
 };
 
 Filter.propTypes = {
@@ -285,6 +288,7 @@ Filter.propTypes = {
 	hideCustomEvents: PropTypes.bool,
 	filterLabels: PropTypes.array,
 	toggleInsights: PropTypes.func.isRequired,
+	dateFilterProps: PropTypes.object,
 };
 
 const mapStateToProps = (state, props) => ({
