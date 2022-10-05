@@ -454,9 +454,16 @@ export const getPipelineScript = (pipelineId, scriptRefKey) => {
 export const validatePipeline = (formdata) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
-	return doPost(`${ACC_API}/_pipeline/validate`, formdata, {
-		Authorization: `Basic ${authToken}`,
-	});
+	return doPost(
+		`${ACC_API}/_pipeline/validate`,
+		formdata,
+		{
+			Authorization: `Basic ${authToken}`,
+		},
+		undefined,
+		undefined,
+		true,
+	);
 };
 
 export const getPipelineSchema = () => {
