@@ -576,3 +576,19 @@ export const updatePipelineVersion = (pipelineId, versionId, pipeline) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const updateBackendConnection = (payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(
+		`${ACC_API}/_update_backend_connection`,
+		payload,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+		undefined,
+		undefined,
+		true,
+	);
+};
