@@ -38,10 +38,10 @@ export function clearMappings(appName) {
 	};
 }
 
-export function getAppMappings(appName, credentials, url) {
+export function getAppMappings(appName, credentials, url, backend) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.GET_MAPPINGS));
-		return getMappings(appName, credentials, url)
+		return getMappings(appName, credentials, url, backend)
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, {

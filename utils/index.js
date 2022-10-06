@@ -1,6 +1,7 @@
 import get from 'lodash/get';
 import { doGet, doPost } from './requestService';
 import { getURL } from '../../constants/config';
+import { ALLOWED_ACTIONS } from '../../constants';
 
 // Get credentials if permissions are already present
 export function getCredentialsFromPermissions(permissions = []) {
@@ -417,6 +418,67 @@ export const deleteObjectFromPath = (obj, path) => {
 			return delete obj[path];
 		}
 		return deleteObjectFromPath(obj[fields[0]], fields.slice(1).join('.'));
+	}
+	return false;
+};
+
+export const BACKENDS = {
+	ELASTICSEARCH: {
+		name: 'elasticsearch',
+		logo: 'https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/blt05047fdbe3b9c333/5c11ec1f3312ce2e785d9c30/logo-elastic-elasticsearch-lt.svg',
+	},
+	OPENSEARCH: {
+		name: 'opensearch',
+		logo: 'https://opensearch.org/assets/brand/SVG/Logo/opensearch_logo_default.svg',
+	},
+	SOLR: {
+		name: 'solr',
+		logo: 'https://www.drupal.org/files/project-images/Solr.png',
+	},
+	MONGODB: {
+		name: 'mongodb',
+		logo: 'https://webimages.mongodb.com/_com_assets/cms/kuyjf3vea2hg34taa-horizontal_default_slate_blue.svg?auto=format%252Ccompress',
+	},
+	FUSION: {
+		name: 'fusion',
+		logo: 'https://www.drupal.org/files/project-images/Solr.png',
+	},
+};
+
+export const ALLOWED_ACTIONS_BY_BACKEND = {
+	[BACKENDS.ELASTICSEARCH.name]: [...Object.values(ALLOWED_ACTIONS)],
+	[BACKENDS.OPENSEARCH.name]: [...Object.values(ALLOWED_ACTIONS)],
+	[BACKENDS.SOLR.name]: [
+		...Object.values(ALLOWED_ACTIONS).filter(
+			(action) =>
+				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
+				action !== ALLOWED_ACTIONS.DEVELOP &&
+				action !== ALLOWED_ACTIONS.SPEED,
+		),
+	],
+	[BACKENDS.FUSION.name]: [
+		...Object.values(ALLOWED_ACTIONS).filter(
+			(action) =>
+				action !== ALLOWED_ACTIONS.OVERVIEW &&
+				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
+				action !== ALLOWED_ACTIONS.DEVELOP &&
+				action !== ALLOWED_ACTIONS.SPEED,
+		),
+	],
+	[BACKENDS.MONGODB.name]: [
+		...Object.values(ALLOWED_ACTIONS).filter(
+			(action) =>
+				action !== ALLOWED_ACTIONS.OVERVIEW &&
+				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
+				action !== ALLOWED_ACTIONS.DEVELOP &&
+				action !== ALLOWED_ACTIONS.SPEED,
+		),
+	],
+};
+
+export const isFusion = () => {
+	if (window && window.host) {
+		return window.host === 'https://lw-dash.appbase.io/' || window.host.includes('lw-dash');
 	}
 	return false;
 };
