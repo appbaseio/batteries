@@ -163,5 +163,22 @@ export const doPatch = (url, body, headers, credentials) =>
  * @param {Object} headers
  * @param {boolean} credentials
  */
-export const doPut = (url, body, headers, credentials) =>
-	createRequest(url, body, headers, 'PUT', credentials);
+export const doPut = (
+	url,
+	body,
+	headers,
+	credentials,
+	allowedStatusCode,
+	allowRawError,
+	allowRawResponse,
+) =>
+	createRequest(
+		url,
+		body,
+		headers,
+		'PUT',
+		credentials,
+		allowedStatusCode,
+		allowRawError,
+		allowRawResponse,
+	);
