@@ -4,9 +4,6 @@ import analyzerSettings, { synonymsSettings } from './analyzerSettings';
 import { getURL } from '../../constants/config';
 import { BACKENDS, deleteObjectFromPath } from '.';
 import language from '../../constants/language';
-import apisMapper from '../../pages/IntegrationsPage/utils/apisMapper';
-// eslint-disable-next-line import/no-cycle
-import { getValidURL } from '../../utils';
 
 const PRESERVED_KEYS = ['meta'];
 export const REMOVED_KEYS = [
@@ -28,21 +25,10 @@ export function getAuthHeaders(credentials) {
 	return {};
 }
 
-export function getMappings(
-	appName,
-	credentials,
-	url = getURL(),
-	backend = BACKENDS.ELASTICSEARCH.name,
-) {
+export function getMappings(appName, credentials, url = getURL()) {
 	return new Promise((resolve, reject) => {
-		const schemaConfig = apisMapper[backend].schema || {};
-
-		let schemaURL = getValidURL(schemaConfig, { index: appName || '*,-.*,-metricbeat*' });
-		if (backend !== BACKENDS.ELASTICSEARCH.name && backend !== BACKENDS.SOLR.name)
-			schemaURL = `${appName || '*,-.*,-metricbeat*'}/_mapping`;
-
 		// If index is not defined then use pattern to eliminate the system indices
-		fetch(`${url}${schemaURL}`, {
+		fetch(`${url}/${appName || '*,-.*,-metricbeat*'}/_mapping`, {
 			method: 'GET',
 			headers: {
 				...getAuthHeaders(credentials),
