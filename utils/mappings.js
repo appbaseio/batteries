@@ -5,6 +5,7 @@ import { getURL } from '../../constants/config';
 import { BACKENDS, deleteObjectFromPath } from '.';
 import language from '../../constants/language';
 import apisMapper from '../../pages/IntegrationsPage/utils/apisMapper';
+// eslint-disable-next-line import/no-cycle
 import { getValidURL } from '../../utils';
 
 const PRESERVED_KEYS = ['meta'];
