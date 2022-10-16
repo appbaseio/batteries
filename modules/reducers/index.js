@@ -11,6 +11,7 @@ import {
 	computePlan,
 } from './utils';
 import getAppFunction from './getAppFunction';
+import getSearchPreferencesVersions from './searchPreferencesReducer';
 import privateRegistries from './getPrivateRegistry';
 import getAppSettings from './getAppSettings';
 import getAppRules from './getAppRules';
@@ -358,6 +359,8 @@ export default {
 		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.DELETE_SUCCESS,
 		AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.DELETE_ERROR,
 	),
+	// search preferences - versions
+	$getSearchPreferencesVersionsN: getSearchPreferencesVersions,
 	$deleteRecommendationPreferenceN: createRequestReducer(
 		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE,
 		AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE_SUCCESS,

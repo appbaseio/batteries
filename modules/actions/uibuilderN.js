@@ -222,3 +222,29 @@ export function deleteRecommendationPreferenceN(id) {
 			);
 	};
 }
+
+export function getSearchPreferenceVersionsN(preferenceId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/code/versions`)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_SUCCESS,
+						{ results: res.versions, preferenceId },
+						null,
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
