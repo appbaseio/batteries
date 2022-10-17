@@ -443,6 +443,10 @@ export const BACKENDS = {
 		name: 'solr',
 		logo: 'https://www.drupal.org/files/project-images/Solr.png',
 	},
+	ZINC: {
+		name: 'zinc',
+		logo: 'https://zincsearch.com/assets/images/common/logo.svg',
+	},
 };
 
 export const ALLOWED_ACTIONS_BY_BACKEND = {
@@ -466,6 +470,15 @@ export const ALLOWED_ACTIONS_BY_BACKEND = {
 		),
 	],
 	[BACKENDS.MONGODB.name]: [
+		...Object.values(ALLOWED_ACTIONS).filter(
+			(action) =>
+				action !== ALLOWED_ACTIONS.OVERVIEW &&
+				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
+				action !== ALLOWED_ACTIONS.DEVELOP &&
+				action !== ALLOWED_ACTIONS.SPEED,
+		),
+	],
+	[BACKENDS.ZINC.name]: [
 		...Object.values(ALLOWED_ACTIONS).filter(
 			(action) =>
 				action !== ALLOWED_ACTIONS.OVERVIEW &&
