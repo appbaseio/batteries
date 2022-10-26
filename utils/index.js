@@ -378,7 +378,7 @@ export const features = {
 	SEARCH_RELEVANCY: 'SEARCH_RELEVANCY',
 	QUERY_RULES: 'QUERY_RULES',
 	ANALYTICS: 'ANALYTICS',
-	UI_BUILDER: 'UI BUILDER',
+	UI_BUILDER_PREMIUM: 'UI BUILDER PREMIUM',
 };
 
 export const isValidPlan = (tier, override, feature) => {
@@ -396,8 +396,7 @@ export const isValidPlan = (tier, override, feature) => {
 			);
 			return tier && functionPlans.includes(tier);
 		case features.SEARCH_RELEVANCY:
-		case features.UI_BUILDER:
-			// Allow search relevancy and ui builder for starter and standard 2021 plans
+			// Allow search relevancy for starter and standard 2021 plans
 			return (
 				tier &&
 				[
