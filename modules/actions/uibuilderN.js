@@ -222,3 +222,86 @@ export function deleteRecommendationPreferenceN(id) {
 			);
 	};
 }
+
+export function getSearchPreferenceVersionsN(preferenceId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/code/versions`)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_SUCCESS,
+						{ results: res.versions, preferenceId },
+						null,
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+// actions to handle fetching, updating, etc for versions of code for search ui
+export function getSearchPreferenceLatestVersionN(preferenceId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/code`)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_SUCCESS,
+						{ res, preferenceId },
+						null,
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
+
+export function getSearchPreferenceVersionCodeByVersionN(preferenceId, versionId) {
+	return (dispatch) => {
+		dispatch(
+			createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE),
+		);
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/code/version/${versionId}`)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS
+							.GET_VERSION_CODE_SUCCESS,
+						{ res, preferenceId },
+						null,
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS
+							.GET_VERSION_CODE_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}
