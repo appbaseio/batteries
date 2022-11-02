@@ -39,9 +39,13 @@ export function clearMappings(appName) {
 }
 
 export function getAppMappings(appName, credentials, url) {
-	return (dispatch) => {
+	return (dispatch, getState) => {
 		dispatch(createAction(AppConstants.APP.GET_MAPPINGS));
-		return getMappings(appName, credentials, url)
+		const schemaEndpointUrl = get(getState(), 'endpoints.data.schema.url') ?? '';
+
+		// eslint-disable-next-line no-template-curly-in-string
+		const endpointSuffix = schemaEndpointUrl.replace('${index}', appName);
+		return getMappings(appName, credentials, url, endpointSuffix)
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, {
