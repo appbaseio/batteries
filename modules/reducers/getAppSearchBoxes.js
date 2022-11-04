@@ -69,6 +69,10 @@ function getAppSearchBoxes(state = initialAppState, action) {
 			return {
 				...state,
 				results: updatedResults,
+				update: {
+					isLoading: true,
+					error: null,
+				},
 			};
 		}
 		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_SUCCESS: {
