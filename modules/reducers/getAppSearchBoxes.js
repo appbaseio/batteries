@@ -69,6 +69,14 @@ function getAppSearchBoxes(state = initialAppState, action) {
 			return {
 				...state,
 				results: updatedResults,
+				...(state.results.find((item) => item.id === action.payload.id)
+					? {}
+					: {
+							create: {
+								isLoading: true,
+								error: null,
+							},
+					  }),
 			};
 		}
 		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_SUCCESS: {
@@ -87,6 +95,14 @@ function getAppSearchBoxes(state = initialAppState, action) {
 			return {
 				...state,
 				results: updatedResults,
+				...(state.results.find((item) => item.id === action.payload.id)
+					? {}
+					: {
+							create: {
+								isLoading: false,
+								error: null,
+							},
+					  }),
 			};
 		}
 		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_ERROR: {
@@ -104,6 +120,14 @@ function getAppSearchBoxes(state = initialAppState, action) {
 			return {
 				...state,
 				results: updatedResults,
+				...(state.results.find((item) => item.id === action.payload.id)
+					? {}
+					: {
+							create: {
+								isLoading: false,
+								error: action.error,
+							},
+					  }),
 			};
 		}
 
