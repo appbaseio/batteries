@@ -14,7 +14,7 @@ const SummaryStats = ({ summaryConfig, style }) => {
 	return (
 		<Card
 			extra={
-				<a href="https://docs.appbase.io/docs/analytics/Overview/">
+				<a href="https://docs.reactivesearch.io/docs/analytics/Overview/">
 					Read More about these stats
 				</a>
 			}
