@@ -15,6 +15,8 @@ import {
 import { getMappings, getAuthHeaders } from '../../utils/mappings';
 import { doDelete, doGet, doPost, doPatch } from '../../utils/requestService';
 import { getURL } from '../../../constants/config';
+import apisMapper from '../../../pages/IntegrationsPage/utils/apisMapper';
+import { BACKENDS } from '../../utils';
 
 /**
  * @param {string} appId
@@ -41,8 +43,10 @@ export function clearMappings(appName) {
 export function getAppMappings(appName, credentials, url) {
 	return (dispatch, getState) => {
 		dispatch(createAction(AppConstants.APP.GET_MAPPINGS));
-		const schemaEndpointUrl = get(getState(), 'endpoints.data.schema.url') ?? '';
-
+		const backend =
+			get(getState(), '$getAppPlan.results.backend') ?? BACKENDS.ELASTICSEARCH.name;
+		const schemaEndpointUrl =
+			get(getState(), 'endpoints.data.schema.url') ?? apisMapper[backend].schema.url;
 		// eslint-disable-next-line no-template-curly-in-string
 		const endpointSuffix = schemaEndpointUrl.replace('${index}', appName);
 		return getMappings(appName, credentials, url, endpointSuffix)
