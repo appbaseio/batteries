@@ -489,7 +489,7 @@ export const ALLOWED_ACTIONS_BY_BACKEND = {
 
 export const isFusion = () => {
 	if (window && window.host) {
-		return window.host === 'https://lw-dash.appbase.io/' || window.host.includes('lw-dash');
+		return window.host === 'https://lw-dash.reactivesearch.io/' || window.host.includes('lw-dash');
 	}
 	return false;
 };
