@@ -20,6 +20,10 @@ import { generatePipelinePayload } from '../../utils/helpers';
 export function getPipelinesScripts(pipelines) {
 	return (dispatch) => {
 		try {
+			if (!pipelines || !Array.isArray(pipelines)) {
+				return;
+			}
+
 			dispatch(createAction(AppConstants.APP.PIPELINES.GET_SCRIPTS));
 			const scriptRefs = {};
 
@@ -28,23 +32,42 @@ export function getPipelinesScripts(pipelines) {
 				if (Array.isArray(pipelineJSON.stages) && pipelineJSON.stages.length) {
 					pipelineJSON.stages.forEach((stageItem) => {
 						if (stageItem?.scriptRef) {
-							scriptRefs[pipeline.id] = scriptRefs[pipeline.id]
-								? [...scriptRefs[pipeline.id], stageItem?.scriptRef]
-								: [stageItem?.scriptRef];
+							scriptRefs[pipeline.id] = {
+								refs: scriptRefs[pipeline.id]?.refs
+									? [...scriptRefs[pipeline.id].refs, stageItem?.scriptRef]
+									: [stageItem?.scriptRef],
+							};
 						}
 					});
+
+					scriptRefs[pipeline.id] = {
+						...scriptRefs[pipeline.id],
+						versionId: pipeline._version,
+					};
 				}
 			});
 			if (Object.keys(scriptRefs).length) {
 				const promises = [];
 				Object.keys(scriptRefs).forEach((pipelineId) => {
-					return scriptRefs[pipelineId].forEach((scriptRefName) =>
-						promises.push(getPipelineScript(pipelineId, scriptRefName)),
+					return scriptRefs[pipelineId]?.refs?.forEach((scriptRefName) =>
+						promises.push(
+							getPipelineScript(
+								pipelineId,
+								scriptRefs[pipelineId].versionId,
+								scriptRefName,
+							),
+						),
 					);
 				});
 				Promise.allSettled(promises)
 					.then((values) => {
 						const scriptContents = {};
+
+						if (values.length === 0) {
+							pipelines.forEach((pipeline) => {
+								scriptContents[pipeline.id] = {};
+							});
+						}
 						values.forEach((val) => {
 							if (val.status === 'fulfilled') {
 								scriptContents[val.value.id] = {
@@ -58,6 +81,7 @@ export function getPipelinesScripts(pipelines) {
 								};
 							}
 						});
+
 						return dispatch(
 							createAction(
 								AppConstants.APP.PIPELINES.GET_SCRIPTS_SUCCESS,
@@ -352,14 +376,18 @@ export function createPipelineVersion(pipelineId, payload) {
 					),
 				);
 			})
-			.finally(() => {
-				dispatch(getPipelineVersions(pipelineId));
-			});
+			.finally(() => {});
 	};
 }
 
 export function updateCurrentActiveVersion(pipelineId, version) {
-	return (dispatch) => {
+	return (dispatch, getState) => {
+		const state = getState();
+		const pipeline = get(state, '$getAppPipelines.results').find(
+			(item) => item.id === pipelineId,
+		);
+		const currentVersionContent = pipeline.versions.find((item) => item._version === version);
+		dispatch(getPipelinesScripts([{ ...currentVersionContent }]));
 		dispatch(
 			createAction(AppConstants.APP.PIPELINES.UPDATE_CURRENT_ACTIVE_VERSION, {
 				id: pipelineId,

@@ -48,7 +48,7 @@ function getAppPipelines(state = initialAppState, action) {
 
 		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS: {
 			const { id } = action.payload;
-			const pipelines = state.results.map((pipeline) => {
+			const pipelines = state?.results?.map((pipeline) => {
 				if (pipeline.id === id) {
 					return {
 						...pipeline,
@@ -67,7 +67,7 @@ function getAppPipelines(state = initialAppState, action) {
 		}
 		case AppConstants.APP.PIPELINES.GET_PIPELINE_VERSIONS_SUCCESS: {
 			const { id, versions } = action.payload;
-			const pipelines = state.results.map((pipeline) => {
+			const pipelines = state?.results?.map((pipeline) => {
 				if (pipeline.id === id) {
 					return {
 						...pipeline,
@@ -116,7 +116,7 @@ function getAppPipelines(state = initialAppState, action) {
 				isFetchingPipelineScripts: false,
 				scriptFetchSuccess: true,
 				scriptFetchError: false,
-				scriptResults: action.payload,
+				scriptResults: { ...(state.scriptResults ?? {}), ...(action.payload ?? {}) },
 			};
 		case AppConstants.APP.PIPELINES.GET_SCRIPTS_ERROR:
 			return {
@@ -520,6 +520,33 @@ function getAppPipelines(state = initialAppState, action) {
 			return {
 				...state,
 				results: updatedResults,
+			};
+		}
+		case AppConstants.APP.PIPELINES.CREATE_VERSION: {
+			return {
+				...state,
+				createVersion: {
+					isLoading: true,
+					error: null,
+				},
+			};
+		}
+		case AppConstants.APP.PIPELINES.CREATE_VERSION_SUCCESS: {
+			return {
+				...state,
+				createVersion: {
+					isLoading: false,
+					error: null,
+				},
+			};
+		}
+		case AppConstants.APP.PIPELINES.CREATE_VERSION_ERROR: {
+			return {
+				...state,
+				createVersion: {
+					isLoading: false,
+					error: action.error,
+				},
 			};
 		}
 		default:
