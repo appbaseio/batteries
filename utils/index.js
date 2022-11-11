@@ -446,6 +446,10 @@ export const BACKENDS = {
 		name: 'zinc',
 		logo: 'https://zincsearch.com/assets/images/common/logo.svg',
 	},
+	MARKLOGIC: {
+		name: 'marklogic',
+		logo: 'https://marklogicweb.wpenginepowered.com/wp-content/uploads/2022/07/ML_Logo_Slate.svg',
+	},
 };
 
 export const ALLOWED_ACTIONS_BY_BACKEND = {
@@ -485,11 +489,21 @@ export const ALLOWED_ACTIONS_BY_BACKEND = {
 				action !== ALLOWED_ACTIONS.SPEED,
 		),
 	],
+	[BACKENDS.MARKLOGIC.name]: [
+		...Object.values(ALLOWED_ACTIONS).filter(
+			(action) =>
+				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
+				action !== ALLOWED_ACTIONS.DEVELOP &&
+				action !== ALLOWED_ACTIONS.SPEED,
+		),
+	],
 };
 
 export const isFusion = () => {
 	if (window && window.host) {
-		return window.host === 'https://lw-dash.reactivesearch.io/' || window.host.includes('lw-dash');
+		return (
+			window.host === 'https://lw-dash.reactivesearch.io/' || window.host.includes('lw-dash')
+		);
 	}
 	return false;
 };
