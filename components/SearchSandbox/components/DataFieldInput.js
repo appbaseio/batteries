@@ -1,9 +1,8 @@
 import React from 'react';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Button, Table } from 'antd';
+import { Button, Table, Form } from 'antd';
 
+import { any, func, string } from 'prop-types';
 import { NumberInput, DropdownInput } from '../../shared/Input';
 import { rowStyles, deleteStyles } from '../styles';
 
@@ -47,7 +46,7 @@ class DataFieldInput extends React.Component {
 	handleAddFieldRow = () => {
 		const { setComponentProps, getAvailableDataField, componentProps } = this.props;
 		const field = getAvailableDataField().find(
-			item => !componentProps.dataField.includes(item),
+			(item) => !componentProps.dataField.includes(item),
 		);
 
 		if (field) {
@@ -70,9 +69,9 @@ class DataFieldInput extends React.Component {
 				render: (selected, x, index) => {
 					const options = fields
 						.filter(
-							item => item === selected || !componentProps.dataField.includes(item),
+							(item) => item === selected || !componentProps.dataField.includes(item),
 						)
-						.map(item => ({ label: item, key: item }));
+						.map((item) => ({ label: item, key: item }));
 
 					return (
 						<DropdownInput
@@ -141,7 +140,7 @@ class DataFieldInput extends React.Component {
         } = this.props; // prettier-ignore
 		const { dataField } = componentProps;
 		const fields = getAvailableDataField();
-		const options = fields.map(item => ({
+		const options = fields.map((item) => ({
 			label: item,
 			key: item,
 		}));
@@ -166,5 +165,14 @@ class DataFieldInput extends React.Component {
 		);
 	}
 }
+
+DataFieldInput.propTypes = {
+	componentProps: any.isRequired,
+	setComponentProps: func.isRequired,
+	id: string.isRequired,
+	label: string.isRequired,
+	description: string.isRequired,
+	getAvailableDataField: func.isRequired,
+};
 
 export default DataFieldInput;

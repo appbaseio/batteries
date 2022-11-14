@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Row, Col, Card, Button, Modal, message } from 'antd';
+import { Row, Col, Card, Button, Modal, message, Form } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';
@@ -94,7 +92,7 @@ export default class Editor extends Component {
 		}));
 	};
 
-	setComponentProps = newProps => {
+	setComponentProps = (newProps) => {
 		const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
@@ -104,7 +102,7 @@ export default class Editor extends Component {
 		});
 	};
 
-	setRenderKey = newKey => {
+	setRenderKey = (newKey) => {
 		this.setState({
 			renderKey: newKey,
 		});
@@ -168,7 +166,7 @@ export default class Editor extends Component {
 		const { mappingsURL, mappings } = this.props;
 		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
 		const fieldsOptions = [];
-		fields.map(field =>
+		fields.map((field) =>
 			fieldsOptions.push({
 				key: field,
 				label: field,
@@ -186,7 +184,7 @@ export default class Editor extends Component {
 
 		const { listComponentProps } = this.state;
 		return (
-			<Form onSubmit={this.handleSubmit} className={formWrapper}>
+			<Form onFinish={this.handleSubmit} className={formWrapper}>
 				<DataFieldInput
 					label={multiListTypes.dataField.label}
 					description={multiListTypes.dataField.description}
@@ -197,8 +195,8 @@ export default class Editor extends Component {
 					}
 				/>
 				{Object.keys(multiListTypes)
-					.filter(item => item !== 'dataField')
-					.map(item => this.renderFormItem(multiListTypes[item], item))}
+					.filter((item) => item !== 'dataField')
+					.map((item) => this.renderFormItem(multiListTypes[item], item))}
 			</Form>
 		);
 	};
@@ -211,6 +209,7 @@ export default class Editor extends Component {
 			url,
 			deleteComponent,
 			analytics,
+			useCategorySearch,
 		} = this.props;
 		const { renderKey, showModal, showVideo } = this.state;
 
@@ -225,7 +224,7 @@ export default class Editor extends Component {
 			</span>
 		);
 		return (
-            <ReactiveBase
+			<ReactiveBase
 				app={appName}
 				credentials={credentials}
 				url={url}
@@ -246,8 +245,8 @@ export default class Editor extends Component {
 							</Button>
 						</Card>
 						{Object.keys(componentProps)
-							.filter(item => item !== 'search' && item !== 'result')
-							.map(config => (
+							.filter((item) => item !== 'search' && item !== 'result')
+							.map((config) => (
 								<Card className={cardStyle} key={config} style={{ marginTop: 20 }}>
 									<RSWrapper
 										id={config}
@@ -263,9 +262,7 @@ export default class Editor extends Component {
 						<Card className={cardStyle}>
 							<RSWrapper
 								id="search"
-								component={
-									this.props.useCategorySearch ? 'CategorySearch' : 'DataSearch'
-								}
+								component={useCategorySearch ? 'CategorySearch' : 'DataSearch'}
 								searchRef={searchRef}
 								componentProps={componentProps.search || {}}
 							/>
@@ -273,18 +270,14 @@ export default class Editor extends Component {
 
 						<Card className={cardStyle}>
 							<SelectedFilters
-								render={props => {
-									const {
-										selectedValues,
-										setValue,
-										clearValues,
-										components,
-									} = props;
-									const clearFilter = component => {
+								render={(props) => {
+									const { selectedValues, setValue, clearValues, components } =
+										props;
+									const clearFilter = (component) => {
 										setValue(component, null);
 									};
 
-									const filters = Object.keys(selectedValues).map(component => {
+									const filters = Object.keys(selectedValues).map((component) => {
 										if (!components.includes(component)) {
 											return null;
 										}
@@ -336,7 +329,7 @@ export default class Editor extends Component {
 												...componentProps.result,
 												react: {
 													and: Object.keys(componentProps).filter(
-														item => item !== 'result',
+														(item) => item !== 'result',
 													),
 												},
 										  }
@@ -378,12 +371,23 @@ export default class Editor extends Component {
 					</Modal>
 				</Row>
 			</ReactiveBase>
-        );
+		);
 	}
 }
 
 Editor.propTypes = {
 	mappingsURL: PropTypes.string,
+	mappings: PropTypes.any.isRequired,
+	componentProps: PropTypes.any.isRequired,
+	filterCount: PropTypes.number.isRequired,
+	setFilterCount: PropTypes.func.isRequired,
+	onPropChange: PropTypes.func.isRequired,
+	useCategorySearch: PropTypes.func.isRequired,
+	appName: PropTypes.string.isRequired,
+	credentials: PropTypes.string.isRequired,
+	url: PropTypes.string.isRequired,
+	deleteComponent: PropTypes.func.isRequired,
+	analytics: PropTypes.any.isRequired,
 };
 
 Editor.defaultProps = {

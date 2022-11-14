@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { CodeOutlined, DeleteOutlined, EditOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Row, Col, Button, Modal, Popover, message } from 'antd';
-import { withRouter, Link } from 'react-router-dom';
+import {
+	CodeOutlined,
+	DeleteOutlined,
+	EditOutlined,
+	UnorderedListOutlined,
+} from '@ant-design/icons';
+import { Row, Col, Button, Modal, Popover, message, Form } from 'antd';
+import { withRouter } from 'react-router-dom';
 
 import { DataSearch, MultiList, ReactiveList, CategorySearch } from '@appbaseio/reactivesearch';
 
@@ -36,9 +39,9 @@ const propsMap = {
 	CategorySearch: categorySearchTypes,
 };
 
-const RSWrapper = props => (
+const RSWrapper = (props) => (
 	<SandboxContext.Consumer>
-		{contextValue => <RSComponentRender {...contextValue} {...props} />}
+		{(contextValue) => <RSComponentRender {...contextValue} {...props} />}
 	</SandboxContext.Consumer>
 );
 
@@ -87,7 +90,7 @@ class RSComponentRender extends Component {
 			categoryField: { types },
 		} = propsMap[component];
 
-		const fields = Object.keys(mappings).filter(field => {
+		const fields = Object.keys(mappings).filter((field) => {
 			let fieldsToCheck = [mappings[field]];
 
 			if (mappings[field].originalFields) {
@@ -97,13 +100,13 @@ class RSComponentRender extends Component {
 				];
 			}
 
-			return fieldsToCheck.some(item => types.includes(item.type));
+			return fieldsToCheck.some((item) => types.includes(item.type));
 		});
 
 		return fields;
 	};
 
-	setComponentProps = newProps => {
+	setComponentProps = (newProps) => {
 		const { componentProps } = this.state;
 		this.setState({
 			componentProps: {
@@ -149,7 +152,7 @@ class RSComponentRender extends Component {
 		}));
 	};
 
-	handleSavePreview = values => {
+	handleSavePreview = (values) => {
 		const { onPropChange, id } = this.props;
 		onPropChange(id, {
 			meta: true,
@@ -175,7 +178,7 @@ class RSComponentRender extends Component {
 		};
 		const code = getComponentCode(config, version);
 		return (
-            <Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
+			<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
 				<Button
 					className="show-on-hover"
 					icon={<CodeOutlined />}
@@ -184,7 +187,7 @@ class RSComponentRender extends Component {
 					style={{ marginLeft: 8 }}
 				/>
 			</Popover>
-        );
+		);
 	};
 
 	renderFormItem = (item, name) => {
@@ -231,7 +234,7 @@ class RSComponentRender extends Component {
 						</p>
 					);
 
-					this.getCategoryField().forEach(field =>
+					this.getCategoryField().forEach((field) =>
 						dropdownOptions.push({
 							label: field,
 							key: field,
@@ -246,7 +249,7 @@ class RSComponentRender extends Component {
 						}
 
 						selectedDropdown = dropdownOptions.find(
-							option => option.key === stateComponentProps[name],
+							(option) => option.key === stateComponentProps[name],
 						);
 						selectedValue = selectedDropdown
 							? selectedDropdown.label
@@ -255,7 +258,7 @@ class RSComponentRender extends Component {
 				} else {
 					dropdownOptions = propsMap[component][name].options;
 					selectedDropdown = dropdownOptions.find(
-						option => option.key === stateComponentProps[name],
+						(option) => option.key === stateComponentProps[name],
 					);
 					selectedValue = selectedDropdown
 						? selectedDropdown.label
@@ -298,7 +301,7 @@ class RSComponentRender extends Component {
 		const propNames = propsMap[component];
 
 		return (
-			<Form onSubmit={this.handleSubmit} className={formWrapper}>
+			<Form onFinish={this.handleSubmit} className={formWrapper}>
 				<DataFieldInput
 					label={propNames.dataField.label}
 					id={id}
@@ -308,8 +311,8 @@ class RSComponentRender extends Component {
 					setComponentProps={this.setComponentProps}
 				/>
 				{Object.keys(propNames)
-					.filter(item => item !== 'dataField')
-					.map(item => this.renderFormItem(propNames[item], item))}
+					.filter((item) => item !== 'dataField')
+					.map((item) => this.renderFormItem(propNames[item], item))}
 			</Form>
 		);
 	};
@@ -369,7 +372,7 @@ class RSComponentRender extends Component {
 		const customComponentProps = customProps[component];
 
 		return (
-            <div>
+			<div>
 				<Row gutter={8}>
 					{full ? (
 						<Col
@@ -478,7 +481,7 @@ class RSComponentRender extends Component {
 					/>
 				) : null}
 			</div>
-        );
+		);
 	}
 }
 
