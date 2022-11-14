@@ -86,7 +86,7 @@ const RequestDetails = ({
 	}
 	const responseHeaders = get(response, 'Headers', null) || get(response, 'headers', null) || {};
 	return (
-        <Container style={{ background: 'white' }}>
+		<Container style={{ background: 'white' }}>
 			<span css="font-weight: 500;color: black;font-size: 16px;">Log Details</span>
 			<Grid label="Time" component={time} />
 			<Grid label="Method" component={method.toUpperCase()} />
@@ -99,7 +99,7 @@ const RequestDetails = ({
 				rulesData.map((rule) => (
 					<Alert
 						type="info"
-						icon="info"
+						showIcon
 						style={{ margin: '16px 0px' }}
 						message={
 							<React.Fragment>
@@ -246,7 +246,7 @@ const RequestDetails = ({
 				)}
 			</Tabs>
 		</Container>
-    );
+	);
 };
 RequestDetails.defaultProps = {
 	ip: '_',
