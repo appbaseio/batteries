@@ -1,5 +1,7 @@
 import React from 'react';
-import { Button, Icon, Row, Col } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Button, Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 import Header from './Header';
 
@@ -22,7 +24,7 @@ const Banner = ({
 			<Col md={18}>
 				{showGoBack && (
 					<Button onClick={onClickGoBack}>
-						<Icon type="arrow-left" />
+						<ArrowLeftOutlined />
 						{goBackText}
 					</Button>
 				)}
@@ -58,7 +60,7 @@ const Banner = ({
 							target="_blank"
 							rel="noopener noreferrer"
 							onClick={onClick}
-							icon={icon}
+							icon={<LegacyIcon type={icon} />}
 						>
 							{buttonText}
 						</Button>

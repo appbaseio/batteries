@@ -1,5 +1,6 @@
 import React from 'react';
-import { Select, Spin, Button, Icon, Tooltip } from 'antd';
+import { BarChartOutlined, RedoOutlined } from '@ant-design/icons';
+import { Select, Spin, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
@@ -173,7 +174,7 @@ class Filter extends React.Component {
 		}
 		const filterValues = get(filterValuesByLabels, `${filterKey}.filter_values`, []);
 		return (
-			<Flex flexDirection="column" style={{ paddingBottom: 15 }}>
+            <Flex flexDirection="column" style={{ paddingBottom: 15 }}>
 				<Flex justifyContent="space-between" style={{ flexWrap: 'wrap' }}>
 					<Flex style={{ flexWrap: 'wrap' }}>
 						{!hideCustomEvents ? (
@@ -239,7 +240,7 @@ class Filter extends React.Component {
 					</Flex>
 					<Flex>
 						<Tooltip placement="topLeft" title="Refresh data">
-							<Button onClick={this.handleRefresh} icon="redo" />
+							<Button onClick={this.handleRefresh} icon={<RedoOutlined />} />
 						</Tooltip>
 						<DateFilter
 							onChange={this.handleDateRangeChange}
@@ -251,7 +252,7 @@ class Filter extends React.Component {
 						/>
 						{hideInsightsButton ? null : (
 							<Button onClick={toggleInsights} style={{ marginLeft: 15 }}>
-								<Icon type="bar-chart" />
+								<BarChartOutlined />
 								Insights
 							</Button>
 						)}
@@ -259,7 +260,7 @@ class Filter extends React.Component {
 				</Flex>
 				<SelectedFilters filterId={filterId} />
 			</Flex>
-		);
+        );
 	}
 }
 

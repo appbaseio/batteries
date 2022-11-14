@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import { Skeleton, Tooltip, Icon, Alert } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Skeleton, Tooltip, Alert } from 'antd';
 
 import Flex from '../shared/Flex';
 import { CustomCard, Title, Value } from './MonitoringStyledComponents';
@@ -34,7 +35,7 @@ const Indices = ({ config, timeFilter }) => {
 	}, [timeFilter]);
 
 	return (
-		<CustomCard
+        <CustomCard
 			title={`Indices${
 				get(indicesData, 'data.indices') ? `: ${get(indicesData, 'data.indices')}` : ''
 			}`}
@@ -46,7 +47,7 @@ const Indices = ({ config, timeFilter }) => {
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<Tooltip title={get(messages, 'tooltips.summaryDocuments')}>
 							<Title>
-								Documents <Icon type="info-circle" />
+								Documents <InfoCircleOutlined />
 							</Title>
 						</Tooltip>
 						<Value>{get(indicesData, 'data.documents', 'N/A')}</Value>
@@ -54,7 +55,7 @@ const Indices = ({ config, timeFilter }) => {
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<Tooltip title={get(messages, 'tooltips.summaryData', 'N/A')}>
 							<Title>
-								Data <Icon type="info-circle" />
+								Data <InfoCircleOutlined />
 							</Title>
 						</Tooltip>
 						<Value>{get(indicesData, 'data.data', 'N/A')}</Value>
@@ -62,7 +63,7 @@ const Indices = ({ config, timeFilter }) => {
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<Tooltip title={get(messages, 'tooltips.summaryPrimaryShards', 'N/A')}>
 							<Title>
-								Primary Shards <Icon type="info-circle" />
+								Primary Shards <InfoCircleOutlined />
 							</Title>
 						</Tooltip>
 						<Value>{get(indicesData, 'data.primaryShards', 'N/A')}</Value>
@@ -70,7 +71,7 @@ const Indices = ({ config, timeFilter }) => {
 					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<Tooltip title={get(messages, 'tooltips.summaryReplicaShards')}>
 							<Title>
-								Replica Shards <Icon type="info-circle" />
+								Replica Shards <InfoCircleOutlined />
 							</Title>
 						</Tooltip>
 						<Value>{get(indicesData, 'data.replicaShards', 'N/A')}</Value>
@@ -89,7 +90,7 @@ const Indices = ({ config, timeFilter }) => {
 				</>
 			)}
 		</CustomCard>
-	);
+    );
 };
 
 Indices.propTypes = {

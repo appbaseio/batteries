@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Tooltip, Icon, Menu, Dropdown, Modal, Input, Button } from 'antd';
+import { DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Tooltip, Menu, Dropdown, Modal, Input, Button } from 'antd';
 
 import { Header, inputStyles, dropdown } from './styles';
 import conversionMap from '../../utils/conversionMap';
@@ -96,13 +97,13 @@ export default class NewFieldModal extends Component {
 			</Menu>
 		);
 		return (
-			<Dropdown overlay={menu}>
+            <Dropdown overlay={menu}>
 				<Button className={dropdown}>
 					{value}
-					<Icon type="down" />
+					<DownOutlined />
 				</Button>
 			</Dropdown>
-		);
+        );
 	};
 
 	render() {
@@ -118,7 +119,7 @@ export default class NewFieldModal extends Component {
 			</Menu>
 		);
 		return (
-			<Modal
+            <Modal
 				visible={this.props.show}
 				onCancel={this.props.onClose}
 				onOk={this.addField}
@@ -136,7 +137,7 @@ export default class NewFieldModal extends Component {
 							Field Name
 							<Tooltip title={fieldNameMessage}>
 								<span style={{ marginLeft: 5 }}>
-									<Icon type="info-circle" />
+									<InfoCircleOutlined />
 								</span>
 							</Tooltip>
 						</span>
@@ -145,7 +146,7 @@ export default class NewFieldModal extends Component {
 								Use case
 								<Tooltip title={usecaseMessage}>
 									<span style={{ marginLeft: 5 }}>
-										<Icon type="info-circle" />
+										<InfoCircleOutlined />
 									</span>
 								</Tooltip>
 							</span>
@@ -216,6 +217,6 @@ export default class NewFieldModal extends Component {
 					) : null}
 				</section>
 			</Modal>
-		);
+        );
 	}
 }

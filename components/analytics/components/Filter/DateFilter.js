@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Popover, Row, Col, Icon } from 'antd';
+import { ClockCircleOutlined } from '@ant-design/icons';
+import { Button, Popover, Row, Col } from 'antd';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { dateRangesColumn, dateRanges as defaultDateRanges } from '../../utils';
@@ -7,7 +8,7 @@ import { dateRangesColumn, dateRanges as defaultDateRanges } from '../../utils';
 const DateFilter = ({ visible, toggleVisible, onChange, label, dateRanges, columnItems }) => {
 	const datesToDisplay = dateRangesColumn(dateRanges, columnItems);
 	return (
-		<Popover
+        <Popover
 			visible={visible}
 			trigger="click"
 			content={
@@ -36,11 +37,11 @@ const DateFilter = ({ visible, toggleVisible, onChange, label, dateRanges, colum
 			placement="leftTop"
 		>
 			<Button style={{ marginLeft: 15 }} onClick={toggleVisible}>
-				<Icon type="clock-circle" />
+				<ClockCircleOutlined />
 				{label}
 			</Button>
 		</Popover>
-	);
+    );
 };
 
 DateFilter.defaultProps = {

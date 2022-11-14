@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { string, object, func, bool } from 'prop-types';
-import { Tooltip, Icon, Button, Affix, message, Typography, Alert } from 'antd';
+import { InfoCircleOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Tooltip, Button, Affix, message, Typography, Alert } from 'antd';
 import get from 'lodash/get';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -587,7 +588,7 @@ class Mappings extends Component {
 		}
 
 		return (
-			<React.Fragment>
+            <React.Fragment>
 				{showShards ? (
 					<Shards
 						handleSlider={this.handleSlider}
@@ -637,7 +638,7 @@ class Mappings extends Component {
 								strong
 								onClick={this.loadData}
 							>
-								<Icon type="reload" style={{ margin: 0, marginRight: 5 }} />
+								<ReloadOutlined style={{ margin: 0, marginRight: 5 }} />
 								Reload Mappings
 							</Typography.Text>
 						</Tooltip>
@@ -653,7 +654,7 @@ class Mappings extends Component {
 								Field Name
 								<Tooltip title={fieldNameMessage}>
 									<span style={{ marginLeft: 5 }}>
-										<Icon type="info-circle" />
+										<InfoCircleOutlined />
 									</span>
 								</Tooltip>
 							</span>
@@ -662,7 +663,7 @@ class Mappings extends Component {
 									Use case
 									<Tooltip title={usecaseMessage}>
 										<span style={{ marginLeft: 5 }}>
-											<Icon type="info-circle" />
+											<InfoCircleOutlined />
 										</span>
 									</Tooltip>
 								</span>
@@ -671,7 +672,7 @@ class Mappings extends Component {
 										Data Type
 										<Tooltip title="Type of data in the corresponding field.">
 											<span style={{ marginLeft: 5 }}>
-												<Icon type="info-circle" />
+												<InfoCircleOutlined />
 											</span>
 										</Tooltip>
 									</span>
@@ -769,7 +770,7 @@ class Mappings extends Component {
 					onClose={this.handleTimeout}
 				/>
 			</React.Fragment>
-		);
+        );
 	}
 }
 

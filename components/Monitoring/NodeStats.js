@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import { Table, Tooltip, Icon } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Table, Tooltip } from 'antd';
 
 import { fetchNodeStats } from '../../utils/monitoring';
 import { messages } from './messages';
@@ -42,7 +43,7 @@ const NodeStats = ({ config, timeFilter }) => {
 			title: (
 				<Tooltip title={get(messages, 'tooltips.tableCpuUsage')}>
 					<span>
-						CPU Usage <Icon type="info-circle" />
+						CPU Usage <InfoCircleOutlined />
 					</span>
 				</Tooltip>
 			),
@@ -53,7 +54,7 @@ const NodeStats = ({ config, timeFilter }) => {
 			title: (
 				<Tooltip title={get(messages, 'tooltips.tableJvmHeap')}>
 					<span>
-						JVM Heap <Icon type="info-circle" />
+						JVM Heap <InfoCircleOutlined />
 					</span>
 				</Tooltip>
 			),
@@ -64,7 +65,7 @@ const NodeStats = ({ config, timeFilter }) => {
 			title: (
 				<Tooltip title={get(messages, 'tooltips.tableMemory')}>
 					<span>
-						Memory <Icon type="info-circle" />
+						Memory <InfoCircleOutlined />
 					</span>
 				</Tooltip>
 			),
@@ -75,7 +76,7 @@ const NodeStats = ({ config, timeFilter }) => {
 			title: (
 				<Tooltip title={get(messages, 'tooltips.tableDocuments')}>
 					<span>
-						Documents <Icon type="info-circle" />
+						Documents <InfoCircleOutlined />
 					</span>
 				</Tooltip>
 			),
@@ -86,7 +87,7 @@ const NodeStats = ({ config, timeFilter }) => {
 			title: (
 				<Tooltip title={get(messages, 'tooltips.tableDiskAvailable')}>
 					<span>
-						Disk Available <Icon type="info-circle" />
+						Disk Available <InfoCircleOutlined />
 					</span>
 				</Tooltip>
 			),

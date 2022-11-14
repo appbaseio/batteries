@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import filter from 'lodash/filter';
+import { RedoOutlined } from '@ant-design/icons';
 import { Card, Tabs, Table, notification, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import Parser from 'partial-json-parser';
@@ -344,7 +345,7 @@ class RequestLogs extends React.Component {
 		const { displayFilter, title, displaySearchLogs, hideRefreshButton, pipelineLogsMode } =
 			this.props;
 		return (
-			<Card
+            <Card
 				title={title}
 				extra={
 					<Flex>
@@ -368,7 +369,7 @@ class RequestLogs extends React.Component {
 									onClick={() => {
 										this.fetchRequestLogs();
 									}}
-									icon="redo"
+									icon={<RedoOutlined />}
 								/>
 							</Tooltip>
 						) : null}
@@ -409,7 +410,7 @@ class RequestLogs extends React.Component {
 					)}
 				</React.Fragment>
 			</Card>
-		);
+        );
 	}
 }
 RequestLogs.defaultProps = {

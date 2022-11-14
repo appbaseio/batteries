@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Button, Modal, Popover, message, Icon } from 'antd';
+import { CodeOutlined, DeleteOutlined, EditOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Col, Button, Modal, Popover, message } from 'antd';
 import { withRouter, Link } from 'react-router-dom';
 
 import { DataSearch, MultiList, ReactiveList, CategorySearch } from '@appbaseio/reactivesearch';
@@ -172,16 +175,16 @@ class RSComponentRender extends Component {
 		};
 		const code = getComponentCode(config, version);
 		return (
-			<Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
+            <Popover content={<pre>{code}</pre>} placement="leftTop" title="Code">
 				<Button
 					className="show-on-hover"
-					icon="code-o"
+					icon={<CodeOutlined />}
 					shape="circle"
 					size="large"
 					style={{ marginLeft: 8 }}
 				/>
 			</Popover>
-		);
+        );
 	};
 
 	renderFormItem = (item, name) => {
@@ -366,7 +369,7 @@ class RSComponentRender extends Component {
 		const customComponentProps = customProps[component];
 
 		return (
-			<div>
+            <div>
 				<Row gutter={8}>
 					{full ? (
 						<Col
@@ -375,7 +378,7 @@ class RSComponentRender extends Component {
 							style={{ textAlign: 'right', paddingBottom: 16 }}
 						>
 							<Button
-								icon="edit"
+								icon={<EditOutlined />}
 								shape="circle"
 								size="large"
 								className={`${
@@ -399,13 +402,13 @@ class RSComponentRender extends Component {
 									style={{ marginLeft: 8 }}
 									onClick={this.handlePreviewModal}
 								>
-									<Icon type="unordered-list" />
+									<UnorderedListOutlined />
 									Set Result View
 								</Button>
 							) : null}
 							{showDelete ? (
 								<Button
-									icon="delete"
+									icon={<DeleteOutlined />}
 									shape="circle"
 									type="danger"
 									size="large"
@@ -421,7 +424,7 @@ class RSComponentRender extends Component {
 					{full ? null : (
 						<Col span={2} style={{ textAlign: 'right' }} className={componentStyle}>
 							<Button
-								icon="edit"
+								icon={<EditOutlined />}
 								shape="circle"
 								size="large"
 								className={`${
@@ -475,7 +478,7 @@ class RSComponentRender extends Component {
 					/>
 				) : null}
 			</div>
-		);
+        );
 	}
 }
 

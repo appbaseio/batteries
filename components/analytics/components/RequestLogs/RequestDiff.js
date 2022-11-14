@@ -1,7 +1,8 @@
 import React from 'react';
 import { css } from 'emotion';
 import PropTypes from 'prop-types';
-import { Card, Popover, Icon, Button } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
+import { Card, Popover, Button } from 'antd';
 import DiffMatchPatch from 'diff-match-patch';
 import { getStringifiedJSON, convertToCURL, isValidJSONFormat } from '../../utils';
 import AceEditor from '../../../SearchSandbox/containers/AceEditor';
@@ -78,7 +79,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 		requestBody && typeof requestBody === 'object' ? JSON.stringify(requestBody) : requestBody;
 
 	return (
-		<div>
+        <div>
 			<Card
 				title={
 					<div style={{ display: 'flex' }}>
@@ -124,7 +125,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 					)}
 					<Popover content="Copy cURL request to clipboard" trigger="hover">
 						<Button onClick={() => convertToCURL(url, method, headers, requestBody)}>
-							<Icon type="copy" />
+							<CopyOutlined />
 							Copy as cURL
 						</Button>
 					</Popover>
@@ -221,7 +222,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 					);
 				})}
 		</div>
-	);
+    );
 };
 
 RequestDiff.defaultProps = {

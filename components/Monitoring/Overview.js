@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, Skeleton, Tooltip, Icon, Alert } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Badge, Skeleton, Tooltip, Alert } from 'antd';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -42,14 +43,14 @@ const Overview = ({ config, timeFilter }) => {
 		};
 	}, [timeFilter]);
 	return (
-		<CustomCard title="Overview">
+        <CustomCard title="Overview">
 			{overviewData.loading ? (
 				<Skeleton active />
 			) : (
 				<>
 					<Tooltip title={get(messages, 'tooltips.health')}>
 						<Title>
-							Health <Icon type="info-circle" />
+							Health <InfoCircleOutlined />
 						</Title>
 					</Tooltip>
 					<Flex
@@ -121,7 +122,7 @@ const Overview = ({ config, timeFilter }) => {
 					<br />
 					<Tooltip title={get(messages, 'tooltips.uptime')}>
 						<Title>
-							Uptime <Icon type="info-circle" />
+							Uptime <InfoCircleOutlined />
 						</Title>
 					</Tooltip>
 					{get(overviewData, 'data.uptime').length ? (
@@ -150,7 +151,7 @@ const Overview = ({ config, timeFilter }) => {
 				</>
 			)}
 		</CustomCard>
-	);
+    );
 };
 
 Overview.propTypes = {

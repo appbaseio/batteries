@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Card, Tooltip, Icon } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Card, Tooltip } from 'antd';
 import { css } from 'react-emotion';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
@@ -68,7 +69,7 @@ class OverviewContent extends React.Component {
 			displayFilter,
 		} = this.props;
 		return (
-			<div>
+            <div>
 				{isLoading ? (
 					<Loader />
 				) : (
@@ -107,12 +108,10 @@ class OverviewContent extends React.Component {
 										<span>
 											Top Result Clicks
 											<Tooltip title="In the drilldown view, only result clicks are shown. The summary stat includes suggestion clicks as well.">
-												<Icon
-													style={{
+												<InfoCircleOutlined
+                                                    style={{
 														marginLeft: 8,
-													}}
-													type="info-circle"
-												/>
+													}} />
 											</Tooltip>
 										</span>
 									}
@@ -146,7 +145,7 @@ class OverviewContent extends React.Component {
 					</div>
 				)}
 			</div>
-		);
+        );
 	}
 }
 

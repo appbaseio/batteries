@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import get from 'lodash/get';
-import { Button, Tabs, Icon, Popover, Alert, Card } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
+import { Button, Tabs, Popover, Alert, Card } from 'antd';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import AceEditor from 'react-ace';
@@ -85,7 +86,7 @@ const RequestDetails = ({
 	}
 	const responseHeaders = get(response, 'Headers', null) || get(response, 'headers', null) || {};
 	return (
-		<Container style={{ background: 'white' }}>
+        <Container style={{ background: 'white' }}>
 			<span css="font-weight: 500;color: black;font-size: 16px;">Log Details</span>
 			<Grid label="Time" component={time} />
 			<Grid label="Method" component={method.toUpperCase()} />
@@ -140,7 +141,7 @@ const RequestDetails = ({
 						trigger="hover"
 					>
 						<Button onClick={() => replayRequest(url, method, headers, request)}>
-							<Icon type="reload" />
+							<ReloadOutlined />
 							Replay Request
 						</Button>
 					</Popover>
@@ -245,7 +246,7 @@ const RequestDetails = ({
 				)}
 			</Tabs>
 		</Container>
-	);
+    );
 };
 RequestDetails.defaultProps = {
 	ip: '_',

@@ -1,4 +1,5 @@
 import React from 'react';
+import { DeleteOutlined } from '@ant-design/icons';
 import { Popconfirm, Button, notification } from 'antd';
 
 class DeleteJSON extends React.Component {
@@ -31,15 +32,15 @@ class DeleteJSON extends React.Component {
 	render() {
 		const { res } = this.props;
 		return (
-			<Popconfirm
+            <Popconfirm
 				title="Are you sure you want to delete this JSON?"
 				placement="bottomRight"
 				onConfirm={() => this.handleDeleteJSON(res._id)}
 				okText="Yes"
 			>
-				<Button shape="circle" icon="delete" style={{ marginRight: '5px' }} />
+				<Button shape="circle" icon={<DeleteOutlined />} style={{ marginRight: '5px' }} />
 			</Popconfirm>
-		);
+        );
 	}
 }
 
