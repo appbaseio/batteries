@@ -46,7 +46,7 @@ const Synonyms = ({
 				placeholder={
 					'Enter comma separated synonym pairs. Enter additional synonym pairs separated by new lines, e.g.\nbritish, english\nqueen, monarch'
 				}
-				autosize={{ minRows: 2, maxRows: 10 }}
+				autoSize={{ minRows: 2, maxRows: 10 }}
 			/>
 		</Modal>
 	</React.Fragment>
