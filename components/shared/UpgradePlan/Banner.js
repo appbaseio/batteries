@@ -1,8 +1,7 @@
 import React from 'react';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { ArrowLeftOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Row, Col } from 'antd';
-import PropTypes from 'prop-types';
+import PropTypes, { any } from 'prop-types';
 import Header from './Header';
 
 const Banner = ({
@@ -60,7 +59,7 @@ const Banner = ({
 							target="_blank"
 							rel="noopener noreferrer"
 							onClick={onClick}
-							icon={<LegacyIcon type={icon} />}
+							icon={icon}
 						>
 							{buttonText}
 						</Button>
@@ -72,7 +71,7 @@ const Banner = ({
 	</Header>
 );
 Banner.defaultProps = {
-	icon: 'info-circle',
+	icon: <InfoCircleOutlined />,
 	description: '',
 	href: '/billing',
 	buttonText: 'Upgrade Now',
@@ -87,7 +86,7 @@ Banner.defaultProps = {
 
 Banner.propTypes = {
 	title: PropTypes.string.isRequired,
-	icon: PropTypes.string,
+	icon: any,
 	onClick: PropTypes.func,
 	description: PropTypes.string,
 	buttonText: PropTypes.string,
