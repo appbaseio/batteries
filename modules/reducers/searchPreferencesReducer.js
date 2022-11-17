@@ -121,11 +121,24 @@ function getSearchPreferencesVersions(state = initialAppState, action) {
 				},
 			};
 		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_ERROR:
+			const errMsg = action?.error?.actual?.error?.message || action?.error?.message;
+			const preferenceId = action?.error?.actual?.preferenceId || '';
+			console.log({ action });
 			return {
 				...state,
 				isFetching: false,
 				success: false,
-				error: action.error && action.error.message,
+				error: errMsg,
+				results: {
+					...state.results,
+					[preferenceId]: {
+						...(state.results?.[preferenceId] ?? {}),
+						deploymentStatus: {
+							error: errMsg,
+							status: 'Not deployed',
+						},
+					},
+				},
 			};
 
 		default:

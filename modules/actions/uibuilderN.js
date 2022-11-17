@@ -325,7 +325,7 @@ export function getSearchPreferenceDeploymentStatus(preferenceId) {
 					createAction(
 						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_ERROR,
 						null,
-						error,
+						{ error, preferenceId },
 					),
 				),
 			);
