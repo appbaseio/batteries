@@ -305,3 +305,29 @@ export function getSearchPreferenceVersionCodeByVersionN(preferenceId, versionId
 			);
 	};
 }
+
+export function getSearchPreferenceDeploymentStatus(preferenceId) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET));
+		const ACC_API = getURL();
+		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/deploy`)
+			.then((res) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_SUCCESS,
+						{ results: res, preferenceId },
+						null,
+					),
+				),
+			)
+			.catch((error) =>
+				dispatch(
+					createAction(
+						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_ERROR,
+						null,
+						error,
+					),
+				),
+			);
+	};
+}

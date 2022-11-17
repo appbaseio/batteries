@@ -100,6 +100,34 @@ function getSearchPreferencesVersions(state = initialAppState, action) {
 				error: action.error && action.error.message,
 			};
 
+		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET:
+			return {
+				...state,
+				isFetching: true,
+				success: false,
+				error: false,
+			};
+		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_SUCCESS:
+			return {
+				isFetching: false,
+				success: true,
+				error: false,
+				results: {
+					...state.results,
+					[action.payload.preferenceId]: {
+						...(state.results?.[action.payload.preferenceId] ?? {}),
+						deploymentStatus: { ...action.payload.results },
+					},
+				},
+			};
+		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_ERROR:
+			return {
+				...state,
+				isFetching: false,
+				success: false,
+				error: action.error && action.error.message,
+			};
+
 		default:
 			return state;
 	}
