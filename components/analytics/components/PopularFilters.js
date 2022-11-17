@@ -206,6 +206,7 @@ class PopularFilters extends React.Component {
 					title="Popular Filters"
 					pagination={{
 						pageSize: 10,
+						showSizeChanger: false,
 					}}
 					onClickDownload={() =>
 						exportCSVFile(

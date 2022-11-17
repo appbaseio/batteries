@@ -109,6 +109,7 @@ class NoResultsSearch extends React.Component {
 					title="No Results Searches"
 					pagination={{
 						pageSize: 10,
+						showSizeChanger: false,
 					}}
 					onClickDownload={() =>
 						exportCSVFile(

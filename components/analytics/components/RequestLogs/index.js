@@ -327,6 +327,7 @@ class RequestLogs extends React.Component {
 					total,
 					current: currentPage,
 					onChange: this.handlePageChange,
+					showSizeChanger: false,
 				}}
 				scroll={{ x: 700 }}
 				onRow={(record) => ({
@@ -345,7 +346,7 @@ class RequestLogs extends React.Component {
 		const { displayFilter, title, displaySearchLogs, hideRefreshButton, pipelineLogsMode } =
 			this.props;
 		return (
-            <Card
+			<Card
 				title={title}
 				extra={
 					<Flex>
@@ -410,7 +411,7 @@ class RequestLogs extends React.Component {
 					)}
 				</React.Fragment>
 			</Card>
-        );
+		);
 	}
 }
 RequestLogs.defaultProps = {
