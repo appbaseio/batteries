@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Button, Modal, Popover, message, Icon } from 'antd';
+import {
+	CodeOutlined,
+	DeleteOutlined,
+	EditOutlined,
+	UnorderedListOutlined,
+} from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Col, Button, Modal, Popover, message } from 'antd';
 
 import {
 	DataSearch,
@@ -187,7 +195,7 @@ class RSComponentRender extends Component {
 				title="Code"
 			>
 				<Button
-					icon="code-o"
+					icon={<CodeOutlined />}
 					className="show-on-hover"
 					shape="circle"
 					size="large"
@@ -350,7 +358,7 @@ class RSComponentRender extends Component {
 		const propNames = propsMap[component];
 
 		return (
-			<Form onSubmit={this.handleSubmit} className={formWrapper}>
+			<Form onFinish={this.handleSubmit} className={formWrapper}>
 				<DataFieldInput
 					label={propNames.dataField.label}
 					id={id}
@@ -419,7 +427,7 @@ class RSComponentRender extends Component {
 							}}
 						>
 							<Button
-								icon="edit"
+								icon={<EditOutlined />}
 								shape="circle"
 								size="large"
 								className={`${
@@ -433,14 +441,14 @@ class RSComponentRender extends Component {
 									style={{ marginLeft: 8 }}
 									onClick={this.handlePreviewModal}
 								>
-									<Icon type="unordered-list" />
+									<UnorderedListOutlined />
 									Set Result View
 								</Button>
 							) : null}
 							{showCodePreview && this.renderComponentCode()}
 							{showDelete ? (
 								<Button
-									icon="delete"
+									icon={<DeleteOutlined />}
 									shape="circle"
 									type="danger"
 									size="large"
@@ -458,7 +466,7 @@ class RSComponentRender extends Component {
 							style={{ textAlign: 'right' }}
 						>
 							<Button
-								icon="edit"
+								icon={<EditOutlined />}
 								shape="circle"
 								size="large"
 								className={`${

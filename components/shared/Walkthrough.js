@@ -1,6 +1,7 @@
 import React from 'react';
 import { injectGlobal } from 'emotion';
 import Joyride, { ACTIONS, EVENTS } from 'react-joyride';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { message, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -123,11 +124,12 @@ class Walkthrough extends React.Component {
 									background: '#40a9ff',
 									color: 'white',
 								}}
-								icon={
-									tutorialCompleted
-										? 'check-circle'
-										: 'play-circle'
-								}
+								icon={<LegacyIcon
+                                    type={
+                                        tutorialCompleted
+                                            ? 'check-circle'
+                                            : 'play-circle'
+                                    } />}
 							/>
 						</Tooltip>
 					</div>

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import { Skeleton, Icon, Tooltip, Alert } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Skeleton, Tooltip, Alert } from 'antd';
 
 import Flex from '../shared/Flex';
 import { CustomCard, Title, Value } from './MonitoringStyledComponents';
@@ -36,7 +37,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 		};
 	}, [timeFilter]);
 	return (
-		<CustomCard
+        <CustomCard
 			title={`Nodes${
 				get(nodeSummaryData, 'data.nodes')
 					? `: ${get(nodeSummaryData, 'data.nodes')}`
@@ -55,7 +56,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 							title={get(messages, 'tooltips.summaryCpuUsage')}
 						>
 							<Title>
-								CPU Usage <Icon type="info-circle" />
+								CPU Usage <InfoCircleOutlined />
 							</Title>
 						</Tooltip>
 						<Value>
@@ -70,7 +71,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 							title={get(messages, 'tooltips.summaryHeapUsage')}
 						>
 							<Title>
-								JVM Heap <Icon type="info-circle" />
+								JVM Heap <InfoCircleOutlined />
 							</Title>
 						</Tooltip>
 						<Value>
@@ -85,7 +86,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 							title={get(messages, 'tooltips.summaryMemoryUsage')}
 						>
 							<Title>
-								Memory <Icon type="info-circle" />
+								Memory <InfoCircleOutlined />
 							</Title>
 						</Tooltip>
 						<Value>
@@ -103,7 +104,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 							)}
 						>
 							<Title>
-								Disk Available <Icon type="info-circle" />
+								Disk Available <InfoCircleOutlined />
 							</Title>
 						</Tooltip>
 						<Value>
@@ -124,7 +125,7 @@ const NodeSummary = ({ config, timeFilter }) => {
 				</>
 			)}
 		</CustomCard>
-	);
+    );
 };
 
 NodeSummary.propTypes = {
