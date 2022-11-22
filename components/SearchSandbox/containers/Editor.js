@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import createDOMPurify from 'dompurify';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Row, Col, Card, Button, Modal, message } from 'antd';
+import { Row, Col, Card, Button, Modal, message, Form } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';

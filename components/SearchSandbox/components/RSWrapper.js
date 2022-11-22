@@ -5,9 +5,7 @@ import {
 	EditOutlined,
 	UnorderedListOutlined,
 } from '@ant-design/icons';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Row, Col, Button, Modal, Popover, message } from 'antd';
+import { Row, Col, Button, Modal, Popover, message, Form } from 'antd';
 
 import {
 	DataSearch,

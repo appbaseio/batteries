@@ -1,6 +1,5 @@
 import React from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Button, Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 import Header from './Header';
@@ -43,11 +42,11 @@ const Banner = ({
 					<Button
 						size="large"
 						type="primary"
-						{...!onClick && { href }}
+						{...(!onClick && { href })}
 						target="_blank"
 						rel="noopener noreferrer"
 						onClick={onClick}
-						icon={<LegacyIcon type={icon} />}
+						icon={icon}
 					>
 						{buttonText}
 					</Button>
