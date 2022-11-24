@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button, Form, Table } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Button, Table, Form } from 'antd';
 
 import { NumberInput, DropdownInput } from '../../shared/Input';
 import { rowStyles, deleteStyles } from '../styles';
 
 class DataFieldInput extends React.Component {
-	handleSearchDataFieldChange = (valueObject) => {
+	handleSearchDataFieldChange = valueObject => {
 		const { componentProps, setComponentProps } = this.props;
 
 		const dataField = Object.assign([], componentProps.dataField, {
@@ -17,23 +18,27 @@ class DataFieldInput extends React.Component {
 	renderDeleteButton = (x, y, index) => (
 		<Button
 			className={deleteStyles}
-			icon="delete"
+			icon={<DeleteOutlined />}
 			shape="circle"
 			type="danger"
 			onClick={() => this.handleSearchDataFieldDelete(index)}
 		/>
 	);
 
-	handleSearchDataFieldDelete = (deleteIndex) => {
+	handleSearchDataFieldDelete = deleteIndex => {
 		const { setComponentProps, componentProps } = this.props;
 		const newComponentProps = {
-			dataField: componentProps.dataField.filter((i, index) => index !== deleteIndex),
-			fieldWeights: componentProps.fieldWeights.filter((i, index) => index !== deleteIndex),
+			dataField: componentProps.dataField.filter(
+				(i, index) => index !== deleteIndex,
+			),
+			fieldWeights: componentProps.fieldWeights.filter(
+				(i, index) => index !== deleteIndex,
+			),
 		};
 		setComponentProps(newComponentProps);
 	};
 
-	handleSearchWeightChange = (newWeight) => {
+	handleSearchWeightChange = newWeight => {
 		const { setComponentProps, componentProps } = this.props;
 		const fieldWeights = Object.assign([], componentProps.fieldWeights, {
 			...newWeight,
@@ -42,7 +47,11 @@ class DataFieldInput extends React.Component {
 	};
 
 	handleAddFieldRow = () => {
-		const { setComponentProps, getAvailableDataField, componentProps } = this.props;
+		const {
+			setComponentProps,
+			getAvailableDataField,
+			componentProps,
+		} = this.props;
 		const field = getAvailableDataField().find(
 			item => !componentProps.dataField.includes(item),
 		);
@@ -67,7 +76,9 @@ class DataFieldInput extends React.Component {
 				render: (selected, x, index) => {
 					const options = fields
 						.filter(
-							item => item === selected || !componentProps.dataField.includes(item),
+							item =>
+								item === selected ||
+								!componentProps.dataField.includes(item),
 						)
 						.map(item => ({ label: item, key: item }));
 

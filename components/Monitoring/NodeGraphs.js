@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
-import { Skeleton, Card, Tooltip as AntToolTip, Icon } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Skeleton, Card, Tooltip as AntToolTip } from 'antd';
 import { LineChart, XAxis, YAxis, Tooltip, Line, Legend } from 'recharts';
 
 import { fetchGraphData } from '../../utils/monitoring';
@@ -45,7 +46,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 		: { width: 350, height: 250 };
 
 	return (
-		<div>
+        <div>
 			{graphData.loading ? (
 				<Skeleton active />
 			) : (
@@ -62,7 +63,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 									>
 										<span>
 											CPU Usage{' '}
-											<Icon type="info-circle" />
+											<InfoCircleOutlined />
 										</span>
 									</AntToolTip>
 								}
@@ -108,7 +109,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 									>
 										<span>
 											Disk Available{' '}
-											<Icon type="info-circle" />
+											<InfoCircleOutlined />
 										</span>
 									</AntToolTip>
 								}
@@ -157,7 +158,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 										)}
 									>
 										<span>
-											JVM Heap <Icon type="info-circle" />
+											JVM Heap <InfoCircleOutlined />
 										</span>
 									</AntToolTip>
 								}
@@ -203,7 +204,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 									>
 										<span>
 											Memory Utilization{' '}
-											<Icon type="info-circle" />
+											<InfoCircleOutlined />
 										</span>
 									</AntToolTip>
 								}
@@ -255,7 +256,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 									>
 										<span>
 											Segment Count{' '}
-											<Icon type="info-circle" />
+											<InfoCircleOutlined />
 										</span>
 									</AntToolTip>
 								}
@@ -292,7 +293,7 @@ const NodeGraphs = ({ config, timeFilter, nodeKey }) => {
 				</>
 			)}
 		</div>
-	);
+    );
 };
 
 NodeGraphs.propTypes = {

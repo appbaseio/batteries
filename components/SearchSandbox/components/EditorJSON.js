@@ -1,4 +1,5 @@
 import React from 'react';
+import { CopyOutlined, FileTextOutlined } from '@ant-design/icons';
 import {
  Button, Popover, Row, Col, Tooltip, notification,
 } from 'antd';
@@ -111,7 +112,7 @@ class EditorJSON extends React.Component {
         } = this.state; // prettier-ignore
 		const { res } = this.props;
 		return (
-			<Popover
+            <Popover
 				placement="leftTop"
 				trigger="click"
 				onVisibleChange={
@@ -151,7 +152,7 @@ class EditorJSON extends React.Component {
 							<Tooltip visible={copied} title="Copied">
 								<Button
 									shape="circle"
-									icon="copy"
+									icon={<CopyOutlined />}
 									size="small"
 									onClick={() => this.copyJSON(res)}
 								/>
@@ -181,9 +182,9 @@ class EditorJSON extends React.Component {
                     </Row>
                 )} // prettier-ignore
 			>
-				<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
+				<Button shape="circle" icon={<FileTextOutlined />} style={{ marginRight: '5px' }} />
 			</Popover>
-		);
+        );
 	}
 }
 

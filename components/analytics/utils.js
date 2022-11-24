@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
+import { RedoOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 // import mockProfile from './components/mockProfile';
 import { ACC_API } from '../../utils';
@@ -33,7 +34,7 @@ const replaySearch = [
 		width: 125,
 		render: item => (
 			<div css="text-align: center">
-				<Button disabled={!item.search_state} icon="redo" onClick={() => item.handleReplaySearch(item.search_state)} />
+				<Button disabled={!item.search_state} icon={<RedoOutlined />} onClick={() => item.handleReplaySearch(item.search_state)} />
 			</div>
 		),
 	},

@@ -1,5 +1,6 @@
 import React from 'react';
 import createDOMPurify from 'dompurify';
+import { LinkOutlined } from '@ant-design/icons';
 import { Tree, Row, Col, Button } from 'antd';
 import Appbase from 'appbase-js';
 import ExpandCollapse from 'react-expand-collapse';
@@ -96,7 +97,7 @@ class RenderResultsConsumer extends React.Component {
 				const description = getNestedValue(res, descriptionKey);
 				const image = getNestedValue(res, imageKey);
 				return (
-					<Row
+                    <Row
 						type="flex"
 						onClick={triggerClickAnalytics}
 						key={res._id}
@@ -152,7 +153,7 @@ class RenderResultsConsumer extends React.Component {
 							{url ? (
 								<Button
 									shape="circle"
-									icon="link"
+									icon={<LinkOutlined />}
 									style={{ marginRight: '5px' }}
 									onClick={() => window.open(url, '_blank')}
 								/>
@@ -171,7 +172,7 @@ class RenderResultsConsumer extends React.Component {
 							/>
 						</div>
 					</Row>
-				);
+                );
 			}
 			default:
 				return (

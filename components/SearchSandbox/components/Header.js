@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import {
- Menu, Button, Dropdown, Icon, Modal, Input, message, Switch, Tooltip,
-} from 'antd';
+import { DeleteOutlined, DownOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { Menu, Button, Dropdown, Modal, Input, message, Switch, Tooltip } from 'antd';
 import {
  bool, arrayOf, string, func,
 } from 'prop-types';
@@ -73,7 +72,7 @@ export default class Header extends Component {
 			okText: 'Delete',
 			cancelText: 'Cancel',
 			okType: 'danger',
-			icon: <Icon type="delete" />,
+			icon: <DeleteOutlined />,
 			onOk: () => deleteProfile(profile),
 		});
 	};
@@ -130,11 +129,11 @@ export default class Header extends Component {
 				style={{ maxHeight: 300, overflowY: 'scroll' }}
 			>
 				<Menu.Item key={SAVE_AS_NEW_PROFILE}>
-					<Icon type="save" />
+					<SaveOutlined />
 					&nbsp; Save as ...
 				</Menu.Item>
 				<Menu.Item key={CREATE_NEW_PROFILE}>
-					<Icon type="plus" />
+					<PlusOutlined />
 					&nbsp; Create a New Profile
 				</Menu.Item>
 				<Menu.Divider />
@@ -176,14 +175,14 @@ export default class Header extends Component {
 							onClick={this.handleDeleteProfileModal}
 						>
 							Delete Profile
-							<Icon type="delete" />
+							<DeleteOutlined />
 						</Button>
 					) : null}
 					{isDashboard && showProfileOption ? (
 						<Dropdown overlay={menu} trigger={['click']}>
 							<Button size="large" style={{ marginLeft: 8 }}>
 								{`Search Profile - ${isUnsaved ? 'unsaved' : profile}`}{' '}
-								<Icon type="down" />
+								<DownOutlined />
 							</Button>
 						</Dropdown>
 					) : null}

@@ -1,18 +1,18 @@
 import React from 'react';
 import createDOMPurify from 'dompurify';
+import { DownOutlined, UndoOutlined } from '@ant-design/icons';
 import {
-	Modal,
-	Dropdown,
-	Menu,
-	Button,
-	Icon,
-	message,
-	Row,
-	Col,
-	Typography,
-	Switch,
-	Tree,
-	Tag,
+    Modal,
+    Dropdown,
+    Menu,
+    Button,
+    message,
+    Row,
+    Col,
+    Typography,
+    Switch,
+    Tree,
+    Tag,
 } from 'antd';
 import { ReactiveList } from '@appbaseio/reactivesearch';
 import { css } from 'emotion';
@@ -150,7 +150,7 @@ class PreviewList extends React.Component {
 		};
 
 		return (
-			<div style={{ margin: '16px 0px' }} key={name}>
+            <div style={{ margin: '16px 0px' }} key={name}>
 				<Paragraph strong>
 					Select {name}{' '}
 					{this.optional.includes(name) ? <Tag>Optional</Tag> : ''}
@@ -158,19 +158,19 @@ class PreviewList extends React.Component {
 				<Dropdown overlay={menu} trigger={['click']}>
 					<Button style={style}>
 						{this.state[name] || 'Choose Option'}{' '}
-						<Icon type="down" />
+						<DownOutlined />
 					</Button>
 				</Dropdown>
 				{this.state[name] ? (
 					<Button
-						icon="undo"
+						icon={<UndoOutlined />}
 						style={{ marginLeft: '10px' }}
 						shape="circle"
 						onClick={() => this.resetSelectedOption(name)}
 					/>
 				) : null}
 			</div>
-		);
+        );
 	};
 
 	handleSwitch = checked => {

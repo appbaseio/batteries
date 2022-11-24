@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import createDOMPurify from 'dompurify';
-import { Row, Col, Card, Button, Modal, Form, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Button, Modal, message, Form } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';
@@ -190,7 +191,7 @@ export default class Editor extends Component {
 
 		const { listComponentProps } = this.state;
 		return (
-			<Form onSubmit={this.handleSubmit} className={formWrapper}>
+			<Form onFinish={this.handleSubmit} className={formWrapper}>
 				<DataFieldInput
 					label={multiListTypes.dataField.label}
 					description={multiListTypes.dataField.description}
@@ -258,7 +259,7 @@ export default class Editor extends Component {
 							<Button
 								style={{ width: '100%' }}
 								size="large"
-								icon="plus-circle-o"
+								icon={<PlusCircleOutlined />}
 								className="search-tutorial-3"
 								onClick={this.showModal}
 							>
