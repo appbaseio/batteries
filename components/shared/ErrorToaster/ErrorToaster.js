@@ -48,7 +48,7 @@ class ErrorToaster extends React.Component {
 								{title || 'Something went wrong.'}
 							</span>
 							<Button size="small" type="primary" onClick={this.retry}>
-								<ReloadOutlined />
+								<ReloadOutlined style={{ margin: "0.25rem" }}/>
 								Retry
 							</Button>
 						</React.Fragment>
@@ -76,11 +76,11 @@ class ErrorToaster extends React.Component {
 						extra={
 							<React.Fragment>
 								<Button onClick={() => window.Intercom('show')}>
-									<MessageOutlined />
+									<MessageOutlined style={{ margin: "0.25rem" }}/>
 									Chat with us
 								</Button>
 								<Button type="primary" onClick={this.retry}>
-									<ReloadOutlined />
+									<ReloadOutlined style={{ margin: "0.25rem" }}/>
 									Retry
 								</Button>
 							</React.Fragment>

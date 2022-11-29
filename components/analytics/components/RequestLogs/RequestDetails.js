@@ -142,7 +142,7 @@ const RequestDetails = ({
 					>
 						<Button onClick={() => replayRequest(url, method, headers, request)}>
 							<ReloadOutlined />
-							Replay Request
+							<span>Replay Request</span>
 						</Button>
 					</Popover>
 				</Flex>

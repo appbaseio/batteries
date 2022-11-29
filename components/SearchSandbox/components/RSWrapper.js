@@ -405,7 +405,7 @@ class RSComponentRender extends Component {
 									style={{ marginLeft: 8 }}
 									onClick={this.handlePreviewModal}
 								>
-									<UnorderedListOutlined />
+									<UnorderedListOutlined style={{ margin: "0.25rem" }}/>
 									Set Result View
 								</Button>
 							) : null}

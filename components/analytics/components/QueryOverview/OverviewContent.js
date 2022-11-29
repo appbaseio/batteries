@@ -59,17 +59,10 @@ class OverviewContent extends React.Component {
 	}
 
 	render() {
-		const {
-			isLoading,
-			histogram,
-			topClicks,
-			topResults,
-			filterId,
-			query,
-			displayFilter,
-		} = this.props;
+		const { isLoading, histogram, topClicks, topResults, filterId, query, displayFilter } =
+			this.props;
 		return (
-            <div>
+			<div>
 				{isLoading ? (
 					<Loader />
 				) : (
@@ -109,9 +102,10 @@ class OverviewContent extends React.Component {
 											Top Result Clicks
 											<Tooltip title="In the drilldown view, only result clicks are shown. The summary stat includes suggestion clicks as well.">
 												<InfoCircleOutlined
-                                                    style={{
+													style={{
 														marginLeft: 8,
-													}} />
+													}}
+												/>
 											</Tooltip>
 										</span>
 									}
@@ -145,7 +139,7 @@ class OverviewContent extends React.Component {
 					</div>
 				)}
 			</div>
-        );
+		);
 	}
 }
 

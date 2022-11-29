@@ -174,7 +174,7 @@ class Filter extends React.Component {
 		}
 		const filterValues = get(filterValuesByLabels, `${filterKey}.filter_values`, []);
 		return (
-            <Flex flexDirection="column" style={{ paddingBottom: 15 }}>
+			<Flex flexDirection="column" style={{ paddingBottom: 15 }}>
 				<Flex justifyContent="space-between" style={{ flexWrap: 'wrap' }}>
 					<Flex style={{ flexWrap: 'wrap' }}>
 						{!hideCustomEvents ? (
@@ -253,14 +253,14 @@ class Filter extends React.Component {
 						{hideInsightsButton ? null : (
 							<Button onClick={toggleInsights} style={{ marginLeft: 15 }}>
 								<BarChartOutlined />
-								Insights
+								<span>Insights</span>
 							</Button>
 						)}
 					</Flex>
 				</Flex>
 				<SelectedFilters filterId={filterId} />
 			</Flex>
-        );
+		);
 	}
 }
 

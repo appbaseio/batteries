@@ -79,7 +79,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 		requestBody && typeof requestBody === 'object' ? JSON.stringify(requestBody) : requestBody;
 
 	return (
-        <div>
+		<div>
 			<Card
 				title={
 					<div style={{ display: 'flex' }}>
@@ -126,7 +126,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 					<Popover content="Copy cURL request to clipboard" trigger="hover">
 						<Button onClick={() => convertToCURL(url, method, headers, requestBody)}>
 							<CopyOutlined />
-							Copy as cURL
+							<span>Copy as cURL</span>
 						</Button>
 					</Popover>
 				</div>
@@ -222,7 +222,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 					);
 				})}
 		</div>
-    );
+	);
 };
 
 RequestDiff.defaultProps = {

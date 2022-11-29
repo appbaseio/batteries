@@ -8,7 +8,7 @@ import { dateRangesColumn, dateRanges as defaultDateRanges } from '../../utils';
 const DateFilter = ({ visible, toggleVisible, onChange, label, dateRanges, columnItems }) => {
 	const datesToDisplay = dateRangesColumn(dateRanges, columnItems);
 	return (
-        <Popover
+		<Popover
 			visible={visible}
 			trigger="click"
 			content={
@@ -38,10 +38,10 @@ const DateFilter = ({ visible, toggleVisible, onChange, label, dateRanges, colum
 		>
 			<Button style={{ marginLeft: 15 }} onClick={toggleVisible}>
 				<ClockCircleOutlined />
-				{label}
+				<span>{label}</span>
 			</Button>
 		</Popover>
-    );
+	);
 };
 
 DateFilter.defaultProps = {
