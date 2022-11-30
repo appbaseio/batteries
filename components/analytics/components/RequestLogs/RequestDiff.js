@@ -154,7 +154,7 @@ const RequestDiff = ({ requestBody, requestChanges, method, headers, url, should
 					editorProps={{ $blockScrolling: true }}
 				/>
 			</Card>
-			{requestChanges
+			{(requestChanges ?? [])
 				.filter((i) => i.stage !== 'searchrelevancy')
 				.map((requestChange, index) => {
 					const requestChangeBody = requestChange.body || requestChange.context;
