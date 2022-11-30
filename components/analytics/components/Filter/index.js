@@ -180,7 +180,7 @@ class Filter extends React.Component {
 						{!hideCustomEvents ? (
 							<Select
 								showSearch
-								style={{ width: 150, marginBottom: 15, paddingRight: 15 }}
+								style={{ width: 150, marginBottom: 15, marginRight: 15 }}
 								placeholder="Filter by"
 								optionFilterProp="children"
 								onChange={this.handleFilterByChange}
@@ -196,7 +196,7 @@ class Filter extends React.Component {
 						{displayLabelSelector && (
 							<Select
 								showSearch
-								style={{ width: 200, paddingRight: 15, marginBottom: 15 }}
+								style={{ width: 200, marginRight: 15, marginBottom: 15 }}
 								placeholder="Filter label"
 								optionFilterProp="children"
 								onChange={this.handleFilterLabelChange}
@@ -218,7 +218,7 @@ class Filter extends React.Component {
 								showSearch
 								style={{
 									width: 200,
-									paddingRight: 15,
+									marginRight: 15,
 									marginBottom: 15,
 								}}
 								placeholder="Filter value"
