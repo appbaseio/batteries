@@ -29,7 +29,12 @@ import {
 } from '../../utils/mappings';
 import conversionMap from '../../utils/conversionMap';
 import { getRawMappingsByAppName } from '../../modules/selectors';
-import { setCurrentApp, getAppMappings as getMappings, clearMappings, getSettings as getSearchSettings } from '../../modules/actions';
+import {
+	setCurrentApp,
+	getAppMappings as getMappings,
+	clearMappings,
+	getSettings as getSearchSettings,
+} from '../../modules/actions';
 
 import { Header, footerStyles } from './styles';
 import NewFieldModal from './NewFieldModal';
@@ -101,13 +106,8 @@ class Mappings extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		const {
-			appName,
-			appbaseCredentials,
-			mapping,
-			getAppMappings,
-			isFetchingMapping,
-		} = this.props;
+		const { appName, appbaseCredentials, mapping, getAppMappings, isFetchingMapping } =
+			this.props;
 
 		if (!isEqual(prevProps.mapping, mapping)) {
 			this.handleMapping(mapping);
@@ -180,7 +180,7 @@ class Mappings extends Component {
 	/**
 	 * used for rendering types in mappings view
 	 */
-	getType = type => {
+	getType = (type) => {
 		if (type === 'string') return 'text';
 		return type;
 	};
@@ -216,13 +216,13 @@ class Mappings extends Component {
 		});
 	};
 
-	handleModal = name => {
-		this.setState(prevState => ({
+	handleModal = (name) => {
+		this.setState((prevState) => ({
 			[name]: !prevState[name],
 		}));
 	};
 
-	handleMapping = async res => {
+	handleMapping = async (res) => {
 		if (res) {
 			const { appName, appbaseCredentials } = this.props;
 			const fullVersion = getVersion() || (await getESVersion(appName, appbaseCredentials));
@@ -300,7 +300,7 @@ class Mappings extends Component {
 		});
 	};
 
-	handleChange = e => {
+	handleChange = (e) => {
 		const { name, value } = e.target;
 		this.setState({
 			[name]: value,
@@ -338,7 +338,7 @@ class Mappings extends Component {
 		});
 	};
 
-	reIndex = async callback => {
+	reIndex = async (callback) => {
 		this.setState({
 			isLoading: true,
 		});
@@ -349,7 +349,9 @@ class Mappings extends Component {
 
 		let { mapping } = this.state;
 
-		let appSettings = await getSettings(appId, credentials).then(data => data[appId].settings);
+		let appSettings = await getSettings(appId, credentials).then(
+			(data) => data[appId].settings,
+		);
 
 		appSettings = getUpdatedSettings({ settings: appSettings, shards, replicas });
 
@@ -364,8 +366,8 @@ class Mappings extends Component {
 		}
 
 		const excludedFields = deletedPaths
-			.map(path => path.split('.properties.').join('.'))
-			.map(path => {
+			.map((path) => path.split('.properties.').join('.'))
+			.map((path) => {
 				const i = path.indexOf('.') + 1;
 				return path.substring(i);
 			});
@@ -406,7 +408,7 @@ class Mappings extends Component {
 			});
 	};
 
-	getConversionMap = field => conversionMap[field] || [];
+	getConversionMap = (field) => conversionMap[field] || [];
 
 	updateShards = () => {
 		this.handleModal('shardsModal');
@@ -422,10 +424,10 @@ class Mappings extends Component {
 		const credentials = this.props.credentials || this.state.credentials;
 		const { url, appName, mapping, appId } = this.props;
 
-		const synonyms = this.state.synonyms.split('\n').map(pair =>
+		const synonyms = this.state.synonyms.split('\n').map((pair) =>
 			pair
 				.split(',')
-				.map(synonym => synonym.trim())
+				.map((synonym) => synonym.trim())
 				.join(','),
 		);
 
@@ -468,7 +470,7 @@ class Mappings extends Component {
 					.then(() => {
 						this.handleReindex();
 					})
-					.catch(err => {
+					.catch((err) => {
 						console.log(err);
 						this.setState({
 							isLoading: false,
@@ -588,7 +590,7 @@ class Mappings extends Component {
 		}
 
 		return (
-            <React.Fragment>
+			<React.Fragment>
 				{showShards ? (
 					<Shards
 						handleSlider={this.handleSlider}
@@ -651,7 +653,7 @@ class Mappings extends Component {
 						) : null}
 						<Header>
 							<span>
-								Field Name
+								Field Name{' '}
 								<Tooltip title={fieldNameMessage}>
 									<span style={{ marginLeft: 5 }}>
 										<InfoCircleOutlined />
@@ -770,7 +772,7 @@ class Mappings extends Component {
 					onClose={this.handleTimeout}
 				/>
 			</React.Fragment>
-        );
+		);
 	}
 }
 
@@ -867,18 +869,18 @@ const mapStateToProps = (state, props) => {
 	};
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
 	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
 	getAppMappings: (appName, credentials, url) => {
 		dispatch(getMappings(appName, credentials, url));
 	},
-	clearMappings: appName => dispatch(clearMappings(appName)),
-	addApp: appName => dispatch(appendApp(appName)),
-	deleteApp: appName => dispatch(removeAppData(appName)),
+	clearMappings: (appName) => dispatch(clearMappings(appName)),
+	addApp: (appName) => dispatch(appendApp(appName)),
+	deleteApp: (appName) => dispatch(removeAppData(appName)),
 	getSettingsAction: (name) => dispatch(getSearchSettings(name)),
 });
 
-const withRouterRef = Wrapped => {
+const withRouterRef = (Wrapped) => {
 	const WithRouter = withRouter(({ forwardRef, ...otherProps }) => (
 		<Wrapped ref={forwardRef} {...otherProps} />
 	));

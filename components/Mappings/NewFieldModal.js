@@ -41,11 +41,11 @@ export default class NewFieldModal extends Component {
 		error: '',
 	});
 
-	handleEsTypeChange = label => {
+	handleEsTypeChange = (label) => {
 		this.setState({ esType: label, fieldType: label });
 	};
 
-	handleNewFieldChange = e => {
+	handleNewFieldChange = (e) => {
 		const { name, value } = e.target;
 		this.setState({
 			...this.state.new,
@@ -55,15 +55,14 @@ export default class NewFieldModal extends Component {
 
 	addField = () => {
 		const { esType, fieldType, name, usecase, type } = this.state;
-		const deletedPaths = this.props.deletedPaths.map(item =>
+		const deletedPaths = this.props.deletedPaths.map((item) =>
 			item.split('.properties.').join('.'),
 		);
 		const fieldName = `${fieldType || esType}.${name}`;
 
 		if (name && deletedPaths.includes(fieldName)) {
 			this.setState({
-				error:
-					"You're trying to add a field which you just deleted. This will result in loss of data.",
+				error: "You're trying to add a field which you just deleted. This will result in loss of data.",
 			});
 		} else if (name) {
 			this.props.addField({
@@ -90,27 +89,27 @@ export default class NewFieldModal extends Component {
 
 	renderDropDown = ({ name, options, value }) => {
 		const menu = (
-			<Menu onClick={e => this.handleDropdownMenu(e, name)}>
-				{options.map(option => (
+			<Menu onClick={(e) => this.handleDropdownMenu(e, name)}>
+				{options.map((option) => (
 					<Menu.Item key={option.value}>{option.label}</Menu.Item>
 				))}
 			</Menu>
 		);
 		return (
-            <Dropdown overlay={menu}>
+			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
 					{value}
 					<DownOutlined />
 				</Button>
 			</Dropdown>
-        );
+		);
 	};
 
 	render() {
 		const { fieldType, esType } = this.state;
 		const menu = (
-			<Menu onClick={e => this.handleEsTypeChange(e.key)}>
-				{this.props.types.map(item => (
+			<Menu onClick={(e) => this.handleEsTypeChange(e.key)}>
+				{this.props.types.map((item) => (
 					<Menu.Item key={item}>{item}</Menu.Item>
 				))}
 				{fieldType && !this.props.types.includes(fieldType) ? (
@@ -119,7 +118,7 @@ export default class NewFieldModal extends Component {
 			</Menu>
 		);
 		return (
-            <Modal
+			<Modal
 				visible={this.props.show}
 				onCancel={this.props.onClose}
 				onOk={this.addField}
@@ -134,7 +133,7 @@ export default class NewFieldModal extends Component {
 					<Header>
 						{this.props.esVersion < 6 ? <span className="col">Type</span> : null}
 						<span className="col col--grow">
-							Field Name
+							Field Name{' '}
 							<Tooltip title={fieldNameMessage}>
 								<span style={{ marginLeft: 5 }}>
 									<InfoCircleOutlined />
@@ -194,7 +193,7 @@ export default class NewFieldModal extends Component {
 						{this.state.type === 'text'
 							? this.renderDropDown({
 									name: 'usecase',
-									options: Object.entries(this.usecases).map(entry => ({
+									options: Object.entries(this.usecases).map((entry) => ({
 										label: entry[1],
 										value: entry[0],
 									})),
@@ -204,8 +203,8 @@ export default class NewFieldModal extends Component {
 						{this.renderDropDown({
 							name: 'type',
 							options: Object.keys(conversionMap)
-								.filter(value => value !== 'object')
-								.map(entry => ({
+								.filter((value) => value !== 'object')
+								.map((entry) => ({
 									label: entry,
 									value: entry,
 								})),
@@ -217,6 +216,6 @@ export default class NewFieldModal extends Component {
 					) : null}
 				</section>
 			</Modal>
-        );
+		);
 	}
 }
