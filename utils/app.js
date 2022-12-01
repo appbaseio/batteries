@@ -594,3 +594,13 @@ export const updateBackendConnection = (payload) => {
 		true,
 	);
 };
+
+export const getDataUsage = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/sls/data_usage`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
