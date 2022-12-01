@@ -138,6 +138,7 @@ class PopularSearches extends React.Component {
 					}}
 					pagination={{
 						pageSize: 10,
+						showSizeChanger: false,
 					}}
 				/>
 			</React.Fragment>

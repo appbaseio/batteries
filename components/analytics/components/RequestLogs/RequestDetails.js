@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import get from 'lodash/get';
-import { Button, Tabs, Icon, Popover, Alert, Card } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
+import { Button, Tabs, Popover, Alert, Card } from 'antd';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import AceEditor from 'react-ace';
@@ -98,7 +99,7 @@ const RequestDetails = ({
 				rulesData.map((rule) => (
 					<Alert
 						type="info"
-						icon="info"
+						showIcon
 						style={{ margin: '16px 0px' }}
 						message={
 							<React.Fragment>
@@ -140,8 +141,8 @@ const RequestDetails = ({
 						trigger="hover"
 					>
 						<Button onClick={() => replayRequest(url, method, headers, request)}>
-							<Icon type="reload" />
-							Replay Request
+							<ReloadOutlined />
+							<span>Replay Request</span>
 						</Button>
 					</Popover>
 				</Flex>

@@ -127,6 +127,7 @@ class PopularResults extends React.Component {
 					title="Popular Results"
 					pagination={{
 						pageSize: 10,
+						showSizeChanger: false,
 					}}
 					onClickDownload={() =>
 						exportCSVFile(

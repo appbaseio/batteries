@@ -1,5 +1,6 @@
 import React from 'react';
-import { Select, Spin, Button, Icon, Tooltip } from 'antd';
+import { BarChartOutlined, RedoOutlined } from '@ant-design/icons';
+import { Select, Spin, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
@@ -179,7 +180,7 @@ class Filter extends React.Component {
 						{!hideCustomEvents ? (
 							<Select
 								showSearch
-								style={{ width: 150, marginBottom: 15, paddingRight: 15 }}
+								style={{ width: 150, marginBottom: 15, marginRight: 15 }}
 								placeholder="Filter by"
 								optionFilterProp="children"
 								onChange={this.handleFilterByChange}
@@ -195,7 +196,7 @@ class Filter extends React.Component {
 						{displayLabelSelector && (
 							<Select
 								showSearch
-								style={{ width: 200, paddingRight: 15, marginBottom: 15 }}
+								style={{ width: 200, marginRight: 15, marginBottom: 15 }}
 								placeholder="Filter label"
 								optionFilterProp="children"
 								onChange={this.handleFilterLabelChange}
@@ -217,7 +218,7 @@ class Filter extends React.Component {
 								showSearch
 								style={{
 									width: 200,
-									paddingRight: 15,
+									marginRight: 15,
 									marginBottom: 15,
 								}}
 								placeholder="Filter value"
@@ -239,7 +240,7 @@ class Filter extends React.Component {
 					</Flex>
 					<Flex>
 						<Tooltip placement="topLeft" title="Refresh data">
-							<Button onClick={this.handleRefresh} icon="redo" />
+							<Button onClick={this.handleRefresh} icon={<RedoOutlined />} />
 						</Tooltip>
 						<DateFilter
 							onChange={this.handleDateRangeChange}
@@ -251,8 +252,8 @@ class Filter extends React.Component {
 						/>
 						{hideInsightsButton ? null : (
 							<Button onClick={toggleInsights} style={{ marginLeft: 15 }}>
-								<Icon type="bar-chart" />
-								Insights
+								<BarChartOutlined />
+								<span>Insights</span>
 							</Button>
 						)}
 					</Flex>

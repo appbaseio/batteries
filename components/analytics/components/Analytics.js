@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Spin, Icon, Card } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin, Card } from 'antd';
 import PropTypes from 'prop-types';
 import Filter from './Filter';
 import Flex from '../../shared/Flex';
@@ -62,7 +63,7 @@ const Analytics = ({
 	};
 
 	if (loading) {
-		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
+		const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
 	}
 

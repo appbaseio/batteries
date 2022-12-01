@@ -1,5 +1,13 @@
 import React from 'react';
-import { Icon } from 'antd';
+
+import {
+    CalendarOutlined,
+    CheckOutlined,
+    EnvironmentOutlined,
+    FileJpgOutlined,
+    FileTextOutlined,
+    FileUnknownOutlined,
+} from '@ant-design/icons';
 
 const MappingIcon = ({ type }) => {
 	const iconStyle = { margin: 0, fontSize: 13 };
@@ -7,26 +15,26 @@ const MappingIcon = ({ type }) => {
 		case 'text':
 		case 'string':
 		case 'keyword':
-			return <Icon style={iconStyle} type="file-text" theme="outlined" />;
+			return <FileTextOutlined style={iconStyle} />;
 		case 'long':
 		case 'integer':
 			return <div style={iconStyle}>#</div>;
 		case 'geo_point':
 		case 'geo_shape':
-			return <Icon style={iconStyle} type="environment" theme="outlined" />;
+			return <EnvironmentOutlined style={iconStyle} />;
 		case 'date':
-			return <Icon style={iconStyle} type="calendar" theme="outlined" />;
+			return <CalendarOutlined style={iconStyle} />;
 		case 'double':
 		case 'float':
 			return <div style={iconStyle}>π</div>;
 		case 'boolean':
-			return <Icon style={iconStyle} type="check" theme="outlined" />;
+			return <CheckOutlined style={iconStyle} />;
 		case 'object':
 			return <div style={iconStyle}>{'{...}'}</div>;
 		case 'image':
-			return <Icon style={iconStyle} type="file-jpg" theme="outlined" />;
+			return <FileJpgOutlined style={iconStyle} />;
 		default:
-			return <Icon style={iconStyle} type="file-unknown" theme="outlined" />;
+			return <FileUnknownOutlined style={iconStyle} />;
 	}
 };
 

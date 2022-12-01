@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
+import { RedoOutlined } from '@ant-design/icons';
 import { Button, message } from 'antd';
 import { Link } from 'react-router-dom';
 import get from 'lodash/get';
@@ -84,7 +85,7 @@ const replaySearch = [
 			<div css="text-align: center">
 				<Button
 					disabled={!item.search_state}
-					icon="redo"
+					icon={<RedoOutlined />}
 					onClick={() => item.handleReplaySearch(item.search_state)}
 				/>
 			</div>
