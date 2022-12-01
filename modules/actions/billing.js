@@ -2,10 +2,10 @@ import { createAction } from './utils';
 import AppConstants from '../constants';
 import { getDataUsage as fetchDataUsage } from '../../utils/app';
 
-export function getDataUsage() {
+export function getDataUsage(queryParams) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.BILLING.GET_DATA_USAGE));
-		return fetchDataUsage()
+		return fetchDataUsage(queryParams)
 			.then((res) => {
 				return dispatch(
 					createAction(AppConstants.BILLING.GET_DATA_USAGE_SUCCESS, res, null),
