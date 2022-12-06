@@ -75,7 +75,7 @@ class ViewSource extends React.Component {
 							Viewing source for <b>{docID}</b>
 						</span>
 					}
-					visible={visible}
+					open={visible}
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 				>

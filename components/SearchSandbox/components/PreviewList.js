@@ -1,17 +1,17 @@
 import React from 'react';
 import { DownOutlined, UndoOutlined } from '@ant-design/icons';
 import {
-    Modal,
-    Dropdown,
-    Menu,
-    Button,
-    message,
-    Row,
-    Col,
-    Typography,
-    Tree,
-    Switch,
-    Tag,
+	Modal,
+	Dropdown,
+	Menu,
+	Button,
+	message,
+	Row,
+	Col,
+	Typography,
+	Tree,
+	Switch,
+	Tag,
 } from 'antd';
 import { css } from 'emotion';
 import { ReactiveList } from '@appbaseio/reactivesearch';
@@ -131,7 +131,7 @@ class PreviewList extends React.Component {
 		};
 
 		return (
-            <div style={{ margin: '16px 0px' }} key={name}>
+			<div style={{ margin: '16px 0px' }} key={name}>
 				<Paragraph strong>
 					Select {name} {this.optional.includes(name) ? <Tag>Optional</Tag> : ''}
 				</Paragraph>
@@ -149,7 +149,7 @@ class PreviewList extends React.Component {
 					/>
 				) : null}
 			</div>
-        );
+		);
 	};
 
 	handleSwitch = (checked) => {
@@ -205,7 +205,7 @@ class PreviewList extends React.Component {
 
 		return (
 			<Modal
-				visible={this.props.visible}
+				open={this.props.visible}
 				onOk={this.handleSave}
 				okText="Save"
 				width={720}

@@ -1,8 +1,6 @@
 import React from 'react';
 import { CopyOutlined, FileTextOutlined } from '@ant-design/icons';
-import {
- Button, Popover, Row, Col, Tooltip, notification,
-} from 'antd';
+import { Button, Popover, Row, Col, Tooltip, notification } from 'antd';
 
 import Ace from '../containers/AceEditor';
 
@@ -78,8 +76,10 @@ class EditorJSON extends React.Component {
 			{
 				copied: true,
 			},
-			() => setTimeout(
-					() => this.setState({
+			() =>
+				setTimeout(
+					() =>
+						this.setState({
 							copied: false,
 						}),
 					300,
@@ -112,7 +112,7 @@ class EditorJSON extends React.Component {
         } = this.state; // prettier-ignore
 		const { res } = this.props;
 		return (
-            <Popover
+			<Popover
 				placement="leftTop"
 				trigger="click"
 				onVisibleChange={
@@ -123,7 +123,7 @@ class EditorJSON extends React.Component {
 						<Ace
 							mode="json"
 							value={editorValue}
-							onChange={value => this.handleEditingJSON(value)}
+							onChange={(value) => this.handleEditingJSON(value)}
 							theme="monokai"
 							name="editor-JSON"
 							fontSize={14}
@@ -149,7 +149,7 @@ class EditorJSON extends React.Component {
 							</h5>
 						</Col>
 						<Col span={isEditable ? 5 : 6}>
-							<Tooltip visible={copied} title="Copied">
+							<Tooltip open={copied} title="Copied">
 								<Button
 									shape="circle"
 									icon={<CopyOutlined />}
@@ -184,7 +184,7 @@ class EditorJSON extends React.Component {
 			>
 				<Button shape="circle" icon={<FileTextOutlined />} style={{ marginRight: '5px' }} />
 			</Popover>
-        );
+		);
 	}
 }
 

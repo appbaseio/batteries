@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { DeleteOutlined, DownOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { Menu, Button, Dropdown, Modal, Input, message, Switch, Tooltip } from 'antd';
-import {
- bool, arrayOf, string, func,
-} from 'prop-types';
+import { bool, arrayOf, string, func } from 'prop-types';
 
 const CREATE_NEW_PROFILE = 'SEARCH_SANDBOX_CREATE_NEW_PROFILE_APPBASE';
 const SAVE_AS_NEW_PROFILE = 'SEARCH_SANDBOX_SAVE_AS_NEW_PROFILE_APPBASE';
@@ -137,7 +135,7 @@ export default class Header extends Component {
 					&nbsp; Create a New Profile
 				</Menu.Item>
 				<Menu.Divider />
-				{profileList.map(item => (
+				{profileList.map((item) => (
 					<Menu.Item key={item}>{item}</Menu.Item>
 				))}
 			</Menu>
@@ -194,7 +192,7 @@ export default class Header extends Component {
 
 					<Modal
 						title="Create a new Search Profile"
-						visible={showNewProfileModal}
+						open={showNewProfileModal}
 						onOk={this.handleSaveProfile}
 						onCancel={this.handleCancel}
 						destroyOnClose

@@ -3,7 +3,7 @@ import { Modal } from 'antd';
 
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
 	<Modal
-		visible={show}
+		open={show}
 		title="Re-index in progress"
 		onOk={onClose}
 		closable={false}

@@ -119,7 +119,7 @@ export default class NewFieldModal extends Component {
 		);
 		return (
 			<Modal
-				visible={this.props.show}
+				open={this.props.show}
 				onCancel={this.props.onClose}
 				onOk={this.addField}
 				title="Add new Field"

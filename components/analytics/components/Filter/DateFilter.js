@@ -9,7 +9,7 @@ const DateFilter = ({ visible, toggleVisible, onChange, label, dateRanges, colum
 	const datesToDisplay = dateRangesColumn(dateRanges, columnItems);
 	return (
 		<Popover
-			visible={visible}
+			open={visible}
 			trigger="click"
 			content={
 				<Row style={{ width: 300 }} gutter={[8, 8]}>
