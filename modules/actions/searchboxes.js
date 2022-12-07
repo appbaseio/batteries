@@ -4,7 +4,7 @@ import { getSearchBoxes, getSearchBox, deleteSearchBox, updateSearchBox } from '
 
 export function saveSearchBox(id, payload, shouldFetchSearchboxes = true) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE, { id, ...payload }));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE, { id, ...payload }));
 		return updateSearchBox({ id, searchBoxConfig: payload })
 			.then((data) => {
 				if (shouldFetchSearchboxes) {
@@ -12,7 +12,7 @@ export function saveSearchBox(id, payload, shouldFetchSearchboxes = true) {
 				}
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE_SUCCESS,
 						{ id, ...data },
 						null,
 					),
@@ -20,7 +20,7 @@ export function saveSearchBox(id, payload, shouldFetchSearchboxes = true) {
 			})
 			.catch((error) =>
 				dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_ERROR, null, error),
+					createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE_ERROR, null, error),
 				),
 			);
 	};
@@ -31,7 +31,7 @@ export function cloneSearchBox(refSearchBox) {
 		const cloneId = `${refSearchBox.id}_clone_${new Date().getTime()}`;
 		const { id, ...payload } = refSearchBox;
 		dispatch(
-			createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE, {
+			createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.CLONE, {
 				id,
 			}),
 		);
@@ -40,7 +40,7 @@ export function cloneSearchBox(refSearchBox) {
 				dispatch(fetchSearchBoxes());
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_BOX.CLONE_SUCCESS,
 						{ id: cloneId, ...payload },
 						null,
 						{ id },
@@ -50,7 +50,7 @@ export function cloneSearchBox(refSearchBox) {
 			.catch((error) => {
 				console.log('data cloned error', error);
 				return dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE_ERROR, null, error),
+					createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.CLONE_ERROR, null, error),
 				);
 			});
 	};
@@ -58,16 +58,16 @@ export function cloneSearchBox(refSearchBox) {
 
 export function fetchSearchBoxes() {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOXES.GET));
 		return getSearchBoxes()
 			.then((res) => {
 				return dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET_SUCCESS, res, null),
+					createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOXES.GET_SUCCESS, res, null),
 				);
 			})
 			.catch((error) => {
 				dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET_ERROR, null, error),
+					createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOXES.GET_ERROR, null, error),
 				);
 			});
 	};
@@ -75,16 +75,16 @@ export function fetchSearchBoxes() {
 
 export function fetchSearchBox(id) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.GET));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.GET));
 		return getSearchBox(id)
 			.then((res) => {
 				return dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.GET_SUCCESS, res, null),
+					createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.GET_SUCCESS, res, null),
 				);
 			})
 			.catch((error) => {
 				dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.GET_ERROR, null, error),
+					createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.GET_ERROR, null, error),
 				);
 			});
 	};
@@ -92,7 +92,7 @@ export function fetchSearchBox(id) {
 
 export function removeSearchBox(id, shouldRefetchSearchboxes = true) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE, { id }));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.DELETE, { id }));
 		return deleteSearchBox(id)
 			.then(() => {
 				if (shouldRefetchSearchboxes) {
@@ -100,7 +100,7 @@ export function removeSearchBox(id, shouldRefetchSearchboxes = true) {
 				}
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_BOX.DELETE_SUCCESS,
 						{ id },
 						null,
 					),
@@ -109,7 +109,7 @@ export function removeSearchBox(id, shouldRefetchSearchboxes = true) {
 			.catch((error) => {
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_ERROR,
+						AppConstants.APP.UI_BUILDER.SEARCH_BOX.DELETE_ERROR,
 						{ id },
 						error,
 					),

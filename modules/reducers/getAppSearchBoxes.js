@@ -4,28 +4,28 @@ const initialAppState = {};
 
 function getAppSearchBoxes(state = initialAppState, action) {
 	switch (action.type) {
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET:
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOXES.GET:
 			return {
 				isFetching: true,
 				success: false,
 				error: false,
 				results: state.results ?? [],
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET_SUCCESS:
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOXES.GET_SUCCESS:
 			return {
 				isFetching: false,
 				success: true,
 				error: false,
 				results: action.payload,
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOXES.GET_ERROR:
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOXES.GET_ERROR:
 			return {
 				isFetching: false,
 				success: false,
 				error: action.payload,
 			};
 
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CREATE: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.CREATE: {
 			return {
 				...state,
 				create: {
@@ -34,7 +34,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 				},
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CREATE_SUCCESS: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.CREATE_SUCCESS: {
 			return {
 				...state,
 				results: [...state.results, { ...action.payload }],
@@ -44,7 +44,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 				},
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CREATE_ERROR: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.CREATE_ERROR: {
 			return {
 				...state,
 				create: {
@@ -54,7 +54,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 			};
 		}
 
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE: {
 			const updatedResults = state.results.map((item) => {
 				return item.id === action.payload.id
 					? {
@@ -79,7 +79,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 					  }),
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_SUCCESS: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE_SUCCESS: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
@@ -105,7 +105,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 					  }),
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.UPDATE_ERROR: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE_ERROR: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
@@ -131,7 +131,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 			};
 		}
 
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.DELETE: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
@@ -145,7 +145,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 				results: updatedResults,
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_SUCCESS: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.DELETE_SUCCESS: {
 			const filteredResults = state.results.filter((item) => item.id !== action.payload.id);
 			return {
 				...state,
@@ -153,7 +153,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 				deleted: action.payload.id,
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.DELETE_ERROR: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.DELETE_ERROR: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
@@ -168,7 +168,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 				results: updatedResults,
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.CLONE: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {
@@ -183,7 +183,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 				results: updatedResults,
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE_SUCCESS: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.CLONE_SUCCESS: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.meta.id
 					? {
@@ -197,7 +197,7 @@ function getAppSearchBoxes(state = initialAppState, action) {
 				results: [...updatedResults, { ...action.payload }],
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_BOX.CLONE_ERROR: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_BOX.CLONE_ERROR: {
 			const updatedResults = state.results.map((item) =>
 				item.id === action.payload.id
 					? {

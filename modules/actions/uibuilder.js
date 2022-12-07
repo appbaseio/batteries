@@ -5,15 +5,15 @@ import { getURL } from '../../../constants/config';
 import { doGet, doPut, doDelete, doPost, doPatch } from '../../utils/requestService';
 
 // New methods
-export function getSearchPreferencesN() {
+export function getSearchPreferences() {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/search`)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET_SUCCESS,
 						res,
 						null,
 					),
@@ -22,7 +22,7 @@ export function getSearchPreferencesN() {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET_ERROR,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET_ERROR,
 						null,
 						error,
 					),
@@ -31,15 +31,15 @@ export function getSearchPreferencesN() {
 	};
 }
 
-export function getRecommendationsPreferencesN() {
+export function getRecommendationsPreferences() {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/recommendation`)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET_SUCCESS,
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET_SUCCESS,
 						res,
 						null,
 					),
@@ -48,7 +48,7 @@ export function getRecommendationsPreferencesN() {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET_ERROR,
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET_ERROR,
 						null,
 						error,
 					),
@@ -57,15 +57,15 @@ export function getRecommendationsPreferencesN() {
 	};
 }
 
-export function getSearchPreferenceN(id) {
+export function getSearchPreference(id) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/${id}/search`)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET_SUCCESS,
 						res,
 						null,
 					),
@@ -74,7 +74,7 @@ export function getSearchPreferenceN(id) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.GET_ERROR,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET_ERROR,
 						null,
 						error,
 					),
@@ -83,15 +83,15 @@ export function getSearchPreferenceN(id) {
 	};
 }
 
-export function getRecommendationPreferenceN(id) {
+export function getRecommendationPreference(id) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/${id}/recommendation`)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET_SUCCESS,
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET_SUCCESS,
 						res,
 						null,
 					),
@@ -100,7 +100,7 @@ export function getRecommendationPreferenceN(id) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.GET_ERROR,
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET_ERROR,
 						null,
 						error,
 					),
@@ -109,20 +109,20 @@ export function getRecommendationPreferenceN(id) {
 	};
 }
 
-export function saveSearchPreferenceN(id, payload) {
+export function saveSearchPreference(id, payload) {
 	return (dispatch) => {
 		let preferenceId = id;
 		if (!preferenceId) {
 			preferenceId = uuidv4();
 		}
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.SAVE));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.SAVE));
 		const ACC_API = getURL();
 		return doPut(`${ACC_API}/_uibuilder/${preferenceId}/search`, payload)
 			.then((res) => {
 				// Update preferences
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.SAVE_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.SAVE_SUCCESS,
 						res,
 						payload,
 					),
@@ -131,7 +131,7 @@ export function saveSearchPreferenceN(id, payload) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.SAVE_ERROR,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.SAVE_ERROR,
 						null,
 						error,
 					),
@@ -140,9 +140,9 @@ export function saveSearchPreferenceN(id, payload) {
 	};
 }
 
-export function saveRecommendationPreferenceN(id, payload) {
+export function saveRecommendationPreference(id, payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.SAVE));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.SAVE));
 		const ACC_API = getURL();
 		let preferenceId = id;
 		if (!preferenceId) {
@@ -153,7 +153,7 @@ export function saveRecommendationPreferenceN(id, payload) {
 				// Update preferences
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.SAVE_SUCCESS,
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.SAVE_SUCCESS,
 						res,
 						payload,
 					),
@@ -162,7 +162,7 @@ export function saveRecommendationPreferenceN(id, payload) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.SAVE_ERROR,
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.SAVE_ERROR,
 						null,
 						error,
 					),
@@ -171,16 +171,16 @@ export function saveRecommendationPreferenceN(id, payload) {
 	};
 }
 
-export function deleteSearchPreferenceN(id) {
+export function deleteSearchPreference(id) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.DELETE));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE));
 		const ACC_API = getURL();
 		return doDelete(`${ACC_API}/_uibuilder/${id}/search`)
 			.then((res) => {
 				// Update preferences
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.DELETE_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE_SUCCESS,
 						res,
 					),
 				);
@@ -188,7 +188,7 @@ export function deleteSearchPreferenceN(id) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCES.DELETE_ERROR,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE_ERROR,
 						null,
 						error,
 					),
@@ -197,16 +197,16 @@ export function deleteSearchPreferenceN(id) {
 	};
 }
 
-export function deleteRecommendationPreferenceN(id) {
+export function deleteRecommendationPreference(id) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE));
 		const ACC_API = getURL();
 		return doDelete(`${ACC_API}/_uibuilder/${id}/recommendation`)
 			.then((res) => {
 				// Update preferences
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE_SUCCESS,
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE_SUCCESS,
 						res,
 					),
 				);
@@ -214,7 +214,7 @@ export function deleteRecommendationPreferenceN(id) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.RECOMMENDATION_PREFERENCES.DELETE_ERROR,
+						AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE_ERROR,
 						null,
 						error,
 					),
@@ -223,15 +223,15 @@ export function deleteRecommendationPreferenceN(id) {
 	};
 }
 
-export function getSearchPreferenceVersionsN(preferenceId) {
+export function getSearchPreferenceVersions(preferenceId) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/code/versions`)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_SUCCESS,
 						{ results: res.versions, preferenceId },
 						null,
 					),
@@ -240,7 +240,7 @@ export function getSearchPreferenceVersionsN(preferenceId) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_ERROR,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_ERROR,
 						null,
 						error,
 					),
@@ -250,15 +250,15 @@ export function getSearchPreferenceVersionsN(preferenceId) {
 }
 
 // actions to handle fetching, updating, etc for versions of code for search ui
-export function getSearchPreferenceLatestVersionN(preferenceId) {
+export function getSearchPreferenceLatestVersion(preferenceId) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_LATEST));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/code`)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_SUCCESS,
 						{ res, preferenceId },
 						null,
 					),
@@ -267,7 +267,7 @@ export function getSearchPreferenceLatestVersionN(preferenceId) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_ERROR,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_ERROR,
 						null,
 						error,
 					),
@@ -276,17 +276,17 @@ export function getSearchPreferenceLatestVersionN(preferenceId) {
 	};
 }
 
-export function getSearchPreferenceVersionCodeByVersionN(preferenceId, versionId) {
+export function getSearchPreferenceVersionCodeByVersion(preferenceId, versionId) {
 	return (dispatch) => {
 		dispatch(
-			createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE),
+			createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE),
 		);
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/code/version/${versionId}`)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS
 							.GET_VERSION_CODE_SUCCESS,
 						{ res, preferenceId },
 						null,
@@ -296,7 +296,7 @@ export function getSearchPreferenceVersionCodeByVersionN(preferenceId, versionId
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS
 							.GET_VERSION_CODE_ERROR,
 						null,
 						error,
@@ -308,13 +308,13 @@ export function getSearchPreferenceVersionCodeByVersionN(preferenceId, versionId
 
 export function getSearchPreferenceDeploymentStatus(preferenceId) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_DEPLOYEMENTS.GET));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/${preferenceId}/deploy`)
 			.then((res) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_SUCCESS,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_SUCCESS,
 						{ results: res, preferenceId },
 						null,
 					),
@@ -323,7 +323,7 @@ export function getSearchPreferenceDeploymentStatus(preferenceId) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_ERROR,
+						AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_ERROR,
 						null,
 						{ error, preferenceId },
 					),
@@ -334,7 +334,7 @@ export function getSearchPreferenceDeploymentStatus(preferenceId) {
 
 export function fetchAuth0Preferences() {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_PREFERENCES));
 		const ACC_API = getURL();
 
 		return doGet(`${ACC_API}/_uibuilder/auth_preferences`)
@@ -342,7 +342,7 @@ export function fetchAuth0Preferences() {
 				if (res._client_id) dispatch(fetchAuth0Client(res._client_id));
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_PREFERENCES_SUCCESS,
 						res,
 					),
 				);
@@ -350,7 +350,7 @@ export function fetchAuth0Preferences() {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_PREFERENCES_ERROR,
 						null,
 						error,
 					),
@@ -361,20 +361,20 @@ export function fetchAuth0Preferences() {
 
 export function putAuth0Preferences(payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.SET_AUTH0_PREFERENCES));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.SET_AUTH0_PREFERENCES));
 		const ACC_API = getURL();
 
 		return doPut(`${ACC_API}/_uibuilder/auth_preferences`, payload)
 			.then((res) => {
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.SET_AUTH0_PREFERENCES_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.SET_AUTH0_PREFERENCES_SUCCESS,
 						res,
 					),
 				);
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_PREFERENCES_SUCCESS,
 						payload,
 					),
 				);
@@ -382,7 +382,7 @@ export function putAuth0Preferences(payload) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.SET_AUTH0_PREFERENCES_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.SET_AUTH0_PREFERENCES_ERROR,
 						null,
 						error,
 					),
@@ -393,16 +393,16 @@ export function putAuth0Preferences(payload) {
 
 export function postAuth0Client(payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_CLIENT));
 		const ACC_API = getURL();
 		return doPost(`${ACC_API}/_uibuilder/authentication`, payload)
 			.then((res) => {
 				dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
+					createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
 				);
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_CLIENT_SUCCESS,
 						res,
 					),
 				);
@@ -410,7 +410,7 @@ export function postAuth0Client(payload) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_CLIENT_ERROR,
 						null,
 						error,
 					),
@@ -421,19 +421,19 @@ export function postAuth0Client(payload) {
 
 export function fetchAuth0Client(clientId) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT));
 		const ACC_API = getURL();
 
 		return doGet(`${ACC_API}/_uibuilder/authentication/${clientId}`)
 			.then((res) => {
 				dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
+					createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
 				);
 			})
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_ERROR,
 						null,
 						error,
 					),
@@ -444,16 +444,16 @@ export function fetchAuth0Client(clientId) {
 
 export function patchAuth0Client(clientId, payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_CLIENT));
 		const ACC_API = getURL();
 		return doPatch(`${ACC_API}/_uibuilder/authentication/${clientId}`, payload)
 			.then((res) => {
 				dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
+					createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_SUCCESS, res),
 				);
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_CLIENT_SUCCESS,
 						res,
 					),
 				);
@@ -461,7 +461,7 @@ export function patchAuth0Client(clientId, payload) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_CLIENT_ERROR,
 						null,
 						error,
 					),
@@ -472,13 +472,13 @@ export function patchAuth0Client(clientId, payload) {
 
 export function getAuth0ClientConnections(clientId) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/auth_connection_state/${clientId}`)
 			.then((res) => {
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS_SUCCESS,
 						res,
 					),
 				);
@@ -486,7 +486,7 @@ export function getAuth0ClientConnections(clientId) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_CONNECTIONS_ERROR,
 						null,
 						error,
 					),
@@ -497,13 +497,13 @@ export function getAuth0ClientConnections(clientId) {
 
 export function putAuth0ClientConnections(clientId, payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.SAVE_AUTH0_CLIENT_CONNECTIONS));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.SAVE_AUTH0_CLIENT_CONNECTIONS));
 		const ACC_API = getURL();
 		return doPut(`${ACC_API}/_uibuilder/auth_connection_state/${clientId}`, payload)
 			.then((res) => {
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.SAVE_AUTH0_CLIENT_CONNECTIONS_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.SAVE_AUTH0_CLIENT_CONNECTIONS_SUCCESS,
 						res,
 					),
 				);
@@ -511,7 +511,7 @@ export function putAuth0ClientConnections(clientId, payload) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.SAVE_AUTH0_CLIENT_CONNECTIONS_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.SAVE_AUTH0_CLIENT_CONNECTIONS_ERROR,
 						null,
 						error,
 					),
@@ -522,14 +522,14 @@ export function putAuth0ClientConnections(clientId, payload) {
 
 export function postAuth0ClientConnection(payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION));
 		const ACC_API = getURL();
 		return doPost(`${ACC_API}/_uibuilder/auth_connection`, payload)
 			.then((res) => {
 				getAuth0ClientConnections(payload.name); // payload.name contains the _client_id
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION_SUCCESS,
 						res,
 					),
 				);
@@ -537,7 +537,7 @@ export function postAuth0ClientConnection(payload) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_CLIENT_CONNECTION_ERROR,
 						null,
 						error,
 					),
@@ -548,13 +548,13 @@ export function postAuth0ClientConnection(payload) {
 
 export function getAuth0ClientConnection(connectionId) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTION));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_CONNECTION));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/auth_connection/${connectionId}`)
 			.then((res) => {
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTION_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_CONNECTION_SUCCESS,
 						res,
 					),
 				);
@@ -562,7 +562,7 @@ export function getAuth0ClientConnection(connectionId) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_CLIENT_CONNECTION_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_CLIENT_CONNECTION_ERROR,
 						null,
 						error,
 					),
@@ -573,14 +573,14 @@ export function getAuth0ClientConnection(connectionId) {
 
 export function patchAuth0ClientConnection(connectionId, payload, clientId) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION));
 		const ACC_API = getURL();
 		return doPatch(`${ACC_API}/_uibuilder/auth_connection/${connectionId}`, payload)
 			.then((res) => {
 				getAuth0ClientConnections(clientId); // payload.name contains the _client_id
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION_SUCCESS,
 						res,
 					),
 				);
@@ -588,7 +588,7 @@ export function patchAuth0ClientConnection(connectionId, payload, clientId) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_CLIENT_CONNECTION_ERROR,
 						null,
 						error,
 					),
@@ -600,18 +600,18 @@ export function patchAuth0ClientConnection(connectionId, payload, clientId) {
 export function getAuth0Users() {
 	return (dispatch, getState) => {
 		const clientId = getState().$getAuth0Preferences.results._client_id;
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_USERS));
 		const ACC_API = getURL();
 		return doGet(`${ACC_API}/_uibuilder/auth_users?q=app_metadata.${clientId}=true`)
 			.then((res) => {
 				return dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS_SUCCESS, res),
+					createAction(AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_USERS_SUCCESS, res),
 				);
 			})
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_USERS_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.GET_AUTH0_USERS_ERROR,
 						null,
 						error,
 					),
@@ -622,7 +622,7 @@ export function getAuth0Users() {
 
 export function createAuth0User(payload) {
 	return (dispatch, getState) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_USER));
 
 		const ACC_API = getURL();
 		const clientId = getState().$getAuth0Preferences.results._client_id;
@@ -635,13 +635,13 @@ export function createAuth0User(payload) {
 			.then((res) => {
 				dispatch(getAuth0Users());
 				return dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER_SUCCESS, res),
+					createAction(AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_USER_SUCCESS, res),
 				);
 			})
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.CREATE_AUTH0_USER_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.CREATE_AUTH0_USER_ERROR,
 						null,
 						error,
 					),
@@ -652,14 +652,14 @@ export function createAuth0User(payload) {
 
 export function patchAuth0UserSettings(userId, payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_USER_SETTINGS));
 		const ACC_API = getURL();
 		return doPatch(`${ACC_API}/_uibuilder/auth_user/${userId}`, payload)
 			.then((res) => {
 				dispatch(getAuth0Users());
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS_SUCCESS,
+						AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_USER_SETTINGS_SUCCESS,
 						res,
 					),
 				);
@@ -667,7 +667,7 @@ export function patchAuth0UserSettings(userId, payload) {
 			.catch((error) =>
 				dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.UPDATE_AUTH0_USER_SETTINGS_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.UPDATE_AUTH0_USER_SETTINGS_ERROR,
 						null,
 						error,
 					),
@@ -678,19 +678,19 @@ export function patchAuth0UserSettings(userId, payload) {
 
 export function deleteAuthUser(userId) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER));
+		dispatch(createAction(AppConstants.APP.UI_BUILDER.AUTH0.DELETE_AUTH0_USER));
 		const ACC_API = getURL();
 
 		return doDelete(`${ACC_API}/_uibuilder/auth_user/${userId}`)
 			.then((res) => {
 				return dispatch(
-					createAction(AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER_SUCCESS, res),
+					createAction(AppConstants.APP.UI_BUILDER.AUTH0.DELETE_AUTH0_USER_SUCCESS, res),
 				);
 			})
 			.catch((error) => {
 				return dispatch(
 					createAction(
-						AppConstants.APP.UI_BUILDERN.AUTH0.DELETE_AUTH0_USER_ERROR,
+						AppConstants.APP.UI_BUILDER.AUTH0.DELETE_AUTH0_USER_ERROR,
 						null,
 						error,
 					),

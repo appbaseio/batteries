@@ -10,7 +10,7 @@ export * from './functions';
 export * from './settings';
 export * from './rules';
 export * from './grade';
-export * from './uibuilderN';
+export * from './uibuilder';
 export * from './monitoring';
 export * from './cache';
 export * from './storedQueries';

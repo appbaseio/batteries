@@ -4,14 +4,14 @@ const initialAppState = {};
 
 function getSearchPreferencesVersions(state = initialAppState, action) {
 	switch (action.type) {
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET:
 			return {
 				...state,
 				isFetching: true,
 				success: false,
 				error: false,
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_SUCCESS:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_SUCCESS:
 			return {
 				isFetching: false,
 				success: true,
@@ -24,23 +24,23 @@ function getSearchPreferencesVersions(state = initialAppState, action) {
 					},
 				},
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_ERROR:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_ERROR:
 			return {
 				...state,
 				isFetching: false,
 				success: false,
 				error: action.error && action.error.message,
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST:
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_LATEST:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE:
 			return {
 				...state,
 				isLoading: true,
 				success: false,
 				error: false,
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_SUCCESS:
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE_SUCCESS: {
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_SUCCESS:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE_SUCCESS: {
 			const { res } = action.payload;
 			const currentVersion = {
 				version_id: res.version_id,
@@ -60,8 +60,8 @@ function getSearchPreferencesVersions(state = initialAppState, action) {
 				},
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_ERROR:
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE_ERROR:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_LATEST_ERROR:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.GET_VERSION_CODE_ERROR:
 			return {
 				...state,
 				isLoading: false,
@@ -69,14 +69,14 @@ function getSearchPreferencesVersions(state = initialAppState, action) {
 				error: action.error && action.error.message,
 			};
 
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.UPDATE_PREFERENCE_STATE:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.UPDATE_PREFERENCE_STATE:
 			return {
 				...state,
 				isLoading: true,
 				success: false,
 				error: false,
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS
 			.UPDATE_PREFERENCE_STATE_SUCCESS: {
 			const { preferenceId, patchPayload } = action.payload;
 			return {
@@ -92,7 +92,7 @@ function getSearchPreferencesVersions(state = initialAppState, action) {
 				},
 			};
 		}
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_VERSIONS.UPDATE_PREFERENCE_STATE_ERROR:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_VERSIONS.UPDATE_PREFERENCE_STATE_ERROR:
 			return {
 				...state,
 				isLoading: false,
@@ -100,14 +100,14 @@ function getSearchPreferencesVersions(state = initialAppState, action) {
 				error: action.error && action.error.message,
 			};
 
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_DEPLOYEMENTS.GET:
 			return {
 				...state,
 				isFetching: true,
 				success: false,
 				error: false,
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_SUCCESS:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_SUCCESS:
 			return {
 				isFetching: false,
 				success: true,
@@ -120,8 +120,10 @@ function getSearchPreferencesVersions(state = initialAppState, action) {
 					},
 				},
 			};
-		case AppConstants.APP.UI_BUILDERN.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_ERROR:
+		case AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCE_DEPLOYEMENTS.GET_ERROR:
+			// eslint-disable-next-line no-case-declarations
 			const errMsg = action?.error?.actual?.error?.message || action?.error?.message;
+			// eslint-disable-next-line no-case-declarations
 			const preferenceId = action?.error?.actual?.preferenceId || '';
 			return {
 				...state,
