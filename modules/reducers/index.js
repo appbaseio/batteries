@@ -227,42 +227,6 @@ export default {
 		undefined,
 		AppConstants.APP.STORED_QUERIES.CLEAR_EXECUTE,
 	),
-	$getSearchPreferences: createRequestReducer(
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET,
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET_SUCCESS,
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.GET_ERROR,
-		computeStateByAppName,
-	),
-	$saveSearchPreferences: createRequestReducer(
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.SAVE,
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.SAVE_SUCCESS,
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.SAVE_ERROR,
-		computeStateByAppName,
-	),
-	$deleteSearchPreferences: createRequestReducer(
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE,
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE_SUCCESS,
-		AppConstants.APP.UI_BUILDER.SEARCH_PREFERENCES.DELETE_ERROR,
-		computeStateByAppName,
-	),
-	$getRecommendationsPreferences: createRequestReducer(
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET,
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET_SUCCESS,
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.GET_ERROR,
-		computeStateByAppName,
-	),
-	$saveRecommendationsPreferences: createRequestReducer(
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.SAVE,
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.SAVE_SUCCESS,
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.SAVE_ERROR,
-		computeStateByAppName,
-	),
-	$deleteRecommendationsPreferences: createRequestReducer(
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE,
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE_SUCCESS,
-		AppConstants.APP.UI_BUILDER.RECOMMENDATION_PREFERENCES.DELETE_ERROR,
-		computeStateByAppName,
-	),
 	$getAuth0Preferences: createRequestReducer(
 		AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES,
 		AppConstants.APP.UI_BUILDERN.AUTH0.GET_AUTH0_PREFERENCES_SUCCESS,
