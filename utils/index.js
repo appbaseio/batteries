@@ -450,6 +450,10 @@ export const BACKENDS = {
 		name: 'system',
 		logo: 'https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/blt05047fdbe3b9c333/5c11ec1f3312ce2e785d9c30/logo-elastic-elasticsearch-lt.svg',
 	},
+	MARKLOGIC: {
+		name: 'marklogic',
+		logo: 'https://marklogicweb.wpenginepowered.com/wp-content/uploads/2022/07/ML_Logo_Slate.svg',
+	},
 };
 
 export const ALLOWED_ACTIONS_BY_BACKEND = {
@@ -485,7 +489,14 @@ export const ALLOWED_ACTIONS_BY_BACKEND = {
 	[BACKENDS.ZINC.name]: [
 		...Object.values(ALLOWED_ACTIONS).filter(
 			(action) =>
-				action !== ALLOWED_ACTIONS.OVERVIEW &&
+				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
+				action !== ALLOWED_ACTIONS.DEVELOP &&
+				action !== ALLOWED_ACTIONS.SPEED,
+		),
+	],
+	[BACKENDS.MARKLOGIC.name]: [
+		...Object.values(ALLOWED_ACTIONS).filter(
+			(action) =>
 				action !== ALLOWED_ACTIONS.SEARCH_RELEVANCY &&
 				action !== ALLOWED_ACTIONS.DEVELOP &&
 				action !== ALLOWED_ACTIONS.SPEED,
@@ -495,7 +506,9 @@ export const ALLOWED_ACTIONS_BY_BACKEND = {
 
 export const isFusion = () => {
 	if (window && window.host) {
-		return window.host === 'https://lw-dash.appbase.io/' || window.host.includes('lw-dash');
+		return (
+			window.host === 'https://lw-dash.reactivesearch.io/' || window.host.includes('lw-dash')
+		);
 	}
 	return false;
 };

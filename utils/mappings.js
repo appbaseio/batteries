@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import mappingUsecase from './mappingUsecase';
 import analyzerSettings, { synonymsSettings } from './analyzerSettings';
 import { getURL } from '../../constants/config';
-import { BACKENDS, deleteObjectFromPath } from '.';
+import { deleteObjectFromPath } from '.';
 import language from '../../constants/language';
 
 const PRESERVED_KEYS = ['meta'];
@@ -25,10 +25,11 @@ export function getAuthHeaders(credentials) {
 	return {};
 }
 
-export function getMappings(appName, credentials, url = getURL()) {
+export function getMappings(appName, credentials, url = getURL(), endpointSuffixParam) {
 	return new Promise((resolve, reject) => {
+		const endpointSuffix = endpointSuffixParam ?? `${appName || '*,-.*,-metricbeat*'}/_mapping`;
 		// If index is not defined then use pattern to eliminate the system indices
-		fetch(`${url}/${appName || '*,-.*,-metricbeat*'}/_mapping`, {
+		fetch(`${url}/${endpointSuffix}`, {
 			method: 'GET',
 			headers: {
 				...getAuthHeaders(credentials),
@@ -558,10 +559,10 @@ export function getMappingsTree(mappings = {}, version) {
 	return tree;
 }
 
-export const applyLanguageAnalyzers = (properties = {}, language) => {
+export const applyLanguageAnalyzers = (properties = {}, languageParam) => {
 	const lang = {
 		type: 'text',
-		analyzer: language,
+		analyzer: languageParam,
 	};
 	const synonyms = {
 		analyzer: 'synonyms',
@@ -597,7 +598,7 @@ export const updateMappingsProperties = ({
 	mapping: originalMapping,
 	types,
 	esVersion,
-	language = 'universal',
+	languageParam = 'universal',
 }) => {
 	const mapping = JSON.parse(JSON.stringify(originalMapping));
 	let isMappingsPresent = false;
@@ -610,7 +611,7 @@ export const updateMappingsProperties = ({
 		if (+esVersion >= 7) {
 			const updatedProperties = applyLanguageAnalyzers(
 				JSON.parse(JSON.stringify(mapping.properties)),
-				language,
+				languageParam,
 			);
 			mapping.properties = {
 				...mapping.properties,
@@ -624,7 +625,7 @@ export const updateMappingsProperties = ({
 						? {
 								properties: applyLanguageAnalyzers(
 									mapping[type].properties,
-									language,
+									languageParam,
 								),
 						  }
 						: mapping[type],

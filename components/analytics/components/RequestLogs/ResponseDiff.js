@@ -151,7 +151,7 @@ const ResponseDiff = ({ responseBody, response, responseChanges, method, url }) 
 					maxLines={30}
 				/>
 			</Card>
-			{responseChanges
+			{(responseChanges ?? [])
 				.filter((i) => i.stage !== 'searchrelevancy')
 				.map((responseChange) => {
 					const value = decodeResponseChange(responseChange.body, responseBody);

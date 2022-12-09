@@ -71,6 +71,7 @@ class RecentResults extends React.Component {
 					title="Recent Results"
 					pagination={{
 						pageSize: 10,
+						showSizeChanger: false,
 					}}
 					onClickDownload={() =>
 						exportCSVFile(

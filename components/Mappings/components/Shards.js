@@ -37,7 +37,7 @@ const Shards = ({
 		>
 			<h4>
 				Move slider to change the number of shards for your index. Read more{' '}
-				<a href="https://docs.appbase.io/docs/search/relevancy/#index-settings">here</a>.
+				<a href="https://docs.reactivesearch.io/docs/search/relevancy/#index-settings">here</a>.
 			</h4>
 			<Slider
 				step={1}

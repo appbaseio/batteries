@@ -438,12 +438,14 @@ export const createPipeline = (pipeline) => {
 	});
 };
 
-export const getPipelineScript = (pipelineId, scriptRefKey) => {
+export const getPipelineScript = (pipelineId, versionId, scriptRefKey) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
 
 	return doGet(
-		`${ACC_API}/_pipeline/${pipelineId}/scriptRef?key=${encodeURIComponent(scriptRefKey)}`,
+		`${ACC_API}/_pipeline/${pipelineId}/version/${versionId}/scriptRef?key=${encodeURIComponent(
+			scriptRefKey,
+		)}`,
 		{
 			'Content-Type': 'application/json',
 			Authorization: `Basic ${authToken}`,

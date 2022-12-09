@@ -1,6 +1,7 @@
 import React from 'react';
 import { injectGlobal } from 'emotion';
 import Joyride from 'react-joyride';
+import { CheckCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { message, Button, Tooltip } from 'antd';
 import { ACTIONS, EVENTS } from 'react-joyride/es/constants';
 import PropTypes from 'prop-types';
@@ -98,7 +99,9 @@ class Walkthrough extends React.Component {
 							type="primary"
 							size="large"
 							style={{ background: '#40a9ff', color: 'white' }}
-							icon={tutorialCompleted ? 'check-circle' : 'play-circle'}
+							icon={
+								tutorialCompleted ? <CheckCircleOutlined /> : <PlayCircleOutlined />
+							}
 						/>
 					</Tooltip>
 				</div>

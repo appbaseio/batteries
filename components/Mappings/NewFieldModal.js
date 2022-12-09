@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Tooltip, Icon, Menu, Dropdown, Modal, Input, Button } from 'antd';
+import { DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Tooltip, Menu, Dropdown, Modal, Input, Button } from 'antd';
 
 import { Header, inputStyles, dropdown } from './styles';
 import conversionMap from '../../utils/conversionMap';
@@ -40,11 +41,11 @@ export default class NewFieldModal extends Component {
 		error: '',
 	});
 
-	handleEsTypeChange = label => {
+	handleEsTypeChange = (label) => {
 		this.setState({ esType: label, fieldType: label });
 	};
 
-	handleNewFieldChange = e => {
+	handleNewFieldChange = (e) => {
 		const { name, value } = e.target;
 		this.setState({
 			...this.state.new,
@@ -54,15 +55,14 @@ export default class NewFieldModal extends Component {
 
 	addField = () => {
 		const { esType, fieldType, name, usecase, type } = this.state;
-		const deletedPaths = this.props.deletedPaths.map(item =>
+		const deletedPaths = this.props.deletedPaths.map((item) =>
 			item.split('.properties.').join('.'),
 		);
 		const fieldName = `${fieldType || esType}.${name}`;
 
 		if (name && deletedPaths.includes(fieldName)) {
 			this.setState({
-				error:
-					"You're trying to add a field which you just deleted. This will result in loss of data.",
+				error: "You're trying to add a field which you just deleted. This will result in loss of data.",
 			});
 		} else if (name) {
 			this.props.addField({
@@ -89,8 +89,8 @@ export default class NewFieldModal extends Component {
 
 	renderDropDown = ({ name, options, value }) => {
 		const menu = (
-			<Menu onClick={e => this.handleDropdownMenu(e, name)}>
-				{options.map(option => (
+			<Menu onClick={(e) => this.handleDropdownMenu(e, name)}>
+				{options.map((option) => (
 					<Menu.Item key={option.value}>{option.label}</Menu.Item>
 				))}
 			</Menu>
@@ -99,7 +99,7 @@ export default class NewFieldModal extends Component {
 			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
 					{value}
-					<Icon type="down" />
+					<DownOutlined />
 				</Button>
 			</Dropdown>
 		);
@@ -108,8 +108,8 @@ export default class NewFieldModal extends Component {
 	render() {
 		const { fieldType, esType } = this.state;
 		const menu = (
-			<Menu onClick={e => this.handleEsTypeChange(e.key)}>
-				{this.props.types.map(item => (
+			<Menu onClick={(e) => this.handleEsTypeChange(e.key)}>
+				{this.props.types.map((item) => (
 					<Menu.Item key={item}>{item}</Menu.Item>
 				))}
 				{fieldType && !this.props.types.includes(fieldType) ? (
@@ -133,10 +133,10 @@ export default class NewFieldModal extends Component {
 					<Header>
 						{this.props.esVersion < 6 ? <span className="col">Type</span> : null}
 						<span className="col col--grow">
-							Field Name
+							Field Name{' '}
 							<Tooltip title={fieldNameMessage}>
 								<span style={{ marginLeft: 5 }}>
-									<Icon type="info-circle" />
+									<InfoCircleOutlined />
 								</span>
 							</Tooltip>
 						</span>
@@ -145,7 +145,7 @@ export default class NewFieldModal extends Component {
 								Use case
 								<Tooltip title={usecaseMessage}>
 									<span style={{ marginLeft: 5 }}>
-										<Icon type="info-circle" />
+										<InfoCircleOutlined />
 									</span>
 								</Tooltip>
 							</span>
@@ -193,7 +193,7 @@ export default class NewFieldModal extends Component {
 						{this.state.type === 'text'
 							? this.renderDropDown({
 									name: 'usecase',
-									options: Object.entries(this.usecases).map(entry => ({
+									options: Object.entries(this.usecases).map((entry) => ({
 										label: entry[1],
 										value: entry[0],
 									})),
@@ -203,8 +203,8 @@ export default class NewFieldModal extends Component {
 						{this.renderDropDown({
 							name: 'type',
 							options: Object.keys(conversionMap)
-								.filter(value => value !== 'object')
-								.map(entry => ({
+								.filter((value) => value !== 'object')
+								.map((entry) => ({
 									label: entry,
 									value: entry,
 								})),
