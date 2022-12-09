@@ -446,10 +446,15 @@ export const BACKENDS = {
 		name: 'zinc',
 		logo: 'https://zincsearch.com/assets/images/common/logo.svg',
 	},
+	SYSTEM: {
+		name: 'system',
+		logo: 'https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/blt05047fdbe3b9c333/5c11ec1f3312ce2e785d9c30/logo-elastic-elasticsearch-lt.svg',
+	},
 };
 
 export const ALLOWED_ACTIONS_BY_BACKEND = {
 	[BACKENDS.ELASTICSEARCH.name]: [...Object.values(ALLOWED_ACTIONS)],
+	[BACKENDS.SYSTEM.name]: [...Object.values(ALLOWED_ACTIONS)],
 	[BACKENDS.OPENSEARCH.name]: [...Object.values(ALLOWED_ACTIONS)],
 	[BACKENDS.SOLR.name]: [
 		...Object.values(ALLOWED_ACTIONS).filter(
