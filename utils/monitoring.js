@@ -1,5 +1,5 @@
 import get from 'lodash/get';
-import moment from 'moment';
+import moment from 'dayjs';
 
 export const TIME_FILTER = {
 	'now-5m': { label: 'Last 5 minutes', interval: '45s' },
