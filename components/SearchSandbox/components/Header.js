@@ -167,7 +167,7 @@ export default class Header extends Component {
 				>
 					{profile !== 'default' ? (
 						<Button
-							type="danger"
+							danger
 							size="large"
 							style={{ marginLeft: 8 }}
 							onClick={this.handleDeleteProfileModal}

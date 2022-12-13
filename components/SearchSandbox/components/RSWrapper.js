@@ -413,7 +413,7 @@ class RSComponentRender extends Component {
 								<Button
 									icon={<DeleteOutlined />}
 									shape="circle"
-									type="danger"
+									danger
 									size="large"
 									className="show-on-hover"
 									style={{ marginLeft: 8 }}
