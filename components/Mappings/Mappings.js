@@ -119,7 +119,7 @@ const shardsMessage = () => (
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
 	<Modal
-		visible={show}
+		open={show}
 		title="Re-index successful"
 		onOk={onClose}
 		closable={false}
@@ -1418,7 +1418,7 @@ class Mappings extends Component {
 					onClose={this.handleClose}
 				/>
 				<Modal
-					visible={this.state.showSynonymModal}
+					open={this.state.showSynonymModal}
 					onOk={this.updateSynonyms}
 					title="Add Synonym"
 					okText={
@@ -1440,7 +1440,7 @@ class Mappings extends Component {
 				</Modal>
 				{this.state.editable && (
 					<Modal
-						visible={this.state.shardsModal}
+						open={this.state.shardsModal}
 						onOk={this.updateShards}
 						title="Configure Shards"
 						okText="Update"

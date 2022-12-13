@@ -8,7 +8,8 @@ import textUsecases from './usecases';
 
 const fieldNameMessage = () => (
 	<div style={{ maxWidth: 250 }}>
-		Add a nested field by using the dot (.) notation, e.g. foo.bar will create a mapping like:
+		Add a nested field by using the dot (.) notation, e.g. foo.bar will
+		create a mapping like:
 		<pre style={{ marginTop: 5, padding: 10, backgroundColor: '#eee' }}>
 			{`foo: {
     bar: { ... }
@@ -19,8 +20,9 @@ const fieldNameMessage = () => (
 
 const usecaseMessage = () => (
 	<div style={{ maxWidth: 250 }}>
-		Based on the primary use case, whether search or aggregations, we will add the appropriate
-		analyzers, mappings to ensure best results when performing the action
+		Based on the primary use case, whether search or aggregations, we will
+		add the appropriate analyzers, mappings to ensure best results when
+		performing the action
 	</div>
 );
 
@@ -41,7 +43,7 @@ export default class NewFieldModal extends Component {
 		error: '',
 	});
 
-	handleEsTypeChange = (label) => {
+	handleEsTypeChange = label => {
 		this.setState({ esType: label, fieldType: label });
 	};
 
@@ -52,7 +54,7 @@ export default class NewFieldModal extends Component {
 		});
 	};
 
-	handleNewFieldChange = (e) => {
+	handleNewFieldChange = e => {
 		const { name, value } = e.target;
 		this.setState({
 			[name]: value,
@@ -63,7 +65,9 @@ export default class NewFieldModal extends Component {
 		const {
 			esType, fieldType, name, usecase, type,
 		} = this.state; // prettier-ignore
-		const deletedPaths = this.props.deletedPaths.map(item => item.split('.properties.').join('.'));
+		const deletedPaths = this.props.deletedPaths.map(item =>
+			item.split('.properties.').join('.'),
+		);
 
 		const fieldName = `${fieldType || esType}.${name}`;
 
@@ -97,13 +101,13 @@ export default class NewFieldModal extends Component {
 			</Menu>
 		);
 		return (
-            <Dropdown overlay={menu}>
+			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
 					{value}
 					<DownOutlined />
 				</Button>
 			</Dropdown>
-        );
+		);
 	};
 
 	render() {
@@ -114,13 +118,15 @@ export default class NewFieldModal extends Component {
 					<Menu.Item key={item}>{item}</Menu.Item>
 				))}
 				{fieldType && !this.props.types.includes(fieldType) ? (
-					<Menu.Item key={fieldType}>{`Create type ${fieldType}`}</Menu.Item>
+					<Menu.Item
+						key={fieldType}
+					>{`Create type ${fieldType}`}</Menu.Item>
 				) : null}
 			</Menu>
 		);
 		return (
-            <Modal
-				visible={this.props.show}
+			<Modal
+				open={this.props.show}
 				onCancel={this.props.onClose}
 				onOk={this.addField}
 				title="Add new Field"
@@ -132,7 +138,9 @@ export default class NewFieldModal extends Component {
 			>
 				<section>
 					<Header>
-						{this.props.esVersion >= 6 ? null : <span className="col">Type</span>}
+						{this.props.esVersion >= 6 ? null : (
+							<span className="col">Type</span>
+						)}
 						<span className="col col--grow">
 							Field Name
 							<Tooltip title={fieldNameMessage}>
@@ -193,10 +201,12 @@ export default class NewFieldModal extends Component {
 						{this.state.type === 'text'
 							? this.renderDropDown({
 									name: 'usecase',
-									options: Object.entries(this.usecases).map(entry => ({
-										label: entry[1],
-										value: entry[0],
-									})),
+									options: Object.entries(this.usecases).map(
+										entry => ({
+											label: entry[1],
+											value: entry[0],
+										}),
+									),
 									value: this.state.usecase,
 							  })
 							: null}
@@ -216,6 +226,6 @@ export default class NewFieldModal extends Component {
 					) : null}
 				</section>
 			</Modal>
-        );
+		);
 	}
 }

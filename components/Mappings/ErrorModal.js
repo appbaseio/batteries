@@ -4,19 +4,21 @@ import { ErrorLogger } from './styles';
 
 const ErrorModal = props => (
 	<Modal
-		visible={props.show}
+		open={props.show}
 		onCancel={props.onClose}
 		onOk={props.onClose}
 		title={
-			props.errorLength ? `${props.errorLength} records failed to index` : 'An error occured'
+			props.errorLength
+				? `${props.errorLength} records failed to index`
+				: 'An error occured'
 		}
 	>
 		{props.message ? (
 			<p>{props.message}</p>
 		) : (
 			<p>
-				To prevent data loss, we have restored your original mappings. You can fix{' '}
-				{props.errorLength ? 'these' : 'this'} and retry.
+				To prevent data loss, we have restored your original mappings.
+				You can fix {props.errorLength ? 'these' : 'this'} and retry.
 			</p>
 		)}
 
