@@ -394,7 +394,7 @@ export default class Editor extends Component {
 
 					<Modal
 						title="Add New Filter"
-						visible={showModal}
+						open={showModal}
 						onOk={this.handleOk}
 						onCancel={this.handleCancel}
 						okText="Add"
@@ -404,7 +404,7 @@ export default class Editor extends Component {
 					</Modal>
 					<Modal
 						title="Search Preview: 1 min walkthrough"
-						visible={showVideo}
+						open={showVideo}
 						onOk={this.handleVideoModal}
 						onCancel={this.handleVideoModal}
 						destroyOnClose

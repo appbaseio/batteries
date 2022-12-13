@@ -62,7 +62,7 @@ const orderedList = css`
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
 	<Modal
-		visible={show}
+		open={show}
 		title="Re-index successful"
 		onOk={onClose}
 		closable={false}

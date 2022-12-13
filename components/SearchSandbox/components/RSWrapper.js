@@ -448,7 +448,7 @@ class RSComponentRender extends Component {
 								<Button
 									icon={<DeleteOutlined />}
 									shape="circle"
-									type="danger"
+									danger
 									size="large"
 									className="show-on-hover"
 									style={{ marginLeft: 8 }}
@@ -504,7 +504,7 @@ class RSComponentRender extends Component {
 
 				<Modal
 					title={constants[component]}
-					visible={showModal}
+					open={showModal}
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 					destroyOnClose

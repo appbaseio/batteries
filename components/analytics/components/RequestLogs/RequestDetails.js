@@ -15,7 +15,7 @@ const modal = css`
 const tab = css`
 	background-color: rgb(190, 245, 255, 0.1);
 `;
-const getData = (data) => {
+const getData = data => {
 	try {
 		return JSON.stringify(data, null, 2);
 	} catch (e) {
@@ -47,10 +47,12 @@ const RequestDetails = ({
 					Cancel
 				</Button>,
 			]}
-			visible={show}
+			open={show}
 			onCancel={handleCancel}
 		>
-			<span css="font-weight: 500;color: black;font-size: 16px;">Log Details</span>
+			<span css="font-weight: 500;color: black;font-size: 16px;">
+				Log Details
+			</span>
 			<Grid label="Time" component={time} />
 			<Grid label="Method" component={method.toUpperCase()} />
 			<Grid label="URL" component={url} />
@@ -62,7 +64,11 @@ const RequestDetails = ({
 					component={`${timeDuration.time} ${timeDuration.formattedUnit}`}
 				/>
 			)}
-			<Tabs css="margin-top: 30px" animated={false} defaultActiveKey="response">
+			<Tabs
+				css="margin-top: 30px"
+				animated={false}
+				defaultActiveKey="response"
+			>
 				<TabPane tab="Response" key="response">
 					<pre css={tab}>{getData(response)}</pre>
 				</TabPane>
@@ -89,11 +95,14 @@ RequestDetails.propTypes = {
 	method: PropTypes.string.isRequired,
 	url: PropTypes.string.isRequired,
 	ip: PropTypes.string.isRequired,
-	status: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+	status: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+		.isRequired,
 	processingTime: PropTypes.string.isRequired,
 	headers: PropTypes.object.isRequired,
-	request: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
-	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
+	request: PropTypes.oneOfType([PropTypes.object, PropTypes.string])
+		.isRequired,
+	response: PropTypes.oneOfType([PropTypes.object, PropTypes.string])
+		.isRequired,
 };
 
 export default RequestDetails;

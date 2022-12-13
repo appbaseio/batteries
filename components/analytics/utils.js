@@ -1,6 +1,6 @@
 import React from 'react';
 import { css } from 'emotion';
-import moment from 'moment';
+import moment from 'dayjs';
 import { RedoOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 // import mockProfile from './components/mockProfile';
@@ -16,7 +16,7 @@ const requestOpt = css`
 	border-radius: 3px;
 	border: solid 1px #00ff88;
 `;
-const getQueryParams = (paramObj) => {
+const getQueryParams = paramObj => {
 	let queryString = '';
 	Object.keys(paramObj).forEach((o, i) => {
 		if (i === 0) {
@@ -34,12 +34,16 @@ const replaySearch = [
 		width: 125,
 		render: item => (
 			<div css="text-align: center">
-				<Button disabled={!item.search_state} icon={<RedoOutlined />} onClick={() => item.handleReplaySearch(item.search_state)} />
+				<Button
+					disabled={!item.search_state}
+					icon={<RedoOutlined />}
+					onClick={() => item.handleReplaySearch(item.search_state)}
+				/>
 			</div>
 		),
 	},
 ];
-export const getTimeDuration = (time) => {
+export const getTimeDuration = time => {
 	const timeInMs = moment.duration(moment().diff(time)).asMilliseconds();
 	if (timeInMs >= 24 * 60 * 60 * 1000) {
 		const timeD = parseInt(timeInMs / (24 * 60 * 60 * 1000), 10);
@@ -115,7 +119,7 @@ export const popularResultsCol = (plan, displayReplaySearch) => {
 	}
 	return [...defaults, ...(displayReplaySearch ? replaySearch : [])];
 };
-export const defaultColumns = (plan) => {
+export const defaultColumns = plan => {
 	const defaults = [
 		{
 			title: 'Search Terms',
@@ -152,8 +156,9 @@ export const noResultsFull = (plan, displayReplaySearch) => {
 	return [...defaultColumns(), ...(displayReplaySearch ? replaySearch : [])];
 };
 
-export const ConvertToCSV = (objArray) => {
-	const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+export const ConvertToCSV = objArray => {
+	const array =
+		typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
 	let str = '';
 
 	for (let i = 0; i < array.length; i += 1) {
@@ -205,7 +210,9 @@ export const popularSearchesFull = (plan, displayReplaySearch) => {
 	if (!plan || plan !== 'growth') {
 		return [
 			...defaultColumns(plan),
-			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
+			...(plan === 'bootstrap' && displayReplaySearch
+				? replaySearch
+				: []),
 		];
 	}
 	return [
@@ -242,9 +249,13 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 				style: {
 					maxWidth: 250,
 				},
-				render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+				render: item => (
+					<div css="overflow-y: scroll; height:150px;">{item}</div>
+				),
 			},
-			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
+			...(plan === 'bootstrap' && displayReplaySearch
+				? replaySearch
+				: []),
 		];
 	}
 	return [
@@ -261,7 +272,11 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Position',
 			dataIndex: 'clickposition',
-			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
+			render: item => (
+				<div css="overflow-y: scroll; max-height:150px;">
+					{item || '-'}
+				</div>
+			),
 		},
 		{
 			title: 'Conversion Rate',
@@ -274,7 +289,9 @@ export const popularResultsFull = (plan, displayReplaySearch) => {
 			dataIndex: 'source',
 			key: 'source',
 			width: '30%',
-			render: item => <div css="overflow-y: scroll; height:150px;">{item}</div>,
+			render: item => (
+				<div css="overflow-y: scroll; height:150px;">{item}</div>
+			),
 		},
 	];
 };
@@ -282,7 +299,9 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 	if (plan !== 'growth') {
 		return [
 			...popularFiltersCol(plan),
-			...(plan === 'bootstrap' && displayReplaySearch ? replaySearch : []),
+			...(plan === 'bootstrap' && displayReplaySearch
+				? replaySearch
+				: []),
 		];
 	}
 	return [
@@ -299,7 +318,11 @@ export const popularFiltersFull = (plan, displayReplaySearch) => {
 		{
 			title: 'Click Position',
 			dataIndex: 'clickposition',
-			render: item => <div css="overflow-y: scroll; max-height:150px;">{item || '-'}</div>,
+			render: item => (
+				<div css="overflow-y: scroll; max-height:150px;">
+					{item || '-'}
+				</div>
+			),
 		},
 		{
 			title: 'Conversion Rate',
@@ -364,10 +387,12 @@ const getDateRangeByPlan = (plan, filters) => {
  */
 export function getAnalytics(appName, userPlan, clickanalytics = true) {
 	return new Promise((resolve, reject) => {
-		const url =			userPlan === 'growth'
+		const url =
+			userPlan === 'growth'
 				? `${ACC_API}/analytics/${appName}/advanced`
 				: `${ACC_API}/analytics/${appName}/overview`;
-		const queryParams =			userPlan === 'growth'
+		const queryParams =
+			userPlan === 'growth'
 				? getQueryParams({
 						clickanalytics,
 						...getDateRangeByPlan(userPlan),
@@ -382,11 +407,11 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 		})
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -398,7 +423,9 @@ export function getAnalytics(appName, userPlan, clickanalytics = true) {
 export function getSearchLatency(appName, plan) {
 	return new Promise((resolve, reject) => {
 		fetch(
-			`${ACC_API}/analytics/${appName}/latency${getQueryParams(getDateRangeByPlan(plan))}`,
+			`${ACC_API}/analytics/${appName}/latency${getQueryParams(
+				getDateRangeByPlan(plan),
+			)}`,
 			{
 				method: 'GET',
 				credentials: 'include',
@@ -409,11 +436,11 @@ export function getSearchLatency(appName, plan) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -425,20 +452,25 @@ export function getSearchLatency(appName, plan) {
 
 export function getGeoDistribution(appName, plan) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/analytics/${appName}/geoip${getQueryParams(getDateRangeByPlan(plan))}`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
+		fetch(
+			`${ACC_API}/analytics/${appName}/geoip${getQueryParams(
+				getDateRangeByPlan(plan),
+			)}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
+		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -449,7 +481,9 @@ export function getGeoDistribution(appName, plan) {
  */
 export function getAnalyticsSummary(appName, plan) {
 	return doGet(
-		`${ACC_API}/analytics/${appName}/summary${getQueryParams(getDateRangeByPlan(plan))}`,
+		`${ACC_API}/analytics/${appName}/summary${getQueryParams(
+			getDateRangeByPlan(plan),
+		)}`,
 	);
 }
 /**
@@ -467,7 +501,12 @@ export function getRequestDistribution(appName, plan, filters) {
  * Get the popular seraches
  * @param {string} appName
  */
-export function getPopularSearches(appName, plan, clickanalytics = true, size = 100) {
+export function getPopularSearches(
+	appName,
+	plan,
+	clickanalytics = true,
+	size = 100,
+) {
 	return new Promise((resolve, reject) => {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularsearches${getQueryParams({
@@ -485,12 +524,12 @@ export function getPopularSearches(appName, plan, clickanalytics = true, size = 
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popularSearches);
 				// resolve(data.body.popularSearches);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -516,16 +555,21 @@ export function getNoResultSearches(appName, plan, size = 100) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.noResultSearches);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
 }
-export function getPopularResults(appName, plan, clickanalytics = true, size = 100) {
+export function getPopularResults(
+	appName,
+	plan,
+	clickanalytics = true,
+	size = 100,
+) {
 	return new Promise((resolve, reject) => {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularResults${getQueryParams({
@@ -543,16 +587,21 @@ export function getPopularResults(appName, plan, clickanalytics = true, size = 1
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popularResults);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
 }
-export function getPopularFilters(appName, plan, clickanalytics = true, size = 100) {
+export function getPopularFilters(
+	appName,
+	plan,
+	clickanalytics = true,
+	size = 100,
+) {
 	return new Promise((resolve, reject) => {
 		fetch(
 			`${ACC_API}/analytics/${appName}/popularFilters${getQueryParams({
@@ -570,11 +619,11 @@ export function getPopularFilters(appName, plan, clickanalytics = true, size = 1
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res.popularFilters);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -587,8 +636,8 @@ export function getRequestLogs(appName, plan, size = 10, from = 0, filter) {
 			`${ACC_API}/app/${appName}/logs${getQueryParams({
 				size,
 				from,
-				...(filter
-					&& validFilters.includes(filter) && {
+				...(filter &&
+					validFilters.includes(filter) && {
 						filter,
 					}),
 			})}`,
@@ -602,11 +651,11 @@ export function getRequestLogs(appName, plan, size = 10, from = 0, filter) {
 		)
 			// Comment out this line
 			.then(res => res.json())
-			.then((res) => {
+			.then(res => {
 				// resolve the promise with response
 				resolve(res);
 			})
-			.catch((e) => {
+			.catch(e => {
 				reject(e);
 			});
 	});
@@ -644,9 +693,9 @@ export const tabMappings = {
 	requestLogs: 'request-logs',
 	analytics: 'analytics',
 };
-export const getActiveKeyByRoutes = (tab) => {
+export const getActiveKeyByRoutes = tab => {
 	let activeKey = '';
-	Object.keys(tabMappings).every((k) => {
+	Object.keys(tabMappings).every(k => {
 		if (tabMappings[k] === tab) {
 			activeKey = k;
 			return false;

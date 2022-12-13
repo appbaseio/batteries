@@ -20,7 +20,7 @@ class DataFieldInput extends React.Component {
 			className={deleteStyles}
 			icon={<DeleteOutlined />}
 			shape="circle"
-			type="danger"
+			danger
 			onClick={() => this.handleSearchDataFieldDelete(index)}
 		/>
 	);
