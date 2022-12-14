@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
-import { formWrapper, tagContainer, cardStyle } from '../styles';
+import { tagContainer, cardStyle } from '../styles';
 import DataFieldInput from '../components/DataFieldInput';
 import { getAvailableDataField } from '../utils/dataField';
 import {
@@ -162,7 +162,7 @@ export default class Editor extends Component {
 		}
 
 		return (
-			<Form.Item label={item.label} colon={false} key={name}>
+			<Form.Item label={item.label} key={name}>
 				<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
 					{item.description}
 				</div>
@@ -191,7 +191,7 @@ export default class Editor extends Component {
 
 		const { listComponentProps } = this.state;
 		return (
-			<Form onFinish={this.handleSubmit} className={formWrapper}>
+			<Form onFinish={this.handleSubmit} layout="vertical" colon>
 				<DataFieldInput
 					label={multiListTypes.dataField.label}
 					description={multiListTypes.dataField.description}
@@ -232,18 +232,20 @@ export default class Editor extends Component {
 		} = this.props;
 		const { renderKey, showModal, showVideo } = this.state;
 		const title = (
-			<span>
-				Search Preview{' '}
-				{window.innerWidth > 1280 ? (
-					<Button
-						style={{ float: 'right' }}
-						onClick={this.handleVideoModal}
-						size="small"
-					>
-						Watch Video
-					</Button>
-				) : null}
-			</span>
+			<div style={{ display: 'flex', flexWrap: 'wrap' }}>
+				<span>Search Preview </span>
+				<span>
+					{window.innerWidth > 1280 ? (
+						<Button
+							style={{ float: 'right' }}
+							onClick={this.handleVideoModal}
+							size="small"
+						>
+							Watch Video
+						</Button>
+					) : null}
+				</span>
+			</div>
 		);
 		return (
 			<ReactiveBase

@@ -31,7 +31,7 @@ import {
 	DropdownInput,
 	ToggleInput,
 } from '../../shared/Input';
-import { formWrapper, componentStyle } from '../styles';
+import { componentStyle } from '../styles';
 import HtmlEditor from './HtmlEditor';
 
 const componentMap = {
@@ -356,7 +356,7 @@ class RSComponentRender extends Component {
 		const propNames = propsMap[component];
 
 		return (
-			<Form onFinish={this.handleSubmit} className={formWrapper}>
+			<Form layout="vertical" onFinish={this.handleSubmit}>
 				<DataFieldInput
 					label={propNames.dataField.label}
 					id={id}

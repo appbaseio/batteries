@@ -84,12 +84,6 @@ const title = css`
 	margin-right: 12px;
 `;
 
-const formWrapper = css`
-	.ant-form-item-label {
-		line-height: 16px;
-	}
-`;
-
 const deleteStyles = css`
 	margin: 0 10px;
 	opacity: 0;
@@ -205,7 +199,6 @@ const resultItem = css`
 export {
 	listItem,
 	title,
-	formWrapper,
 	rowStyles,
 	deleteStyles,
 	fieldBadge,
