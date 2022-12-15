@@ -48,9 +48,11 @@ export function getAppMappings(appName, credentials, url) {
 		const schemaEndpointUrl =
 			get(getState(), 'endpoints.data.schema.url') ?? apisMapper[backend].schema.url;
 		// eslint-disable-next-line no-template-curly-in-string
-		const endpointSuffix = schemaEndpointUrl.replace('${index}', appName || '*');
-		const forwardSlashEscapedSuffix = endpointSuffix && endpointSuffix.substr(1);
-		return getMappings(appName, credentials, url, forwardSlashEscapedSuffix)
+		let endpointSuffix = schemaEndpointUrl.replace('${index}', appName || '');
+		if (endpointSuffix.startsWith('//')) endpointSuffix = endpointSuffix.slice(2);
+		if (endpointSuffix.startsWith('/')) endpointSuffix = endpointSuffix.slice(1);
+
+		return getMappings(appName, credentials, url, endpointSuffix)
 			.then((res) =>
 				dispatch(
 					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, {
