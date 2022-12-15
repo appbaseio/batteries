@@ -103,12 +103,14 @@ export function getPipelinesScripts(pipelines) {
 	};
 }
 
-export function getPipelines() {
+export function getPipelines(fetchScriptRefs = true) {
 	return (dispatch) => {
 		dispatch(createAction(AppConstants.APP.PIPELINES.GET));
 		return fetchPipelines()
 			.then((res) => {
-				dispatch(getPipelinesScripts(res));
+				if (fetchScriptRefs) {
+					dispatch(getPipelinesScripts(res));
+				}
 				return dispatch(createAction(AppConstants.APP.PIPELINES.GET_SUCCESS, res, null));
 			})
 			.catch((error) => {

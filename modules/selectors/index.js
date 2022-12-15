@@ -23,9 +23,9 @@ const appRules = (state) => get(state, '$getAppRules.results');
 const searchPreferences = (state) => get(state, '$getSearchPreferences.results');
 const recommendationPreferences = (state) => get(state, '$getRecommendationsPreferences.results');
 const appAnalyticsInsights = (state) => get(state, '$getAppAnalyticsInsights.results', {});
-const searchPreferencesN = (state) => get(state, '$getSearchPreferencesN.results', []);
+const searchPreferencesN = (state) => get(state, '$getSearchPreferences.results', []);
 const recommendationPreferencesN = (state) =>
-	get(state, '$getRecommendationsPreferencesN.results', []);
+	get(state, '$getRecommendationsPreferences.results', []);
 const getCollectionByKey = (collection, key) => collection && collection[key];
 
 const getPreferenceById = (collection = [], id) => {

@@ -11,7 +11,6 @@ export * from './settings';
 export * from './rules';
 export * from './grade';
 export * from './uibuilder';
-export * from './uibuilderN';
 export * from './monitoring';
 export * from './cache';
 export * from './storedQueries';
