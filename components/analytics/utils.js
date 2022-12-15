@@ -522,7 +522,15 @@ export const getRequestLogsColumns = (displaySearchLogs, isPipeMode = false) => 
 						<div css="width: 100px;margin-top: 5px;word-break: keep-all;">
 							<span css={requestOpt}>{operation.method}</span>
 						</div>
-						<div css="margin-left: 5px;">
+						<div
+							style={{
+								marginLeft: '5px',
+								whiteSpace: 'nowrap',
+								textOverflow: 'ellipsis',
+								overflow: 'hidden',
+								maxWidth: '300px',
+							}}
+						>
 							<span css="color: #74A2FF;">
 								{operation[isPipeMode ? 'route' : 'uri']}
 							</span>
