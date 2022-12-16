@@ -5,7 +5,7 @@ const { Header } = Layout;
 
 const WhiteHeader = ({ children, compact, ...props }) => (
 	<Header
-		css={{
+		style={{
 			backgroundColor: '#fff',
 			height: 'auto',
 			boxShadow: '0 1px 1px 0 rgba(0,0,0,0.05)',
@@ -13,7 +13,7 @@ const WhiteHeader = ({ children, compact, ...props }) => (
 		{...props}
 	>
 		<div
-			css={{
+			style={{
 				padding: compact ? '25px 0px' : '45px 25px',
 				margin: '0 auto',
 				maxWidth: compact ? 'none' : 1300,

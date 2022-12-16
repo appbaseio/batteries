@@ -405,7 +405,7 @@ class RSComponentRender extends Component {
 									style={{ marginLeft: 8 }}
 									onClick={this.handlePreviewModal}
 								>
-									<UnorderedListOutlined style={{ margin: "0.25rem" }}/>
+									<UnorderedListOutlined style={{ margin: '0.25rem' }} />
 									Set Result View
 								</Button>
 							) : null}
@@ -413,7 +413,7 @@ class RSComponentRender extends Component {
 								<Button
 									icon={<DeleteOutlined />}
 									shape="circle"
-									type="danger"
+									danger
 									size="large"
 									className="show-on-hover"
 									style={{ marginLeft: 8 }}
@@ -460,7 +460,7 @@ class RSComponentRender extends Component {
 
 				<Modal
 					title={constants[component]}
-					visible={showModal}
+					open={showModal}
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 					destroyOnClose

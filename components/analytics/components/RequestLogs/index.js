@@ -13,7 +13,6 @@ import {
 	getTimeDuration,
 	requestLogsDateRanges,
 } from '../../utils';
-import Loader from '../../../shared/Loader/Spinner';
 import Flex from '../../../shared/Flex';
 import DateFilter from '../Filter/DateFilter';
 import { getUrlParams } from '../../../../utils/helpers';
@@ -333,10 +332,7 @@ class RequestLogs extends React.Component {
 				onRow={(record) => ({
 					onClick: () => this.handleLogClick(record),
 				})}
-				loading={{
-					spinning: isLoading,
-					indicator: <Loader />,
-				}}
+				loading={isLoading}
 			/>
 		);
 	};

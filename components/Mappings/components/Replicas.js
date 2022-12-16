@@ -30,7 +30,7 @@ const Replicas = ({
 		/>
 
 		<Modal
-			visible={replicasModal}
+			open={replicasModal}
 			onOk={updateReplicas}
 			title="Configure Replicas"
 			okText="Update"
@@ -45,7 +45,7 @@ const Replicas = ({
 				marks={{ 0: '0', 1: '1', 2: '2' }}
 				max={totalNodes - 1}
 				value={+replicas}
-				onChange={value => handleSlider('replicas', value)}
+				onChange={(value) => handleSlider('replicas', value)}
 			/>
 		</Modal>
 	</React.Fragment>

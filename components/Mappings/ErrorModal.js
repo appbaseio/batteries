@@ -3,9 +3,9 @@ import React from 'react';
 import { Modal } from 'antd';
 import { ErrorLogger } from './styles';
 
-const ErrorModal = props => (
+const ErrorModal = (props) => (
 	<Modal
-		visible={props.show}
+		open={props.show}
 		onCancel={props.onClose}
 		onOk={props.onClose}
 		title={

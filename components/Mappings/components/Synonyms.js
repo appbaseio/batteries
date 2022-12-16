@@ -32,7 +32,7 @@ const Synonyms = ({
 		/>
 
 		<Modal
-			visible={showSynonymModal}
+			open={showSynonymModal}
 			onOk={updateSynonyms}
 			title="Add Synonym"
 			okText={synonyms ? 'Save Synonym' : 'Add Synonym'}

@@ -2,7 +2,7 @@ import React from 'react';
 import { css } from 'emotion';
 import moment from 'moment';
 import { RedoOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button, message, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import get from 'lodash/get';
 // import mockProfile from './components/mockProfile';
@@ -522,9 +522,19 @@ export const getRequestLogsColumns = (displaySearchLogs, isPipeMode = false) => 
 						<div css="width: 100px;margin-top: 5px;word-break: keep-all;">
 							<span css={requestOpt}>{operation.method}</span>
 						</div>
-						<div css="margin-left: 5px;">
+						<div
+							style={{
+								marginLeft: '5px',
+								whiteSpace: 'nowrap',
+								textOverflow: 'ellipsis',
+								overflow: 'hidden',
+								maxWidth: '300px',
+							}}
+						>
 							<span css="color: #74A2FF;">
-								{operation[isPipeMode ? 'route' : 'uri']}
+								<Tooltip title={operation[isPipeMode ? 'route' : 'uri']}>
+									{operation[isPipeMode ? 'route' : 'uri']}
+								</Tooltip>
 							</span>
 						</div>
 					</Flex>
