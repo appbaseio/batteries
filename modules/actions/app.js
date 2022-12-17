@@ -118,6 +118,9 @@ export function getAppPlan() {
 		dispatch(createAction(AppConstants.APP.GET_PLAN));
 		return fetchAppPlan()
 			.then((res) => {
+				if (res.customer_id) {
+					localStorage.setItem('cus_id', res.customer_id);
+				}
 				dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res, null));
 			})
 			.catch((error) => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
