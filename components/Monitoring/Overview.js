@@ -24,10 +24,7 @@ const Overview = ({ config, timeFilter }) => {
 	useEffect(() => {
 		let isMounted = true;
 		async function getOverviewData() {
-			const overviewResponse = await fetchOverviewData(
-				config,
-				timeFilter,
-			);
+			const overviewResponse = await fetchOverviewData(config, timeFilter);
 			if (isMounted) {
 				setOverviewData({
 					loading: false,
@@ -43,7 +40,7 @@ const Overview = ({ config, timeFilter }) => {
 		};
 	}, [timeFilter]);
 	return (
-        <CustomCard title="Overview">
+		<CustomCard title="Overview">
 			{overviewData.loading ? (
 				<Skeleton active />
 			) : (
@@ -53,37 +50,26 @@ const Overview = ({ config, timeFilter }) => {
 							Health <InfoCircleOutlined />
 						</Title>
 					</Tooltip>
-					<Flex
-						justifyContent="space-between"
-						style={{ paddingTop: 10 }}
-					>
+					<Flex justifyContent="space-between" style={{ paddingTop: 10 }}>
 						<div style={{ flex: 1 }}>Elasticsearch</div>
 						{get(overviewData, 'data.esStatus') ? (
 							<Badge
 								color={get(overviewData, 'data.esStatus')}
-								text={
-									HEALTH_TEXT[
-										get(overviewData, 'data.esStatus')
-									]
-								}
+								text={HEALTH_TEXT[get(overviewData, 'data.esStatus')]}
 								style={{
 									flex: 1,
 									textAlign: 'right',
 								}}
 							/>
 						) : (
-							<div style={{ flex: 1, textAlign: 'right' }}>
-								N/A
-							</div>
+							<div style={{ flex: 1, textAlign: 'right' }}>N/A</div>
 						)}
 					</Flex>
 					<Flex justifyContent="space-between">
 						<div style={{ flex: 1 }}>Appbase.io</div>
 						<Badge
 							color={get(overviewData, 'data.arcStatus')}
-							text={
-								HEALTH_TEXT[get(overviewData, 'data.arcStatus')]
-							}
+							text={HEALTH_TEXT[get(overviewData, 'data.arcStatus')]}
 							style={{
 								flex: 1,
 								textAlign: 'right',
@@ -97,11 +83,7 @@ const Overview = ({ config, timeFilter }) => {
 						{get(overviewData, 'data.kibanaStatus') ? (
 							<Badge
 								color={get(overviewData, 'data.kibanaStatus')}
-								text={
-									HEALTH_TEXT[
-										get(overviewData, 'data.kibanaStatus')
-									]
-								}
+								text={HEALTH_TEXT[get(overviewData, 'data.kibanaStatus')]}
 								style={{
 									flex: 1,
 									textAlign: 'right',
@@ -126,15 +108,10 @@ const Overview = ({ config, timeFilter }) => {
 						</Title>
 					</Tooltip>
 					{get(overviewData, 'data.uptime').length ? (
-						get(overviewData, 'data.uptime').map(item => (
-							<Flex
-								justifyContent="space-between"
-								key={item.node}
-							>
+						get(overviewData, 'data.uptime').map((item) => (
+							<Flex justifyContent="space-between" key={item.node}>
 								<div style={{ fleX: 1 }}>{item.node}</div>
-								<div style={{ flex: 1, textAlign: 'right' }}>
-									{item.uptime}
-								</div>
+								<div style={{ flex: 1, textAlign: 'right' }}>{item.uptime}</div>
 							</Flex>
 						))
 					) : (
@@ -151,7 +128,7 @@ const Overview = ({ config, timeFilter }) => {
 				</>
 			)}
 		</CustomCard>
-    );
+	);
 };
 
 Overview.propTypes = {
@@ -159,7 +136,7 @@ Overview.propTypes = {
 	timeFilter: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
 	return {
 		config: get(state, '$monitoring.config', {}),
 		timeFilter: get(state, '$monitoring.filter.time', ''),

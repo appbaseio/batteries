@@ -115,6 +115,7 @@ export function deleteAppShare(username, payload, appId) {
 
 export function getAppPlan() {
 	return (dispatch) => {
+		dispatch(createAction(AppConstants.HEALTH.SET_SERVER_HEALTH));
 		dispatch(createAction(AppConstants.APP.GET_PLAN));
 		return fetchAppPlan()
 			.then((res) => {
@@ -122,8 +123,14 @@ export function getAppPlan() {
 					localStorage.setItem('cus_id', res.customer_id);
 				}
 				dispatch(createAction(AppConstants.APP.GET_PLAN_SUCCESS, res, null));
+				// update server health on success of /plan API call
+				dispatch(createAction(AppConstants.HEALTH.SET_SERVER_HEALTH_SUCCESS));
 			})
-			.catch((error) => dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error)));
+			.catch((error) => {
+				dispatch(createAction(AppConstants.APP.GET_PLAN_ERROR, null, error));
+				// update server health on failure of /plan API call
+				dispatch(createAction(AppConstants.HEALTH.SET_SERVER_HEALTH_ERROR));
+			});
 	};
 }
 
