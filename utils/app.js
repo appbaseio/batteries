@@ -1,6 +1,6 @@
 import get from 'lodash/get';
 import { doDelete, doPatch, doGet, doPost, doPut } from './requestService';
-import { getApp } from '../components/analytics/utils';
+import { getApp, getQueryParams } from '../components/analytics/utils';
 import { getURL } from '../../constants/config';
 
 export const transferOwnership = (appId, info) => {
@@ -592,5 +592,32 @@ export const updateBackendConnection = (payload) => {
 		undefined,
 		undefined,
 		true,
+	);
+};
+
+export const getDataUsage = (
+	queryParams = {
+		from_timestamp: undefined,
+		to_timestamp: undefined,
+	},
+) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(
+		`${ACC_API}/sls/data_usage${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					...queryParams,
+				}),
+			),
+			undefined,
+			false,
+		)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
 	);
 };

@@ -72,7 +72,11 @@ const Analytics = ({
 			{filterId && <Filter filterId={filterId} />}
 			<Card
 				extra={
-					<a href="https://docs.reactivesearch.io/docs/analytics/Overview/" target="_blank">
+					<a
+						href="https://docs.reactivesearch.io/docs/analytics/Overview/"
+						target="_blank"
+						rel="noreferrer"
+					>
 						Read More about these stats
 					</a>
 				}

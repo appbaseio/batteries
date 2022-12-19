@@ -478,4 +478,9 @@ export default {
 	$monitoring: monitoring,
 	$getFeaturedSuggestions: getAppFeaturedSuggestions,
 	$getSearchBoxes: getAppSearchBoxes,
+	$getDataUsage: createRequestReducer(
+		AppConstants.BILLING.GET_DATA_USAGE,
+		AppConstants.BILLING.GET_DATA_USAGE_SUCCESS,
+		AppConstants.BILLING.GET_DATA_USAGE_ERROR,
+	),
 };
