@@ -7,7 +7,7 @@ export function saveSearchBox(id, payload, shouldFetchSearchboxes = true) {
 		dispatch(createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE, { id, ...payload }));
 		return updateSearchBox({ id, searchBoxConfig: payload })
 			.then((data) => {
-				if (shouldFetchSearchboxes) {
+				if (!data.error && shouldFetchSearchboxes) {
 					dispatch(fetchSearchBoxes());
 				}
 				return dispatch(
