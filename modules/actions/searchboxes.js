@@ -20,7 +20,11 @@ export function saveSearchBox(id, payload, shouldFetchSearchboxes = true) {
 			})
 			.catch((error) =>
 				dispatch(
-					createAction(AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE_ERROR, null, error),
+					createAction(
+						AppConstants.APP.UI_BUILDER.SEARCH_BOX.UPDATE_ERROR,
+						{ id, ...payload },
+						error,
+					),
 				),
 			);
 	};
