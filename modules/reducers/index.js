@@ -24,6 +24,7 @@ import monitoring from './monitoring';
 import getAppPipelines from './getAppPipelines';
 import getAppFeaturedSuggestions from './getAppFeaturedSuggestions';
 import getAppSearchBoxes from './getAppSearchBoxes';
+import health from './health';
 
 export default {
 	$getAppMappings: getAppMappings,
@@ -483,4 +484,5 @@ export default {
 		AppConstants.BILLING.GET_DATA_USAGE_SUCCESS,
 		AppConstants.BILLING.GET_DATA_USAGE_ERROR,
 	),
+	$getHealthStats: health,
 };
