@@ -217,6 +217,12 @@ export const parseSearchState = (searchState = {}) => {
 	return [...aggregations, result, search];
 };
 
+export const SLS_PLANS = {
+	REACTIVESEARCH_CLOUD_HOBBY: "reactivesearch-cloud-hobby",
+	REACTIVESEARCH_CLOUD_PRODUCTION: "reactivesearch-cloud-production",
+	REACTIVESEARCH_CLOUD_ENTERPRISE: "reactivesearch-cloud-enterprise"
+}
+
 export const ARC_PLANS = {
 	// arc basic
 	ARC_BASIC: 'arc-basic',
@@ -371,6 +377,8 @@ export const allowedPlans = [
 	CLUSTER_PLANS.PRODUCTION_2021_1,
 	CLUSTER_PLANS.PRODUCTION_2021_2,
 	CLUSTER_PLANS.PRODUCTION_2021_3,
+	SLS_PLANS.REACTIVESEARCH_CLOUD_ENTERPRISE,
+	SLS_PLANS.REACTIVESEARCH_CLOUD_PRODUCTION
 ];
 
 export const features = {
@@ -403,6 +411,7 @@ export const isValidPlan = (tier, override, feature) => {
 					...allowedPlans,
 					CLUSTER_PLANS.STARTER_2021,
 					ARC_PLANS.HOSTED_ARC_STANDARD_2021,
+					SLS_PLANS.REACTIVESEARCH_CLOUD_HOBBY
 				].includes(tier)
 			);
 		default:
