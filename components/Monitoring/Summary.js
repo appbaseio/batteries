@@ -12,6 +12,7 @@ const Summary = () => {
 				justifyContent="space-around"
 				css={{
 					flexWrap: 'wrap',
+					height: '100%',
 				}}
 			>
 				<Overview />
