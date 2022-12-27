@@ -116,7 +116,7 @@ class EditorJSON extends React.Component {
 			<Popover
 				placement="leftTop"
 				trigger="click"
-				onVisibleChange={
+				onOpenChange={
                     visible => (visible ? this.handleInitialEditorValue(res) : this.resetEditorValues())
 				} // prettier-ignore
 				content={
