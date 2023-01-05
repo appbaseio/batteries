@@ -11,8 +11,8 @@ export const isStaging = true;
 // export const isStaging = process.env.CONTEXT === 'deploy-preview';
 
 export const ACC_API = isStaging
-	? 'http://accapi-prod.reactivesearch.io'
-	: 'http://accapi-prod.reactivesearch.io';
+	? 'https://accapi-prod.reactivesearch.io'
+	: 'https://accapi-prod.reactivesearch.io';
 
 // export const ACC_API = 'http://localhost:3000';
 export const SCALR_API = isStaging
