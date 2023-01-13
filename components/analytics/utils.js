@@ -454,12 +454,17 @@ export function getSearchLatency(appName, plan) {
 
 export function getGeoDistribution(appName, plan) {
 	return new Promise((resolve, reject) => {
-		fetch(`${ACC_API}/analytics/${appName}/geoip${getQueryParams(getDateRangeByPlan(plan))}`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json',
-				...getSecretHeaders(),
+		fetch(
+			`${ACC_API}/analytics/${appName}/geoip${getQueryParams(
+				getDateRangeByPlan(plan),
+			)}`,
+			{
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+					...getSecretHeaders(),
+				},
 			},
 		)
 			// Comment out this line
