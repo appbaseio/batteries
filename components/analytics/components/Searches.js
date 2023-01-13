@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import {
- Card, Table, Button, Tooltip, Icon,
-} from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Tooltip } from 'antd';
 import Flex from '../../shared/Flex';
 import { defaultColumns } from '../utils';
 import EmptyData from '../../shared/EmptyData';
@@ -28,7 +27,7 @@ const Searches = ({
 			onClickDownload ? (
 				<Tooltip title="Download data in .csv format.">
 					<Button disabled={!dataSource.length} onClick={onClickDownload}>
-						<Icon type="download" theme="outlined" />
+						<DownloadOutlined />
 					</Button>
 				</Tooltip>
 			) : (

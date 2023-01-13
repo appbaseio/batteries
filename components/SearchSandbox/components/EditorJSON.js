@@ -1,7 +1,6 @@
 import React from 'react';
-import {
- Button, Popover, Row, Col, Tooltip, notification,
-} from 'antd';
+import { CopyOutlined, FileTextOutlined } from '@ant-design/icons';
+import { Button, Popover, Row, Col, Tooltip, notification } from 'antd';
 
 import Ace from '../containers/AceEditor';
 
@@ -13,7 +12,7 @@ class EditorJSON extends React.Component {
 		isEditable: false,
 	};
 
-	handleInitialEditorValue = (res) => {
+	handleInitialEditorValue = res => {
 		const { _id: id, _index: del, ...objectJSON } = res;
 
 		const stringifiedJSON = JSON.stringify(objectJSON, null, '\t');
@@ -32,7 +31,7 @@ class EditorJSON extends React.Component {
 		});
 	};
 
-	handleUpdateJSON = (updatedJSONString) => {
+	handleUpdateJSON = updatedJSONString => {
 		const updatedJSON = JSON.parse(updatedJSONString);
 		const { mappingsType, appbaseRef, setRenderKey } = this.props;
 		const { editorObjectId } = this.state;
@@ -49,7 +48,7 @@ class EditorJSON extends React.Component {
 					doc: updatedJSON,
 				},
 			})
-			.then((res) => {
+			.then(res => {
 				this.setState({
 					isEditable: false,
 				});
@@ -59,14 +58,15 @@ class EditorJSON extends React.Component {
 			.catch(() => {
 				responseMessage = {
 					message: 'Update JSON',
-					description: 'There were error in Updating JSON. Try again Later.',
+					description:
+						'There were error in Updating JSON. Try again Later.',
 					duration: 2,
 				};
 				notification.open(responseMessage);
 			});
 	};
 
-	copyJSON = (code) => {
+	copyJSON = code => {
 		const el = document.createElement('textarea');
 		el.value = JSON.stringify(code);
 		document.body.appendChild(el);
@@ -77,8 +77,10 @@ class EditorJSON extends React.Component {
 			{
 				copied: true,
 			},
-			() => setTimeout(
-					() => this.setState({
+			() =>
+				setTimeout(
+					() =>
+						this.setState({
 							copied: false,
 						}),
 					300,
@@ -92,7 +94,7 @@ class EditorJSON extends React.Component {
 		}));
 	};
 
-	handleEditingJSON = (value) => {
+	handleEditingJSON = value => {
 		let isValidJSON = true;
 		try {
 			JSON.parse(value);
@@ -137,7 +139,9 @@ class EditorJSON extends React.Component {
 							editorProps={{ $blockScrolling: true }}
 						/>
 					) : (
-						<pre style={{ width: 300 }}>{JSON.stringify(res, null, 4)}</pre>
+						<pre style={{ width: 300 }}>
+							{JSON.stringify(res, null, 4)}
+						</pre>
 					)
 				}
 				title={(
@@ -148,10 +152,10 @@ class EditorJSON extends React.Component {
 							</h5>
 						</Col>
 						<Col span={isEditable ? 5 : 6}>
-							<Tooltip visible={copied} title="Copied">
+							<Tooltip open={copied} title="Copied">
 								<Button
 									shape="circle"
-									icon="copy"
+									icon={<CopyOutlined />}
 									size="small"
 									onClick={() => this.copyJSON(res)}
 								/>
@@ -181,7 +185,11 @@ class EditorJSON extends React.Component {
                     </Row>
                 )} // prettier-ignore
 			>
-				<Button shape="circle" icon="file-text" style={{ marginRight: '5px' }} />
+				<Button
+					shape="circle"
+					icon={<FileTextOutlined />}
+					style={{ marginRight: '5px' }}
+				/>
 			</Popover>
 		);
 	}

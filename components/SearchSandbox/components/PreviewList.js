@@ -1,11 +1,11 @@
 import React from 'react';
 import createDOMPurify from 'dompurify';
+import { DownOutlined, UndoOutlined } from '@ant-design/icons';
 import {
 	Modal,
 	Dropdown,
 	Menu,
 	Button,
-	Icon,
 	message,
 	Row,
 	Col,
@@ -157,13 +157,12 @@ class PreviewList extends React.Component {
 				</Paragraph>
 				<Dropdown overlay={menu} trigger={['click']}>
 					<Button style={style}>
-						{this.state[name] || 'Choose Option'}{' '}
-						<Icon type="down" />
+						{this.state[name] || 'Choose Option'} <DownOutlined />
 					</Button>
 				</Dropdown>
 				{this.state[name] ? (
 					<Button
-						icon="undo"
+						icon={<UndoOutlined />}
 						style={{ marginLeft: '10px' }}
 						shape="circle"
 						onClick={() => this.resetSelectedOption(name)}
@@ -239,7 +238,7 @@ class PreviewList extends React.Component {
 		};
 		return (
 			<Modal
-				visible={this.props.visible}
+				open={this.props.visible}
 				onOk={this.handleSave}
 				okText="Save"
 				width={720}

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip, Button } from 'antd';
 import Flex from '../../../shared/Flex';
 
@@ -50,7 +51,7 @@ const SummaryCard = ({
 		<span css={countCls}>{formatValue ? formatValue(count) : count}</span>
 		{toolTipMessage && (
 			<Tooltip placement="rightTop" title={toolTipMessage}>
-				<Button className="tooltip" icon="question-circle" />
+				<Button className="tooltip" icon={<QuestionCircleOutlined />} />
 			</Tooltip>
 		)}
 	</Flex>
