@@ -15,7 +15,7 @@ import {
 import { getMappings, getAuthHeaders } from '../../utils/mappings';
 import { doDelete, doGet, doPost, doPatch } from '../../utils/requestService';
 import { getURL } from '../../../constants/config';
-import apisMapper from '../../../pages/IntegrationsPage/utils/apisMapper';
+import apisMapper from '../../utils/apisMapper';
 import { BACKENDS } from '../../utils';
 
 /**

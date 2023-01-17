@@ -9,8 +9,7 @@ import get from 'lodash/get';
 import { doGet, doPut } from '../../utils/requestService';
 import Flex from '../shared/Flex';
 import { getURL } from '../../../constants/config';
-import { getUrlParams } from '../../../utils/helper';
-import { versionCompare } from '../../utils/helpers';
+import { versionCompare, getUrlParams } from '../../utils/helpers';
 
 export const ANALYTICS_ROOT_FILTER_ID = 'analytics_page';
 
