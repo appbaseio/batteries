@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { RedoOutlined } from '@ant-design/icons';
 import { Card, Tooltip, Button } from 'antd';
 import get from 'lodash/get';
 
@@ -105,7 +106,7 @@ const MonitoringContainer = ({
 	}
 
 	return (
-		<div>
+        <div>
 			{data.isLoading ? (
 				<Loader />
 			) : (
@@ -133,7 +134,7 @@ const MonitoringContainer = ({
 												onClick={() => {
 													setRefreshKey(Date.now());
 												}}
-												icon="redo"
+												icon={<RedoOutlined />}
 											/>
 										</Tooltip>
 										<TimeFilter plan={plan} />
@@ -172,7 +173,7 @@ const MonitoringContainer = ({
 				</>
 			)}
 		</div>
-	);
+    );
 };
 
 MonitoringContainer.propTypes = {

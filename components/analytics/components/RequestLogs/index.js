@@ -3,6 +3,7 @@ import find from 'lodash/find';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import filter from 'lodash/filter';
+import { RedoOutlined } from '@ant-design/icons';
 import {
  Card, Tabs, Table, notification, Button, Tooltip,
 } from 'antd';
@@ -218,7 +219,7 @@ class RequestLogs extends React.Component {
 	render() {
 		const { activeTabKey, isFetching, showDetails } = this.state;
 		return (
-			<Card
+            <Card
 				title="Latest Operations"
 				extra={(
 					<Tooltip placement="topLeft" title="Refresh request logs.">
@@ -226,7 +227,7 @@ class RequestLogs extends React.Component {
 							onClick={() => {
 								this.fetchRequestLogs();
 							}}
-							icon="redo"
+							icon={<RedoOutlined />}
 						/>
 					</Tooltip>
 				)}
@@ -287,7 +288,7 @@ class RequestLogs extends React.Component {
 					</React.Fragment>
 				)}
 			</Card>
-		);
+        );
 	}
 }
 RequestLogs.defaultProps = {

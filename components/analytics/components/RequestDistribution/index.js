@@ -2,23 +2,32 @@ import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import moment from 'dayjs';
 import { Card, Select } from 'antd';
 import {
- LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend,
+	LineChart,
+	Line,
+	CartesianGrid,
+	XAxis,
+	YAxis,
+	Tooltip,
+	Legend,
 } from 'recharts';
 import Loader from '../../../shared/Loader/Spinner';
 import EmptyData from '../../../shared/EmptyData';
 import { displayErrors } from '../../../../utils/heplers';
 import { getAppRequestDistribution } from '../../../../modules/actions';
-import { getAppRequestDistributionByName, getAppPlanByName } from '../../../../modules/selectors';
+import {
+	getAppRequestDistributionByName,
+	getAppPlanByName,
+} from '../../../../modules/selectors';
 
 const normalizedData = (data = []) => {
 	const dataTobeReturned = [];
-	data.forEach((item) => {
+	data.forEach(item => {
 		const modifiedItem = item;
 		if (item.buckets) {
-			item.buckets.forEach((bucket) => {
+			item.buckets.forEach(bucket => {
 				modifiedItem[bucket.key] = bucket.count;
 			});
 		}
@@ -51,11 +60,12 @@ class RequestDistribution extends React.Component {
 
 	getformatedDate(date) {
 		const { ticks } = this.state;
-		return ticks.length > 9 ? moment(date).format('MM/DD')
-		: moment(date).format('Do ddd');
+		return ticks.length > 9
+			? moment(date).format('MM/DD')
+			: moment(date).format('Do ddd');
 	}
 
-	handleChange = (value) => {
+	handleChange = value => {
 		const { fetchAppRequestDistribution } = this.props;
 		if (value === 'weekly') {
 			fetchAppRequestDistribution({
@@ -86,17 +96,21 @@ class RequestDistribution extends React.Component {
 				.valueOf(),
 		];
 		const monthlyTicks = [
-			...[...Array(30)].map((x, i) => moment()
+			...[...Array(30)].map((x, i) =>
+				moment()
 					.subtract(30 - i, 'd')
 					.startOf('day')
-					.valueOf()),
+					.valueOf(),
+			),
 			...baseTicks,
 		];
 		const weeklyTicks = [
-			...[...Array(7)].map((x, i) => moment()
+			...[...Array(7)].map((x, i) =>
+				moment()
 					.subtract(7 - i, 'd')
 					.startOf('day')
-					.valueOf()),
+					.valueOf(),
+			),
 			...baseTicks,
 		];
 		this.weeklyTicks = weeklyTicks;
@@ -108,14 +122,12 @@ class RequestDistribution extends React.Component {
 	}
 
 	render() {
-		const {
- isLoading, results, success, plan,
-} = this.props;
+		const { isLoading, results, success, plan } = this.props;
 		const { width, ticks } = this.state;
 		const data = normalizedData(results);
 		return (
 			<div
-				ref={(c) => {
+				ref={c => {
 					this.child = c;
 				}}
 				css="width: 100%"
@@ -127,7 +139,10 @@ class RequestDistribution extends React.Component {
 					}}
 					extra={
 						plan === 'growth' ? (
-							<Select onChange={this.handleChange} defaultValue="monthly">
+							<Select
+								onChange={this.handleChange}
+								defaultValue="monthly"
+							>
 								<Select.Option value="monthly" key="monthly">
 									Monthly
 								</Select.Option>
@@ -143,7 +158,9 @@ class RequestDistribution extends React.Component {
 					{isLoading ? (
 						<Loader />
 					) : (
-						(success && !data.length && <EmptyData css="height: 400px" />) || (
+						(success && !data.length && (
+							<EmptyData css="height: 400px" />
+						)) || (
 							<LineChart
 								width={width}
 								height={400}
@@ -157,7 +174,9 @@ class RequestDistribution extends React.Component {
 							>
 								<CartesianGrid />
 								<XAxis
-									tickFormatter={unixTime => this.getformatedDate(unixTime)}
+									tickFormatter={unixTime =>
+										this.getformatedDate(unixTime)
+									}
 									type="number"
 									dataKey="key"
 									domain={[ticks[0], ticks[ticks.length - 1]]}
@@ -173,7 +192,10 @@ class RequestDistribution extends React.Component {
 									}}
 								/>
 								<Tooltip
-									labelFormatter={unixTime => moment(unixTime).format('MMMM Do YYYY, HH:MM:SS')
+									labelFormatter={unixTime =>
+										moment(unixTime).format(
+											'MMMM Do YYYY, HH:MM:SS',
+										)
 									}
 								/>
 								<Legend />
@@ -225,11 +247,16 @@ const mapStateToProps = state => ({
 	isLoading: get(state, '$getAppRequestDistribution.isFetching'),
 	errors: [get(state, '$getAppRequestDistribution.error')],
 	success: get(state, '$getAppRequestDistribution.success'),
-	results: get(getAppRequestDistributionByName(state), 'request_distribution', []),
+	results: get(
+		getAppRequestDistributionByName(state),
+		'request_distribution',
+		[],
+	),
 	plan: get(getAppPlanByName(state), 'plan', 'free'),
 });
 const mapDispatchToProps = dispatch => ({
-	fetchAppRequestDistribution: filters => dispatch(getAppRequestDistribution(null, null, filters)),
+	fetchAppRequestDistribution: filters =>
+		dispatch(getAppRequestDistribution(null, null, filters)),
 });
 export default connect(
 	mapStateToProps,

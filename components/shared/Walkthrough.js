@@ -3,6 +3,7 @@ import { injectGlobal } from 'emotion';
 import Joyride, { ACTIONS, EVENTS } from 'react-joyride';
 import { message, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
+import { CheckCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
 
 /* eslint-disable-next-line */
 injectGlobal`
@@ -124,9 +125,11 @@ class Walkthrough extends React.Component {
 									color: 'white',
 								}}
 								icon={
-									tutorialCompleted
-										? 'check-circle'
-										: 'play-circle'
+									tutorialCompleted ? (
+										<CheckCircleOutlined />
+									) : (
+										<PlayCircleOutlined />
+									)
 								}
 							/>
 						</Tooltip>

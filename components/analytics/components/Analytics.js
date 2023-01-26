@@ -1,5 +1,6 @@
 import React from 'react';
-import { Spin, Icon, Card } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin, Card } from 'antd';
 import PropTypes from 'prop-types';
 import { css } from 'react-emotion';
 import Flex from '../../shared/Flex';
@@ -56,7 +57,7 @@ const Analytics = ({
 	handleReplaySearch,
 }) => {
 	if (loading) {
-		const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
+		const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 		return <Spin indicator={antIcon} />;
 	}
 	return (

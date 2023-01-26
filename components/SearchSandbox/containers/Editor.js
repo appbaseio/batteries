@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import createDOMPurify from 'dompurify';
-import { Row, Col, Card, Button, Modal, Form, message } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Button, Modal, message, Form } from 'antd';
 import { ReactiveBase, SelectedFilters } from '@appbaseio/reactivesearch';
 import SelectedTag from '@appbaseio/reactivesearch/lib/styles/Button';
 import PropTypes from 'prop-types';
 
 import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
-import { formWrapper, tagContainer, cardStyle } from '../styles';
+import { tagContainer, cardStyle } from '../styles';
 import DataFieldInput from '../components/DataFieldInput';
 import { getAvailableDataField } from '../utils/dataField';
 import {
@@ -161,7 +162,7 @@ export default class Editor extends Component {
 		}
 
 		return (
-			<Form.Item label={item.label} colon={false} key={name}>
+			<Form.Item label={item.label} key={name}>
 				<div style={{ margin: '0 0 6px' }} className="ant-form-extra">
 					{item.description}
 				</div>
@@ -190,7 +191,7 @@ export default class Editor extends Component {
 
 		const { listComponentProps } = this.state;
 		return (
-			<Form onSubmit={this.handleSubmit} className={formWrapper}>
+			<Form onFinish={this.handleSubmit} layout="vertical" colon>
 				<DataFieldInput
 					label={multiListTypes.dataField.label}
 					description={multiListTypes.dataField.description}
@@ -231,18 +232,20 @@ export default class Editor extends Component {
 		} = this.props;
 		const { renderKey, showModal, showVideo } = this.state;
 		const title = (
-			<span>
-				Search Preview{' '}
-				{window.innerWidth > 1280 ? (
-					<Button
-						style={{ float: 'right' }}
-						onClick={this.handleVideoModal}
-						size="small"
-					>
-						Watch Video
-					</Button>
-				) : null}
-			</span>
+			<div style={{ display: 'flex', flexWrap: 'wrap' }}>
+				<span>Search Preview </span>
+				<span>
+					{window.innerWidth > 1280 ? (
+						<Button
+							style={{ float: 'right' }}
+							onClick={this.handleVideoModal}
+							size="small"
+						>
+							Watch Video
+						</Button>
+					) : null}
+				</span>
+			</div>
 		);
 		return (
 			<ReactiveBase
@@ -258,7 +261,7 @@ export default class Editor extends Component {
 							<Button
 								style={{ width: '100%' }}
 								size="large"
-								icon="plus-circle-o"
+								icon={<PlusCircleOutlined />}
 								className="search-tutorial-3"
 								onClick={this.showModal}
 							>
@@ -393,7 +396,7 @@ export default class Editor extends Component {
 
 					<Modal
 						title="Add New Filter"
-						visible={showModal}
+						open={showModal}
 						onOk={this.handleOk}
 						onCancel={this.handleCancel}
 						okText="Add"
@@ -403,7 +406,7 @@ export default class Editor extends Component {
 					</Modal>
 					<Modal
 						title="Search Preview: 1 min walkthrough"
-						visible={showVideo}
+						open={showVideo}
 						onOk={this.handleVideoModal}
 						onCancel={this.handleVideoModal}
 						destroyOnClose

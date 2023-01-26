@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Button, Modal, Popover, message, Icon } from 'antd';
+import {
+	CodeOutlined,
+	DeleteOutlined,
+	EditOutlined,
+	UnorderedListOutlined,
+} from '@ant-design/icons';
+import { Row, Col, Button, Modal, Popover, message, Form } from 'antd';
 
 import {
 	DataSearch,
@@ -25,7 +31,7 @@ import {
 	DropdownInput,
 	ToggleInput,
 } from '../../shared/Input';
-import { formWrapper, componentStyle } from '../styles';
+import { componentStyle } from '../styles';
 import HtmlEditor from './HtmlEditor';
 
 const componentMap = {
@@ -187,7 +193,7 @@ class RSComponentRender extends Component {
 				title="Code"
 			>
 				<Button
-					icon="code-o"
+					icon={<CodeOutlined />}
 					className="show-on-hover"
 					shape="circle"
 					size="large"
@@ -350,7 +356,7 @@ class RSComponentRender extends Component {
 		const propNames = propsMap[component];
 
 		return (
-			<Form onSubmit={this.handleSubmit} className={formWrapper}>
+			<Form layout="vertical" onFinish={this.handleSubmit}>
 				<DataFieldInput
 					label={propNames.dataField.label}
 					id={id}
@@ -419,7 +425,7 @@ class RSComponentRender extends Component {
 							}}
 						>
 							<Button
-								icon="edit"
+								icon={<EditOutlined />}
 								shape="circle"
 								size="large"
 								className={`${
@@ -433,16 +439,16 @@ class RSComponentRender extends Component {
 									style={{ marginLeft: 8 }}
 									onClick={this.handlePreviewModal}
 								>
-									<Icon type="unordered-list" />
+									<UnorderedListOutlined />
 									Set Result View
 								</Button>
 							) : null}
 							{showCodePreview && this.renderComponentCode()}
 							{showDelete ? (
 								<Button
-									icon="delete"
+									icon={<DeleteOutlined />}
 									shape="circle"
-									type="danger"
+									danger
 									size="large"
 									className="show-on-hover"
 									style={{ marginLeft: 8 }}
@@ -458,7 +464,7 @@ class RSComponentRender extends Component {
 							style={{ textAlign: 'right' }}
 						>
 							<Button
-								icon="edit"
+								icon={<EditOutlined />}
 								shape="circle"
 								size="large"
 								className={`${
@@ -498,7 +504,7 @@ class RSComponentRender extends Component {
 
 				<Modal
 					title={constants[component]}
-					visible={showModal}
+					open={showModal}
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 					destroyOnClose

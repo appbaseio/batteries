@@ -1,8 +1,20 @@
 import React, { Component } from 'react';
 import { string, object, func, bool } from 'prop-types';
+
+import {
+	CalendarOutlined,
+	CheckOutlined,
+	DeleteOutlined,
+	DownOutlined,
+	EnvironmentOutlined,
+	FileJpgOutlined,
+	FileTextOutlined,
+	FileUnknownOutlined,
+	InfoCircleOutlined,
+} from '@ant-design/icons';
+
 import {
 	Tooltip,
-	Icon,
 	Input,
 	Popover,
 	Card,
@@ -107,7 +119,7 @@ const shardsMessage = () => (
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
 	<Modal
-		visible={show}
+		open={show}
 		title="Re-index successful"
 		onOk={onClose}
 		closable={false}
@@ -708,44 +720,26 @@ class Mappings extends Component {
 			case 'text':
 			case 'string':
 			case 'keyword':
-				return (
-					<Icon style={iconStyle} type="file-text" theme="outlined" />
-				);
+				return <FileTextOutlined style={iconStyle} />;
 			case 'long':
 			case 'integer':
 				return <div style={iconStyle}>#</div>;
 			case 'geo_point':
 			case 'geo_shape':
-				return (
-					<Icon
-						style={iconStyle}
-						type="environment"
-						theme="outlined"
-					/>
-				);
+				return <EnvironmentOutlined style={iconStyle} />;
 			case 'date':
-				return (
-					<Icon style={iconStyle} type="calendar" theme="outlined" />
-				);
+				return <CalendarOutlined style={iconStyle} />;
 			case 'double':
 			case 'float':
 				return <div style={iconStyle}>π</div>;
 			case 'boolean':
-				return <Icon style={iconStyle} type="check" theme="outlined" />;
+				return <CheckOutlined style={iconStyle} />;
 			case 'object':
 				return <div style={iconStyle}>{'{...}'}</div>;
 			case 'image':
-				return (
-					<Icon style={iconStyle} type="file-jpg" theme="outlined" />
-				);
+				return <FileJpgOutlined style={iconStyle} />;
 			default:
-				return (
-					<Icon
-						style={iconStyle}
-						type="file-unknown"
-						theme="outlined"
-					/>
-				);
+				return <FileUnknownOutlined style={iconStyle} />;
 		}
 	};
 
@@ -757,44 +751,26 @@ class Mappings extends Component {
 			case 'text':
 			case 'string':
 			case 'keyword':
-				return (
-					<Icon style={iconStyle} type="file-text" theme="outlined" />
-				);
+				return <FileTextOutlined style={iconStyle} />;
 			case 'long':
 			case 'integer':
 				return <div style={iconStyle}>#</div>;
 			case 'geo_point':
 			case 'geo_shape':
-				return (
-					<Icon
-						style={iconStyle}
-						type="environment"
-						theme="outlined"
-					/>
-				);
+				return <EnvironmentOutlined style={iconStyle} />;
 			case 'date':
-				return (
-					<Icon style={iconStyle} type="calendar" theme="outlined" />
-				);
+				return <CalendarOutlined style={iconStyle} />;
 			case 'double':
 			case 'float':
 				return <div style={iconStyle}>π</div>;
 			case 'boolean':
-				return <Icon style={iconStyle} type="check" theme="outlined" />;
+				return <CheckOutlined style={iconStyle} />;
 			case 'object':
 				return <div style={iconStyle}>{'{...}'}</div>;
 			case 'image':
-				return (
-					<Icon style={iconStyle} type="file-jpg" theme="outlined" />
-				);
+				return <FileJpgOutlined style={iconStyle} />;
 			default:
-				return (
-					<Icon
-						style={iconStyle}
-						type="file-unknown"
-						theme="outlined"
-					/>
-				);
+				return <FileUnknownOutlined style={iconStyle} />;
 		}
 	};
 
@@ -850,7 +826,7 @@ class Mappings extends Component {
 			<Dropdown overlay={menu}>
 				<Button className={dropdown}>
 					{(selectedOption && selectedOption.label) || value}
-					<Icon type="down" />
+					<DownOutlined />
 				</Button>
 			</Dropdown>
 		);
@@ -914,7 +890,7 @@ class Mappings extends Component {
 									this.deletePath(address, true);
 								}}
 							>
-								<Icon type="delete" />
+								<DeleteOutlined />
 								Delete
 							</a>
 						) : null}
@@ -980,7 +956,7 @@ class Mappings extends Component {
 												this.deletePath(addressField);
 											}}
 										>
-											<Icon type="delete" />
+											<DeleteOutlined />
 											Delete
 										</a>
 									) : null}
@@ -1033,7 +1009,7 @@ class Mappings extends Component {
 					Get an appbase.io account to edit {type}
 					<Tooltip title={message}>
 						<span>
-							<Icon type="info-circle" />
+							<InfoCircleOutlined />
 						</span>
 					</Tooltip>
 				</p>
@@ -1051,7 +1027,7 @@ class Mappings extends Component {
 					Upgrade your plan to edit {type}
 					<Tooltip title={message}>
 						<span>
-							<Icon type="info-circle" />
+							<InfoCircleOutlined />
 						</span>
 					</Tooltip>
 				</p>
@@ -1334,7 +1310,7 @@ class Mappings extends Component {
 								Field Name
 								<Tooltip title={fieldNameMessage}>
 									<span>
-										<Icon type="info-circle" />
+										<InfoCircleOutlined />
 									</span>
 								</Tooltip>
 							</span>
@@ -1343,7 +1319,7 @@ class Mappings extends Component {
 									Use case
 									<Tooltip title={usecaseMessage}>
 										<span>
-											<Icon type="info-circle" />
+											<InfoCircleOutlined />
 										</span>
 									</Tooltip>
 								</span>
@@ -1442,7 +1418,7 @@ class Mappings extends Component {
 					onClose={this.handleClose}
 				/>
 				<Modal
-					visible={this.state.showSynonymModal}
+					open={this.state.showSynonymModal}
 					onOk={this.updateSynonyms}
 					title="Add Synonym"
 					okText={
@@ -1459,12 +1435,12 @@ class Mappings extends Component {
 						placeholder={
 							'Enter comma separated synonym pairs. Enter additional synonym pairs separated by new lines, e.g.\nbritish, english\nqueen, monarch'
 						}
-						autosize={{ minRows: 2, maxRows: 10 }}
+						autoSize={{ minRows: 2, maxRows: 10 }}
 					/>
 				</Modal>
 				{this.state.editable && (
 					<Modal
-						visible={this.state.shardsModal}
+						open={this.state.shardsModal}
 						onOk={this.updateShards}
 						title="Configure Shards"
 						okText="Update"

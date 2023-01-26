@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
-import {
- string, object, func, bool,
-} from 'prop-types';
-import {
-	Tooltip,
-	Icon,
-	Input,
-	Button,
-	Modal,
-	message,
-} from 'antd';
+import { string, object, func, bool } from 'prop-types';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Tooltip, Input, Button, Modal, message } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
@@ -42,9 +34,7 @@ import {
 	clearMappings,
 } from '../../modules/actions';
 
-import {
-	promotionContainer,
-} from './styles';
+import { promotionContainer } from './styles';
 import ErrorModal from './ErrorModal';
 import { css } from 'emotion';
 
@@ -52,8 +42,8 @@ const { TextArea } = Input;
 
 const synonymMessage = () => (
 	<div style={{ maxWidth: 220 }}>
-		Editing synonyms isn{"'"}t a native feature in Elasticsearch. All appbase.io paid plans
-		offer editable synonym.
+		Editing synonyms isn{"'"}t a native feature in Elasticsearch. All
+		appbase.io paid plans offer editable synonym.
 	</div>
 );
 
@@ -63,15 +53,16 @@ const orderedList = css`
 		padding-left: 0;
 		margin-bottom: 15px;
 	}
-	h4,p {
+	h4,
+	p {
 		margin-bottom: 0;
 	}
-`
+`;
 
 // eslint-disable-next-line
 const FeedbackModal = ({ show, onClose, timeTaken }) => (
 	<Modal
-		visible={show}
+		open={show}
 		title="Re-index successful"
 		onOk={onClose}
 		closable={false}
@@ -79,8 +70,8 @@ const FeedbackModal = ({ show, onClose, timeTaken }) => (
 		okText="Done"
 	>
 		<p>
-			The mappings have been updated and the data has been successfully re-indexed in{' '}
-			{timeTaken}ms.
+			The mappings have been updated and the data has been successfully
+			re-indexed in {timeTaken}ms.
 		</p>
 	</Modal>
 );
@@ -155,7 +146,10 @@ class Synonyms extends Component {
 			this.init();
 		}
 
-		if (appbaseCredentials && prevProps.appbaseCredentials !== appbaseCredentials) {
+		if (
+			appbaseCredentials &&
+			prevProps.appbaseCredentials !== appbaseCredentials
+		) {
 			// handle mappings + synonyms if credentials have changed
 			if (!isFetchingMapping) {
 				getAppMappings(appName, appbaseCredentials);
@@ -202,7 +196,7 @@ class Synonyms extends Component {
 	initializeSynonymsData = () => {
 		const { appbaseCredentials } = this.props;
 
-		this.fetchSynonyms(appbaseCredentials).then((synonyms) => {
+		this.fetchSynonyms(appbaseCredentials).then(synonyms => {
 			this.setState({
 				synonyms,
 			});
@@ -212,7 +206,7 @@ class Synonyms extends Component {
 	initializeShards = () => {
 		const { appbaseCredentials } = this.props;
 
-		this.fetchSettings(appbaseCredentials).then((shards) => {
+		this.fetchSettings(appbaseCredentials).then(shards => {
 			this.setState({
 				shards,
 				allocated_shards: shards,
@@ -223,7 +217,7 @@ class Synonyms extends Component {
 	/**
 	 * used for rendering types in mappings view
 	 */
-	getType = (type) => {
+	getType = type => {
 		if (type === 'string') return 'text';
 		return type;
 	};
@@ -231,7 +225,7 @@ class Synonyms extends Component {
 	/**
 	 * used for rendering usecase in mappings view
 	 */
-	getUsecase = (fields) => {
+	getUsecase = fields => {
 		const hasAggsFlag = hasAggs(fields);
 		let hasSearchFlag = 0;
 		if (fields.search) hasSearchFlag = 1;
@@ -248,7 +242,13 @@ class Synonyms extends Component {
 		if (+esVersion >= 7) {
 			mapping = updateMappingES7(currentMapping, field, type, usecase);
 		} else {
-			mapping = updateMapping(currentMapping, field, type, usecase, esVersion);
+			mapping = updateMapping(
+				currentMapping,
+				field,
+				type,
+				usecase,
+				esVersion,
+			);
 		}
 		this.setState({
 			mapping,
@@ -256,17 +256,21 @@ class Synonyms extends Component {
 		});
 	};
 
-	handleMapping = async (res) => {
+	handleMapping = async res => {
 		if (res) {
-			const {esVersion} = this.state;
+			const { esVersion } = this.state;
 			let mapping = res ? transformToES5(res) : res;
 
 			if (!mapping.properties && esVersion >= 7) {
 				// Default Value for Version 7 Mappings
-				mapping = { properties: { } };
+				mapping = { properties: {} };
 			}
 
-			if ((!mapping._doc || !mapping._doc.properties) && esVersion >= 6 && esVersion < 7) {
+			if (
+				(!mapping._doc || !mapping._doc.properties) &&
+				esVersion >= 6 &&
+				esVersion < 7
+			) {
 				// Default Value for Version 6 Mappings
 				mapping = { _doc: { properties: {} } };
 			}
@@ -335,16 +339,16 @@ class Synonyms extends Component {
 		});
 	};
 
-	handleChange = (e) => {
+	handleChange = e => {
 		const { name, value } = e.target;
 		this.setState({
 			[name]: value,
 		});
 	};
 
-	fetchSynonyms = (credentials) => {
+	fetchSynonyms = credentials => {
 		const { url, appName } = this.props;
-		return getSettings(appName, credentials, url).then((data) => {
+		return getSettings(appName, credentials, url).then(data => {
 			if (get(data[appName], 'settings.index')) {
 				const { index } = data[appName].settings;
 				return index.analysis && index.analysis.filter.synonyms_filter
@@ -355,27 +359,35 @@ class Synonyms extends Component {
 		});
 	};
 
-	fetchSettings = (credentials) => {
+	fetchSettings = credentials => {
 		const { url, appName } = this.props;
-		return getSettings(appName, credentials, url).then(data => get(data[appName], 'settings.index.number_of_shards'));
+		return getSettings(appName, credentials, url).then(data =>
+			get(data[appName], 'settings.index.number_of_shards'),
+		);
 	};
 
 	updateField = () => {
 		const mapping = JSON.parse(JSON.stringify(this.state.mapping));
 		const { activeType } = this.state;
 		if (
-			mapping
-			&& activeType[0]
-			&& mapping[activeType[0]]
-			&& mapping[activeType[0]].properties
+			mapping &&
+			activeType[0] &&
+			mapping[activeType[0]] &&
+			mapping[activeType[0]].properties
 		) {
 			const { properties } = mapping[activeType[0]];
 			const keys = Object.keys(properties);
 
-			keys.forEach((key) => {
-				if (properties[key] && properties[key].fields && properties[key].fields.english) {
-					properties[key].fields.english.search_analyzer = 'english_synonyms_analyzer';
-					properties[key].fields.english.analyzer = 'english_analyzer';
+			keys.forEach(key => {
+				if (
+					properties[key] &&
+					properties[key].fields &&
+					properties[key].fields.english
+				) {
+					properties[key].fields.english.search_analyzer =
+						'english_synonyms_analyzer';
+					properties[key].fields.english.analyzer =
+						'english_analyzer';
 				} else if (properties[key] && properties[key].fields) {
 					properties[key].fields.english = {
 						type: 'text',
@@ -389,20 +401,23 @@ class Synonyms extends Component {
 		return mapping;
 	};
 
-	getUpdatedSettings = (settings) => {
+	getUpdatedSettings = settings => {
 		if (settings && settings.analyzer) {
-			const { analyzer: currentAnalyzer, filter: currentFilter } = settings;
+			const {
+				analyzer: currentAnalyzer,
+				filter: currentFilter,
+			} = settings;
 			const {
 				analysis: { analyzer, filter },
 			} = analyzerSettings;
 
-			Object.keys(analyzer).forEach((key) => {
+			Object.keys(analyzer).forEach(key => {
 				if (!currentAnalyzer[key]) {
 					currentAnalyzer[key] = analyzer[key];
 				}
 			});
 
-			Object.keys(filter).forEach((key) => {
+			Object.keys(filter).forEach(key => {
 				if (!currentFilter[key]) {
 					currentFilter[key] = filter[key];
 				}
@@ -414,17 +429,22 @@ class Synonyms extends Component {
 		return analyzerSettings.analysis;
 	};
 
-	renderPromotionalButtons = (type, message) => (this.props.url ? (
+	renderPromotionalButtons = (type, message) =>
+		this.props.url ? (
 			<div className={promotionContainer}>
 				<p>
 					Get an appbase.io account to edit {type}
 					<Tooltip title={message}>
 						<span>
-							<Icon type="info-circle" />
+							<InfoCircleOutlined />
 						</span>
 					</Tooltip>
 				</p>
-				<Button href="https://appbase.io" className="promotional-button" target="_blank">
+				<Button
+					href="https://appbase.io"
+					className="promotional-button"
+					target="_blank"
+				>
 					Signup Now
 				</Button>
 			</div>
@@ -434,7 +454,7 @@ class Synonyms extends Component {
 					Upgrade your plan to edit {type}
 					<Tooltip title={message}>
 						<span>
-							<Icon type="info-circle" />
+							<InfoCircleOutlined />
 						</span>
 					</Tooltip>
 				</p>
@@ -447,7 +467,7 @@ class Synonyms extends Component {
 					Upgrade Now
 				</Button>
 			</div>
-		));
+		);
 
 	updateSynonyms = () => {
 		const credentials = this.props.appbaseCredentials;
@@ -457,19 +477,30 @@ class Synonyms extends Component {
 			synonymsLoading: true,
 		});
 
-		const synonyms = this.state.synonyms.split('\n').map(pair => pair
+		const synonyms = this.state.synonyms.split('\n').map(pair =>
+			pair
 				.split(',')
 				.map(synonym => synonym.trim())
-				.join(','));
+				.join(','),
+		);
 
 		closeIndex(this.props.appName, credentials, url)
-			.then(() => updateSynonymsData(this.props.appName, credentials, url, synonyms))
+			.then(() =>
+				updateSynonymsData(
+					this.props.appName,
+					credentials,
+					url,
+					synonyms,
+				),
+			)
 			.then(data => data.acknowledged)
-			.then((isUpdated) => {
+			.then(isUpdated => {
 				if (isUpdated) {
-					this.fetchSynonyms(credentials).then(newSynonyms => this.setState({
+					this.fetchSynonyms(credentials).then(newSynonyms =>
+						this.setState({
 							synonyms: newSynonyms,
-						}));
+						}),
+					);
 					synonymsUpdated = true;
 				} else {
 					this.setState({
@@ -506,7 +537,7 @@ class Synonyms extends Component {
 					synonymsLoading: false,
 				});
 			})
-			.catch((e) => {
+			.catch(e => {
 				console.error(e);
 				openIndex(this.props.appName, credentials, url);
 				this.setState({
@@ -526,7 +557,10 @@ class Synonyms extends Component {
 		if (this.props.loadingError) {
 			return <p style={{ padding: 20 }}>{this.props.loadingError}</p>;
 		}
-		if ((this.props.isFetchingMapping || this.state.isLoading) && !this.state.mapping) {
+		if (
+			(this.props.isFetchingMapping || this.state.isLoading) &&
+			!this.state.mapping
+		) {
 			return <Loader show message="Fetching mappings... Please wait!" />;
 		}
 		if (this.state.mappingsError) {
@@ -543,29 +577,39 @@ class Synonyms extends Component {
 
 		return (
 			<React.Fragment>
-				
 				<h2>Manage Synonyms</h2>
 				<p>
-					Synonyms allow users to find relevant content the way they actually search for it. We support the following synonym definition formats:
+					Synonyms allow users to find relevant content the way they
+					actually search for it. We support the following synonym
+					definition formats:
 				</p>
 				<ul className={orderedList}>
-					<ol >
-						<h4>Equivalent Synonyms:</h4> 
+					<ol>
+						<h4>Equivalent Synonyms:</h4>
 						<p>
-							Synonyms separated by commas that have the same meaning. Searching for any of these terms will search for all its associated synonyms as well.
+							Synonyms separated by commas that have the same
+							meaning. Searching for any of these terms will
+							search for all its associated synonyms as well.
 						</p>
-							<strong>Examples:</strong><br />
-							ipod, i-pod, i pod<br/>
-							foozball, foosball<br/>
+						<strong>Examples:</strong>
+						<br />
+						ipod, i-pod, i pod
+						<br />
+						foozball, foosball
+						<br />
 					</ol>
-					<ol >
+					<ol>
 						<h4>Replacement Synonyms:</h4>
 						<p>
-							Search terms on the left hand side of `=>` are replaced by the terms on the right hand side.
+							Search terms on the left hand side of `=>` are
+							replaced by the terms on the right hand side.
 						</p>
-						<strong>Examples:</strong><br />
-						"u s a, united states, united states of america ⇒ usa"<br />
-						"cat, dog ⇒ pet"<br />
+						<strong>Examples:</strong>
+						<br />
+						"u s a, united states, united states of america ⇒ usa"
+						<br />
+						"cat, dog ⇒ pet"
+						<br />
 					</ol>
 				</ul>
 
@@ -577,17 +621,21 @@ class Synonyms extends Component {
 					placeholder={
 						'Enter comma separated synonym pairs. Enter additional synonym pairs separated by new lines, e.g.\nbritish, english\nqueen, monarch'
 					}
-					style={{margin: '10px auto'}}
-					autosize={{ minRows: 2, maxRows: 10 }}
+					style={{ margin: '10px auto' }}
+					autoSize={{ minRows: 2, maxRows: 10 }}
 				/>
 				{this.state.editable ? (
-					<Button loading={this.state.synonymsLoading}  type="primary" onClick={this.updateSynonyms}>
+					<Button
+						loading={this.state.synonymsLoading}
+						type="primary"
+						onClick={this.updateSynonyms}
+					>
 						Update Synonyms
 					</Button>
 				) : (
 					this.renderPromotionalButtons('synonyms', synonymMessage)
 				)}
-				
+
 				<ErrorModal
 					show={this.state.showError}
 					errorLength={this.state.errorLength}
@@ -627,8 +675,12 @@ Synonyms.defaultProps = {
 	mapping: null,
 };
 
-const mapStateToProps = (state) => {
-	const { username, password } = get(getAppPermissionsByName(state), 'credentials', {});
+const mapStateToProps = state => {
+	const { username, password } = get(
+		getAppPermissionsByName(state),
+		'credentials',
+		{},
+	);
 	const appPlan = getAppPlanByName(state);
 	return {
 		appName: get(state, '$getCurrentApp.name'),
@@ -644,7 +696,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-	updateCurrentApp: (appName, appId) => dispatch(setCurrentApp(appName, appId)),
+	updateCurrentApp: (appName, appId) =>
+		dispatch(setCurrentApp(appName, appId)),
 	getPermission: appName => dispatch(getPermissionFromAppbase(appName)),
 	getAppMappings: (appName, credentials, url) => {
 		dispatch(getMappings(appName, credentials, url));
@@ -652,7 +705,4 @@ const mapDispatchToProps = dispatch => ({
 	clearMappings: appName => dispatch(clearMappings(appName)),
 });
 
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps,
-)(Synonyms);
+export default connect(mapStateToProps, mapDispatchToProps)(Synonyms);
