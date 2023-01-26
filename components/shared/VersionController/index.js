@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { versionCompare } from '../../../utils/helpers';
 
-const VersionController = ({ version, arcVersion, children, title, style }) => {
+const VersionController = ({ version, arcVersion, children, title, style, backendImage }) => {
 	// If arc version is less than the version specified for feature then render the upgrade component
-	if (versionCompare(arcVersion, version) === -1) {
+	if (backendImage !== 'multi-tenant-sls' && versionCompare(arcVersion, version) === -1) {
 		return (
 			<Card title={title} style={style}>
 				<div>
@@ -32,9 +32,11 @@ VersionController.propTypes = {
 	children: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 	// System props
 	arcVersion: PropTypes.string.isRequired,
+	backendImage: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => ({
 	arcVersion: get(state, '$getAppPlan.results.version'),
+	backendImage: get(state, '$getAppPlan.results.image_type') ?? '',
 });
 export default connect(mapStateToProps)(VersionController);
