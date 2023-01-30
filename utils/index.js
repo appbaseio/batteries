@@ -460,7 +460,7 @@ export const BACKENDS = {
 	},
 	ZINC: {
 		name: 'zinc',
-		logo: 'https://zincsearch.com/assets/images/common/logo.svg',
+		logo: 'https://zincsearch.com/assets/logo.4dc9f675.svg',
 	},
 	SYSTEM: {
 		name: 'system',
