@@ -60,6 +60,7 @@ const RequestDetails = ({
 	latency,
 	pipelineMode,
 	context,
+	diffLogs,
 }) => {
 	const [rulesData, setRulesData] = useState([]);
 	const timeDuration = getTimeDuration(processingTime);
@@ -161,7 +162,7 @@ const RequestDetails = ({
 						headers={headers}
 						method={method}
 						requestChanges={requestChanges}
-						shouldDecode={!pipelineMode}
+						shouldDecode={diffLogs === false ? false : !pipelineMode}
 					/>
 					{pipelineMode && (
 						<Card
@@ -241,6 +242,7 @@ const RequestDetails = ({
 							url={url}
 							method={method}
 							responseChanges={responseChanges}
+							shouldDecode={diffLogs === false}
 						/>
 					</TabPane>
 				)}
@@ -257,6 +259,7 @@ RequestDetails.defaultProps = {
 	pipelineMode: false,
 	response: {},
 	context: {},
+	diffLogs: true,
 };
 RequestDetails.propTypes = {
 	time: PropTypes.string.isRequired,
@@ -279,6 +282,7 @@ RequestDetails.propTypes = {
 	latency: PropTypes.number,
 	pipelineMode: PropTypes.bool,
 	context: PropTypes.object,
+	diffLogs: PropTypes.bool,
 };
 
 const mapStateToProps = (state) => ({
