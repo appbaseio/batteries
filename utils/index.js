@@ -12,7 +12,7 @@ export const isStaging = true;
 
 export const ACC_API = isStaging
 	? 'https://accapi-staging.reactivesearch.io'
-	: 'https://accapi-prod.reactivesearch.io';
+	: 'https://accapi.appbase.io';
 
 // export const ACC_API = 'http://localhost:3000';
 export const SCALR_API = isStaging
