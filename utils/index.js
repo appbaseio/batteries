@@ -7,12 +7,12 @@ import { doGet } from './requestService';
  * Please don't try to change this section just to switch the URLs
  * instead create a `.env` file at root and define the `CONTEXT` variable according to your usage
  */
-export const isStaging = true;
+export const isStaging = false;
 // export const isStaging = process.env.CONTEXT === 'deploy-preview';
 
 export const ACC_API = isStaging
 	? 'https://accapi-staging.reactivesearch.io'
-	: 'https://accapi-prod.reactivesearch.io';
+	: 'https://accapi.appbase.io';
 
 // export const ACC_API = 'http://localhost:3000';
 export const SCALR_API = isStaging
