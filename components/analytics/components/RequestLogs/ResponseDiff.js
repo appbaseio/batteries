@@ -20,7 +20,7 @@ const popoverContent = css`
 
 const overflow = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
-const ResponseDiff = ({ responseBody, response, responseChanges, method, url }) => {
+const ResponseDiff = ({ responseBody, response, responseChanges, method, url, shouldDecode }) => {
 	const inverseOp = (currentOp) => {
 		switch (currentOp) {
 			case DiffMatchPatch.DIFF_DELETE:
@@ -154,7 +154,9 @@ const ResponseDiff = ({ responseBody, response, responseChanges, method, url }) 
 			{(responseChanges ?? [])
 				.filter((i) => i.stage !== 'searchrelevancy')
 				.map((responseChange) => {
-					const value = decodeResponseChange(responseChange.body, responseBody);
+					const value = shouldDecode
+						? decodeResponseChange(responseChange.body, responseBody)
+						: responseChange.body;
 
 					return (
 						<Card
@@ -212,6 +214,7 @@ ResponseDiff.defaultProps = {
 	method: '',
 	url: '',
 	response: {},
+	shouldDecode: true,
 };
 ResponseDiff.propTypes = {
 	responseChanges: PropTypes.array,
@@ -219,5 +222,6 @@ ResponseDiff.propTypes = {
 	method: PropTypes.string,
 	response: PropTypes.object,
 	url: PropTypes.string,
+	shouldDecode: PropTypes.bool,
 };
 export default ResponseDiff;
