@@ -5,6 +5,7 @@ import {
 	setUserInfo,
 	getUserAppsPermissions,
 	ACC_API,
+	getSecretHeaders,
 } from '../../utils/index';
 
 export function updateUser(info) {
@@ -61,7 +62,7 @@ export function getUserPermissions(appName, username) {
 export function getUserPlan() {
 	return dispatch => {
 		dispatch(createAction(AppConstants.ACCOUNT.CHECK_USER_PLAN.GET));
-		return doGet(`${ACC_API}/user/plan`)
+		return doGet(`${ACC_API}/user/plan`, { ...getSecretHeaders() })
 			.then(res =>
 				dispatch(
 					createAction(
