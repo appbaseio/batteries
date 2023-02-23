@@ -12,7 +12,7 @@ const VersionController = ({ version, arcVersion, children, title, style, backen
 		return (
 			<Card title={title} style={style}>
 				<div>
-					This feature requires the minimum version of appbase.io to be <b>{version}</b>.
+					This feature requires the minimum version of ReactiveSearch Server to be <b>{version}</b>.
 					Your current version is <b>{arcVersion}</b>, you can upgrade your version from
 					the cluster detail view of the dashboard.
 				</div>
@@ -22,7 +22,7 @@ const VersionController = ({ version, arcVersion, children, title, style, backen
 	return children;
 };
 VersionController.defaultProps = {
-	title: 'Upgrade Appbase.io Version',
+	title: 'Upgrade ReactiveSearch Server Version',
 	style: null,
 };
 VersionController.propTypes = {
