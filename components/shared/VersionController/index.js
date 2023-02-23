@@ -12,9 +12,9 @@ const VersionController = ({ version, arcVersion, children, title, style, backen
 		return (
 			<Card title={title} style={style}>
 				<div>
-					This feature requires the minimum version of ReactiveSearch Server to be <b>{version}</b>.
-					Your current version is <b>{arcVersion}</b>, you can upgrade your version from
-					the cluster detail view of the dashboard.
+					This feature requires the minimum version of ReactiveSearch Server to be{' '}
+					<b>{version}</b>. Your current version is <b>{arcVersion}</b>, you can upgrade
+					your version from the cluster detail view of the dashboard.
 				</div>
 			</Card>
 		);
