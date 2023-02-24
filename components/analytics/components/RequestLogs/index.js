@@ -155,7 +155,7 @@ class RequestLogs extends React.Component {
 			if (onTabChange) {
 				onTabChange(tab);
 			} else {
-				history.push(`app/${appName}/analytics/request-logs/${tab}`);
+				history.push(`/app/${appName}/analytics/request-logs/${tab}`);
 			}
 		}
 	};
@@ -169,7 +169,7 @@ class RequestLogs extends React.Component {
 			} else {
 				history.push(
 					appName
-						? `app/${appName}/request-logs/${record.id}`
+						? `/app/${appName}/request-logs/${record.id}`
 						: `request-logs/${String(record.id)}`,
 				);
 			}
