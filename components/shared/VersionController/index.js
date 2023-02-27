@@ -4,16 +4,17 @@ import { Card } from 'antd';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { versionCompare } from '../../../utils/helpers';
+import { ALLOWED_SLS } from '../../../../constants';
 
-const VersionController = ({ version, arcVersion, children, title, style }) => {
+const VersionController = ({ version, arcVersion, children, title, style, backendImage }) => {
 	// If arc version is less than the version specified for feature then render the upgrade component
-	if (versionCompare(arcVersion, version) === -1) {
+	if (!ALLOWED_SLS.includes(backendImage) && versionCompare(arcVersion, version) === -1) {
 		return (
 			<Card title={title} style={style}>
 				<div>
-					This feature requires the minimum version of appbase.io to be <b>{version}</b>.
-					Your current version is <b>{arcVersion}</b>, you can upgrade your version from
-					the cluster detail view of the dashboard.
+					This feature requires the minimum version of ReactiveSearch Server to be{' '}
+					<b>{version}</b>. Your current version is <b>{arcVersion}</b>, you can upgrade
+					your version from the cluster detail view of the dashboard.
 				</div>
 			</Card>
 		);
@@ -21,7 +22,7 @@ const VersionController = ({ version, arcVersion, children, title, style }) => {
 	return children;
 };
 VersionController.defaultProps = {
-	title: 'Upgrade Appbase.io Version',
+	title: 'Upgrade ReactiveSearch Server Version',
 	style: null,
 };
 VersionController.propTypes = {
@@ -32,9 +33,11 @@ VersionController.propTypes = {
 	children: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
 	// System props
 	arcVersion: PropTypes.string.isRequired,
+	backendImage: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => ({
 	arcVersion: get(state, '$getAppPlan.results.version'),
+	backendImage: get(state, '$getAppPlan.results.image_type') ?? '',
 });
 export default connect(mapStateToProps)(VersionController);
