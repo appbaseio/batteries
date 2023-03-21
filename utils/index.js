@@ -7,7 +7,7 @@ import { doGet } from './requestService';
  * Please don't try to change this section just to switch the URLs
  * instead create a `.env` file at root and define the `CONTEXT` variable according to your usage
  */
-export const isStaging = false;
+export const isStaging = true;
 // export const isStaging = process.env.CONTEXT === 'deploy-preview';
 
 export const ACC_API = isStaging
