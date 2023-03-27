@@ -218,10 +218,10 @@ export const parseSearchState = (searchState = {}) => {
 };
 
 export const SLS_PLANS = {
-	REACTIVESEARCH_CLOUD_HOBBY: "reactivesearch-cloud-hobby",
-	REACTIVESEARCH_CLOUD_PRODUCTION: "reactivesearch-cloud-production",
-	REACTIVESEARCH_CLOUD_ENTERPRISE: "reactivesearch-cloud-enterprise"
-}
+	REACTIVESEARCH_CLOUD_HOBBY: 'reactivesearch-cloud-hobby',
+	REACTIVESEARCH_CLOUD_PRODUCTION: 'reactivesearch-cloud-production',
+	REACTIVESEARCH_CLOUD_ENTERPRISE: 'reactivesearch-cloud-enterprise',
+};
 
 export const ARC_PLANS = {
 	// arc basic
@@ -245,7 +245,6 @@ export const ARC_PLANS = {
 	HOSTED_ARC_ENTERPRISE: 'hosted-arc-enterprise',
 	HOSTED_ARC_ENTERPRISE_2021: '2021-hosted-arc-enterprise',
 };
-
 export const CLUSTER_PLANS = {
 	// cluster sandbox
 	SANDBOX_2019: '2019-sandbox',
@@ -272,7 +271,6 @@ export const CLUSTER_PLANS = {
 	PRODUCTION_2019_3: '2019-production-3',
 	PRODUCTION_2021_3: '2021-production-3',
 };
-
 export const PRICE_BY_PLANS = {
 	// self-hosted arc basic plans
 	[ARC_PLANS.ARC_BASIC]: 19,
@@ -317,6 +315,10 @@ export const PRICE_BY_PLANS = {
 	// cluster production 3
 	[CLUSTER_PLANS.PRODUCTION_2019_3]: 1599,
 	[CLUSTER_PLANS.PRODUCTION_2021_3]: 3199,
+
+	[SLS_PLANS.REACTIVESEARCH_CLOUD_HOBBY]: 29,
+	[SLS_PLANS.REACTIVESEARCH_CLOUD_PRODUCTION]: 149,
+	[SLS_PLANS.REACTIVESEARCH_CLOUD_ENTERPRISE]: null, // contact us
 };
 
 // Price per node/hr
@@ -364,6 +366,10 @@ export const EFFECTIVE_PRICE_BY_PLANS = {
 	// cluster production 3
 	[CLUSTER_PLANS.PRODUCTION_2019_3]: 2.22,
 	[CLUSTER_PLANS.PRODUCTION_2021_3]: 1.48,
+
+	[SLS_PLANS.REACTIVESEARCH_CLOUD_HOBBY]: 1.11,
+	[SLS_PLANS.REACTIVESEARCH_CLOUD_PRODUCTION]: 2.22,
+	[SLS_PLANS.REACTIVESEARCH_CLOUD_ENTERPRISE]: 4.44,
 };
 
 // Production or enterprise plans
@@ -378,7 +384,8 @@ export const allowedPlans = [
 	CLUSTER_PLANS.PRODUCTION_2021_2,
 	CLUSTER_PLANS.PRODUCTION_2021_3,
 	SLS_PLANS.REACTIVESEARCH_CLOUD_ENTERPRISE,
-	SLS_PLANS.REACTIVESEARCH_CLOUD_PRODUCTION
+	SLS_PLANS.REACTIVESEARCH_CLOUD_PRODUCTION,
+	SLS_PLANS.REACTIVESEARCH_CLOUD_HOBBY,
 ];
 
 export const features = {
@@ -411,7 +418,7 @@ export const isValidPlan = (tier, override, feature) => {
 					...allowedPlans,
 					CLUSTER_PLANS.STARTER_2021,
 					ARC_PLANS.HOSTED_ARC_STANDARD_2021,
-					SLS_PLANS.REACTIVESEARCH_CLOUD_HOBBY
+					SLS_PLANS.REACTIVESEARCH_CLOUD_HOBBY,
 				].includes(tier)
 			);
 		default:

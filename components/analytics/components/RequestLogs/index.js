@@ -150,30 +150,28 @@ class RequestLogs extends React.Component {
 	};
 
 	redirectTo = (tab) => {
-		const { changeUrlOnTabChange, appName, onTabChange } = this.props;
+		const { changeUrlOnTabChange, appName, onTabChange, history } = this.props;
 		if (changeUrlOnTabChange) {
 			if (onTabChange) {
 				onTabChange(tab);
 			} else {
-				window.history.pushState(
-					null,
-					null,
-					`${window.location.origin}/app/${appName}/analytics/request-logs/${tab}`,
-				);
+				history.push(`/app/${appName}/analytics/request-logs/${tab}`);
 			}
 		}
 	};
 
 	handleLogClick = (record) => {
 		try {
-			const { pipelineLogsMode, appName } = this.props;
+			const { pipelineLogsMode, appName, history } = this.props;
 
 			if (pipelineLogsMode) {
 				window.location.href = `logs/${record.id}`;
 			} else {
-				window.location.href = appName
-					? `/app/${appName}/request-logs/${record.id}`
-					: `request-logs/${String(record.id)}`;
+				history.push(
+					appName
+						? `/app/${appName}/request-logs/${record.id}`
+						: `request-logs/${String(record.id)}`,
+				);
 			}
 		} catch (e) {
 			console.log('Error', e);
@@ -426,6 +424,7 @@ RequestLogs.defaultProps = {
 	hideRefreshButton: false,
 	pipelineLogsMode: false,
 	pipelineId: '',
+	history: null,
 };
 RequestLogs.propTypes = {
 	tab: PropTypes.string,
@@ -444,6 +443,7 @@ RequestLogs.propTypes = {
 	endDate: PropTypes.string,
 	pipelineLogsMode: PropTypes.bool,
 	pipelineId: PropTypes.string,
+	history: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
