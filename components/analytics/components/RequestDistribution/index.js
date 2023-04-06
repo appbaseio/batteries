@@ -70,10 +70,15 @@ class RequestDistribution extends React.Component {
 		if (get(filters, 'from') && get(filters, 'to')) {
 			const a = moment(get(filters, 'from'));
 			const b = moment(get(filters, 'to'));
-			if (b.diff(a, 'days') <= 7) {
+			if (b.diff(a, 'days') <= 1) {
 				// eslint-disable-next-line
-				return this.weeklyTicks;
+				return this.dayTicks;
 			}
+			const startOfWeek = moment().startOf('week');
+			const ticks = [...Array(b.diff(a, 'days'))].map((x, i) =>
+				a.add(1, 'd').startOf('day').valueOf(),
+			);
+			return [moment(ticks[0]).subtract(1, 'd'), ...ticks, moment(ticks[ticks.length - 1]).subtract(1, 'd')];
 		}
 		return this.monthlyTicks;
 	}
@@ -97,20 +102,14 @@ class RequestDistribution extends React.Component {
 			),
 			...baseTicks,
 		];
-		const weeklyTicks = [
-			...[...Array(7)].map((x, i) =>
-				moment()
-					.subtract(7 - i, 'd')
-					.startOf('day')
-					.valueOf(),
-			),
-			...baseTicks,
-		];
-		this.weeklyTicks = weeklyTicks;
+		const dayTicks = [moment().subtract(1, 'd').startOf('day').valueOf(), moment().valueOf()];
+
 		this.monthlyTicks = monthlyTicks;
+		this.dayTicks = dayTicks;
+
 		return {
-			weeklyTicks,
 			monthlyTicks,
+			dayTicks,
 		};
 	}
 

@@ -41,13 +41,19 @@ export const getQueryParams = (paramConfig, arcVersion, shouldApplyDateFilters =
 		if (!paramObj) {
 			paramObj = {};
 		}
-		if (!paramObj.from) {
+		if (!paramObj.from && !paramObj.start_date) {
 			paramObj.from_timestamp = defaultDateRange.from;
+		} if (paramObj.start_date) {
+			paramObj.from_timestamp = Math.ceil(new Date(paramObj.start_date).getTime() / 1000);
 		} else {
 			paramObj.from_timestamp = Math.ceil(new Date(paramObj.from).getTime() / 1000);
 		}
-		if (!paramObj.to) {
+		if (!paramObj.to && !paramObj.end_date) {
 			paramObj.to_timestamp = defaultDateRange.to;
+		} if (paramObj.end_date) {
+			paramObj.to_timestamp =
+				Math.ceil(new Date(paramObj.end_date).getTime() / 1000) + 24 * 60 * 60 - 1; // end of day
+
 		} else {
 			paramObj.to_timestamp =
 				Math.ceil(new Date(paramObj.to).getTime() / 1000) + 24 * 60 * 60 - 1; // end of day
@@ -618,11 +624,7 @@ export function getAnalytics(appName, filters, arcVersion) {
  */
 export function getSearchLatency(appName, filters, arcVersion) {
 	return doGet(
-		`${getURL()}/_analytics/${getApp(appName)}latency${getQueryParams(
-			filters,
-			arcVersion,
-			false,
-		)}`,
+		`${getURL()}/_analytics/${getApp(appName)}latency${getQueryParams(filters, arcVersion)}`,
 	);
 }
 
@@ -779,7 +781,6 @@ export function getRequestLogs(
 				}),
 			),
 			arcVersion,
-			false,
 		)}`,
 	);
 }

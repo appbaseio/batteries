@@ -84,8 +84,8 @@ class RequestLogs extends React.Component {
 		this.tabKeys = ['all', 'search', 'suggestion', 'index', 'delete', 'error'];
 		const { tab } = this.props;
 		const defaultTabState = {
-			currentPage: 0,
-			0: {
+			currentPage: 1,
+			1: {
 				hits: [],
 				isLoading: false,
 			},
@@ -186,7 +186,7 @@ class RequestLogs extends React.Component {
 	// eslint-disable-next-line
 	fetchRequestLogs = (
 		from = 0,
-		currentPage = 0,
+		currentPage = 1,
 		tab = this.state.activeTabKey, // eslint-disable-line
 		startDate = get(requestLogsDateRanges, `${this.state.selectedDate}.from`), // eslint-disable-line
 		endDate = get(requestLogsDateRanges, `${this.state.selectedDate}.to`), // eslint-disable-line
@@ -252,7 +252,7 @@ class RequestLogs extends React.Component {
 							...item,
 						}));
 						this.setState({
-							logs: [...hits, ...logs],
+							logs: from ? [...hits, ...logs] : [...hits],
 							[tab]: {
 								isLoading: false,
 								currentPage,
@@ -312,7 +312,6 @@ class RequestLogs extends React.Component {
 		const { pageSize, displaySearchLogs, pipelineLogsMode } = this.props;
 		const { currentPage, total, isLoading } = this.state[tab]; // eslint-disable-line
 		const { hits } = this.state[tab][currentPage]; // eslint-disable-line
-
 		return (
 			<Table
 				css=".ant-table-row { cursor: pointer }"
