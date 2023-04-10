@@ -249,6 +249,7 @@ export const CLUSTER_PLANS = {
 	// cluster sandbox
 	SANDBOX_2019: '2019-sandbox',
 	SANDBOX_2020: '2020-sandbox',
+	SANDBOX_2023: '2023-sandbox',
 
 	// cluster hobby
 	HOBBY_2019: '2019-hobby',
@@ -258,10 +259,12 @@ export const CLUSTER_PLANS = {
 	STARTER_2019: '2019-starter',
 	STARTER_2020: '2020-starter',
 	STARTER_2021: '2021-starter',
+	STARTER_2023: '2023-starter',
 
 	// cluster production 1
 	PRODUCTION_2019_1: '2019-production-1',
 	PRODUCTION_2021_1: '2021-production-1',
+	PRODUCTION_2023_1: '2023-production-1',
 
 	// cluster production 2
 	PRODUCTION_2019_2: '2019-production-2',
@@ -394,6 +397,7 @@ export const features = {
 	QUERY_RULES: 'QUERY_RULES',
 	ANALYTICS: 'ANALYTICS',
 	UI_BUILDER_PREMIUM: 'UI BUILDER PREMIUM',
+	AI: 'AI',
 };
 
 export const isValidPlan = (tier, override, feature) => {
@@ -419,6 +423,17 @@ export const isValidPlan = (tier, override, feature) => {
 					CLUSTER_PLANS.STARTER_2021,
 					ARC_PLANS.HOSTED_ARC_STANDARD_2021,
 					SLS_PLANS.REACTIVESEARCH_CLOUD_HOBBY,
+				].includes(tier)
+			);
+		case features.AI:
+			// Allow search relevancy for starter and standard 2021 plans
+			return (
+				tier &&
+				[
+					...allowedPlans,
+					CLUSTER_PLANS.STARTER_2023,
+					CLUSTER_PLANS.SANDBOX_2023,
+					CLUSTER_PLANS.PRODUCTION_2023_1,
 				].includes(tier)
 			);
 		default:
