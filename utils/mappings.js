@@ -40,13 +40,15 @@ export function getMappings(appName, credentials, url = getURL(), endpointSuffix
 			.then((data) => {
 				let mappings = {};
 				if (appName) {
-					const types = Object.keys(data[appName].mappings).filter(
+					const mappingsObject =
+						data[appName]?.mappings ?? Object.values(data)[0].mappings;
+					const types = Object.keys(mappingsObject).filter(
 						(type) => !REMOVED_KEYS.includes(type),
 					);
 					types.forEach((type) => {
 						mappings = {
 							...mappings,
-							[type]: data[appName].mappings[type],
+							[type]: mappingsObject[type],
 						};
 					});
 				} else {
