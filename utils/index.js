@@ -430,7 +430,6 @@ export const isValidPlan = (tier, override, feature) => {
 			return (
 				tier &&
 				[
-					...allowedPlans,
 					CLUSTER_PLANS.STARTER_2023,
 					CLUSTER_PLANS.SANDBOX_2023,
 					CLUSTER_PLANS.PRODUCTION_2023_1,
