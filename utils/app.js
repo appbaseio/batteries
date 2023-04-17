@@ -621,3 +621,22 @@ export const getDataUsage = (
 		},
 	);
 };
+
+export const getAIPreferences = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_ai/preferences`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const updateAIPreferences = (AIPreferencesPayload) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+	return doPost(`${ACC_API}/_ai/preferences`, AIPreferencesPayload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
