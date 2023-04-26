@@ -39,10 +39,10 @@ class SearchVolumeChart extends React.Component {
 	}
 
 	render() {
-		const { height, data } = this.props;
+		const { height, data, title } = this.props;
 		const { width } = this.state;
 		return (
-			<Card css={chart} title="Daily Search Volume">
+			<Card css={chart} title={title}>
 				<div
 					ref={(c) => {
 						this.child = c;
@@ -83,12 +83,14 @@ SearchVolumeChart.defaultProps = {
 	width: undefined,
 	height: undefined,
 	margin: 0,
+	title: 'Daily Search Volume',
 };
 SearchVolumeChart.propTypes = {
 	data: PropTypes.array,
 	width: PropTypes.number,
 	height: PropTypes.number,
 	margin: PropTypes.number,
+	title: PropTypes.string,
 };
 
 export default SearchVolumeChart;
