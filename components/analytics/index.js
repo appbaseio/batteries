@@ -28,7 +28,7 @@ class Main extends React.Component {
 
 	render() {
 		const { onClickViewAll, displayReplaySearch, filterId } = this.props;
-		const { appName, chartWidth, plan } = this.props;
+		const { appName, chartWidth, plan, history } = this.props;
 		return (
 			<Analytics
 				filterId={filterId}
@@ -38,6 +38,7 @@ class Main extends React.Component {
 				displayReplaySearch={displayReplaySearch}
 				handleReplaySearch={this.handleReplaySearch}
 				appName={appName}
+				history={history}
 			/>
 		);
 	}

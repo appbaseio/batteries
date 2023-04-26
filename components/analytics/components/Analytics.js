@@ -31,6 +31,7 @@ const Analytics = ({
 	handleReplaySearch,
 	filterId,
 	appName,
+	history,
 }) => {
 	useEffect(() => {
 		window.addEventListener('scroll', tracker);
@@ -136,7 +137,11 @@ const Analytics = ({
 						id="request-logs-component"
 					>
 						{visibility['request-logs-component'] && (
-							<RequestLogs displayFilter={false} appName={appName} />
+							<RequestLogs
+								displayFilter={false}
+								appName={appName}
+								history={history}
+							/>
 						)}
 					</Flex>
 				</React.Fragment>
@@ -164,6 +169,7 @@ Analytics.propTypes = {
 	plan: PropTypes.string.isRequired,
 	handleReplaySearch: PropTypes.func.isRequired,
 	appName: PropTypes.string,
+	history: PropTypes.object.isRequired,
 };
 
 export default Analytics;
