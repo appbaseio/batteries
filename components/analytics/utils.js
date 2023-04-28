@@ -1286,3 +1286,30 @@ export const getAIInsights = (
 		},
 	);
 };
+
+export const getAISessionDocs = (
+	queryParams = {
+		from_timestamp: undefined,
+		to_timestamp: undefined,
+	},
+) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(
+		`${ACC_API}/_ai/analytics/filter${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					...queryParams,
+				}),
+			),
+			undefined,
+			false,
+		)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
+};
