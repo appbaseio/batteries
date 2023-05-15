@@ -1455,7 +1455,7 @@ class Mappings extends Component {
 							Move slider to change the number of shards for your
 							app. Read more{' '}
 							<a
-								href="https://docs.appbase.io/docs/search/Mappings/#manage-shards"
+								href="https://docs.reactivesearch.io/docs/search/Mappings/#manage-shards"
 								target="_blank"
 								rel="noopener noreferrer"
 							>
