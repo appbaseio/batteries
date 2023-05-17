@@ -640,3 +640,29 @@ export const updateAIPreferences = (AIPreferencesPayload) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getAIFAQsAPI = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_ai/faqs`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const putAIFAQAPI = (id, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(
+		`${ACC_API}/_ai/faq/${id}`,
+		payload,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+		undefined,
+		undefined,
+		true,
+	);
+};
