@@ -666,3 +666,13 @@ export const putAIFAQAPI = (id, payload) => {
 		true,
 	);
 };
+
+export const deleteAIFAQAPI = (faqId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_ai/faq/${faqId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};

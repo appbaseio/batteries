@@ -1,6 +1,6 @@
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { getAIFAQsAPI, putAIFAQAPI } from '../../utils/app';
+import { deleteAIFAQAPI, getAIFAQsAPI, putAIFAQAPI } from '../../utils/app';
 
 export function getAIFAQs() {
 	return (dispatch) => {
@@ -27,6 +27,23 @@ export function putAIFAQ(id, payload) {
 			.catch((error) => {
 				return dispatch(
 					createAction(AppConstants.APP.AI.UPDATE_AI_FAQS_ERROR, null, error),
+				);
+			});
+	};
+}
+
+export function removeAIFAQ(id) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.AI.DELETE_AI_FAQS, { id }));
+		return deleteAIFAQAPI(id)
+			.then((res) => {
+				return dispatch(
+					createAction(AppConstants.APP.AI.DELETE_AI_FAQS_SUCCESS, res, null),
+				);
+			})
+			.catch((error) => {
+				return dispatch(
+					createAction(AppConstants.APP.AI.DELETE_AI_FAQS_ERROR, null, error),
 				);
 			});
 	};

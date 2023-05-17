@@ -38,6 +38,33 @@ function AIReducer(state = initialAppState, action) {
 					data: action.payload,
 				},
 			};
+		case AppConstants.APP.AI.DELETE_AI_FAQS:
+			return {
+				...state,
+				faqs: {
+					...state.faqs,
+					isDeleting: true,
+					error: null,
+				},
+			};
+		case AppConstants.APP.AI.DELETE_AI_FAQS_SUCCESS:
+			return {
+				...state,
+				faqs: {
+					...state.faqs,
+					isDeleting: false,
+					error: null,
+				},
+			};
+		case AppConstants.APP.AI.DELETE_AI_FAQS_ERROR:
+			return {
+				...state,
+				faqs: {
+					...state.faqs,
+					isDeleting: false,
+					error: action.error,
+				},
+			};
 		default:
 			return state;
 	}
