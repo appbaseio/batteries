@@ -97,8 +97,11 @@ function AIReducer(state = initialAppState, action) {
 				...state,
 				faqs: {
 					...state.faqs,
-					isUpdating: action.payload.id,
+					isUpdating: action.payload.faq_id,
 					error: null,
+					data: state.faqs.data.map((faq) =>
+						faq.faq_id === action.payload.faq_id ? { ...faq, ...action.payload } : faq,
+					),
 				},
 			};
 		case AppConstants.APP.AI.UPDATE_AI_FAQS_SUCCESS:
@@ -108,9 +111,6 @@ function AIReducer(state = initialAppState, action) {
 					...state.faqs,
 					isUpdating: false,
 					error: null,
-					data: state.faqs.data.map((faq) =>
-						faq.faq_id === action.payload.faq_id ? action.payload : faq,
-					),
 				},
 			};
 		case AppConstants.APP.AI.UPDATE_AI_FAQS_ERROR:

@@ -28,6 +28,9 @@ export function putAIFAQ(id, payload) {
 				return dispatch(
 					createAction(AppConstants.APP.AI.CREATE_AI_FAQS_ERROR, null, error),
 				);
+			})
+			.finally(() => {
+				dispatch(getAIFAQs());
 			});
 	};
 }
@@ -45,13 +48,16 @@ export function removeAIFAQ(id) {
 				return dispatch(
 					createAction(AppConstants.APP.AI.DELETE_AI_FAQS_ERROR, null, error),
 				);
+			})
+			.finally(() => {
+				dispatch(getAIFAQs());
 			});
 	};
 }
 
 export function patchAIFAQ(id, payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.AI.UPDATE_AI_FAQS));
+		dispatch(createAction(AppConstants.APP.AI.UPDATE_AI_FAQS, { faq_id: id, ...payload }));
 		return patchAIFAQAPI(id, payload)
 			.then((res) => {
 				return dispatch(
@@ -62,6 +68,9 @@ export function patchAIFAQ(id, payload) {
 				return dispatch(
 					createAction(AppConstants.APP.AI.UPDATE_AI_FAQS_ERROR, null, error),
 				);
+			})
+			.finally(() => {
+				dispatch(getAIFAQs());
 			});
 	};
 }
