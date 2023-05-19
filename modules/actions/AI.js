@@ -1,6 +1,6 @@
 import { createAction } from './utils';
 import AppConstants from '../constants';
-import { deleteAIFAQAPI, getAIFAQsAPI, putAIFAQAPI } from '../../utils/app';
+import { deleteAIFAQAPI, getAIFAQsAPI, patchAIFAQAPI, putAIFAQAPI } from '../../utils/app';
 
 export function getAIFAQs() {
 	return (dispatch) => {
@@ -17,16 +17,16 @@ export function getAIFAQs() {
 
 export function putAIFAQ(id, payload) {
 	return (dispatch) => {
-		dispatch(createAction(AppConstants.APP.AI.UPDATE_AI_FAQS));
+		dispatch(createAction(AppConstants.APP.AI.CREATE_AI_FAQS));
 		return putAIFAQAPI(id, payload)
 			.then((res) => {
 				return dispatch(
-					createAction(AppConstants.APP.AI.UPDATE_AI_FAQS_SUCCESS, res, null),
+					createAction(AppConstants.APP.AI.CREATE_AI_FAQS_SUCCESS, res, null),
 				);
 			})
 			.catch((error) => {
 				return dispatch(
-					createAction(AppConstants.APP.AI.UPDATE_AI_FAQS_ERROR, null, error),
+					createAction(AppConstants.APP.AI.CREATE_AI_FAQS_ERROR, null, error),
 				);
 			});
 	};
@@ -44,6 +44,23 @@ export function removeAIFAQ(id) {
 			.catch((error) => {
 				return dispatch(
 					createAction(AppConstants.APP.AI.DELETE_AI_FAQS_ERROR, null, error),
+				);
+			});
+	};
+}
+
+export function patchAIFAQ(id, payload) {
+	return (dispatch) => {
+		dispatch(createAction(AppConstants.APP.AI.UPDATE_AI_FAQS));
+		return patchAIFAQAPI(id, payload)
+			.then((res) => {
+				return dispatch(
+					createAction(AppConstants.APP.AI.UPDATE_AI_FAQS_SUCCESS, res, null),
+				);
+			})
+			.catch((error) => {
+				return dispatch(
+					createAction(AppConstants.APP.AI.UPDATE_AI_FAQS_ERROR, null, error),
 				);
 			});
 	};

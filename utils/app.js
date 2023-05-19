@@ -676,3 +676,8 @@ export const deleteAIFAQAPI = (faqId) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const patchAIFAQAPI = (faqId, payload) => {
+	const ACC_API = getURL();
+	return doPatch(`${ACC_API}/_ai/faq/${faqId}`, payload);
+};
