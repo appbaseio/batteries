@@ -681,3 +681,13 @@ export const patchAIFAQAPI = (faqId, payload) => {
 	const ACC_API = getURL();
 	return doPatch(`${ACC_API}/_ai/faq/${faqId}`, payload);
 };
+
+export const createAISession = (payload) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doPost(`${ACC_API}/_ai`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
