@@ -691,3 +691,13 @@ export const createAISession = (payload) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getSessionDetailsByID = (sessionId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_ai/${sessionId}/detail`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
