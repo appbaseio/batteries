@@ -701,3 +701,13 @@ export const getSessionDetailsByID = (sessionId) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getAIAnswerByID = (sessionId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_ai/${sessionId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
