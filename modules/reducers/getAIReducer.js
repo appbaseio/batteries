@@ -80,7 +80,7 @@ function AIReducer(state = initialAppState, action) {
 					...state.faqs,
 					isCreating: false,
 					error: null,
-					data: [...state.faqs.data, action.payload],
+					data: [...(state.faqs?.data ?? []), action.payload],
 				},
 			};
 		case AppConstants.APP.AI.CREATE_AI_FAQS_ERROR:
