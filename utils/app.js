@@ -640,3 +640,74 @@ export const updateAIPreferences = (AIPreferencesPayload) => {
 		Authorization: `Basic ${authToken}`,
 	});
 };
+
+export const getAIFAQsAPI = () => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_ai/faqs`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const putAIFAQAPI = (id, payload) => {
+	const ACC_API = getURL();
+	const authToken = getAuthToken();
+	return doPut(
+		`${ACC_API}/_ai/faq/${id}`,
+		payload,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+		undefined,
+		undefined,
+		true,
+	);
+};
+
+export const deleteAIFAQAPI = (faqId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doDelete(`${ACC_API}/_ai/faq/${faqId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const patchAIFAQAPI = (faqId, payload) => {
+	const ACC_API = getURL();
+	return doPatch(`${ACC_API}/_ai/faq/${faqId}`, payload);
+};
+
+export const createAISession = (payload) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doPost(`${ACC_API}/_ai`, payload, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getSessionDetailsByID = (sessionId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_ai/${sessionId}/detail`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};
+
+export const getAIAnswerByID = (sessionId) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(`${ACC_API}/_ai/${sessionId}`, {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${authToken}`,
+	});
+};

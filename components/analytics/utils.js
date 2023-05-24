@@ -43,17 +43,18 @@ export const getQueryParams = (paramConfig, arcVersion, shouldApplyDateFilters =
 		}
 		if (!paramObj.from && !paramObj.start_date) {
 			paramObj.from_timestamp = defaultDateRange.from;
-		} if (paramObj.start_date) {
+		}
+		if (paramObj.start_date) {
 			paramObj.from_timestamp = Math.ceil(new Date(paramObj.start_date).getTime() / 1000);
 		} else {
 			paramObj.from_timestamp = Math.ceil(new Date(paramObj.from).getTime() / 1000);
 		}
 		if (!paramObj.to && !paramObj.end_date) {
 			paramObj.to_timestamp = defaultDateRange.to;
-		} if (paramObj.end_date) {
+		}
+		if (paramObj.end_date) {
 			paramObj.to_timestamp =
 				Math.ceil(new Date(paramObj.end_date).getTime() / 1000) + 24 * 60 * 60 - 1; // end of day
-
 		} else {
 			paramObj.to_timestamp =
 				Math.ceil(new Date(paramObj.to).getTime() / 1000) + 24 * 60 * 60 - 1; // end of day
@@ -1243,6 +1244,60 @@ export const getPipelinesErrorRateInsightsPerVersion = (
 
 	return doGet(
 		`${ACC_API}/_analytics/pipeline/${pipelineId}/version/${versionId}/error-rate${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					...queryParams,
+				}),
+			),
+			undefined,
+			false,
+		)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
+};
+
+export const getAIInsights = (
+	queryParams = {
+		from_timestamp: undefined,
+		to_timestamp: undefined,
+	},
+) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(
+		`${ACC_API}/_ai/analytics${getQueryParams(
+			// remove undefined
+			JSON.parse(
+				JSON.stringify({
+					...queryParams,
+				}),
+			),
+			undefined,
+			false,
+		)}`,
+		{
+			'Content-Type': 'application/json',
+			Authorization: `Basic ${authToken}`,
+		},
+	);
+};
+
+export const getAISessionDocs = (
+	queryParams = {
+		from_timestamp: undefined,
+		to_timestamp: undefined,
+	},
+) => {
+	const authToken = getAuthToken();
+	const ACC_API = getURL();
+
+	return doGet(
+		`${ACC_API}/_ai/analytics/filter${getQueryParams(
 			// remove undefined
 			JSON.parse(
 				JSON.stringify({
