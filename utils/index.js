@@ -453,6 +453,9 @@ export const deleteObjectFromPath = (obj, path) => {
 };
 
 export const BACKENDS = {
+	SYSTEM: {
+		name: 'system',
+	},
 	ELASTICSEARCH: {
 		name: 'elasticsearch',
 		logo: 'https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/blt05047fdbe3b9c333/5c11ec1f3312ce2e785d9c30/logo-elastic-elasticsearch-lt.svg',
@@ -460,6 +463,10 @@ export const BACKENDS = {
 	OPENSEARCH: {
 		name: 'opensearch',
 		logo: 'https://opensearch.org/assets/brand/SVG/Logo/opensearch_logo_default.svg',
+	},
+	SOLR: {
+		name: 'solr',
+		logo: 'https://www.drupal.org/files/project-images/Solr.png',
 	},
 	MONGODB: {
 		name: 'mongodb',
@@ -469,17 +476,9 @@ export const BACKENDS = {
 		name: 'fusion',
 		logo: 'https://www.drupal.org/files/project-images/Solr.png',
 	},
-	SOLR: {
-		name: 'solr',
-		logo: 'https://www.drupal.org/files/project-images/Solr.png',
-	},
 	ZINC: {
 		name: 'zinc',
 		logo: 'https://zincsearch.com/assets/images/common/logo.svg',
-	},
-	SYSTEM: {
-		name: 'system',
-		logo: 'https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/blt05047fdbe3b9c333/5c11ec1f3312ce2e785d9c30/logo-elastic-elasticsearch-lt.svg',
 	},
 	MARKLOGIC: {
 		name: 'marklogic',
