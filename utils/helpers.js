@@ -81,6 +81,7 @@ export const generatePipelinePayload = (
 	scriptRefsMap,
 	scriptValKey = 'scriptValue',
 	versionDescription,
+	executionContext,
 ) => {
 	const formData = new FormData();
 
@@ -89,6 +90,7 @@ export const generatePipelinePayload = (
 		JSON.stringify({
 			content: pipelineJSON || '',
 			extension: 'json',
+			validateContext: executionContext || '',
 		}),
 	);
 	if (scriptRefsMap) {
