@@ -76,21 +76,20 @@ export function versionCompare(v1 = '', v2 = '', options) {
 	return 0;
 }
 
-export const generatePipelinePayload = (
+export const generatePipelinePayload = ({
 	pipelineJSON,
 	scriptRefsMap,
-	scriptValKey = 'scriptValue',
-	versionDescription,
 	executionContext,
-) => {
+	versionDescription,
+	scriptValKey = 'scriptValue',
+}) => {
 	const formData = new FormData();
-
 	formData.append(
 		'pipeline',
 		JSON.stringify({
 			content: pipelineJSON || '',
 			extension: 'json',
-			validateContext: executionContext || '',
+			validateContext: executionContext,
 		}),
 	);
 	if (scriptRefsMap) {
