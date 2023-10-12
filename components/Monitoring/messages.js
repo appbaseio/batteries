@@ -22,6 +22,6 @@ export const messages = {
 		graphIndexMemory: `Indicates the total heap allocated to a node that can be used as indexing buffer`,
 		graphSegmentCount: `Total number of segments on this node. A segment represents an inverted index. A search in a shard will search each segment in turn, then combine their results into the final results for that shard.`,
 	},
-	featureUnavailable: `Monitoring is only available for Appbase.io cloud instances`,
+	featureUnavailable: `Monitoring is only available for ReactiveSearch cloud instances`,
 	monitoringUnavailable: `Monitoring system is unavailable on your instance.`,
 };

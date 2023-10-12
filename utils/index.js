@@ -240,4 +240,5 @@ export const CLUSTER_PLANS = {
 	PRODUCTION_2021_1: '2021-production-1',
 	PRODUCTION_2021_2: '2021-production-2',
 	PRODUCTION_2021_3: '2021-production-3',
+	PRODUCTION_2023_1: '2023-production-1',
 };
