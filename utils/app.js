@@ -641,11 +641,10 @@ export const updateAIPreferences = (AIPreferencesPayload) => {
 	});
 };
 
-export const getAIFAQsAPI = () => {
+export const getAIFAQsAPI = (searchboxId) => {
 	const authToken = getAuthToken();
 	const ACC_API = getURL();
-
-	return doGet(`${ACC_API}/_ai/faqs`, {
+	return doGet(`${ACC_API}/_ai/faqs${searchboxId ? `/searchbox/${searchboxId}` : ''}`, {
 		'Content-Type': 'application/json',
 		Authorization: `Basic ${authToken}`,
 	});
