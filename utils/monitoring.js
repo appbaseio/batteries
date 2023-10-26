@@ -564,7 +564,6 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 
 		return moment.utc(dateValue).local().format('HH:mm');
 	};
-	console.log('load data: ', responses[3]);
 
 	return {
 		cpuUsage: get(responses[0], 'aggregations.time_intervals.buckets').map((item) => ({
