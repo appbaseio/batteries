@@ -514,6 +514,18 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		'1h',
 	)}"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"memory"}}]}}}`;
 
+	const loadData = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"load_1m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.1"]}}},"load_5m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.5"]}}},"load_15m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.15"]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"load"}}]}}}`;
+
+	const loadDataFallback = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"load_1m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.1"]}}},"load_5m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.5"]}}},"load_15m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.15"]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"load"}}]}}}`;
+
 	const { esURL, esUsername, esPassword } = config;
 
 	const esSearchConfig = getMonitoringSearchConfig({
@@ -524,7 +536,7 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 	const esRes = await fetch(esSearchConfig.url, {
 		method: esSearchConfig.method,
 		headers: esSearchConfig.headers,
-		body: `{"preference": "cpuSet"}\n${cpuSet}\n{"preference": "nodeSet"}\n${nodeSet}\n{"preference": "memorySet"}\n${memorySet}\n`,
+		body: `{"preference": "cpuSet"}\n${cpuSet}\n{"preference": "nodeSet"}\n${nodeSet}\n{"preference": "memorySet"}\n${memorySet}\n{"preference": "loadData"}\n${loadData}\n`,
 	});
 
 	let { responses } = await esRes.json();
@@ -535,7 +547,7 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		const esResFallback = await fetch(esSearchConfig.url, {
 			method: esSearchConfig.method,
 			headers: esSearchConfig.headers,
-			body: `{"preference": "cpuSet"}\n${cpuSetFallback}\n{"preference": "nodeSet"}\n${nodeSetFallback}\n{"preference": "memorySet"}\n${memorySetFallback}\n`,
+			body: `{"preference": "cpuSet"}\n${cpuSetFallback}\n{"preference": "nodeSet"}\n${nodeSetFallback}\n{"preference": "memorySet"}\n${memorySetFallback}\n{"preference": "loadData"}\n${loadDataFallback}\n`,
 		});
 		({ responses } = await esResFallback.json());
 	}
@@ -552,6 +564,7 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 
 		return moment.utc(dateValue).local().format('HH:mm');
 	};
+	console.log('load data: ', responses[3]);
 
 	return {
 		cpuUsage: get(responses[0], 'aggregations.time_intervals.buckets').map((item) => ({
@@ -614,6 +627,13 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 				item,
 				'node_stats.hits.hits.0._source.elasticsearch.node.stats.indices.segments.count',
 			),
+		})),
+		loadData: get(responses[3], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			load_1m: get(item, 'load_1m.hits.hits.0._source.system.load.1'),
+			load_5m: get(item, 'load_5m.hits.hits.0._source.system.load.5'),
+			load_15m: get(item, 'load_15m.hits.hits.0._source.system.load.15'),
 		})),
 	};
 };
