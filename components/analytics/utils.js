@@ -919,7 +919,7 @@ export const dateRanges = {
 	},
 	'This week': {
 		from: moment().startOf('week').format('YYYY/MM/DD'),
-		to: moment().format('YYYY/MM/DD'),
+		to: moment().format(),
 	},
 	'Last Week': {
 		from: moment().subtract(1, 'weeks').startOf('week').format('YYYY/MM/DD'),
