@@ -19,7 +19,7 @@ export const getMonitoringSearchConfig = ({ username, password, url }) => ({
 	},
 });
 
-export const formatSizeUnits = byte => {
+export const formatSizeUnits = (byte) => {
 	const bytes = byte;
 	// if (bytes >= 1073741824) {
 	// 	bytes = `${(bytes / 1073741824).toFixed(2)} GB`;
@@ -109,22 +109,14 @@ export const fetchOverviewData = async (config, timeFilter) => {
 			arcStatus = 'red';
 		}
 
-		const currentNodes = get(
-			esData,
-			'responses.2.aggregations.instances.buckets',
-		).map(i => i.key);
+		const currentNodes = get(esData, 'responses.2.aggregations.instances.buckets').map(
+			(i) => i.key,
+		);
 
-		const uptimes = get(
-			esData,
-			'responses.1.aggregations.instances.buckets',
-		)
-			.map(item => {
+		const uptimes = get(esData, 'responses.1.aggregations.instances.buckets')
+			.map((item) => {
 				const hours = Math.ceil(
-					get(
-						item.uptimes,
-						'hits.hits.0._source.system.uptime.duration.ms',
-						0,
-					) /
+					get(item.uptimes, 'hits.hits.0._source.system.uptime.duration.ms', 0) /
 						(1000 * 60 * 60),
 				);
 				let uptimeData = `${hours} hrs`;
@@ -132,22 +124,16 @@ export const fetchOverviewData = async (config, timeFilter) => {
 					uptimeData = `${Math.ceil(hours / 24)} days`;
 				}
 				return {
-					nodeId: get(
-						item.uptimes,
-						'hits.hits.0._source.cloud.instance.id',
-					),
+					nodeId: get(item.uptimes, 'hits.hits.0._source.cloud.instance.id'),
 					node: get(
 						item.uptimes,
 						'hits.hits.0._source.cloud.instance.name',
-						get(
-							item.uptimes,
-							'hits.hits.0._source.cloud.instance.id',
-						),
+						get(item.uptimes, 'hits.hits.0._source.cloud.instance.id'),
 					),
 					uptime: uptimeData,
 				};
 			})
-			.filter(item => currentNodes.includes(item.nodeId));
+			.filter((item) => currentNodes.includes(item.nodeId));
 		dataToReturn = {
 			...dataToReturn,
 			esStatus: get(
@@ -165,9 +151,7 @@ export const fetchOverviewData = async (config, timeFilter) => {
 			try {
 				const kibanaRes = await fetch(`${kibanaURL}/api/status`, {
 					headers: {
-						Authorization: `Basic ${btoa(
-							`${kibanaUsername}:${kibanaPassword}`,
-						)}`,
+						Authorization: `Basic ${btoa(`${kibanaUsername}:${kibanaPassword}`)}`,
 					},
 				});
 
@@ -229,31 +213,20 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 			({ responses } = await esResFallback.json());
 		}
 
-		const instanceBuckets = get(
-			responses[0],
-			'aggregations.instances.buckets',
-		);
+		const instanceBuckets = get(responses[0], 'aggregations.instances.buckets');
 		if (!instanceBuckets.length) {
 			return null;
 		}
 		const cpuUsageString = `${(
 			(get(responses[0], 'aggregations.instances.buckets').reduce(
-				(agg, item) =>
-					agg +
-					get(
-						item.cpu,
-						'hits.hits.0._source.system.cpu.total.norm.pct',
-					),
+				(agg, item) => agg + get(item.cpu, 'hits.hits.0._source.system.cpu.total.norm.pct'),
 				0,
 			) /
 				get(responses[0], 'aggregations.instances.buckets').length) *
 			100
 		).toFixed(2)}%`;
 
-		const jvmHeapTuple = get(
-			responses[1],
-			'aggregations.instances.buckets',
-		).reduce(
+		const jvmHeapTuple = get(responses[1], 'aggregations.instances.buckets').reduce(
 			(agg, item) => [
 				agg[0] +
 					get(
@@ -268,49 +241,28 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 			],
 			[0, 0],
 		);
-		const jvmHeapString = `${(
-			(jvmHeapTuple[0] / jvmHeapTuple[1]) *
-			100
-		).toFixed(1)}% (${formatSizeUnits(jvmHeapTuple[0])} / ${formatSizeUnits(
-			jvmHeapTuple[1],
-		)})`;
+		const jvmHeapString = `${((jvmHeapTuple[0] / jvmHeapTuple[1]) * 100).toFixed(
+			1,
+		)}% (${formatSizeUnits(jvmHeapTuple[0])} / ${formatSizeUnits(jvmHeapTuple[1])})`;
 
-		const memoryTuple = get(
-			responses[2],
-			'aggregations.instances.buckets',
-		).reduce(
+		const memoryTuple = get(responses[2], 'aggregations.instances.buckets').reduce(
 			(agg, item) => {
 				return [
 					agg[0] +
-						get(
-							item.memory,
-							'hits.hits.0._source.system.memory.actual.used.bytes',
-						),
+						get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
 					agg[1] +
-						get(
-							item.memory,
-							'hits.hits.0._source.system.memory.actual.free',
-						) +
-						get(
-							item.memory,
-							'hits.hits.0._source.system.memory.actual.used.bytes',
-						),
+						get(item.memory, 'hits.hits.0._source.system.memory.actual.free') +
+						get(item.memory, 'hits.hits.0._source.system.memory.actual.used.bytes'),
 				];
 			},
 			[0, 0],
 		);
 
-		const memoryString = `${(
-			(memoryTuple[0] / memoryTuple[1]) *
-			100
-		).toFixed(1)}% (${formatSizeUnits(memoryTuple[0])} / ${formatSizeUnits(
-			memoryTuple[1],
-		)})`;
+		const memoryString = `${((memoryTuple[0] / memoryTuple[1]) * 100).toFixed(
+			1,
+		)}% (${formatSizeUnits(memoryTuple[0])} / ${formatSizeUnits(memoryTuple[1])})`;
 
-		const diskTuple = get(
-			responses[3],
-			'aggregations.instances.buckets',
-		).reduce(
+		const diskTuple = get(responses[3], 'aggregations.instances.buckets').reduce(
 			(agg, item) => [
 				agg[0] +
 					get(
@@ -327,11 +279,9 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 			[0, 0],
 		);
 
-		const diskString = `${((diskTuple[0] / diskTuple[1]) * 100).toFixed(
-			1,
-		)}% (${formatSizeUnits(diskTuple[0])} / ${formatSizeUnits(
-			diskTuple[1],
-		)})`;
+		const diskString = `${((diskTuple[0] / diskTuple[1]) * 100).toFixed(1)}% (${formatSizeUnits(
+			diskTuple[0],
+		)} / ${formatSizeUnits(diskTuple[1])})`;
 		return {
 			nodes: get(responses[0], 'aggregations.instances.buckets').length,
 			cpuUsage: cpuUsageString,
@@ -457,23 +407,19 @@ export const fetchNodeStats = async (config, timeFilter) => {
 
 		const nodeBucket = get(responses[0], 'aggregations.instances.buckets');
 
-		const data = nodeBucket.map(bucket => {
-			const cpuDetails = get(
-				responses[1],
-				'aggregations.instances.buckets',
-			).find(i => i.key === bucket.key);
-			const jvmHeapDetails = get(
-				responses[2],
-				'aggregations.instances.buckets',
-			).find(i => i.key === bucket.key);
-			const memoryDetails = get(
-				responses[3],
-				'aggregations.instances.buckets',
-			).find(i => i.key === bucket.key);
-			const diskDetails = get(
-				responses[4],
-				'aggregations.instances.buckets',
-			).find(i => i.key === bucket.key);
+		const data = nodeBucket.map((bucket) => {
+			const cpuDetails = get(responses[1], 'aggregations.instances.buckets').find(
+				(i) => i.key === bucket.key,
+			);
+			const jvmHeapDetails = get(responses[2], 'aggregations.instances.buckets').find(
+				(i) => i.key === bucket.key,
+			);
+			const memoryDetails = get(responses[3], 'aggregations.instances.buckets').find(
+				(i) => i.key === bucket.key,
+			);
+			const diskDetails = get(responses[4], 'aggregations.instances.buckets').find(
+				(i) => i.key === bucket.key,
+			);
 
 			return {
 				key: bucket.key,
@@ -483,10 +429,7 @@ export const fetchNodeStats = async (config, timeFilter) => {
 					get(bucket, 'nodes.hits.hits.0._source.cloud.instance.id'),
 				),
 				cpuUsage: `${(
-					get(
-						cpuDetails,
-						'cpu.hits.hits.0._source.system.cpu.total.norm.pct',
-					) * 100
+					get(cpuDetails, 'cpu.hits.hits.0._source.system.cpu.total.norm.pct') * 100
 				).toFixed(2)}%`,
 				jvmHeap: `${formatSizeUnits(
 					get(
@@ -505,10 +448,7 @@ export const fetchNodeStats = async (config, timeFilter) => {
 						'memory.hits.hits.0._source.system.memory.actual.used.bytes',
 					),
 				)} / ${formatSizeUnits(
-					get(
-						memoryDetails,
-						'memory.hits.hits.0._source.system.memory.actual.free',
-					) +
+					get(memoryDetails, 'memory.hits.hits.0._source.system.memory.actual.free') +
 						get(
 							memoryDetails,
 							'memory.hits.hits.0._source.system.memory.actual.used.bytes',
@@ -574,6 +514,18 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		'1h',
 	)}"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"memory"}}]}}}`;
 
+	const loadData = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"load_1m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.1"]}}},"load_5m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.5"]}}},"load_15m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.15"]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"load"}}]}}}`;
+
+	const loadDataFallback = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"load_1m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.1"]}}},"load_5m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.5"]}}},"load_15m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.15"]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"load"}}]}}}`;
+
 	const { esURL, esUsername, esPassword } = config;
 
 	const esSearchConfig = getMonitoringSearchConfig({
@@ -584,7 +536,7 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 	const esRes = await fetch(esSearchConfig.url, {
 		method: esSearchConfig.method,
 		headers: esSearchConfig.headers,
-		body: `{"preference": "cpuSet"}\n${cpuSet}\n{"preference": "nodeSet"}\n${nodeSet}\n{"preference": "memorySet"}\n${memorySet}\n`,
+		body: `{"preference": "cpuSet"}\n${cpuSet}\n{"preference": "nodeSet"}\n${nodeSet}\n{"preference": "memorySet"}\n${memorySet}\n{"preference": "loadData"}\n${loadData}\n`,
 	});
 
 	let { responses } = await esRes.json();
@@ -595,52 +547,33 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		const esResFallback = await fetch(esSearchConfig.url, {
 			method: esSearchConfig.method,
 			headers: esSearchConfig.headers,
-			body: `{"preference": "cpuSet"}\n${cpuSetFallback}\n{"preference": "nodeSet"}\n${nodeSetFallback}\n{"preference": "memorySet"}\n${memorySetFallback}\n`,
+			body: `{"preference": "cpuSet"}\n${cpuSetFallback}\n{"preference": "nodeSet"}\n${nodeSetFallback}\n{"preference": "memorySet"}\n${memorySetFallback}\n{"preference": "loadData"}\n${loadDataFallback}\n`,
 		});
 		({ responses } = await esResFallback.json());
 	}
 
-	const getDateIntervalValue = dateValue => {
+	const getDateIntervalValue = (dateValue) => {
 		const isDayInterval = timeFilter === 'now-7d';
 		const isSecondInterval = timeFilter === 'now-5m';
 		if (isDayInterval) {
-			return moment
-				.utc(dateValue)
-				.local()
-				.format('DD-MMM');
+			return moment.utc(dateValue).local().format('DD-MMM');
 		}
 		if (isSecondInterval) {
-			moment
-				.utc(dateValue)
-				.local()
-				.format('HH:mm:ss');
+			moment.utc(dateValue).local().format('HH:mm:ss');
 		}
 
-		return moment
-			.utc(dateValue)
-			.local()
-			.format('HH:mm');
+		return moment.utc(dateValue).local().format('HH:mm');
 	};
 
 	return {
-		cpuUsage: get(responses[0], 'aggregations.time_intervals.buckets').map(
-			item => ({
-				key: item.key,
-				date: getDateIntervalValue(item.key_as_string),
-				data: Number(
-					(
-						get(
-							item,
-							'cpu.hits.hits.0._source.system.cpu.total.norm.pct',
-						) * 100
-					).toFixed(2),
-				),
-			}),
-		),
-		diskAvailable: get(
-			responses[1],
-			'aggregations.time_intervals.buckets',
-		).map(item => ({
+		cpuUsage: get(responses[0], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: Number(
+				(get(item, 'cpu.hits.hits.0._source.system.cpu.total.norm.pct') * 100).toFixed(2),
+			),
+		})),
+		diskAvailable: get(responses[1], 'aggregations.time_intervals.buckets').map((item) => ({
 			key: item.key,
 			date: getDateIntervalValue(item.key_as_string),
 			data: Number(
@@ -652,38 +585,29 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 				).toFixed(2),
 			),
 		})),
-		jvmHeap: get(responses[1], 'aggregations.time_intervals.buckets').map(
-			item => ({
-				key: item.key,
-				date: getDateIntervalValue(item.key_as_string),
-				data: Number(
-					(
-						get(
-							item,
-							'node_stats.hits.hits.0._source.elasticsearch.node.stats.jvm.mem.heap.used.bytes',
-						) / 1073741824
-					).toFixed(2),
-				),
-			}),
-		),
-		memory: get(responses[2], 'aggregations.time_intervals.buckets').map(
-			item => ({
-				key: item.key,
-				date: getDateIntervalValue(item.key_as_string),
-				data: Number(
-					(
-						get(
-							item,
-							'memory.hits.hits.0._source.system.memory.actual.used.bytes',
-						) / 1073741824
-					).toFixed(2),
-				),
-			}),
-		),
-		indexMemory: get(
-			responses[1],
-			'aggregations.time_intervals.buckets',
-		).map(item => ({
+		jvmHeap: get(responses[1], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: Number(
+				(
+					get(
+						item,
+						'node_stats.hits.hits.0._source.elasticsearch.node.stats.jvm.mem.heap.used.bytes',
+					) / 1073741824
+				).toFixed(2),
+			),
+		})),
+		memory: get(responses[2], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			data: Number(
+				(
+					get(item, 'memory.hits.hits.0._source.system.memory.actual.used.bytes') /
+					1073741824
+				).toFixed(2),
+			),
+		})),
+		indexMemory: get(responses[1], 'aggregations.time_intervals.buckets').map((item) => ({
 			key: item.key,
 			date: getDateIntervalValue(item.key_as_string),
 			data: Number(
@@ -695,16 +619,20 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 				).toFixed(2),
 			),
 		})),
-		segmentCount: get(
-			responses[1],
-			'aggregations.time_intervals.buckets',
-		).map(item => ({
+		segmentCount: get(responses[1], 'aggregations.time_intervals.buckets').map((item) => ({
 			key: item.key,
 			date: getDateIntervalValue(item.key_as_string),
 			data: get(
 				item,
 				'node_stats.hits.hits.0._source.elasticsearch.node.stats.indices.segments.count',
 			),
+		})),
+		loadData: get(responses[3], 'aggregations.time_intervals.buckets').map((item) => ({
+			key: item.key,
+			date: getDateIntervalValue(item.key_as_string),
+			load_1m: get(item, 'load_1m.hits.hits.0._source.system.load.1'),
+			load_5m: get(item, 'load_5m.hits.hits.0._source.system.load.5'),
+			load_15m: get(item, 'load_15m.hits.hits.0._source.system.load.15'),
 		})),
 	};
 };
