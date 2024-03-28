@@ -16,6 +16,7 @@ export const messages = {
 		tableDocuments: `Total number of documents (primary)`,
 		tableDiskAvailable: `Disk space available / Total disk space`,
 		graphCpuUsage: `Average CPU usage as a time series`,
+		graphCpuLoad: `Average CPU load as a time series - indicates the number of processes that are currently being executed or are waiting for execution, typically should not exceed CPU cores`,
 		graphJvmHeap: `Average JVM heap usage as a time series`,
 		graphMemory: `Average memory usage as a time series`,
 		graphDiskAvailable: `Available disk space as a time series`,

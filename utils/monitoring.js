@@ -69,13 +69,13 @@ export const fetchOverviewData = async (config, timeFilter) => {
 
 		const esStatus = `{"size":0,"aggs":{"status":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cluster_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const uptime = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*", "cloud.instance.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"now-1h","lte":"now"}}}]}}}`;
+		const uptime = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*", "cloud.instance.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"now-1h","lte":"now"}}}]}}}`;
 
-		const uptimeFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*", "cloud.instance.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"now-1h","lte":"now"}}}]}}}`;
+		const uptimeFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"uptimes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.uptime.duration*", "cloud.instance.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"uptime"}}]}},{"range":{"@timestamp":{"gte":"now-1h","lte":"now"}}}]}}}`;
 
-		const liveNodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const liveNodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const liveNodesFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const liveNodesFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
@@ -190,21 +190,21 @@ export const fetchNodeSummaryData = async (config, timeFilter) => {
 	try {
 		const { esURL, esUsername, esPassword } = config;
 
-		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const cpuUsageFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const cpuUsageFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const jvmHeap = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const jvmHeap = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const jvmHeapFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const jvmHeapFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const memoryFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const memoryFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const disk = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.fs.summary*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const disk = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.fs.summary*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const diskFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.fs.summary*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const diskFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.fs.summary*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
@@ -414,25 +414,25 @@ export const fetchNodeStats = async (config, timeFilter) => {
 	try {
 		const { esURL, esUsername, esPassword } = config;
 
-		const nodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp", "cloud.instance*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const nodes = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp", "cloud.instance*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const nodesFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp", "cloud.instance*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const nodesFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"nodes":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp", "cloud.instance*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const cpuUsage = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const cpuUsageFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const cpuUsageFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"cpu":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.cpu.total*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"cpu"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const jvmHeap = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const jvmHeap = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const jvmHeapFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const jvmHeapFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"jvm":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.node.stats.jvm.mem.heap*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory.actual*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const memory = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory.actual*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const memoryFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory.actual*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const memoryFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","system.memory.actual*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"memory"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const disk = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const disk = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id", "size": 100},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
-		const diskFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword"},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
+		const diskFallback = `{"size":0,"aggs":{"instances":{"terms":{"field":"cloud.instance.id.keyword", "size": 100},"aggs":{"disk":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["@timestamp","elasticsearch.*"]}}}}}},"query":{"bool":{"must":[{"bool":{"filter":[{"term":{"metricset.name":"node_stats"}}]}},{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}}]}}}`;
 
 		const esSearchConfig = getMonitoringSearchConfig({
 			url: esURL,
@@ -574,6 +574,18 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		'1h',
 	)}"},"aggs":{"memory":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":[]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"memory"}}]}}}`;
 
+	const loadData = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"load_1m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.1"]}}},"load_5m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.5"]}}},"load_15m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.15"]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id":"${nodeId}"}},{"term":{"metricset.name":"load"}}]}}}`;
+
+	const loadDataFallback = `{"size":0,"aggs":{"time_intervals":{"date_histogram":{"field":"@timestamp","fixed_interval":"${get(
+		TIME_FILTER,
+		`${timeFilter}.interval`,
+		'1h',
+	)}"},"aggs":{"load_1m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.1"]}}},"load_5m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.5"]}}},"load_15m":{"top_hits":{"sort":[{"@timestamp":{"order":"desc"}}],"size":1,"_source":{"includes":["system.load.15"]}}}}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"${timeFilter}","lte":"now"}}},{"term":{"cloud.instance.id.keyword":"${nodeId}"}},{"term":{"metricset.name":"load"}}]}}}`;
+
 	const { esURL, esUsername, esPassword } = config;
 
 	const esSearchConfig = getMonitoringSearchConfig({
@@ -584,7 +596,7 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 	const esRes = await fetch(esSearchConfig.url, {
 		method: esSearchConfig.method,
 		headers: esSearchConfig.headers,
-		body: `{"preference": "cpuSet"}\n${cpuSet}\n{"preference": "nodeSet"}\n${nodeSet}\n{"preference": "memorySet"}\n${memorySet}\n`,
+		body: `{"preference": "cpuSet"}\n${cpuSet}\n{"preference": "nodeSet"}\n${nodeSet}\n{"preference": "memorySet"}\n${memorySet}\n{"preference": "loadData"}\n${loadData}\n`,
 	});
 
 	let { responses } = await esRes.json();
@@ -595,7 +607,7 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 		const esResFallback = await fetch(esSearchConfig.url, {
 			method: esSearchConfig.method,
 			headers: esSearchConfig.headers,
-			body: `{"preference": "cpuSet"}\n${cpuSetFallback}\n{"preference": "nodeSet"}\n${nodeSetFallback}\n{"preference": "memorySet"}\n${memorySetFallback}\n`,
+			body: `{"preference": "cpuSet"}\n${cpuSetFallback}\n{"preference": "nodeSet"}\n${nodeSetFallback}\n{"preference": "memorySet"}\n${memorySetFallback}\n{"preference": "loadData"}\n${loadDataFallback}\n`,
 		});
 		({ responses } = await esResFallback.json());
 	}
@@ -706,5 +718,17 @@ export const fetchGraphData = async (config, timeFilter, nodeId) => {
 				'node_stats.hits.hits.0._source.elasticsearch.node.stats.indices.segments.count',
 			),
 		})),
+		loadData: get(responses[3], 'aggregations.time_intervals.buckets').map(
+			item => ({
+				key: item.key,
+				date: getDateIntervalValue(item.key_as_string),
+				load_1m: get(item, 'load_1m.hits.hits.0._source.system.load.1'),
+				load_5m: get(item, 'load_5m.hits.hits.0._source.system.load.5'),
+				load_15m: get(
+					item,
+					'load_15m.hits.hits.0._source.system.load.15',
+				),
+			}),
+		),
 	};
 };
