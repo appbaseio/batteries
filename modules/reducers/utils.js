@@ -18,22 +18,32 @@ export const computePlan = ({ payload }) => {
 		isStartupMonthly,
 		isBusinessMonthly,
 		isBootstrap: isBootstrapMonthly || isBootstrapAnnual,
-		isGrowth: isGrowthMonthly || isGrowthAnnual || isStartupMonthly || isBusinessMonthly,
+		isGrowth:
+			isGrowthMonthly ||
+			isGrowthAnnual ||
+			isStartupMonthly ||
+			isBusinessMonthly,
+		isTrialEligible: payload.is_trial_eligible || true,
 		isPaid:
-			isBootstrapMonthly
-			|| isBootstrapAnnual
-			|| isGrowthMonthly
-			|| isGrowthAnnual
-			|| isStartupMonthly
-			|| isBusinessMonthly,
+			isBootstrapMonthly ||
+			isBootstrapAnnual ||
+			isGrowthMonthly ||
+			isGrowthAnnual ||
+			isStartupMonthly ||
+			isBusinessMonthly,
 		plan: getPlanFromTier(payload.tier),
 		daysLeft: payload.tier_validity
-			? Math.ceil((payload.tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60))
+			? Math.ceil(
+					(payload.tier_validity - new Date().getTime() / 1000) /
+						(24 * 60 * 60),
+			  )
 			: 0,
 		clusterDaysLeft: payload.cluster_tier_validity
 			? Math.ceil(
-				(payload.cluster_tier_validity - new Date().getTime() / 1000) / (24 * 60 * 60),
-			)
+					(payload.cluster_tier_validity -
+						new Date().getTime() / 1000) /
+						(24 * 60 * 60),
+			  )
 			: 0,
 	};
 };
@@ -62,7 +72,7 @@ export const computeStateByAppName = (action, state) => ({
 export const computeAppPermissionState = (action, state) => {
 	if (action.meta.source === 'user_apps') {
 		const collectResults = {};
-		Object.keys(action.payload || {}).forEach((key) => {
+		Object.keys(action.payload || {}).forEach(key => {
 			collectResults[key] = {
 				credentials: getCredentialsFromPermissions(action.payload[key]),
 				results: action.payload[key],
