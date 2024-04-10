@@ -96,23 +96,23 @@ const usecaseMessage = () => (
 
 const mappingMessage = () => (
 	<div style={{ maxWidth: 220 }}>
-		Editing mappings isn{"'"}t a native feature in Elasticsearch. All
-		appbase.io paid plans offer editable mappings by performing a lossless
-		re-indexing of your data whenever you edit them from this UI.
+		Editing mappings isn't a native feature in Elasticsearch. All
+		reactivesearch.io paid plans offer editable mappings by performing a
+		lossless re-indexing of your data whenever you edit them from this UI.
 	</div>
 );
 
 const synonymMessage = () => (
 	<div style={{ maxWidth: 220 }}>
-		Editing synonyms isn{"'"}t a native feature in Elasticsearch. All
-		appbase.io paid plans offer editable synonym.
+		Editing synonyms isn't a native feature in Elasticsearch. All
+		reactivesearch.io paid plans offer editable synonym.
 	</div>
 );
 
 const shardsMessage = () => (
 	<div style={{ maxWidth: 220 }}>
-		Editing number of shards isn{"'"}t a native feature in Elasticsearch.
-		All appbase.io paid plans offer setting number of Shards.
+		Editing number of shards isn't a native feature in Elasticsearch. All
+		reactivesearch.io paid plans offer setting number of Shards.
 	</div>
 );
 
@@ -1006,7 +1006,7 @@ class Mappings extends Component {
 		this.props.url ? (
 			<div className={promotionContainer}>
 				<p>
-					Get an appbase.io account to edit {type}
+					Get an reactivesearch.io account to edit {type}
 					<Tooltip title={message}>
 						<span>
 							<InfoCircleOutlined />
@@ -1014,7 +1014,7 @@ class Mappings extends Component {
 					</Tooltip>
 				</p>
 				<Button
-					href="https://appbase.io"
+					href="https://reactivesearch.io"
 					className="promotional-button"
 					target="_blank"
 				>

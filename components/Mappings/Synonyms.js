@@ -5,6 +5,7 @@ import { Tooltip, Input, Button, Modal, message } from 'antd';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
+import { css } from 'emotion';
 import Loader from '../shared/Loader';
 import textUsecases from './usecases';
 import { isEqual } from '../../utils';
@@ -36,14 +37,13 @@ import {
 
 import { promotionContainer } from './styles';
 import ErrorModal from './ErrorModal';
-import { css } from 'emotion';
 
 const { TextArea } = Input;
 
 const synonymMessage = () => (
 	<div style={{ maxWidth: 220 }}>
-		Editing synonyms isn{"'"}t a native feature in Elasticsearch. All
-		appbase.io paid plans offer editable synonym.
+		Editing synonyms isn't a native feature in Elasticsearch. All
+		reactivesearch.io paid plans offer editable synonym.
 	</div>
 );
 
@@ -178,7 +178,7 @@ class Synonyms extends Component {
 			// get mappings for non-appbase apps
 			getAppMappings(appName, credentials, url);
 		} else {
-			// this executes only for appbase.io hosted apps
+			// this executes only for reactivesearch.io hosted apps
 			const { getPermission } = this.props;
 
 			if (appbaseCredentials) {
@@ -433,7 +433,7 @@ class Synonyms extends Component {
 		this.props.url ? (
 			<div className={promotionContainer}>
 				<p>
-					Get an appbase.io account to edit {type}
+					Get an reactivesearch.io account to edit {type}
 					<Tooltip title={message}>
 						<span>
 							<InfoCircleOutlined />
@@ -441,7 +441,7 @@ class Synonyms extends Component {
 					</Tooltip>
 				</p>
 				<Button
-					href="https://appbase.io"
+					href="https://reactivesearch.io"
 					className="promotional-button"
 					target="_blank"
 				>

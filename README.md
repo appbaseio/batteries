@@ -122,8 +122,8 @@ import Editor from 'batteries/components/SearchSandbox/containers/Editor';
 	isDashboard
 	useCategorySearch={false}
 	attribution={{
-		text: 'Powered by Appbase',
-		link: 'appbase.io'
+		text: 'Powered by ReactiveSearch',
+		link: 'reactivesearch.io'
 	}}
 	showCodeSandbox
 	customProps={{
