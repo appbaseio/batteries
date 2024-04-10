@@ -43,7 +43,7 @@ const Overview = ({ config, timeFilter }) => {
 		};
 	}, [timeFilter]);
 	return (
-        <CustomCard title="Overview">
+		<CustomCard title="Overview">
 			{overviewData.loading ? (
 				<Skeleton active />
 			) : (
@@ -78,7 +78,7 @@ const Overview = ({ config, timeFilter }) => {
 						)}
 					</Flex>
 					<Flex justifyContent="space-between">
-						<div style={{ flex: 1 }}>Appbase.io</div>
+						<div style={{ flex: 1 }}>ReactiveSearch.io</div>
 						<Badge
 							color={get(overviewData, 'data.arcStatus')}
 							text={
@@ -151,7 +151,7 @@ const Overview = ({ config, timeFilter }) => {
 				</>
 			)}
 		</CustomCard>
-    );
+	);
 };
 
 Overview.propTypes = {
