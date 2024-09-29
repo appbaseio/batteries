@@ -542,7 +542,7 @@ RSComponentRender.propTypes = {
 	customProps: PropTypes.object.isRequired, // Added customProps validation
 	version: PropTypes.string.isRequired, // Added version validation
 	isShopify: PropTypes.bool, // Added isShopify validation
-	mappingsURL: PropTypes.string.isRequired, // Added mappingsURL validation
+	mappingsURL: PropTypes.string, // Added mappingsURL validation
 	full: PropTypes.bool, // Added full validation
 	showDelete: PropTypes.bool, // Added showDelete validation
 	onDelete: PropTypes.func, // Added onDelete validation

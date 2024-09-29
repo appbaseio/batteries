@@ -381,13 +381,30 @@ export function updateMappingES7(mapping, field, type, usecase) {
  * @param {*} mappings
  * @returns Boolean
  */
+export const getVersion = async (appName, credentials, url) => {
+	try {
+		// Try to get the version from the root endpoint
+		const res = await fetch(url, {
+			headers: {
+				Authorization: `Basic ${btoa(credentials)}`,
+			},
+		}).then(response => response.json());
 
-const getVersion = async (appName, credentials, url) => {
-	const settings = await getSettings(appName, credentials, url);
-	const fullVersion = settings[appName].settings.index.version.upgraded
-			|| settings[appName].settings.index.version.created; // prettier-ignore
-	const version = fullVersion.charAt(0);
-	return +version;
+		if (res.version && res.version.number) {
+			const versionNumber = res.version.number;
+			const majorVersion = parseInt(versionNumber.split('.')[0], 10);
+			return majorVersion;
+		}
+		throw new Error('Version not found in root endpoint response');
+	} catch (error) {
+		// Fallback: use settings endpoint
+		const settings = await getSettings(appName, credentials, url);
+		const fullVersion =
+			settings[appName].settings.index.version.upgraded ||
+			settings[appName].settings.index.version.created;
+		const version = parseInt(fullVersion.split('.')[0], 10);
+		return version;
+	}
 };
 
 /**
@@ -424,7 +441,7 @@ export async function traverseMapping(
 		};
 		setFields(m);
 	};
-	if (version >= 7) {
+	if (version !== 5 || version !== 6) {
 		checkIfPropertyPresent(mappings, 'properties');
 	} else {
 		Object.keys(mappings).forEach(k =>
@@ -470,7 +487,7 @@ function getFieldsTree(mappings = {}, prefix = null) {
  */
 export function getMappingsTree(mappings = {}, version) {
 	let tree = {};
-	if (version >= 7) {
+	if (version !== 5 || version !== 6) {
 		// For Elasticsearch version 7
 		if (mappings.properties) {
 			tree = {

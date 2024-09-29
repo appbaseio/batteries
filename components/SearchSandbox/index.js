@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 
 import Header from './components/Header';
 import Walkthrough from '../shared/Walkthrough';
-import { getMappingsTree, getSettings } from '../../utils/mappings';
+import { getMappingsTree, getVersion } from '../../utils/mappings';
 import { getPreferences, setPreferences } from '../../utils/sandbox';
 import { SCALR_API } from '../../utils';
 import getSearchTemplate, { getTemplateStyles } from './template';
@@ -86,10 +86,7 @@ class SearchSandbox extends Component {
 			mappings, isFetchingMapping, url, credentials,
 		} = this.props; // prettier-ignore
 
-		const settings = await getSettings(appName, credentials, url);
-		const fullVersion = settings[appName].settings.index.version.upgraded
-			|| settings[appName].settings.index.version.created; // prettier-ignore
-		const version = fullVersion.charAt(0);
+		const version = await getVersion(appName, credentials, url);
 		this.setState({
 			version,
 		});
@@ -105,21 +102,23 @@ class SearchSandbox extends Component {
 		const { mappings } = this.props;
 		const { version, mappings: stateMappings } = this.state;
 
-		// Check if mappings or version have changed and state.mappings is not set
+		// Check if mappings or version have changed and state.mappings is not set or is empty
 		if (
 			(prevProps.mappings !== mappings ||
 				prevState.version !== version) &&
 			mappings &&
 			version &&
-			!stateMappings
+			(!stateMappings || Object.keys(stateMappings).length === 0)
 		) {
 			const mappingsType =
 				Object.keys(mappings).length > 0
 					? Object.keys(mappings)[0]
 					: '';
+			const processedMappings = getMappingsTree(mappings, version);
+
 			// eslint-disable-next-line react/no-did-update-set-state
 			this.setState({
-				mappings: getMappingsTree(mappings, version),
+				mappings: processedMappings,
 				mappingsType,
 			});
 		}
