@@ -1,15 +1,15 @@
 import React from 'react';
 import { injectGlobal } from 'emotion';
-import Joyride, { ACTIONS, EVENTS } from 'react-joyride';
+import Joyride from 'react-joyride';
 import { message, Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import { CheckCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
 
 /* eslint-disable-next-line */
 injectGlobal`
-	.__floater__body > div > div {
-		text-align: left !important;
-	}
+  .__floater__body > div > div {
+    text-align: left !important;
+  }
 `;
 
 class Walkthrough extends React.Component {
@@ -33,9 +33,11 @@ class Walkthrough extends React.Component {
 		}
 	}
 
-	handleJoyrideSteps = ({ action, index, type }) => {
+	handleJoyrideSteps = data => {
+		const { action, index, status, type } = data;
 		const { showTutorial } = this.state;
-		if (type === EVENTS.TOUR_END && showTutorial) {
+
+		if (['finished', 'skipped'].includes(status) && showTutorial) {
 			this.setState({
 				showTutorial: false,
 				tutorialCompleted: true,
@@ -43,12 +45,9 @@ class Walkthrough extends React.Component {
 			});
 			this.setTutorialStatus();
 			message.success('Congrats! You have completed the Walkthrough.');
-		} else if (
-			type === EVENTS.STEP_AFTER ||
-			type === EVENTS.TARGET_NOT_FOUND
-		) {
+		} else if (type === 'step:after' || type === 'target:notFound') {
 			this.setState({
-				stepIndex: index + (action === ACTIONS.PREV ? -1 : 1),
+				stepIndex: index + (action === 'prev' ? -1 : 1),
 			});
 		}
 	};
@@ -93,8 +92,8 @@ class Walkthrough extends React.Component {
 
 	render() {
 		const { showTutorial, tutorialCompleted, stepIndex } = this.state;
-
 		const { showWalkthrough, joyrideSteps, hideButtons } = this.props;
+
 		return showWalkthrough ? (
 			<React.Fragment>
 				{!hideButtons && (

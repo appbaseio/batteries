@@ -45,22 +45,6 @@ class SearchSandbox extends Component {
 		};
 	}
 
-	static getDerivedStateFromProps(props, state) {
-		const { mappings } = props;
-		if (!state.mappings && mappings && state.version) {
-			const mappingsType =
-				Object.keys(mappings).length > 0
-					? Object.keys(mappings)[0]
-					: '';
-			return {
-				mappings: getMappingsTree(mappings, state.version),
-				mappingsType,
-			};
-		}
-
-		return null;
-	}
-
 	async componentDidMount() {
 		const { appName, isDashboard, searchState } = this.props;
 		const { profileList: profileListState, profile } = this.state;
@@ -116,18 +100,34 @@ class SearchSandbox extends Component {
 			version,
 		});
 
-		if (mappings) {
+		// Fetch mappings if not already fetched
+		if (!mappings && !isFetchingMapping) {
+			const { getAppMappings } = this.props;
+			getAppMappings(appName, credentials, url);
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		const { mappings } = this.props;
+		const { version, mappings: stateMappings } = this.state;
+
+		// Check if mappings or version have changed and state.mappings is not set
+		if (
+			(prevProps.mappings !== mappings ||
+				prevState.version !== version) &&
+			mappings &&
+			version &&
+			!stateMappings
+		) {
 			const mappingsType =
 				Object.keys(mappings).length > 0
 					? Object.keys(mappings)[0]
 					: '';
+			// eslint-disable-next-line react/no-did-update-set-state
 			this.setState({
 				mappings: getMappingsTree(mappings, version),
 				mappingsType,
 			});
-		} else if (!isFetchingMapping) {
-			const { getAppMappings } = this.props;
-			getAppMappings(appName, credentials, url);
 		}
 	}
 
@@ -489,6 +489,7 @@ SearchSandbox.propTypes = {
 	useCategorySearch: PropTypes.bool,
 	getAppMappings: PropTypes.func.isRequired,
 	clearProfile: PropTypes.func.isRequired,
+	mappings: PropTypes.object,
 	isFetchingMapping: PropTypes.bool.isRequired,
 	searchState: PropTypes.object,
 	customJoyrideSteps: PropTypes.array,
@@ -499,6 +500,7 @@ SearchSandbox.propTypes = {
 	showCustomList: PropTypes.bool,
 	showTutorial: PropTypes.bool,
 	isShopify: PropTypes.bool,
+	children: PropTypes.node,
 };
 
 SearchSandbox.defaultProps = {
