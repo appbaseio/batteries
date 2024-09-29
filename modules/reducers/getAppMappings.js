@@ -22,10 +22,12 @@ function getAppMappings(state = initialState, action) {
 				...state,
 				isFetching: false,
 				rawMappings: Object.assign({}, state.rawMappings, {
-					[action.meta.appName]: action.payload.raw,
+					[action.meta.appName]:
+						(action.payload && action.payload.raw) || [],
 				}),
 				traversedMappings: Object.assign({}, state.traversedMappings, {
-					[action.meta.appName]: action.payload.traversed,
+					[action.meta.appName]:
+						(action.payload && action.payload.traversed) || [],
 				}),
 				success: true,
 			};
