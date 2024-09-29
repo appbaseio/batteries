@@ -168,21 +168,9 @@ export default class Header extends Component {
 				style={{
 					display: 'flex',
 					padding: '10px 20px 0',
-					justifyContent: 'space-between',
+					justifyContent: 'right',
 				}}
 			>
-				<div style={{ marginTop: 8, marginRight: 8 }}>
-					<Tooltip
-						placement="right"
-						title="Switch for whether to record analytics based on the search and click requests made from the Search Preview view. It's enabled by default."
-					>
-						<Switch
-							checked={analytics}
-							onChange={toggleAnalytics}
-						/>{' '}
-						Record Analytics
-					</Tooltip>
-				</div>
 				<div
 					style={{
 						display: 'flex',

@@ -14,14 +14,19 @@ export const getAvailableDataField = ({ id, component, mappings }) => {
 	const { types } = propsMap[component].dataField;
 
 	if (id === 'search') {
-		return Object.keys(mappings).filter(field => types.includes(mappings[field].type));
+		return Object.keys(mappings).filter(field =>
+			types.includes(mappings[field].type),
+		);
 	}
 
-	const fields = Object.keys(mappings).filter((field) => {
+	const fields = Object.keys(mappings).filter(field => {
 		let fieldsToCheck = [mappings[field]];
 
 		if (mappings[field].originalFields) {
-			fieldsToCheck = [...fieldsToCheck, ...Object.values(mappings[field].originalFields)];
+			fieldsToCheck = [
+				...fieldsToCheck,
+				...Object.values(mappings[field].originalFields),
+			];
 		}
 
 		return fieldsToCheck.some(item => types.includes(item.type));
@@ -34,18 +39,25 @@ export const getAvailableDataField = ({ id, component, mappings }) => {
 	return fields;
 };
 
-const getSubFields = (mappings, field, types) => (mappings[field] && mappings[field].fields && mappings[field].fields.length
+const getSubFields = (mappings, field, types) =>
+	mappings[field] && mappings[field].fields && mappings[field].fields.length
 		? [
 				...mappings[field].fields
-					.filter(item => types.includes(mappings[field].originalFields[item].type))
+					.filter(item =>
+						types.includes(
+							mappings[field].originalFields[item].type,
+						),
+					)
 					.map(item => `${field}.${item}`),
 		  ]
-		: [field]);
+		: [field];
 
-const getKeywordField = fields => Object.keys(fields).find((item) => {
+const getKeywordField = fields =>
+	Object.keys(fields).find(item => {
 		if (
-			fields[item].type === 'keyword'
-			|| (fields[item].index === 'not_analyzed' && fields[item].type === 'string')
+			fields[item].type === 'keyword' ||
+			(fields[item].index === 'not_analyzed' &&
+				fields[item].type === 'string')
 		) {
 			return true;
 		}
@@ -58,8 +70,13 @@ const generateDataField = (component, selectedFields, mappings) => {
 	// no need to get subfields if it is a result component
 	if (component === 'ReactiveList') {
 		let dataField = '';
-		if (mappings[selectedFields] && mappings[selectedFields].fields.length > 0) {
-			const subField = getKeywordField(mappings[selectedFields].originalFields);
+		if (
+			mappings[selectedFields] &&
+			mappings[selectedFields].fields.length > 0
+		) {
+			const subField = getKeywordField(
+				mappings[selectedFields].originalFields,
+			);
 			dataField = `${selectedFields}${subField ? `.${subField}` : ''}`;
 			return dataField;
 		}
@@ -70,8 +87,12 @@ const generateDataField = (component, selectedFields, mappings) => {
 	const { types, multiple } = propsMap[component].dataField;
 	if (multiple) {
 		let resultFields = [];
-		selectedFields.forEach((item) => {
-			resultFields = [...resultFields, item, ...getSubFields(mappings, item, types)];
+		selectedFields.forEach(item => {
+			resultFields = [
+				...resultFields,
+				item,
+				...getSubFields(mappings, item, types),
+			];
 		});
 		return resultFields;
 	}
@@ -83,7 +104,8 @@ const generateDataField = (component, selectedFields, mappings) => {
 
 // defaultWeight is ignored - we return the same weight (1) for every subfield
 // eslint-disable-next-line
-const getSubFieldWeights = (mappings, field, defaultWeight) => mappings[field] && mappings[field].fields && mappings[field].fields.length
+const getSubFieldWeights = (mappings, field, defaultWeight) =>
+	mappings[field] && mappings[field].fields && mappings[field].fields.length
 		? [...mappings[field].fields.map(() => 1)]
 		: [];
 

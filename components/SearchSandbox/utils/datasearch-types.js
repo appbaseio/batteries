@@ -1,7 +1,8 @@
 export default {
 	dataField: {
 		label: 'Data Field',
-		description: 'Select the fields (and their weights) to perform search on.',
+		description:
+			'Select the fields (and their weights) to perform search on.',
 		types: ['text', 'keyword', 'string'],
 		input: 'dropdown',
 		multiple: true,
@@ -30,7 +31,8 @@ export default {
 	},
 	size: {
 		label: 'Size',
-		description: 'Total number of suggestions to fetch (applicable if autosuggest is enabled).',
+		description:
+			'Total number of suggestions to fetch (applicable if autosuggest is enabled).',
 		input: 'number',
 		default: 10,
 	},
@@ -48,7 +50,10 @@ export default {
 		description:
 			'When multiple search terms are present, should All be matched or should Any term be matched.',
 		input: 'dropdown',
-		options: [{ label: 'Or', key: 'or' }, { label: 'And', key: 'and' }],
+		options: [
+			{ label: 'Or', key: 'or' },
+			{ label: 'And', key: 'and' },
+		],
 		default: 'Or',
 	},
 };

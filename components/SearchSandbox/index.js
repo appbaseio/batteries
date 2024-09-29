@@ -41,7 +41,7 @@ class SearchSandbox extends Component {
 			).length,
 			loading: true,
 			version: null,
-			analytics: true,
+			analytics: false,
 		};
 	}
 
@@ -63,10 +63,7 @@ class SearchSandbox extends Component {
 						this.setState({
 							profileList,
 							loading: false,
-							analytics:
-								this.pref.analytics === undefined
-									? true
-									: this.pref.analytics,
+							analytics: false,
 						});
 					} else {
 						this.setState({
@@ -76,10 +73,7 @@ class SearchSandbox extends Component {
 							filterCount: Object.keys(componentProps).filter(
 								item => item !== 'search' && item !== 'result',
 							).length,
-							analytics:
-								this.pref.analytics === undefined
-									? true
-									: this.pref.analytics,
+							analytics: false,
 						});
 					}
 				})
@@ -153,8 +147,7 @@ class SearchSandbox extends Component {
 			filterCount: Object.keys(componentProps).filter(
 				item => item !== 'search' && item !== 'result',
 			).length,
-			analytics:
-				this.pref.analytics === undefined ? true : this.pref.analytics,
+			analytics: false,
 		});
 	};
 
@@ -353,7 +346,8 @@ class SearchSandbox extends Component {
 							react: '16.8.6',
 							'react-dom': '16.8.6',
 							antd: '^3.6.6',
-							'@appbaseio/reactivesearch': '3.2.2',
+							dompurify: '^3.1.7',
+							'@appbaseio/reactivesearch': '^3.45.0',
 							'react-expand-collapse': 'latest',
 						},
 					},

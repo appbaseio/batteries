@@ -4,10 +4,11 @@ import reactElementToJSXString from 'react-element-to-jsx-string';
 import { generateDataField, generateFieldWeights } from './utils/dataField';
 import { renderHeader, renderAsTree, renderWithOnData } from './render';
 
-const getHeader = (config) => {
-	const isMetaDataPresent =		config.componentProps.result.metaFields
-		&& config.componentProps.result.metaFields.title
-		&& config.componentProps.result.metaFields.description;
+const getHeader = config => {
+	const isMetaDataPresent =
+		config.componentProps.result.metaFields &&
+		config.componentProps.result.metaFields.title &&
+		config.componentProps.result.metaFields.description;
 	const showTree = !isMetaDataPresent;
 	return `${renderHeader()}
 ${showTree ? renderAsTree() : renderWithOnData(config)}`;
@@ -63,7 +64,9 @@ export function getComponentCode(config, version) {
 					Query used by DataSearch component doesn’t work for a field
 					with the keyword mapping from ES 7.
 				*/
-				const keywordIndex = fields.findIndex(field => field.includes('.keyword'));
+				const keywordIndex = fields.findIndex(field =>
+					field.includes('.keyword'),
+				);
 				weights.splice(keywordIndex, 1);
 				fields = fields.filter(field => !field.includes('.keyword'));
 			}
@@ -120,10 +123,13 @@ export function getComponentCode(config, version) {
 		default:
 			return 'Nothing to Display';
 	}
-	let code = reactElementToJSXString(<div style={componentStyle} {...allProps} />, {
-		showFunctions: false,
-		useBooleanShorthandSyntax: false,
-	});
+	let code = reactElementToJSXString(
+		<div style={componentStyle} {...allProps} />,
+		{
+			showFunctions: false,
+			useBooleanShorthandSyntax: false,
+		},
+	);
 
 	code = code.replace('renderItem="{renderItem}"', 'renderItem={renderItem}');
 	code = code.replace('div', config.component);
@@ -144,7 +150,7 @@ function getApp(config, version) {
 	let searchComponentProps = config.componentProps.search || {};
 	let resultComponentProps = config.componentProps.result || {};
 
-	Object.keys(config.componentProps).forEach((item) => {
+	Object.keys(config.componentProps).forEach(item => {
 		switch (item) {
 			case 'search': {
 				searchComponentProps = {
@@ -194,7 +200,10 @@ function getApp(config, version) {
 					componentProps: listComponentProps,
 				};
 				if (listCode) {
-					listCode = `${listCode}\n${getComponentCode(componentConfig, version)}`;
+					listCode = `${listCode}\n${getComponentCode(
+						componentConfig,
+						version,
+					)}`;
 				} else {
 					listCode = getComponentCode(componentConfig, version);
 				}

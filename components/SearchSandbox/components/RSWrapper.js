@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
 	CodeOutlined,
 	DeleteOutlined,
@@ -320,8 +321,8 @@ class RSComponentRender extends Component {
 							undefined
 						}
 						placeholder={placeholder}
-						onChange={value =>
-							this.setComponentProps({ [name]: value })
+						onChange={newValue =>
+							this.setComponentProps({ [name]: newValue })
 						}
 					/>
 				);
@@ -532,6 +533,24 @@ class RSComponentRender extends Component {
 		);
 	}
 }
+RSComponentRender.propTypes = {
+	componentProps: PropTypes.object.isRequired,
+	component: PropTypes.string.isRequired,
+	id: PropTypes.string.isRequired,
+	mappings: PropTypes.object.isRequired,
+	onPropChange: PropTypes.func.isRequired,
+	customProps: PropTypes.object.isRequired, // Added customProps validation
+	version: PropTypes.string.isRequired, // Added version validation
+	isShopify: PropTypes.bool, // Added isShopify validation
+	mappingsURL: PropTypes.string.isRequired, // Added mappingsURL validation
+	full: PropTypes.bool, // Added full validation
+	showDelete: PropTypes.bool, // Added showDelete validation
+	onDelete: PropTypes.func, // Added onDelete validation
+	showCustomList: PropTypes.bool, // Added showCustomList validation
+	showCodePreview: PropTypes.bool, // Added showCodePreview validation
+	setRenderKey: PropTypes.func.isRequired, // Added setRenderKey validation
+	// Add other prop types as needed
+};
 
 RSWrapper.defaultProps = {
 	showDelete: true,

@@ -4,8 +4,8 @@ const joyrideSteps = [
 	{
 		content: (
 			<span>
-				This is the DataSearch component which lets us search across one
-				or more fields easily.
+				This is the DataSearch component. Configure it to search your
+				index data.
 			</span>
 		),
 		target: '.search-tutorial-1',
@@ -14,10 +14,10 @@ const joyrideSteps = [
 	{
 		content: (
 			<span>
-				Here you can set the props of DataSearch component like
-				dataField, title, etc.
+				Here you can set the props for the DataSearch component like
+				dataField, title, field weights.&nbsp;
 				<a
-					href="https://opensource.appbase.io/reactive-manual/search-components/datasearch.html"
+					href="https://docs.reactivesearch.io/docs/reactivesearch/react/v3/search/datasearch/"
 					target="_blank"
 					rel="noopener noreferrer"
 				>
@@ -31,8 +31,8 @@ const joyrideSteps = [
 	{
 		content: (
 			<span>
-				Here you can add the filter ( MultiList Component ) which is
-				used to filter the list ( ReactiveList Component ).
+				Here you can add facets to filter the data. Under the hood, each
+				facet uses a MultiList component.
 			</span>
 		),
 		target: '.search-tutorial-3',
@@ -41,7 +41,7 @@ const joyrideSteps = [
 	{
 		content: (
 			<span>
-				This is the ReactiveList component displaying all the data.
+				The results are displayed using the ReactiveList component.
 			</span>
 		),
 		target: '.search-tutorial-4',
@@ -50,10 +50,10 @@ const joyrideSteps = [
 	{
 		content: (
 			<span>
-				Here you can set the props of ReactiveList component like
-				sortField, size, etc.
+				Here you can set some props for the ReactiveList component for
+				pagination, size and sorting.&nbsp;
 				<a
-					href="https://opensource.appbase.io/reactive-manual/result-components/reactivelist.html"
+					href="https://docs.reactivesearch.io/docs/reactivesearch/react/result/reactivelist/"
 					target="_blank"
 					rel="noopener noreferrer"
 				>

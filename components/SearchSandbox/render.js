@@ -102,7 +102,9 @@ function getNestedValue(obj, path) {
 }
 
 function renderItem(res, triggerClickAnalytics) {
-	let { image, url, description, title } = ${JSON.stringify(config.componentProps.result.metaFields)};
+	let { image, url, description, title } = ${JSON.stringify(
+		config.componentProps.result.metaFields,
+	)};
 	image = getNestedValue(res,image);
 	title = getNestedValue(res,title);
 	url = getNestedValue(res,url);
