@@ -100,8 +100,8 @@ class Walkthrough extends React.Component {
 					<div
 						style={{
 							position: 'fixed',
-							bottom: '15px',
-							right: '65px',
+							bottom: '30px',
+							right: '30px',
 							display: 'inline',
 							zIndex: 2,
 						}}
