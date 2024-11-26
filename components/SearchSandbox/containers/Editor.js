@@ -9,7 +9,12 @@ import multiListTypes from '../utils/multilist-types';
 import RSWrapper from '../components/RSWrapper';
 import DataFieldInput from '../components/DataFieldInput';
 import { getAvailableDataField } from '../utils/dataField';
-import { NumberInput, TextInput, DropdownInput, ToggleInput } from '../../shared/Input';
+import {
+	NumberInput,
+	TextInput,
+	DropdownInput,
+	ToggleInput,
+} from '../../shared/Input';
 import { formWrapper, tagContainer, cardStyle } from '../styles';
 
 const searchRef = React.createRef();
@@ -57,7 +62,11 @@ export default class Editor extends Component {
 	handleOk = () => {
 		// only set to store if dataField is valid
 		const { mappings } = this.props;
-		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
+		const fields = getAvailableDataField({
+			id: 'MultiList',
+			component: 'MultiList',
+			mappings,
+		});
 		if (fields.length) {
 			const { filterCount, setFilterCount, onPropChange } = this.props;
 			const { listComponentProps } = this.state;
@@ -92,7 +101,7 @@ export default class Editor extends Component {
 		}));
 	};
 
-	setComponentProps = (newProps) => {
+	setComponentProps = newProps => {
 		const { listComponentProps } = this.state;
 		this.setState({
 			listComponentProps: {
@@ -102,7 +111,7 @@ export default class Editor extends Component {
 		});
 	};
 
-	setRenderKey = (newKey) => {
+	setRenderKey = newKey => {
 		this.setState({
 			renderKey: newKey,
 		});
@@ -113,12 +122,18 @@ export default class Editor extends Component {
 		// always set to default value
 		const { listComponentProps } = this.state;
 		const value =
-			listComponentProps[name] !== undefined ? listComponentProps[name] : item.default;
+			listComponentProps[name] !== undefined
+				? listComponentProps[name]
+				: item.default;
 
 		switch (item.input) {
 			case 'bool': {
 				FormInput = (
-					<ToggleInput name={name} value={value} handleChange={this.setComponentProps} />
+					<ToggleInput
+						name={name}
+						value={value}
+						handleChange={this.setComponentProps}
+					/>
 				);
 				break;
 			}
@@ -146,7 +161,11 @@ export default class Editor extends Component {
 			}
 			default: {
 				FormInput = (
-					<TextInput name={name} value={value} handleChange={this.setComponentProps} />
+					<TextInput
+						name={name}
+						value={value}
+						handleChange={this.setComponentProps}
+					/>
 				);
 				break;
 			}
@@ -164,9 +183,13 @@ export default class Editor extends Component {
 
 	renderPropsForm = () => {
 		const { mappingsURL, mappings } = this.props;
-		const fields = getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings });
+		const fields = getAvailableDataField({
+			id: 'MultiList',
+			component: 'MultiList',
+			mappings,
+		});
 		const fieldsOptions = [];
-		fields.map((field) =>
+		fields.map(field =>
 			fieldsOptions.push({
 				key: field,
 				label: field,
@@ -175,9 +198,10 @@ export default class Editor extends Component {
 		if (!fields.length) {
 			return (
 				<p>
-					There are no compatible fields present in your data mappings.{' '}
-					<a href={mappingsURL}>You can edit your mappings</a> to add filters
-					(agggregation components).
+					There are no compatible fields present in your data
+					mappings.{' '}
+					<a href={mappingsURL}>You can edit your mappings</a> to add
+					filters (agggregation components).
 				</p>
 			);
 		}
@@ -191,12 +215,18 @@ export default class Editor extends Component {
 					setComponentProps={this.setComponentProps}
 					componentProps={listComponentProps}
 					getAvailableDataField={() =>
-						getAvailableDataField({ id: 'MultiList', component: 'MultiList', mappings })
+						getAvailableDataField({
+							id: 'MultiList',
+							component: 'MultiList',
+							mappings,
+						})
 					}
 				/>
 				{Object.keys(multiListTypes)
-					.filter((item) => item !== 'dataField')
-					.map((item) => this.renderFormItem(multiListTypes[item], item))}
+					.filter(item => item !== 'dataField')
+					.map(item =>
+						this.renderFormItem(multiListTypes[item], item),
+					)}
 			</Form>
 		);
 	};
@@ -217,7 +247,11 @@ export default class Editor extends Component {
 			<span>
 				Search Preview{' '}
 				{window.innerWidth > 1280 ? (
-					<Button style={{ float: 'right' }} onClick={this.handleVideoModal} size="small">
+					<Button
+						style={{ float: 'right' }}
+						onClick={this.handleVideoModal}
+						size="small"
+					>
 						Watch Video
 					</Button>
 				) : null}
@@ -228,7 +262,7 @@ export default class Editor extends Component {
 				app={appName}
 				credentials={credentials}
 				url={url}
-				analytics={analytics}
+				reactivesearchAPIConfig={{ recordAnalytics: analytics }}
 				searchStateHeader
 			>
 				<Row gutter={16} style={{ padding: 20 }}>
@@ -245,13 +279,21 @@ export default class Editor extends Component {
 							</Button>
 						</Card>
 						{Object.keys(componentProps)
-							.filter((item) => item !== 'search' && item !== 'result')
-							.map((config) => (
-								<Card className={cardStyle} key={config} style={{ marginTop: 20 }}>
+							.filter(
+								item => item !== 'search' && item !== 'result',
+							)
+							.map(config => (
+								<Card
+									className={cardStyle}
+									key={config}
+									style={{ marginTop: 20 }}
+								>
 									<RSWrapper
 										id={config}
 										component="MultiList"
-										componentProps={componentProps[config] || {}}
+										componentProps={
+											componentProps[config] || {}
+										}
 										onDelete={deleteComponent}
 										full
 									/>
@@ -262,7 +304,11 @@ export default class Editor extends Component {
 						<Card className={cardStyle}>
 							<RSWrapper
 								id="search"
-								component={useCategorySearch ? 'CategorySearch' : 'DataSearch'}
+								component={
+									useCategorySearch
+										? 'CategorySearch'
+										: 'DataSearch'
+								}
 								searchRef={searchRef}
 								componentProps={componentProps.search || {}}
 							/>
@@ -270,21 +316,28 @@ export default class Editor extends Component {
 
 						<Card className={cardStyle}>
 							<SelectedFilters
-								render={(props) => {
-									const { selectedValues, setValue, clearValues, components } =
-										props;
-									const clearFilter = (component) => {
+								render={props => {
+									const {
+										selectedValues,
+										setValue,
+										clearValues,
+										components,
+									} = props;
+									const clearFilter = component => {
 										setValue(component, null);
 									};
 
-									const filters = Object.keys(selectedValues).map((component) => {
+									const filters = Object.keys(
+										selectedValues,
+									).map(component => {
 										if (!components.includes(component)) {
 											return null;
 										}
 
 										if (
 											!selectedValues[component].value ||
-											selectedValues[component].value.length === 0
+											selectedValues[component].value
+												.length === 0
 										)
 											return null;
 										const value = `${component} : ${selectedValues[component].value}`;
@@ -292,10 +345,16 @@ export default class Editor extends Component {
 										return (
 											<SelectedTag
 												className="tag"
-												onClick={() => clearFilter(component, null)}
+												onClick={() =>
+													clearFilter(component, null)
+												}
 												key={component}
 											>
-												<span dangerouslySetInnerHTML={{ __html: value }} />
+												<span
+													dangerouslySetInnerHTML={{
+														__html: value,
+													}}
+												/>
 												<span>&nbsp; &#x2715;</span>
 											</SelectedTag>
 										);
@@ -328,8 +387,11 @@ export default class Editor extends Component {
 										? {
 												...componentProps.result,
 												react: {
-													and: Object.keys(componentProps).filter(
-														(item) => item !== 'result',
+													and: Object.keys(
+														componentProps,
+													).filter(
+														item =>
+															item !== 'result',
 													),
 												},
 										  }
