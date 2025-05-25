@@ -106,7 +106,7 @@ const MonitoringContainer = ({
 	}
 
 	return (
-        <div>
+		<div>
 			{data.isLoading ? (
 				<Loader />
 			) : (
@@ -162,7 +162,13 @@ const MonitoringContainer = ({
 										cursor: 'pointer',
 										color: 'dodgerblue',
 									}}
-									onClick={() => window.Intercom('show')}
+									onClick={() => {
+										if (window.Tawk_API) {
+											window.Tawk_API.toggle();
+										} else if (window.Intercom) {
+											window.Intercom('show');
+										}
+									}}
 								>
 									contact us
 								</span>
@@ -173,7 +179,7 @@ const MonitoringContainer = ({
 				</>
 			)}
 		</div>
-    );
+	);
 };
 
 MonitoringContainer.propTypes = {
