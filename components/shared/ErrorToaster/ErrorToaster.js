@@ -41,26 +41,26 @@ class ErrorToaster extends React.Component {
 
 		if (hasError && inline) {
 			return (
-                <Alert
+				<Alert
 					message={
 						<React.Fragment>
 							<span style={{ display: 'inline-block', marginRight: 5 }}>
 								{title || 'Something went wrong.'}
 							</span>
 							<Button size="small" type="primary" onClick={this.retry}>
-								<ReloadOutlined style={{ margin: "0.25rem" }}/>
+								<ReloadOutlined style={{ margin: '0.25rem' }} />
 								Retry
 							</Button>
 						</React.Fragment>
 					}
 					type="error"
 				/>
-            );
+			);
 		}
 
 		if (hasError) {
 			return (
-                <React.Fragment>
+				<React.Fragment>
 					<Result
 						icon={<AlertTwoTone twoToneColor="#fa541c" />}
 						title={
@@ -75,19 +75,27 @@ class ErrorToaster extends React.Component {
 						}
 						extra={
 							<React.Fragment>
-								<Button onClick={() => window.Intercom('show')}>
-									<MessageOutlined style={{ margin: "0.25rem" }}/>
+								<Button
+									onClick={() => {
+										if (window.Tawk_API) {
+											window.Tawk_API.toggle();
+										} else if (window.Intercom) {
+											window.Intercom('show');
+										}
+									}}
+								>
+									<MessageOutlined style={{ margin: '0.25rem' }} />
 									Chat with us
 								</Button>
 								<Button type="primary" onClick={this.retry}>
-									<ReloadOutlined style={{ margin: "0.25rem" }}/>
+									<ReloadOutlined style={{ margin: '0.25rem' }} />
 									Retry
 								</Button>
 							</React.Fragment>
 						}
 					/>
 				</React.Fragment>
-            );
+			);
 		}
 
 		return <React.Fragment>{children}</React.Fragment>;

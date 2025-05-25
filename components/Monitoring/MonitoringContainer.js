@@ -41,9 +41,7 @@ const MonitoringContainer = ({
 			try {
 				const res = await fetch(`${esURL}/metricbeat-*,.ds-metricbeat-*`, {
 					headers: {
-						Authorization: `Basic ${btoa(
-							`${esUsername}:${esPassword}`,
-						)}`,
+						Authorization: `Basic ${btoa(`${esUsername}:${esPassword}`)}`,
 						'Content-Type': 'application/json',
 					},
 				});
@@ -95,15 +93,13 @@ const MonitoringContainer = ({
 					src="https://www.dropbox.com/s/nwqf21zsyp8lhui/Screenshot%202021-01-08%20at%207.10.35%20PM.png?raw=1"
 					alt="Query Rules"
 				/>
-				<p style={{ textAlign: 'center' }}>
-					{get(messages, 'featureUnavailable')}
-				</p>
+				<p style={{ textAlign: 'center' }}>{get(messages, 'featureUnavailable')}</p>
 			</div>
 		);
 	}
 
 	return (
-        <div>
+		<div>
 			{data.isLoading ? (
 				<Loader />
 			) : (
@@ -122,10 +118,7 @@ const MonitoringContainer = ({
 								title={<b>Cluster Monitoring</b>}
 								extra={
 									<>
-										<Tooltip
-											placement="topLeft"
-											title="Refresh request logs."
-										>
+										<Tooltip placement="topLeft" title="Refresh request logs.">
 											<Button
 												style={{ marginLeft: 8 }}
 												onClick={() => {
@@ -159,7 +152,13 @@ const MonitoringContainer = ({
 										cursor: 'pointer',
 										color: 'dodgerblue',
 									}}
-									onClick={() => window.Intercom('show')}
+									onClick={() => {
+										if (window.Tawk_API) {
+											window.Tawk_API.toggle();
+										} else if (window.Intercom) {
+											window.Intercom('show');
+										}
+									}}
 								>
 									contact us
 								</span>
@@ -170,7 +169,7 @@ const MonitoringContainer = ({
 				</>
 			)}
 		</div>
-    );
+	);
 };
 
 MonitoringContainer.propTypes = {
@@ -194,9 +193,9 @@ MonitoringContainer.defaultProps = {
 	kibanaUsername: '',
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
 	return {
-		setConfig: data => dispatch(setMonitoringConfig(data)),
+		setConfig: (data) => dispatch(setMonitoringConfig(data)),
 	};
 };
 
