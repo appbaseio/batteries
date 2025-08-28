@@ -53,14 +53,20 @@ export function getAppMappings(appName, credentials, url) {
 		if (endpointSuffix.startsWith('/')) endpointSuffix = endpointSuffix.slice(1);
 
 		return getMappings(appName, credentials, url, endpointSuffix)
-			.then((res) =>
-				dispatch(
-					createAction(AppConstants.APP.GET_MAPPINGS_SUCCESS, res, null, {
-						appName: appName || 'default',
-						credentials,
-					}),
-				),
-			)
+			.then((res) => {
+				console.log('getAppMappings action: res from getMappings:', res);
+				return dispatch(
+					createAction(
+						AppConstants.APP.GET_MAPPINGS_SUCCESS,
+						{ raw: res, traversed: res },
+						null,
+						{
+							appName: appName || 'default',
+							credentials,
+						},
+					),
+				);
+			})
 			.catch((error) =>
 				dispatch(createAction(AppConstants.APP.GET_MAPPINGS_ERROR, null, error)),
 			);
