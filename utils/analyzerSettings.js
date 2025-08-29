@@ -15,6 +15,10 @@ const analyzerSettings = {
 				tokenizer: 'keyword',
 				filter: ['lowercase', 'asciifolding', 'word_delimiter'],
 			},
+			universal: {
+				tokenizer: 'standard',
+				filter: ['universal_stop'],
+			},
 		},
 		filter: {
 			autosuggest_filter: {
@@ -29,11 +33,15 @@ const analyzerSettings = {
 				token_chars: ['letter', 'digit', 'punctuation', 'symbol'],
 				type: 'ngram',
 			},
+			universal_stop: {
+				type: 'stop',
+				stopwords: '_english_',
+			},
 		},
 	},
 };
 
-export const synonymsSettings = synonyms => ({
+export const synonymsSettings = (synonyms) => ({
 	analysis: {
 		filter: {
 			...analyzerSettings.analysis.filter,

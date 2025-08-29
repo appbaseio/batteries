@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 import mappingUsecase from './mappingUsecase';
 import analyzerSettings, { synonymsSettings } from './analyzerSettings';
-import { getURL } from '../../constants/config';
+import { getURL, isUsingOpenSearch } from '../../constants/config';
 import { deleteObjectFromPath } from '.';
 import language from '../../constants/language';
 
@@ -235,10 +235,18 @@ export function reIndex({
 		type,
 		es_version: version,
 	};
-	if (version >= 7) {
+	const isOpenSearch = isUsingOpenSearch();
+	const majorVersion = parseInt(version.split('.')[0], 10);
+	const shouldRestructure =
+		majorVersion >= 7 || (majorVersion >= 3 && isOpenSearch) || majorVersion === 3;
+	if (shouldRestructure) {
 		delete body.type;
 		const { properties, ...rest } = mappings;
 		body.mappings = { properties: { ...properties }, ...rest };
+		// Wrap settings in index if not already
+		if (body.settings && !body.settings.index) {
+			body.settings = { index: body.settings };
+		}
 	}
 
 	return new Promise((resolve, reject) => {
