@@ -1,6 +1,6 @@
 export const renderHeader = () => `
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import {
 	ReactiveBase,
@@ -91,7 +91,9 @@ function getNestedValue(obj, path) {
 }
 
 function renderItem(res, triggerClickAnalytics) {
-	let { image, url, description, title } = ${JSON.stringify(config.componentProps.result.metaFields)};
+	let { image, url, description, title } = ${JSON.stringify(
+		config.componentProps.result.metaFields,
+	)};
 	image = getNestedValue(res,image);
 	title = getNestedValue(res,title);
 	url = getNestedValue(res,url);
