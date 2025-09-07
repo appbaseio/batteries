@@ -342,8 +342,8 @@ class SearchSandbox extends Component {
 				'package.json': {
 					content: {
 						dependencies: {
-							react: '16.8.6',
-							'react-dom': '16.8.6',
+							react: '18.2.0',
+							'react-dom': '18.2.0',
 							antd: '^3.6.6',
 							dompurify: '^3.1.7',
 							'@appbaseio/reactivesearch': '^3.45.0',
