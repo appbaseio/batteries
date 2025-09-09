@@ -12,7 +12,7 @@ import {
 	transferOwnership,
 	updatePaymentMethod,
 } from '../../utils/app';
-import { getMappings, getAuthHeaders } from '../../utils/mappings';
+import { getMappings, getAuthHeaders, traverseMapping } from '../../utils/mappings';
 import { doDelete, doGet, doPost, doPatch } from '../../utils/requestService';
 import { getURL } from '../../../constants/config';
 import apisMapper from '../../utils/apisMapper';
@@ -54,11 +54,12 @@ export function getAppMappings(appName, credentials, url) {
 
 		return getMappings(appName, credentials, url, endpointSuffix)
 			.then((res) => {
-				console.log('getAppMappings action: res from getMappings:', res);
+				// Build traversed mappings (array(s) of field names) from raw mappings
+				const traversed = traverseMapping(res);
 				return dispatch(
 					createAction(
 						AppConstants.APP.GET_MAPPINGS_SUCCESS,
-						{ raw: res, traversed: res },
+						{ raw: res, traversed },
 						null,
 						{
 							appName: appName || 'default',
