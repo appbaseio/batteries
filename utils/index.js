@@ -424,6 +424,8 @@ export const isValidPlan = (tier, override, feature) => {
 					CLUSTER_PLANS.STARTER_2021,
 					ARC_PLANS.HOSTED_ARC_STANDARD_2021,
 					SLS_PLANS.REACTIVESEARCH_CLOUD_HOBBY,
+					// Also allow 2023 sandbox tier for Search Relevancy
+					CLUSTER_PLANS.SANDBOX_2023,
 				].includes(tier)
 			);
 		case features.AI:
