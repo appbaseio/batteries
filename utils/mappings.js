@@ -1,8 +1,12 @@
 import get from 'lodash/get';
 import mappingUsecase from './mappingUsecase';
 import analyzerSettings, { synonymsSettings } from './analyzerSettings';
-import { getURL, isUsingOpenSearch } from '../../constants/config';
-import { deleteObjectFromPath } from '.';
+import {
+	getURL,
+	isUsingOpenSearch,
+	persistElasticsearchServerlessFlavor,
+} from '../../constants/config';
+import { deleteObjectFromPath, supportsIndexShardsAndReplicas } from '.';
 import language from '../../constants/language';
 
 const PRESERVED_KEYS = ['meta'];
@@ -216,6 +220,7 @@ export async function getESVersion(appName, credentials) {
 	if (response.status >= 400) {
 		throw new Error(data);
 	}
+	persistElasticsearchServerlessFlavor(data);
 	return data.version.number.split('.')[0];
 }
 
@@ -646,13 +651,15 @@ export const updateMappingsProperties = ({
 	return mapping;
 };
 
-export const getUpdatedSettings = ({ settings, shards, replicas }) => {
+export const getUpdatedSettings = ({ settings, shards, replicas, backend }) => {
 	const updatedSettings = {
-		index: {
-			number_of_shards: shards,
-			number_of_replicas: replicas,
-		},
+		index: {},
 	};
+
+	if (supportsIndexShardsAndReplicas(backend)) {
+		updatedSettings.index.number_of_shards = shards;
+		updatedSettings.index.number_of_replicas = replicas;
+	}
 	if (settings && settings.index && settings.index.analysis) {
 		const {
 			index: {

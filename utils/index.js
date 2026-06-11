@@ -1,6 +1,6 @@
 import get from 'lodash/get';
 import { doGet, doPost } from './requestService';
-import { getURL } from '../../constants/config';
+import { getURL, isUsingElasticsearchServerless } from '../../constants/config';
 import { ALLOWED_ACTIONS } from '../../constants';
 
 // Get credentials if permissions are already present
@@ -462,6 +462,10 @@ export const BACKENDS = {
 		name: 'elasticsearch',
 		logo: 'https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/blt05047fdbe3b9c333/5c11ec1f3312ce2e785d9c30/logo-elastic-elasticsearch-lt.svg',
 	},
+	ELASTICSEARCH_SERVERLESS: {
+		name: 'elasticsearch_serverless',
+		logo: 'https://static-www.elastic.co/v3/assets/bltefdd0b53724fa2ce/blt05047fdbe3b9c333/5c11ec1f3312ce2e785d9c30/logo-elastic-elasticsearch-lt.svg',
+	},
 	OPENSEARCH: {
 		name: 'opensearch',
 		logo: 'https://opensearch.org/assets/brand/SVG/Logo/opensearch_logo_default.svg',
@@ -488,8 +492,55 @@ export const BACKENDS = {
 	},
 };
 
+export const supportsIndexShardsAndReplicas = (backend) => {
+	if (isUsingElasticsearchServerless()) {
+		return false;
+	}
+
+	if (!backend) {
+		return true;
+	}
+
+	if (backend === BACKENDS.ELASTICSEARCH_SERVERLESS.name) {
+		return false;
+	}
+
+	return !backend.includes('serverless');
+};
+
+export const getAppIndexName = (app) => app?.index || app?.alias || app?.name || '';
+
+export const isSystemIndex = (indexName) => {
+	if (!indexName) return false;
+	if (indexName.startsWith('.') || indexName.includes('metricbeat-')) return true;
+	if (indexName.startsWith('rs_')) return true;
+	return false;
+};
+
+export const stripIndexShardsAndReplicas = (settings = {}) => {
+	if (!settings || typeof settings !== 'object') {
+		return settings;
+	}
+
+	const stripped = { ...settings };
+	delete stripped['index.number_of_shards'];
+	delete stripped['index.number_of_replicas'];
+
+	if (stripped.index && typeof stripped.index === 'object') {
+		const { number_of_shards, number_of_replicas, ...indexRest } = stripped.index;
+		if (Object.keys(indexRest).length) {
+			stripped.index = indexRest;
+		} else {
+			delete stripped.index;
+		}
+	}
+
+	return stripped;
+};
+
 export const ALLOWED_ACTIONS_BY_BACKEND = {
 	[BACKENDS.ELASTICSEARCH.name]: [...Object.values(ALLOWED_ACTIONS)],
+	[BACKENDS.ELASTICSEARCH_SERVERLESS.name]: [...Object.values(ALLOWED_ACTIONS)],
 	[BACKENDS.SYSTEM.name]: [...Object.values(ALLOWED_ACTIONS)],
 	[BACKENDS.OPENSEARCH.name]: [...Object.values(ALLOWED_ACTIONS)],
 	[BACKENDS.SOLR.name]: [

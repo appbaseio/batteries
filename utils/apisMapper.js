@@ -92,6 +92,20 @@ const apisMapper = {
 			method: 'GET',
 		},
 	},
+	elasticsearch_serverless: {
+		index: {
+			url: '/_aliasedindices',
+			method: 'GET',
+		},
+		search: {
+			url: '/${index}/_reactivesearch',
+			method: 'POST',
+		},
+		schema: {
+			url: '/${index}/_mapping',
+			method: 'GET',
+		},
+	},
 	zinc: {
 		index: {
 			url: '/_indices',
